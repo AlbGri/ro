@@ -27,12 +27,22 @@
   // nuovo il codice a chi lo ha gia' inserito.
   const ACCESS_KEY = "ragnarok-timers/access";
 
+  // Colori e caratteri sono quelli della guida Nuovo Mondo, chiari o scuri come
+  // la pagina coperta: segue il sistema, oppure `data-theme` dove la pagina lo usa.
+  const DARK = `
+      --gate-bg: #131a16; --gate-surface: #1b2420; --gate-ink: #e3eae2; --gate-muted: #9daa9f;
+      --gate-line: #33413a; --gate-accent: #b79ceb; --gate-on-accent: #1b1530; --gate-error: #f08a72;
+      color-scheme: dark;`;
+
   // Il contenuto si nasconde con `visibility` e non con `display`: le pagine
   // che misurano i propri elementi al caricamento troverebbero altezze nulle.
   const STYLE = `
     html.locked { overflow: hidden; }
     html.locked body > *:not(.gate) { visibility: hidden; }
     .gate {
+      --gate-bg: #e6ebe2; --gate-surface: #f5f7f1; --gate-ink: #1d2821; --gate-muted: #56655b;
+      --gate-line: #c6d0c1; --gate-accent: #6a4c9c; --gate-on-accent: #fff; --gate-error: #a3402c;
+      color-scheme: light;
       position: fixed;
       inset: 0;
       z-index: 1000;
@@ -40,41 +50,51 @@
       align-items: center;
       justify-content: center;
       padding: 24px;
-      background: #1e1e1e;
-      color: #e8e8e8;
-      font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--gate-bg);
+      color: var(--gate-ink);
+      font: 16px/1.5 "Atkinson Hyperlegible", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .gate {${DARK}
+      }
+    }
+    :root[data-theme="dark"] .gate {${DARK}
     }
     .gate-box { width: 100%; max-width: 320px; margin: 0; text-align: center; }
-    .gate-box h1 { margin: 0 0 24px; color: inherit; font: inherit; font-size: 20px; font-weight: 700; }
-    .gate-box label { display: block; margin: 0 0 8px; color: #8a8a8a; font: inherit; font-size: 13px; }
+    .gate-box h1 {
+      margin: 0 0 20px;
+      color: inherit;
+      font: 700 2.1rem/1.05 "Alegreya", "Palatino Linotype", Palatino, Georgia, serif;
+      letter-spacing: -0.01em;
+    }
+    .gate-box label { display: block; margin: 0 0 8px; color: var(--gate-muted); font: inherit; font-size: 0.9rem; }
     .gate-box input {
       box-sizing: border-box;
       width: 100%;
       margin: 0;
-      padding: 12px;
-      background: #2b2b2b;
-      border: 1px solid #ffffff22;
+      padding: 11px 12px;
+      background: var(--gate-surface);
+      border: 1px solid var(--gate-line);
       border-radius: 8px;
-      color: #e8e8e8;
+      color: var(--gate-ink);
       font: inherit;
-      font-size: 16px;
       text-align: center;
     }
     .gate-box input:focus-visible,
-    .gate-box button:focus-visible { outline: 2px solid #e8e8e8; outline-offset: 2px; }
-    .gate-box p { margin: 12px 0 0; color: #d1495b; font: inherit; font-size: 13px; }
+    .gate-box button:focus-visible { outline: 3px solid var(--gate-accent); outline-offset: 2px; }
+    .gate-box p { margin: 12px 0 0; color: var(--gate-error); font: inherit; font-size: 0.9rem; }
     .gate-box p[hidden] { display: none; }
     .gate-box button {
       box-sizing: border-box;
       width: 100%;
       margin: 16px 0 0;
-      padding: 12px;
-      background: #4a7fb5;
-      border: 0;
+      padding: 11px 12px;
+      background: var(--gate-accent);
+      border: 1px solid var(--gate-accent);
       border-radius: 8px;
-      color: #fff;
+      color: var(--gate-on-accent);
       font: inherit;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
     }`;
 
