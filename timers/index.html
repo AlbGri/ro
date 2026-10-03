@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Ragnarok Timers</title>
+    <meta name="description" content="Respawn window timers for Ragnarok Online MvPs and quests." />
+    <meta name="theme-color" content="#1e1e1e" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="icons/icon-192.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <button id="clock" class="clock" aria-label="Change time zone" title="Change time zone">
+        <span id="clock-time">--:--:--</span>
+        <span id="clock-zone" class="clock-zone"></span>
+      </button>
+      <div class="topbar-actions">
+        <button id="btn-alerts" class="ghost warn compact" hidden>
+          <span class="short">Alerts</span><span class="long">Enable alerts</span>
+        </button>
+        <button id="btn-install" class="ghost compact" hidden>
+          <span class="short">Install</span><span class="long">Install app</span>
+        </button>
+        <button id="btn-settings" class="icon" aria-label="Settings" title="Settings">&#9881;</button>
+      </div>
+    </header>
+
+    <main>
+      <div class="list-head" aria-hidden="true">
+        <span class="col-sound">Sound</span>
+        <span class="col-name">Name</span>
+        <span class="col-map">Map</span>
+        <span class="col-category">Category</span>
+        <span class="col-time">Time</span>
+        <span class="col-spawn">Spawn</span>
+        <span class="col-maxspawn">Max. Spawn</span>
+        <span class="col-left">Left</span>
+        <span class="col-menu"></span>
+      </div>
+      <ul id="timer-list" class="timers"></ul>
+      <p id="empty-state" class="empty">No timers yet. Tap <strong>Add</strong> to create the first one.</p>
+    </main>
+
+    <button id="btn-add" class="fab" aria-label="Add timer">
+      <span aria-hidden="true">+</span><span class="fab-label">Add</span>
+    </button>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden>
+      <span id="toast-text"></span>
+      <button id="toast-action" class="ghost" hidden>Undo</button>
+    </div>
+
+    <dialog id="editor" class="sheet">
+      <form id="editor-form" method="dialog">
+        <h2 id="editor-title">New timer</h2>
+
+        <label for="field-name">Name</label>
+        <input id="field-name" name="name" list="names" autocomplete="off" placeholder="Atroce" />
+
+        <div class="row">
+          <div>
+            <label for="field-map">Map</label>
+            <input id="field-map" name="map" list="maps" autocomplete="off" placeholder="ve_fild01" />
+          </div>
+          <div>
+            <label for="field-category">Category</label>
+            <input id="field-category" name="category" list="categories" autocomplete="off" placeholder="MvP" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="field-time">Time</label>
+            <input id="field-time" name="time" inputmode="numeric" autocomplete="off" placeholder="now" />
+          </div>
+          <div>
+            <label for="field-min">Min</label>
+            <input id="field-min" name="min" inputmode="decimal" autocomplete="off" placeholder="190" required />
+          </div>
+          <div>
+            <label for="field-max">Max</label>
+            <input id="field-max" name="max" inputmode="decimal" autocomplete="off" placeholder="370" />
+          </div>
+        </div>
+        <p class="hint">Minutes, or <code>1h30</code> and <code>3:10</code>. Leave <strong>Max</strong> empty for a fixed countdown.</p>
+        <p id="editor-error" class="error" hidden></p>
+
+        <menu>
+          <button type="button" class="ghost" data-close>Cancel</button>
+          <button type="submit" class="primary" id="editor-submit">Add</button>
+        </menu>
+      </form>
+
+      <datalist id="names"></datalist>
+      <datalist id="maps"></datalist>
+      <datalist id="categories"></datalist>
+    </dialog>
+
+    <dialog id="actions" class="sheet">
+      <h2 id="actions-title">Timer</h2>
+      <div class="stack">
+        <button type="button" class="ghost" data-action="edit">Edit</button>
+        <button type="button" class="ghost" data-action="duplicate">+1 (duplicate from now)</button>
+        <button type="button" class="ghost" data-action="refresh">Restart from now</button>
+        <button type="button" class="ghost danger" data-action="remove">Remove</button>
+      </div>
+      <menu>
+        <button type="button" class="ghost" data-close>Close</button>
+      </menu>
+    </dialog>
+
+    <dialog id="timezone" class="sheet">
+      <h2>Time zone</h2>
+      <p class="hint">
+        The times you type are read in this zone. If the clock above does not
+        match the clock on your wall, pick your city here: some browsers and VPNs
+        report the wrong zone, and every timer would be off by the difference.
+      </p>
+
+      <label for="zone-select">City</label>
+      <select id="zone-select"></select>
+
+      <p class="hint" id="zone-detected"></p>
+      <p class="hint">
+        Changing the zone does not move timers created before: check their
+        <strong>Time</strong> and fix the ones that look wrong.
+      </p>
+
+      <menu>
+        <button type="button" class="ghost" data-close>Close</button>
+      </menu>
+    </dialog>
+
+    <dialog id="install" class="sheet">
+      <h2>Install on this device</h2>
+      <div id="install-steps"></div>
+      <menu>
+        <button type="button" class="ghost" data-close>Close</button>
+      </menu>
+    </dialog>
+
+    <dialog id="settings" class="sheet">
+      <h2>Settings</h2>
+
+      <label for="field-volume">Alarm volume: <output id="volume-value">60</output></label>
+      <input id="field-volume" type="range" min="0" max="100" step="5" />
+
+      <label class="check">
+        <input id="field-wakelock" type="checkbox" />
+        Keep the screen awake while open
+      </label>
+
+      <div class="stack">
+        <button type="button" class="ghost" id="btn-notifications">Enable notifications</button>
+        <button type="button" class="ghost" id="btn-clear">Clear expired</button>
+        <button type="button" class="ghost" id="btn-export">Export data</button>
+        <button type="button" class="ghost" id="btn-import">Import data</button>
+        <input id="file-import" type="file" accept="application/json,.json" hidden />
+      </div>
+
+      <p class="hint">
+        Timers live in this browser only. Nothing is uploaded, and clearing site
+        data deletes them: export a file to move them to another device or to the
+        desktop app.
+      </p>
+      <p class="hint">Alarms only ring while this page is open.</p>
+      <p class="hint" id="version"></p>
+
+      <menu>
+        <button type="button" class="ghost" data-close>Close</button>
+      </menu>
+    </dialog>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

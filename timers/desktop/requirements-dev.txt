@@ -1,0 +1,4 @@
+# L'applicazione usa solo la libreria standard di Python: a runtime non ha
+# dipendenze. Qui ci sono le sole dipendenze di sviluppo.
+pytest>=7.0
+pyinstaller>=6.0

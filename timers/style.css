@@ -1,0 +1,633 @@
+/*
+ * Un solo markup per due layout: su telefono ogni timer e' una scheda, da
+ * 760px in su le stesse celle diventano le colonne della tabella grazie a
+ * `display: contents` sui raggruppamenti.
+ */
+
+:root {
+  --bg: #1e1e1e;
+  --bg-alt: #2b2b2b;
+  --bg-head: #3a3a3a;
+  --fg: #e8e8e8;
+  --fg-muted: #8a8a8a;
+  --accent: #4a7fb5;
+  --open: #e5c07b;
+  --closed: #cc3333;
+  --danger: #d1495b;
+  --radius: 10px;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0 0 calc(96px + env(safe-area-inset-bottom));
+  background: var(--bg);
+  color: var(--fg);
+  font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* ------------------------------------------------------------- topbar --- */
+
+/*
+ * Tre colonne invece di una fila: la prima resta vuota e fa da contrappeso alle
+ * azioni, cosi' l'orologio sta al centro dello schermo e non al centro di cio'
+ * che avanza dopo i pulsanti.
+ */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
+  background: var(--bg-head);
+  border-bottom: 1px solid #00000055;
+}
+
+/*
+ * L'orologio non e' un ornamento: e' il modo per accorgersi che il browser
+ * dichiara un fuso diverso dal proprio, cosa che sfalserebbe ogni orario
+ * digitato senza altri sintomi.
+ */
+.clock {
+  grid-column: 2;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px 10px;
+  background: none;
+  border: 1px solid transparent;
+  text-align: center;
+}
+
+.clock:hover {
+  border-color: #ffffff22;
+}
+
+#clock-time {
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+  line-height: 1.1;
+}
+
+.clock-zone {
+  overflow: hidden;
+  max-width: 100%;
+  color: var(--fg-muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Sul telefono i pulsanti della barra usano l'etichetta corta. */
+.compact {
+  padding: 8px 12px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.compact .long {
+  display: none;
+}
+
+@media (min-width: 560px) {
+  .compact .short {
+    display: none;
+  }
+
+  .compact .long {
+    display: inline;
+  }
+}
+
+.topbar-actions {
+  grid-column: 3;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/*
+ * Sugli schermi stretti la colonna dei pulsanti si prende il suo minimo e
+ * l'orologio scivola verso sinistra, invece di essere tagliato.
+ */
+@media (max-width: 430px) {
+  .topbar {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  #clock-time {
+    font-size: 20px;
+  }
+}
+
+/* ------------------------------------------------------------- pulsanti -- */
+
+button {
+  font: inherit;
+  color: inherit;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.ghost {
+  padding: 10px 14px;
+  background: var(--bg-alt);
+  border: 1px solid #ffffff1a;
+}
+
+.ghost:hover {
+  background: #4a4a4a;
+}
+
+.ghost:disabled {
+  color: var(--fg-muted);
+  cursor: default;
+}
+
+.primary {
+  padding: 10px 18px;
+  background: var(--accent);
+  border: 1px solid transparent;
+  font-weight: 600;
+}
+
+.danger {
+  color: var(--danger);
+}
+
+.warn {
+  border-color: var(--open);
+  color: var(--open);
+}
+
+.icon {
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid #ffffff1a;
+  font-size: 17px;
+}
+
+.fab {
+  position: fixed;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px;
+  background: var(--accent);
+  border: none;
+  border-radius: 28px;
+  box-shadow: 0 6px 18px #0008;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.fab-label {
+  font-size: 15px;
+}
+
+/* --------------------------------------------------------------- lista --- */
+
+.list-head {
+  display: none;
+}
+
+.timers {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timer {
+  --row: var(--cat, var(--fg));
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  grid-template-areas:
+    "sound name left menu"
+    "sound meta times menu";
+  align-items: center;
+  gap: 2px 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #ffffff12;
+  color: var(--row);
+}
+
+.timer:nth-child(even) {
+  background: #ffffff06;
+}
+
+.timer.selected {
+  background: #4a7fb533;
+}
+
+.timer[data-state="open"] {
+  --row: var(--open);
+}
+
+.timer[data-state="closed"] {
+  --row: var(--closed);
+}
+
+.sound {
+  grid-area: sound;
+  min-width: 44px;
+  padding: 8px;
+  background: none;
+  border: none;
+  color: var(--fg-muted);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.sound[aria-pressed="true"] {
+  color: var(--fg);
+}
+
+.name {
+  grid-area: name;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta {
+  grid-area: meta;
+  display: flex;
+  gap: 8px;
+  color: var(--fg-muted);
+  font-size: 13px;
+}
+
+.meta .category::before {
+  content: "·";
+  margin-right: 8px;
+}
+
+/* Senza mappa il separatore non ha nulla da separare. */
+.meta .map:empty {
+  display: none;
+}
+
+.meta .map:empty + .category::before {
+  content: none;
+}
+
+.times {
+  grid-area: times;
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  color: var(--fg-muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.times .spawn {
+  color: var(--row);
+}
+
+.times .time::after,
+.times .spawn::after {
+  content: "→";
+  margin-left: 6px;
+  color: var(--fg-muted);
+}
+
+.times .maxspawn:empty,
+.times .maxspawn:not(:empty) {
+  min-width: 0;
+}
+
+.left {
+  grid-area: left;
+  font-size: 20px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.menu {
+  grid-area: menu;
+  min-width: 40px;
+  padding: 8px 4px;
+  background: none;
+  border: none;
+  color: var(--fg-muted);
+  font-size: 18px;
+}
+
+.empty {
+  padding: 40px 24px;
+  color: var(--fg-muted);
+  text-align: center;
+}
+
+/* --------------------------------------------------------------- toast --- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(90px + env(safe-area-inset-bottom));
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: min(92vw, 460px);
+  padding: 12px 14px;
+  transform: translateX(-50%);
+  background: var(--bg-head);
+  border: 1px solid #ffffff22;
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px #0009;
+}
+
+.toast .ghost {
+  padding: 6px 12px;
+  color: var(--accent);
+}
+
+/* -------------------------------------------------------------- dialog --- */
+
+.sheet {
+  width: 100%;
+  max-width: 460px;
+  margin: auto auto 0;
+  padding: 20px 18px calc(20px + env(safe-area-inset-bottom));
+  background: var(--bg-alt);
+  border: 1px solid #ffffff1a;
+  border-radius: var(--radius) var(--radius) 0 0;
+  color: var(--fg);
+}
+
+.sheet::backdrop {
+  background: #000000aa;
+}
+
+.sheet h2 {
+  margin: 0 0 16px;
+  font-size: 17px;
+}
+
+.sheet label {
+  display: block;
+  margin: 12px 0 4px;
+  color: var(--fg-muted);
+  font-size: 13px;
+}
+
+.sheet input[type="text"],
+.sheet input:not([type]) {
+  width: 100%;
+}
+
+.sheet select {
+  width: 100%;
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid #ffffff22;
+  border-radius: 8px;
+  color: var(--fg);
+  font-size: 16px;
+}
+
+.sheet input:not([type="checkbox"]):not([type="range"]) {
+  width: 100%;
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid #ffffff22;
+  border-radius: 8px;
+  color: var(--fg);
+  /* Sotto i 16px iOS ingrandisce la pagina quando il campo prende il fuoco. */
+  font-size: 16px;
+}
+
+.sheet input[type="range"] {
+  padding: 0;
+  accent-color: var(--accent);
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+}
+
+.row > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.check {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0 !important;
+  color: var(--fg) !important;
+  font-size: 15px !important;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.stack .ghost {
+  text-align: left;
+}
+
+.sheet ol {
+  margin: 8px 0 0;
+  padding-left: 22px;
+  line-height: 1.9;
+}
+
+.sheet p {
+  margin: 0;
+}
+
+.hint {
+  margin: 12px 0 0;
+  color: var(--fg-muted);
+  font-size: 13px;
+}
+
+.hint code {
+  padding: 1px 4px;
+  background: #ffffff12;
+  border-radius: 4px;
+}
+
+.error {
+  margin: 12px 0 0;
+  color: var(--danger);
+  font-size: 13px;
+}
+
+.sheet menu {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: 20px 0 0;
+  padding: 0;
+}
+
+/* --------------------------------------------------------------- gate --- */
+
+body.locked > *:not(.gate) {
+  display: none;
+}
+
+.gate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 24px;
+}
+
+.gate-box {
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+}
+
+.gate-box h1 {
+  margin: 0 0 24px;
+  font-size: 20px;
+}
+
+.gate-box label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--fg-muted);
+  font-size: 13px;
+}
+
+.gate-box input {
+  width: 100%;
+  padding: 12px;
+  background: var(--bg-alt);
+  border: 1px solid #ffffff22;
+  border-radius: 8px;
+  color: var(--fg);
+  font-size: 16px;
+  text-align: center;
+}
+
+.gate-box .primary {
+  width: 100%;
+  margin-top: 16px;
+}
+
+/* ------------------------------------------------------------ desktop --- */
+
+@media (min-width: 760px) {
+  body {
+    padding-bottom: 40px;
+  }
+
+  main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  .list-head,
+  .timer {
+    display: grid;
+    grid-template-columns: 56px minmax(120px, 1.4fr) minmax(80px, 1fr) 110px 64px 70px 92px 100px 40px;
+    align-items: center;
+    gap: 0 8px;
+  }
+
+  .list-head {
+    padding: 8px 12px;
+    background: var(--bg-head);
+    border-radius: var(--radius) var(--radius) 0 0;
+    color: var(--fg-muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .list-head span,
+  .timer > *:not(.name):not(.meta):not(.times) {
+    text-align: center;
+  }
+
+  .list-head .col-name {
+    text-align: left;
+  }
+
+  /* Le celle raggruppate per il telefono tornano colonne indipendenti. */
+  .meta,
+  .times {
+    display: contents;
+  }
+
+  .timer > *,
+  .meta > *,
+  .times > * {
+    grid-area: auto;
+  }
+
+  .map,
+  .category,
+  .time,
+  .spawn,
+  .maxspawn {
+    color: var(--fg-muted);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .spawn {
+    color: var(--row);
+  }
+
+  .meta .category::before,
+  .times .time::after,
+  .times .spawn::after {
+    content: none;
+  }
+
+  .left {
+    font-size: 15px;
+    text-align: center;
+  }
+
+  .sheet {
+    margin: auto;
+    border-radius: var(--radius);
+  }
+
+  .fab {
+    right: calc(50% - 500px + 16px);
+  }
+}
+
+@media (max-width: 759px) {
+  .fab-label {
+    display: none;
+  }
+}
