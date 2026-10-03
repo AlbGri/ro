@@ -1,10 +1,13 @@
 /**
- * Codice di accesso, unico per tutto il sito.
+ * Codice di accesso e tema, comuni a tutto il sito.
  *
  * Ogni pagina lo include nell'<head> con `<script src="../gate.js"></script>`:
  * finche' il codice non viene inserito il contenuto resta coperto dalla
  * schermata di accesso. Lo stile e' qui dentro perche' le pagine del sito non
  * condividono un foglio di stile.
+ *
+ * Girando prima che la pagina venga disegnata, e' anche il posto dove si
+ * applica il tema chiaro o scuro scelto dall'utente, uguale per tutto il sito.
  *
  * Nel sorgente sta solo l'impronta SHA-256 del codice, non il codice: chi apre
  * il repository o gli strumenti per sviluppatori non lo legge scritto in chiaro.
@@ -21,6 +24,38 @@
  */
 
 (() => {
+  const root = document.documentElement;
+
+  // ----------------------------------------------------------------- tema ---
+
+  // La scelta vale per tutto il sito e sta in una chiave sua. Le pagine la
+  // leggono dall'attributo `data-theme`; senza una scelta decide il sistema,
+  // tramite i fogli di stile. La guida scrive la stessa chiave per conto suo,
+  // perche' deve funzionare anche senza questo script.
+  const THEME_KEY = "ragnarok/theme";
+
+  try {
+    const theme = localStorage.getItem(THEME_KEY);
+    if (theme === "light" || theme === "dark") root.dataset.theme = theme;
+  } catch {
+    // Senza localStorage resta il tema del sistema.
+  }
+
+  /** Passa dal tema chiaro allo scuro e viceversa, e ricorda la scelta. */
+  window.toggleTheme = () => {
+    const dark = root.dataset.theme
+      ? root.dataset.theme === "dark"
+      : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.dataset.theme = dark ? "light" : "dark";
+    try {
+      localStorage.setItem(THEME_KEY, root.dataset.theme);
+    } catch {
+      // Senza localStorage la scelta vale per questa sola apertura.
+    }
+  };
+
+  // -------------------------------------------------------------- accesso ---
+
   const ACCESS_HASH = "809770779ab9eed80d00159f4ddb738055d501c06ae1715c8e688ba7452f66cf";
 
   // La chiave e' nata con i timer e resta quella: cambiarla chiederebbe di
@@ -28,7 +63,7 @@
   const ACCESS_KEY = "ragnarok-timers/access";
 
   // Colori e caratteri sono quelli della guida Nuovo Mondo, chiari o scuri come
-  // la pagina coperta: segue il sistema, oppure `data-theme` dove la pagina lo usa.
+  // la pagina coperta, che lo dice con `data-theme` o lascia decidere al sistema.
   const DARK = `
       --gate-bg: #131a16; --gate-surface: #1b2420; --gate-ink: #e3eae2; --gate-muted: #9daa9f;
       --gate-line: #33413a; --gate-accent: #b79ceb; --gate-on-accent: #1b1530; --gate-error: #f08a72;
@@ -142,7 +177,6 @@
 
     // Lo script gira nell'<head>, prima che il contenuto venga disegnato: la
     // classe lo nasconde subito, la schermata arriva quando esiste il <body>.
-    const root = document.documentElement;
     const style = document.createElement("style");
     style.textContent = STYLE;
     document.head.append(style);

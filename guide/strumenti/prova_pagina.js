@@ -31,12 +31,15 @@ const prima = [
   'window.esito = function (t) { document.getElementById("esito").textContent += String(t) + String.fromCharCode(10); };',
   'window.addEventListener("error", function (e) { window.esito("ERRORE: " + e.message); });',
   // Ogni prova parte da zero, oppure dai dati salvati di --semina (per provare la conversione di dati vecchi).
-  'try { ["", "-ids1", "-ids2"].forEach(function (x) { localStorage.removeItem("uaro-nw-guide-PROVA" + x); }); } catch (e) {}',
+  'try { ["", "-ids1", "-ids2"].forEach(function (x) { localStorage.removeItem("uaro-nw-guide-PROVA" + x); }); localStorage.removeItem("ragnarok/theme-PROVA"); } catch (e) {}',
   semina ? 'try { localStorage.setItem("uaro-nw-guide-PROVA", ' + JSON.stringify(fs.readFileSync(semina, "utf8").trim()) + '); } catch (e) {}' : ''
 ].join("\n");
 let html = fs.readFileSync(GUIDA, "utf8");
 if (!html.includes('const STORAGE_KEY = "uaro-nw-guide";')) throw new Error("STORAGE_KEY non trovato nella guida");
 html = html.replace('const STORAGE_KEY = "uaro-nw-guide";', 'const STORAGE_KEY = "uaro-nw-guide-PROVA";');
+// Anche il tema ha la sua chiave di prova: quella vera vale per tutto il sito.
+if (!html.includes('const THEME_KEY = "ragnarok/theme";')) throw new Error("THEME_KEY non trovato nella guida");
+html = html.replace('const THEME_KEY = "ragnarok/theme";', 'const THEME_KEY = "ragnarok/theme-PROVA";');
 // Le sostituzioni vanno prima del codice della pagina, la prova dopo.
 html = html.replace("<body>", function () { return "<body><script>" + prima + "</script>"; });
 const prova = fs.readFileSync(args[0], "utf8");

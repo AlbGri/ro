@@ -27,8 +27,10 @@
         color-scheme: light;
       }
 
+      /* Scuro se lo chiede il sistema, a meno che l'utente abbia scelto il chiaro
+         (data-theme, messo da gate.js); oppure se l'utente ha scelto lo scuro. */
       @media (prefers-color-scheme: dark) {
-        :root {
+        :root:not([data-theme="light"]) {
           --bg: #131a16;
           --surface: #1b2420;
           --ink: #e3eae2;
@@ -37,6 +39,16 @@
           --focus: #b79ceb;
           color-scheme: dark;
         }
+      }
+
+      :root[data-theme="dark"] {
+        --bg: #131a16;
+        --surface: #1b2420;
+        --ink: #e3eae2;
+        --muted: #9daa9f;
+        --line: #33413a;
+        --focus: #b79ceb;
+        color-scheme: dark;
       }
 
       body {
@@ -54,13 +66,42 @@
         margin: 0 auto;
       }
 
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 28px;
+      }
+
       h1 {
-        margin: 0 0 28px;
+        margin: 0;
         font-family: var(--serif);
         font-size: clamp(2.1rem, 6vw, 2.8rem);
         font-weight: 700;
         line-height: 1.05;
         letter-spacing: -0.01em;
+      }
+
+      button {
+        padding: 7px 12px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: inherit;
+        font: inherit;
+        font-size: 0.92rem;
+        line-height: 1.2;
+        cursor: pointer;
+      }
+
+      button:hover {
+        border-color: var(--muted);
+      }
+
+      button:focus-visible {
+        outline: 3px solid var(--focus);
+        outline-offset: 2px;
       }
 
       h2 {
@@ -106,7 +147,10 @@
   </head>
   <body>
     <main>
-      <h1>Ragnarok</h1>
+      <header>
+        <h1>Ragnarok</h1>
+        <button type="button" onclick="toggleTheme()">Light / dark theme</button>
+      </header>
 
       <!-- Un servizio nuovo: una cartella sua, gate.js nel suo <head>, una scheda qui. -->
       <section>

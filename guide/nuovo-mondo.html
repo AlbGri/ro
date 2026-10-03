@@ -429,7 +429,7 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
 </dialog>
 
 <script>
-const GUIDE_VERSION = "7.4";
+const GUIDE_VERSION = "7.5";
 const STORAGE_KEY = "uaro-nw-guide";
 
 const QUESTS = {
@@ -1507,7 +1507,11 @@ const PHASES = [
   const MAIN = ALL.filter(function (s) { return pageOf(s.phase) === "percorso"; });
   let view = "percorso";
 
-  const state = { done: {}, notes: {}, hide: false, theme: null, open: {} };
+  const state = { done: {}, notes: {}, hide: false, open: {} };
+  // Il tema vale per tutto il sito: sta in una chiave sua, la stessa che leggono gate.js, la home e i timer.
+  const THEME_KEY = "ragnarok/theme";
+  let theme = null;
+  try { const t = localStorage.getItem(THEME_KEY); if (t === "light" || t === "dark") theme = t; } catch (e) {}
   let storageOk = true;
   const stepEls = {};
   const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1551,14 +1555,13 @@ const PHASES = [
     state.done = migrateIds((s.done && typeof s.done === "object") ? s.done : {}, idsVersion);
     state.notes = migrateIds((s.notes && typeof s.notes === "object") ? s.notes : {}, idsVersion);
     state.hide = !!s.hide;
-    state.theme = (s.theme === "light" || s.theme === "dark") ? s.theme : null;
     // I blocchi aperti a mano sono salvati per id: dopo una rinumerazione si riparte dai default.
     state.open = (idsVersion >= IDS_VERSION && s.open && typeof s.open === "object") ? s.open : {};
     return true;
   }
   function save() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ guide: "uaro-nw", v: GUIDE_VERSION, ids: IDS_VERSION, done: state.done, notes: state.notes, hide: state.hide, theme: state.theme, open: state.open }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ guide: "uaro-nw", v: GUIDE_VERSION, ids: IDS_VERSION, done: state.done, notes: state.notes, hide: state.hide, open: state.open }));
     } catch (e) {
       if (storageOk) { storageOk = false; toast("Questo browser non salva i progressi: usa Altro, Backup dei progressi"); }
     }
@@ -2025,7 +2028,7 @@ const PHASES = [
   }
 
   function applyTheme() {
-    if (state.theme) document.documentElement.setAttribute("data-theme", state.theme);
+    if (theme) document.documentElement.setAttribute("data-theme", theme);
     else document.documentElement.removeAttribute("data-theme");
   }
 
@@ -2202,9 +2205,10 @@ const PHASES = [
     });
     document.getElementById("btnTheme").addEventListener("click", function () {
       closeMore();
-      const dark = state.theme ? state.theme === "dark" : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
-      state.theme = dark ? "light" : "dark";
-      save(); applyTheme();
+      const dark = theme ? theme === "dark" : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      theme = dark ? "light" : "dark";
+      try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+      applyTheme();
     });
     document.getElementById("btnReset").addEventListener("click", function () {
       closeMore();

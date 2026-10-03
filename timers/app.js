@@ -643,6 +643,8 @@ function bindEvents() {
     }
     event.target.value = "";
   });
+  // Il tema e' del sito, non dei timer: lo cambia e lo ricorda gate.js.
+  $("btn-theme").addEventListener("click", () => window.toggleTheme());
 
   // Scorciatoie a lettera singola invece delle combinazioni del desktop:
   // Ctrl+R e Ctrl+D nel browser sono gia' prese da ricarica e segnalibro.

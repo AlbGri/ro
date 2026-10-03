@@ -28,8 +28,10 @@
   color-scheme: light;
 }
 
+/* Scuro se lo chiede il sistema, a meno che l'utente abbia scelto il chiaro
+   (`data-theme`, messo da gate.js); oppure se l'utente ha scelto lo scuro. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #131a16;
     --bg-alt: #1b2420;
     --bg-head: #212c27;
@@ -46,6 +48,24 @@
     --cat-strength: 100%;
     color-scheme: dark;
   }
+}
+
+:root[data-theme="dark"] {
+  --bg: #131a16;
+  --bg-alt: #1b2420;
+  --bg-head: #212c27;
+  --fg: #e3eae2;
+  --fg-muted: #9daa9f;
+  --line: #33413a;
+  --accent: #b79ceb;
+  --on-accent: #1b1530;
+  --open: #e8a93c;
+  --open-bg: color-mix(in srgb, #e8a93c 16%, transparent);
+  --closed: #f08a72;
+  --closed-bg: color-mix(in srgb, #f08a72 12%, transparent);
+  --danger: #f08a72;
+  --cat-strength: 100%;
+  color-scheme: dark;
 }
 
 * {

@@ -7,6 +7,7 @@ La versione web prende lo stile del resto del sito. L'applicazione desktop non c
 - Colori e caratteri della guida Nuovo Mondo, in tema chiaro o scuro secondo il sistema: prima c'era solo il tema scuro
 - Le righe con la finestra aperta o scaduta hanno anche il fondo colorato, ambra o rosso, oltre al testo
 - Nel tema chiaro il colore di categoria della riga e' scurito per restare leggibile
+- Il tema si puo' scegliere a mano con `Light / dark theme` nelle impostazioni: la scelta vale per tutto il sito
 - Pulsante Home nell'intestazione, per tornare alla scelta del servizio
 - Corretto il riquadro del messaggio a comparsa, che restava a schermo anche dopo la scadenza
 - Sui telefoni stretti le righe non escono piu' dallo schermo: se lo spazio non basta si accorcia il nome della mappa
