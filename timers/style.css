@@ -4,18 +4,48 @@
  * `display: contents` sui raggruppamenti.
  */
 
+/* Colori e caratteri sono quelli della guida Nuovo Mondo, chiari o scuri come il sistema. */
 :root {
-  --bg: #1e1e1e;
-  --bg-alt: #2b2b2b;
-  --bg-head: #3a3a3a;
-  --fg: #e8e8e8;
-  --fg-muted: #8a8a8a;
-  --accent: #4a7fb5;
-  --open: #e5c07b;
-  --closed: #cc3333;
-  --danger: #d1495b;
+  --bg: #e6ebe2;
+  --bg-alt: #f5f7f1;
+  --bg-head: #edf1e8;
+  --fg: #1d2821;
+  --fg-muted: #56655b;
+  --line: #c6d0c1;
+  --accent: #6a4c9c;
+  --on-accent: #fff;
+  --open: #9a5c00;
+  --open-bg: color-mix(in srgb, #e8a93c 30%, transparent);
+  --closed: #a3402c;
+  --closed-bg: color-mix(in srgb, #a3402c 12%, transparent);
+  --danger: #a3402c;
+  /* Quanto del colore di categoria entra nel testo della riga: sul fondo
+     chiaro va scurito, altrimenti giallo e verde non si leggono. */
+  --cat-strength: 60%;
+  --serif: "Alegreya", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: "Atkinson Hyperlegible", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --radius: 10px;
-  color-scheme: dark;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #131a16;
+    --bg-alt: #1b2420;
+    --bg-head: #212c27;
+    --fg: #e3eae2;
+    --fg-muted: #9daa9f;
+    --line: #33413a;
+    --accent: #b79ceb;
+    --on-accent: #1b1530;
+    --open: #e8a93c;
+    --open-bg: color-mix(in srgb, #e8a93c 16%, transparent);
+    --closed: #f08a72;
+    --closed-bg: color-mix(in srgb, #f08a72 12%, transparent);
+    --danger: #f08a72;
+    --cat-strength: 100%;
+    color-scheme: dark;
+  }
 }
 
 * {
@@ -27,8 +57,13 @@ body {
   padding: 0 0 calc(96px + env(safe-area-inset-bottom));
   background: var(--bg);
   color: var(--fg);
-  font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: 15px/1.4 var(--sans);
   -webkit-text-size-adjust: 100%;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
 }
 
 /* ------------------------------------------------------------- topbar --- */
@@ -47,8 +82,25 @@ body {
   align-items: center;
   gap: 8px;
   padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
-  background: var(--bg-head);
-  border-bottom: 1px solid #00000055;
+  background: color-mix(in srgb, var(--bg-alt) 92%, transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+}
+
+/* Torna alla scelta del servizio: occupa la prima colonna, che altrimenti e' vuota. */
+.home {
+  grid-column: 1;
+  justify-self: start;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: inherit;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.home:hover {
+  border-color: var(--fg-muted);
 }
 
 /*
@@ -69,7 +121,7 @@ body {
 }
 
 .clock:hover {
-  border-color: #ffffff22;
+  border-color: var(--line);
 }
 
 #clock-time {
@@ -123,12 +175,28 @@ body {
  */
 @media (max-width: 430px) {
   .topbar {
+    gap: 6px;
     padding-left: 10px;
     padding-right: 10px;
   }
 
   #clock-time {
     font-size: 20px;
+  }
+
+  /* Home, orologio e tre pulsanti devono stare in 360px. Il selettore con
+     `.topbar` serve a vincere su `.icon` e `.ghost`, dichiarati piu' sotto. */
+  .topbar .home {
+    width: 30px;
+    border-color: transparent;
+  }
+
+  .topbar-actions {
+    gap: 6px;
+  }
+
+  .topbar .compact {
+    padding: 8px 9px;
   }
 }
 
@@ -144,11 +212,11 @@ button {
 .ghost {
   padding: 10px 14px;
   background: var(--bg-alt);
-  border: 1px solid #ffffff1a;
+  border: 1px solid var(--line);
 }
 
 .ghost:hover {
-  background: #4a4a4a;
+  border-color: var(--fg-muted);
 }
 
 .ghost:disabled {
@@ -159,8 +227,9 @@ button {
 .primary {
   padding: 10px 18px;
   background: var(--accent);
-  border: 1px solid transparent;
-  font-weight: 600;
+  border: 1px solid var(--accent);
+  color: var(--on-accent);
+  font-weight: 700;
 }
 
 .danger {
@@ -176,7 +245,7 @@ button {
   width: 40px;
   height: 40px;
   background: transparent;
-  border: 1px solid #ffffff1a;
+  border: 1px solid var(--line);
   font-size: 17px;
 }
 
@@ -192,9 +261,10 @@ button {
   background: var(--accent);
   border: none;
   border-radius: 28px;
-  box-shadow: 0 6px 18px #0008;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.3);
+  color: var(--on-accent);
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .fab-label {
@@ -214,33 +284,40 @@ button {
 }
 
 .timer {
-  --row: var(--cat, var(--fg));
+  --row: color-mix(in srgb, var(--cat, var(--fg)) var(--cat-strength), var(--fg));
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  /* `minmax(0, 1fr)`: la colonna del nome cede spazio invece di allargare la
+     riga oltre lo schermo quando mappa e categoria sono lunghe. */
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   grid-template-areas:
     "sound name left menu"
     "sound meta times menu";
   align-items: center;
   gap: 2px 10px;
   padding: 10px 12px;
-  border-bottom: 1px solid #ffffff12;
+  border-bottom: 1px solid var(--line);
   color: var(--row);
 }
 
 .timer:nth-child(even) {
-  background: #ffffff06;
+  background: color-mix(in srgb, var(--bg-alt) 55%, transparent);
 }
 
-.timer.selected {
-  background: #4a7fb533;
-}
-
+/* Lo stato colora anche il fondo: il solo testo ambra si confonderebbe con
+   l'arancio della categoria MvP. */
 .timer[data-state="open"] {
   --row: var(--open);
+  background: var(--open-bg);
 }
 
 .timer[data-state="closed"] {
   --row: var(--closed);
+  background: var(--closed-bg);
+}
+
+/* Dopo gli stati, perche' la selezione si deve vedere anche su una riga aperta. */
+.timer.selected {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
 .sound {
@@ -270,8 +347,22 @@ button {
   grid-area: meta;
   display: flex;
   gap: 8px;
+  min-width: 0;
+  overflow: hidden;
   color: var(--fg-muted);
   font-size: 13px;
+  white-space: nowrap;
+}
+
+/* Se lo spazio non basta si accorcia la mappa, la categoria resta intera. */
+.meta .map {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meta .category {
+  flex: none;
 }
 
 .meta .category::before {
@@ -351,10 +442,16 @@ button {
   max-width: min(92vw, 460px);
   padding: 12px 14px;
   transform: translateX(-50%);
-  background: var(--bg-head);
-  border: 1px solid #ffffff22;
+  background: var(--bg-alt);
+  border: 1px solid var(--line);
   border-radius: var(--radius);
-  box-shadow: 0 8px 24px #0009;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.2);
+}
+
+/* `display: flex` qui sopra vince sull'attributo `hidden`: senza questa regola
+   il riquadro resta a schermo anche quando il messaggio e' scaduto. */
+.toast[hidden] {
+  display: none;
 }
 
 .toast .ghost {
@@ -370,18 +467,20 @@ button {
   margin: auto auto 0;
   padding: 20px 18px calc(20px + env(safe-area-inset-bottom));
   background: var(--bg-alt);
-  border: 1px solid #ffffff1a;
+  border: 1px solid var(--line);
   border-radius: var(--radius) var(--radius) 0 0;
   color: var(--fg);
 }
 
 .sheet::backdrop {
-  background: #000000aa;
+  background: rgb(0 0 0 / 0.45);
 }
 
 .sheet h2 {
   margin: 0 0 16px;
-  font-size: 17px;
+  font-family: var(--serif);
+  font-size: 21px;
+  line-height: 1.2;
 }
 
 .sheet label {
@@ -400,7 +499,7 @@ button {
   width: 100%;
   padding: 12px;
   background: var(--bg);
-  border: 1px solid #ffffff22;
+  border: 1px solid var(--line);
   border-radius: 8px;
   color: var(--fg);
   font-size: 16px;
@@ -410,7 +509,7 @@ button {
   width: 100%;
   padding: 12px;
   background: var(--bg);
-  border: 1px solid #ffffff22;
+  border: 1px solid var(--line);
   border-radius: 8px;
   color: var(--fg);
   /* Sotto i 16px iOS ingrandisce la pagina quando il campo prende il fuoco. */
@@ -470,7 +569,7 @@ button {
 
 .hint code {
   padding: 1px 4px;
-  background: #ffffff12;
+  background: var(--bg-head);
   border-radius: 4px;
 }
 

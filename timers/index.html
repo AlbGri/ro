@@ -5,17 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Ragnarok Timers</title>
     <meta name="description" content="Respawn window timers for Ragnarok Online MvPs and quests." />
-    <meta name="theme-color" content="#1e1e1e" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f7f1" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1b2420" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icons/icon-192.png" />
     <link rel="apple-touch-icon" href="icons/icon-192.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="style.css" />
     <script src="../gate.js"></script>
   </head>
   <body>
     <header class="topbar">
+      <a class="icon home" href="../" aria-label="Home" title="Home">&#8962;</a>
       <button id="clock" class="clock" aria-label="Change time zone" title="Change time zone">
         <span id="clock-time">--:--:--</span>
         <span id="clock-zone" class="clock-zone"></span>

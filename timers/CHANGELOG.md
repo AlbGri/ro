@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.2] - 2026-10-03
+
+La versione web prende lo stile del resto del sito. L'applicazione desktop non cambia.
+
+- Colori e caratteri della guida Nuovo Mondo, in tema chiaro o scuro secondo il sistema: prima c'era solo il tema scuro
+- Le righe con la finestra aperta o scaduta hanno anche il fondo colorato, ambra o rosso, oltre al testo
+- Nel tema chiaro il colore di categoria della riga e' scurito per restare leggibile
+- Pulsante Home nell'intestazione, per tornare alla scelta del servizio
+- Corretto il riquadro del messaggio a comparsa, che restava a schermo anche dopo la scadenza
+- Sui telefoni stretti le righe non escono piu' dallo schermo: se lo spazio non basta si accorcia il nome della mappa
+
 ## [1.1.1] - 2026-10-03
 
 I timer entrano nel sito unificato `albgri.github.io/ragnarok/`, accanto alle
