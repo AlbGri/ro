@@ -1,0 +1,3 @@
+# Gli strumenti della guida cercano blocchi di testo con fine riga LF: senza
+# questa regola git su Windows riscriverebbe i file con CRLF al checkout.
+* text=auto eol=lf

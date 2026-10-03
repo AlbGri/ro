@@ -1,0 +1,2243 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>uaRO – Nuovo Mondo passo per passo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #E6EBE2;
+  --surface: #F5F7F1;
+  --surface-2: #EDF1E8;
+  --ink: #1D2821;
+  --muted: #56655B;
+  --line: #C6D0C1;
+  /* Colori dei tre rami (verde, blu, arancio bruciato): scelti perché restino distinguibili tra loro anche per chi confonde rosso e verde. */
+  --common: #3C7C4C;
+  --nest: #1C5293;
+  --dic: #863709;
+  --backup: #7D877F;
+  --bradium: #6A4C9C;
+  --verify: #9A5C00;
+  --warn: #A3402C;
+  --tip: #4E6B3A;
+  --focus: #6A4C9C;
+  --serif: "Alegreya", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: "Atkinson Hyperlegible", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+  --topbar-h: 64px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131A16; --surface: #1B2420; --surface-2: #212C27; --ink: #E3EAE2; --muted: #9DAA9F; --line: #33413A;
+    --common: #63A471; --nest: #5294E6; --dic: #DA720D; --backup: #9AA59C;
+    --bradium: #B79CEB; --verify: #E8A93C; --warn: #F08A72; --tip: #8DB36F; --focus: #B79CEB;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131A16; --surface: #1B2420; --surface-2: #212C27; --ink: #E3EAE2; --muted: #9DAA9F; --line: #33413A;
+  --common: #63A471; --nest: #5294E6; --dic: #DA720D; --backup: #9AA59C;
+  --bradium: #B79CEB; --verify: #E8A93C; --warn: #F08A72; --tip: #8DB36F; --focus: #B79CEB;
+  color-scheme: dark;
+}
+:root { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+html { scroll-padding-top: calc(var(--topbar-offset, 64px) + 12px); }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--sans); font-size: 16px; line-height: 1.5;
+}
+a { color: inherit; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+
+/* Top bar */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  padding-top: env(safe-area-inset-top, 0px);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-inner {
+  max-width: 1240px; margin: 0 auto; min-height: var(--topbar-h);
+  display: flex; align-items: center; gap: 16px; padding: 8px 20px; flex-wrap: wrap;
+}
+.brand { font-family: var(--serif); font-weight: 700; font-size: 1.15rem; white-space: nowrap; }
+.progress { flex: 1 1 220px; min-width: 180px; display: grid; gap: 4px; }
+.progress-text { font-size: .85rem; color: var(--muted); }
+.progress-track { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--common), var(--nest)); transition: width .3s ease; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.btn {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 8px;
+  padding: 7px 12px; cursor: pointer; font-size: .92rem; line-height: 1.2;
+}
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--bradium); border-color: var(--bradium); color: #fff; font-weight: 700; }
+:root[data-theme="dark"] .btn.primary { color: #1B1530; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #1B1530; } }
+.btn[aria-pressed="true"] { background: var(--surface-2); border-color: var(--ink); }
+.more { position: relative; }
+.more > summary { list-style: none; }
+.more > summary::-webkit-details-marker { display: none; }
+.more-menu {
+  position: absolute; right: 0; top: calc(100% + 6px); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 10px; padding: 6px; display: grid; gap: 4px; min-width: 220px;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--ink) 18%, transparent);
+}
+.more-menu .btn { text-align: left; border-color: transparent; }
+.more-menu .btn:hover { background: var(--surface-2); }
+.phase-select { display: none; }
+/* Due pagine nello stesso file, il percorso e le altre quest: body[data-view] dice quale si vede. */
+body[data-view="percorso"] [data-page="altre"], body[data-view="altre"] [data-page="percorso"] { display: none; }
+
+/* Layout */
+.layout { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 36px; padding: 28px 20px 80px; }
+.route { position: sticky; top: calc(var(--topbar-offset, 64px) + 20px); align-self: start; max-height: calc(100vh - var(--topbar-offset, 64px) - 40px); overflow-y: auto; padding-right: 4px; }
+.route h2 { font-family: var(--serif); font-size: 1rem; margin: 0 0 12px; color: var(--muted); font-weight: 500; }
+.route ol { list-style: none; margin: 0; padding: 0 0 0 22px; position: relative; }
+.route ol::before { content: ""; position: absolute; left: 8px; top: 10px; bottom: 10px; width: 3px; border-radius: 2px; background: var(--line); }
+.route li { position: relative; }
+.route a {
+  display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: baseline;
+  text-decoration: none; padding: 5px 8px; border-radius: 6px; font-size: .9rem; line-height: 1.3;
+}
+.route a:hover { background: var(--surface-2); }
+.route a::before {
+  content: ""; position: absolute; left: -19px; top: 9px; width: 13px; height: 13px; border-radius: 50%;
+  background: var(--bg); border: 3px solid var(--b);
+}
+.route li.complete a::before { background: var(--b); }
+.route li.active a { background: var(--surface); font-weight: 700; }
+.route li.optional a { color: var(--muted); }
+.route li.optional a::before { border-width: 2px; border-style: dashed; }
+.route li.optional.complete a::before { border-style: solid; }
+.route .count { font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* Hero */
+.hero { padding-bottom: 28px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+.hero h1 { font-family: var(--serif); font-size: clamp(2.1rem, 4.5vw, 3.2rem); line-height: 1.05; margin: 0 0 12px; font-weight: 700; letter-spacing: -.01em; }
+.lead { font-size: 1.12rem; max-width: 62ch; margin: 0 0 24px; color: var(--muted); }
+.flows { display: grid; gap: 12px; margin-bottom: 24px; }
+.flow { display: grid; grid-template-columns: 150px 1fr; gap: 12px; align-items: center; }
+.flow-name { font-family: var(--serif); font-size: 1.02rem; color: var(--b); font-weight: 700; }
+.stations { display: flex; flex-wrap: wrap; gap: 6px 0; align-items: center; }
+.station {
+  border: 2px solid var(--b); border-radius: 999px; padding: 3px 12px; font-size: .88rem; background: var(--surface); white-space: nowrap;
+}
+.station + .station { margin-left: 22px; position: relative; }
+.station + .station::before { content: ""; position: absolute; left: -24px; top: 50%; width: 22px; height: 3px; background: var(--b); transform: translateY(-50%); }
+.station.soft { border-style: dashed; }
+.hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.hero-grid h2 { font-family: var(--serif); font-size: 1.2rem; margin: 0 0 8px; }
+.hero-grid ul { margin: 0; padding-left: 1.1em; max-width: 60ch; }
+.hero-grid li { margin-bottom: 6px; }
+.only-dic { margin: 0 0 20px; padding: 10px 14px; border-left: 4px solid var(--dic); background: var(--surface); border-radius: 0 8px 8px 0; max-width: 70ch; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 20px; }
+
+/* Phases */
+.phase { padding-top: 36px; scroll-margin-top: calc(var(--topbar-offset, 64px) + 12px); }
+.phase-head { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 16px; align-items: end; border-bottom: 3px solid var(--b); padding-bottom: 10px; }
+.phase-num { font-family: var(--serif); font-size: 2.6rem; line-height: .9; font-weight: 700; color: var(--b); min-width: 1.4ch; }
+.phase-title { font-family: var(--serif); font-size: 1.55rem; line-height: 1.15; margin: 0; font-weight: 700; }
+.phase-where { font-size: .9rem; color: var(--muted); }
+.phase-count { font-size: .9rem; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.phase-intro { max-width: 70ch; margin: 12px 0 4px; }
+
+/* Blocchi facoltativi richiudibili: fasi, gruppi di step, step isolati */
+.fold { border: 2px dashed var(--line); border-radius: 12px; background: color-mix(in srgb, var(--surface) 55%, transparent); }
+.fold > summary { list-style: none; cursor: pointer; }
+.fold > summary::-webkit-details-marker { display: none; }
+.fold-bar {
+  display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto auto;
+  grid-template-areas: "arrow num title tag count" "arrow num sub tag count";
+  column-gap: 14px; align-items: center; padding: 12px 16px; border-radius: 10px;
+}
+.fold-bar:hover { background: var(--surface); }
+.fold[open] > .fold-bar { border-bottom: 2px dashed var(--line); border-radius: 10px 10px 0 0; }
+.fold-arrow {
+  grid-area: arrow; width: 10px; height: 10px; margin: 0 4px 0 2px;
+  border-right: 2.5px solid var(--muted); border-bottom: 2.5px solid var(--muted);
+  transform: rotate(-45deg); transition: transform .18s ease;
+}
+.fold[open] > .fold-bar .fold-arrow { transform: rotate(45deg); }
+.fold-bar .phase-num { grid-area: num; font-size: 1.9rem; color: var(--muted); }
+.fold-bar .phase-title { grid-area: title; font-size: 1.25rem; }
+.fold-bar .phase-where { grid-area: sub; }
+.fold-bar .phase-count { grid-area: count; }
+.fold-title { grid-area: title; font-weight: 700; }
+.fold-tag {
+  grid-area: tag; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
+  color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 9px;
+}
+.fold-body { padding: 2px 16px 6px; }
+.fold[open] > .fold-body { animation: foldin .2s ease-out; }
+@keyframes foldin { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.fold-body .steps > .step:last-child { border-bottom: none; }
+.fold-small .fold-bar { grid-template-columns: auto minmax(0, 1fr) auto auto; grid-template-areas: "arrow title tag count"; padding: 9px 14px; }
+.step-group { padding: 12px 0; border-bottom: 1px solid var(--line); }
+.step-group.hidden { display: none; }
+
+.steps { list-style: none; margin: 0; padding: 0; }
+.step {
+  display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px;
+  padding: 14px 12px 14px 10px; border-bottom: 1px solid var(--line); position: relative;
+}
+.step > input[type="checkbox"] { width: 20px; height: 20px; margin: 3px 0 0 2px; accent-color: var(--b); cursor: pointer; }
+.step.current { background: var(--surface); border-radius: 8px; box-shadow: inset 4px 0 0 var(--bradium); }
+.step.done .hl, .step.done .sid { color: var(--muted); }
+.step.done .body { opacity: .72; }
+.step.hidden { display: none; }
+a.xref { color: var(--bradium); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+a.xref:hover { text-decoration-thickness: 2px; }
+/* Opzione di dialogo da scegliere: nei testi è scritta tra «virgolette basse». */
+.pick { font-weight: 700; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.step.flash { animation: flash 1.6s ease-out; }
+@keyframes flash { 0%, 30% { background: color-mix(in srgb, var(--bradium) 22%, var(--surface)); } 100% { background: transparent; } }
+.head label { cursor: pointer; display: inline; }
+.step.foldable .head { display: flex; align-items: center; gap: 6px 12px; flex-wrap: wrap; }
+.step.foldable .head label { flex: 1 1 240px; }
+.step.foldable.collapsed { padding-top: 9px; padding-bottom: 9px; }
+.step.foldable.collapsed .hl { font-weight: 400; color: var(--muted); }
+.step.foldable.collapsed .step-more { display: none; }
+.step-toggle {
+  display: inline-flex; align-items: center; gap: 7px; cursor: pointer; white-space: nowrap;
+  background: none; border: 1px dashed var(--muted); border-radius: 999px; padding: 2px 10px 2px 9px;
+  font-size: .78rem; color: var(--muted);
+}
+.step-toggle:hover { color: var(--ink); border-color: var(--ink); }
+.step-toggle::before {
+  content: ""; width: 6px; height: 6px; margin-top: -1px;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg); transition: transform .18s ease;
+}
+.step-toggle[aria-expanded="true"]::before { transform: rotate(45deg); margin-top: -3px; }
+.sid { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .9rem; margin-right: 6px; }
+.hl { font-weight: 700; font-size: 1.04rem; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin-top: 4px; }
+.qtag { display: inline-flex; align-items: center; gap: 6px; font-size: .82rem; color: var(--muted); text-decoration: none; }
+a.qtag:hover { color: var(--ink); text-decoration: underline; }
+.qtag::before { content: ""; width: 9px; height: 9px; border-radius: 2px; background: var(--q); flex: none; }
+.badge { font-size: .78rem; border-radius: 999px; padding: 1px 8px; border: 1px solid; }
+.badge.opt { color: var(--muted); border-color: var(--line); }
+.badge.ver { color: var(--verify); border-color: currentColor; }
+.now-label { display: none; font-size: .78rem; font-weight: 700; color: var(--bradium); }
+.step.current .now-label { display: inline; }
+.d { margin: 6px 0 0; max-width: 72ch; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.chip {
+  font-family: var(--mono); font-size: .86rem; cursor: pointer; line-height: 1.3;
+  border: 1px solid color-mix(in srgb, var(--bradium) 45%, transparent);
+  background: color-mix(in srgb, var(--bradium) 10%, var(--surface));
+  color: var(--ink); border-radius: 6px; padding: 5px 9px;
+  transition: background .15s ease, border-color .15s ease;
+}
+.chip:hover { background: color-mix(in srgb, var(--bradium) 20%, var(--surface)); border-color: var(--bradium); }
+.chip.copied { background: var(--bradium); border-color: var(--bradium); color: var(--surface); }
+.copygroup { margin-top: 8px; }
+.copygroup-label { font-size: .82rem; color: var(--muted); }
+.note-line { margin: 8px 0 0; padding: 7px 12px; border-left: 3px solid; border-radius: 0 6px 6px 0; max-width: 72ch; font-size: .95rem; background: var(--surface); white-space: pre-line; }
+.note-line strong { font-weight: 700; }
+.note-line.tip { border-color: var(--tip); }
+.note-line.warn { border-color: var(--warn); }
+.note-line.warn strong { color: var(--warn); }
+.note-line.verify { border-color: var(--verify); }
+.note-line.verify strong { color: var(--verify); }
+.step.current .note-line { background: var(--surface-2); }
+.notebox { margin-top: 8px; }
+.note-btn { background: none; border: none; padding: 2px 0; color: var(--muted); cursor: pointer; font-size: .86rem; text-decoration: underline; text-underline-offset: 3px; }
+.note-btn:hover { color: var(--ink); }
+.step.has-note .note-btn { color: var(--bradium); font-weight: 700; }
+.note-clear { display: none; margin-left: 14px; }
+.step.has-note .note-clear { display: inline; }
+.note-clear:hover { color: var(--warn); }
+.mark-prev { margin-left: 14px; }
+.step.has-note .mark-prev { color: var(--muted); font-weight: 400; }
+.step.has-note .mark-prev:hover { color: var(--ink); }
+@media (hover: hover) {
+  .mark-prev { opacity: 0; }
+  .step:hover .mark-prev, .mark-prev:focus-visible { opacity: 1; }
+}
+.note {
+  display: block; width: 100%; max-width: 72ch; min-height: 70px; margin-top: 6px; padding: 8px 10px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--surface); resize: vertical;
+}
+.note[hidden] { display: none; }
+
+/* Toast and dialog */
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px);
+  background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; font-size: .92rem;
+  opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; z-index: 50; max-width: calc(100vw - 32px);
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+dialog { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); padding: 20px; width: min(680px, calc(100vw - 32px)); }
+dialog::backdrop { background: rgb(0 0 0 / .45); }
+dialog h2 { font-family: var(--serif); margin: 0 0 6px; font-size: 1.4rem; }
+dialog p { margin: 0 0 10px; color: var(--muted); }
+dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-family: var(--mono); font-size: .85rem; }
+.dialog-actions { display: flex; gap: 8px; justify-content: flex-end; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+.dialog-check { display: inline-flex; align-items: center; gap: 6px; margin-right: auto; font-size: .92rem; cursor: pointer; }
+.dialog-check[hidden] { display: none; }
+.dialog-check input { width: 18px; height: 18px; accent-color: var(--bradium); cursor: pointer; }
+
+.footer { margin-top: 48px; color: var(--muted); font-size: .88rem; max-width: 72ch; }
+
+@media (max-width: 920px) {
+  .layout { grid-template-columns: 1fr; gap: 0; padding-top: 16px; }
+  .route { display: none; }
+  .phase-select { display: block; flex: 1 1 100%; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); }
+  .hero-grid { grid-template-columns: 1fr; }
+  .flow { grid-template-columns: 1fr; gap: 4px; }
+}
+@media (max-width: 560px) {
+  .topbar-inner { gap: 10px; padding: 8px 12px; }
+  .layout { padding-left: 12px; padding-right: 12px; }
+  .phase-head { grid-template-columns: auto 1fr; }
+  .phase-count { grid-column: 2; }
+  .step { padding-right: 4px; }
+  .btn { padding: 6px 10px; font-size: .86rem; }
+  .brand { font-size: 1rem; }
+  .fold-bar {
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    grid-template-areas: "arrow num title title" "arrow num sub sub" ". . tag count";
+    column-gap: 10px; row-gap: 4px; padding: 10px 12px;
+  }
+  .fold-tag { justify-self: start; }
+  .fold-small .fold-bar { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "arrow title count" ". tag tag"; }
+  .fold-body { padding: 2px 8px 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; scroll-behavior: auto !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <span class="brand">Nuovo Mondo</span>
+    <div class="progress" aria-live="polite">
+      <span class="progress-text" id="progressText">Caricamento…</span>
+      <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="btnNext" type="button" title="Clicca di nuovo per passare al successivo non fatto">Vai al prossimo passo</button>
+      <button class="btn" id="btnHide" type="button" aria-pressed="false">Nascondi i fatti</button>
+      <button class="btn" id="btnExport" type="button">Esporta note per Claude</button>
+      <button class="btn" id="btnView" type="button" title="Passa dal percorso alle quest che non servono, e ritorno">Altre quest</button>
+      <details class="more">
+        <summary class="btn">Altro</summary>
+        <div class="more-menu">
+          <button class="btn" id="btnBackup" type="button">Backup dei progressi</button>
+          <button class="btn" id="btnRestore" type="button">Ripristina da backup</button>
+          <button class="btn" id="btnClearNotes" type="button">Cancella tutte le note</button>
+          <button class="btn" id="btnTheme" type="button">Cambia tema chiaro/scuro</button>
+          <button class="btn" id="btnReset" type="button">Azzera tutto</button>
+        </div>
+      </details>
+    </div>
+    <select class="phase-select" id="phaseSelect" aria-label="Vai alla fase"></select>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="route" aria-label="Fasi del percorso">
+    <h2 id="routeTitle">Percorso</h2>
+    <ol id="routeList"></ol>
+  </nav>
+
+  <main>
+    <section class="hero" data-page="altre">
+      <h1>Altre quest</h1>
+      <p class="lead">Il Nidhoggur's Nest da fare in party e le quest che non servono per arrivarci né per El Dicastes. Ognuna è indipendente dalle altre: apri quella che vuoi fare.</p>
+      <p class="only-dic">Spunte e note finiscono nello stesso export e nello stesso backup del percorso. Vai al prossimo passo riporta sempre al percorso.</p>
+      <div class="legend" id="legendAltre" aria-label="Quest e link alle guide"></div>
+    </section>
+
+    <section class="hero" data-page="percorso">
+      <h1>Nuovo Mondo, passo per passo</h1>
+      <p class="lead">Da Onward to the New World fino a El Dicastes e all'accesso al Nidhoggur's Nest, in un solo percorso ordinato per risparmiare viaggi. Pensato per uaRO.</p>
+
+      <div class="flows">
+        <div class="flow" style="--b: var(--common)">
+          <span class="flow-name">Tratto comune</span>
+          <div class="stations"><span class="station">Onward to the New World</span><span class="station">New Surroundings</span><span class="station">Avvio del Report</span><span class="station">Ring of the Wise King</span></div>
+        </div>
+        <div class="flow" style="--b: var(--nest)">
+          <span class="flow-name">Ramo Nidhoggur</span>
+          <div class="stations"><span class="station">Report from the New World completato</span><span class="station">Two Tribes fino al dungeon</span><span class="station">Guardian of Yggdrasil</span><span class="station">Accesso al Nidhoggur's Nest</span></div>
+        </div>
+        <div class="flow" style="--b: var(--dic)">
+          <span class="flow-name">Ramo El Dicastes</span>
+          <div class="stations"><span class="station">Ring of the Ancient Wise King indossato</span><span class="station">Sapha's Visit</span><span class="station">El Dicastes</span></div>
+        </div>
+      </div>
+
+      <p class="only-dic">Ti interessa solo El Dicastes? Bastano le fasi dalla 1 alla 9 e la fase 12: il Ring of the Ancient Wise King (fase 9) richiede di aver avviato il Report, non di finirlo. Il Nest da fare in party e le quest che non servono sono nella pagina <a class="xref" href="#altre">Altre quest</a>.</p>
+
+      <div class="hero-grid">
+        <div>
+          <h2>Come si usa</h2>
+          <ul>
+            <li>Clicca un /navi o un comando: viene copiato, e lo incolli nella chat del gioco.</li>
+            <li>Spunta gli step fatti. Vai al prossimo passo ti porta al primo non fatto; cliccalo di nuovo per saltare quelli lasciati indietro.</li>
+            <li>Nei dialoghi scegli l'opzione sottolineata, come «Yes.»; quelle tra virgolette alte, come “No.”, sono da evitare.</li>
+            <li>Uno step con l'etichetta facoltativo non conta nel progresso. Se qualcosa non torna, scrivilo nella nota dello step e usa Esporta note per Claude.</li>
+            <li>Spunte e note restano in questo browser, finché il file non cambia nome o cartella. Se cancelli i dati del browser si perdono: prima fai un backup dal menu Altro.</li>
+          </ul>
+        </div>
+        <div>
+          <h2>Consigli</h2>
+          <ul>
+            <li>Attiva il Navigator con una scorciatoia (Esc, Shortcut Settings, Interface, seconda pagina, Navigator on/off): dopo un /navi ti mostra la strada.</li>
+            <li>Il /navi non attraversa i Camp Guard del campo: negli step che partono da lì, il primo /navi è il Camp Guard giusto.</li>
+            <li>Usa un personaggio con il Warp Portal, o fatti aiutare da uno: risparmi molti viaggi. Dove fare i /memo è allo step 0.06; nel Nuovo Mondo, a Lighthalzen e a Juno il /memo non funziona.</li>
+            <li>I Warpra delle città portano al campo e al Nidhogg's Dungeon per 5.000 zeny, dopo che hai parlato con il Warpra Helper del posto (step 1.15 e 11.08). Dal campo riparti con il Warp Portal o con i teletrasporti Cat Hand.</li>
+            <li>Nel test di Onward il credito va solo al party leader. Per il Nest porta amici; sui campi di El Dicastes tieni pronte le Fly Wing.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="legend" id="legend" aria-label="Quest e link alle guide"></div>
+    </section>
+
+    <div id="phases"></div>
+
+    <p class="footer">Fonti: iRO Wiki per i passaggi delle quest, script ufficiali di rAthena (il software su cui girano i server privati come uaRO) per coordinate, mappe senza /memo e meccaniche, wiki di uaRO per El Dicastes, Cat Hand, Warpra e le modifiche di uaRO. Le coordinate dell'iRO Wiki possono essere sfalsate di qualche cella su uaRO: gli step dubbi hanno l'etichetta da verificare.</p>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<dialog id="dialog">
+  <h2 id="dialogTitle"></h2>
+  <p id="dialogText"></p>
+  <textarea id="dialogArea" spellcheck="false"></textarea>
+  <div class="dialog-actions">
+    <label class="dialog-check" id="dialogCheckWrap" hidden><input type="checkbox" id="dialogCheck"> <span id="dialogCheckLabel"></span></label>
+    <button class="btn" type="button" id="dialogClose">Chiudi</button>
+    <button class="btn primary" type="button" id="dialogAction"></button>
+  </div>
+</dialog>
+
+<script>
+const GUIDE_VERSION = "7.2";
+const STORAGE_KEY = "uaro-nw-guide";
+
+const QUESTS = {
+  PREP:  { name: "Preparativi", color: "#6B756E" },
+  GO:    { name: "Spostamento", color: "#6B756E" },
+  ONW:   { name: "Onward to the New World", color: "#4E6B3A", url: "https://irowiki.org/wiki/Onward_to_the_New_World_Quest" },
+  CAT:   { name: "Cat Hand Services", color: "#7A6A55", url: "https://wiki.uaro.net/El_Dicastes/#new-world-travel" },
+  RING:  { name: "Ring of the Wise King", color: "#8A6D1F", url: "https://irowiki.org/wiki/Ring_of_the_Wise_King" },
+  FAIRY: { name: "Finding a Fairy", color: "#5F8F4E", url: "https://irowiki.org/wiki/Finding_a_Fairy" },
+  NS:    { name: "New Surroundings", color: "#3E7C8A", url: "https://irowiki.org/wiki/New_Surroundings" },
+  TRI:   { name: "Tripatriate Union's Feud", color: "#9A5B3C", url: "https://irowiki.org/wiki/Tripatriate_Union%27s_Feud" },
+  RAY:   { name: "Pursuing Rayan Moore", color: "#7B4A7A", url: "https://irowiki.org/wiki/Pursuing_Rayan_Moore" },
+  REP:   { name: "Report from the New World", color: "#4B5E99", url: "https://irowiki.org/wiki/Report_from_the_New_World" },
+  TT:    { name: "Two Tribes", color: "#2F7A6B", url: "https://irowiki.org/wiki/Two_Tribes" },
+  SAPHA: { name: "Sapha's Visit (El Dicastes)", color: "#B07A2A", url: "https://wiki.uaro.net/El_Dicastes/" },
+  GY:    { name: "Guardian of Yggdrasil", color: "#3B6E4F", url: "https://irowiki.org/wiki/Guardian_of_Yggdrasil" },
+  NEST:  { name: "Nidhoggur's Nest", color: "#5A3E8C", url: "https://irowiki.org/wiki/Nidhoggur%27s_Nest" },
+  ATT:   { name: "Attitude to the New World", color: "#7B7F3A", url: "https://irowiki.org/wiki/Attitude_to_the_New_World" }
+};
+
+// Id cambiati nella versione 2.0 (vecchio -> nuovo): spunte, note e backup vecchi vengono convertiti in automatico.
+const ID_MAP_V2 = {
+  "2.04": "2.02",
+  "2.05": "2.03",
+  "2.06": "2.04",
+  "2.07": "2.05",
+  "2.08": "2.06",
+  "5.04": "5.01",
+  "5.05": "5.02",
+  "5.06": "5.03",
+  "5.07": "5.04",
+  "5.08": "5.05",
+  "5.09": "5.06",
+  "5.10": "5.07",
+  "6.02": "6.01",
+  "9.01": "8.01",
+  "9.02": "8.02",
+  "9.03": "8.03",
+  "9.04": "8.04",
+  "9.05": "8.05",
+  "9.06": "8.06",
+  "9.07": "8.07",
+  "9.08": "8.08",
+  "9.09": "8.09",
+  "9.10": "8.10",
+  "9.11": "8.11",
+  "9.12": "8.12",
+  "9.13": "8.13",
+  "9.14": "8.14",
+  "9.15": "8.15",
+  "9.16": "8.16",
+  "9.17": "8.17",
+  "9.18": "8.18",
+  "9.19": "8.19",
+  "10.01": "9.01",
+  "10.02": "9.02",
+  "10.03": "9.03",
+  "10.04": "9.04",
+  "10.05": "9.05",
+  "10.06": "9.06",
+  "10.07": "9.07",
+  "10.08": "9.08",
+  "10.09": "9.09",
+  "10.10": "9.10",
+  "10.11": "9.11",
+  "10.12": "9.12",
+  "10.13": "9.13",
+  "10.14": "9.14",
+  "10.15": "9.15",
+  "10.16": "9.16",
+  "10.17": "9.17",
+  "10.18": "9.18",
+  "10.19": "9.19",
+  "10.20": "9.20",
+  "10.21": "9.21",
+  "10.22": "9.22",
+  "11.01": "10.01",
+  "11.02": "10.02",
+  "11.03": "10.03",
+  "11.04": "10.04",
+  "11.05": "10.05",
+  "11.06": "10.06",
+  "2.02": "11.01",
+  "2.03": "11.02",
+  "5.01": "11.03",
+  "5.02": "11.04",
+  "5.03": "11.05",
+  "6.01": "11.06",
+  "6.03": "11.07",
+  "7.04": "11.08",
+  "7.05": "11.09",
+  "7.06": "11.10",
+  "7.07": "11.11",
+  "8.01": "11.12",
+  "8.02": "11.13",
+  "8.03": "11.14",
+  "9.20": "11.15",
+  "11.07": "12.01",
+  "11.08": "12.02",
+  "11.09": "12.03",
+  "11.10": "12.04",
+  "12.01": "13.01",
+  "12.02": "13.02",
+  "12.03": "13.03",
+  "12.04": "13.04",
+  "12.05": "13.05",
+  "12.06": "13.06",
+  "12.07": "13.07",
+  "12.08": "13.08",
+  "12.09": "13.09",
+  "13.01": "14.01",
+  "13.02": "14.02",
+  "13.03": "14.03",
+  "13.04": "14.04",
+  "13.05": "14.05",
+  "13.06": "14.06",
+  "13.07": "14.07",
+  "13.08": "14.08",
+  "13.09": "14.09",
+  "13.10": "14.10",
+  "13.11": "14.11",
+  "14.01": "15.01",
+  "14.02": "15.02",
+  "14.03": "15.03",
+  "14.04": "15.04",
+  "15.01": "16.01",
+  "15.02": "16.02",
+  "15.03": "16.03",
+  "15.04": "16.04",
+  "15.05": "16.05",
+  "15.06": "16.06",
+  "15.07": "16.07",
+  "15.08": "16.08",
+  "15.09": "16.09",
+  "15.10": "16.10",
+  "15.11": "16.11",
+  "16.01": "17.01",
+  "16.02": "17.02",
+  "16.03": "17.03",
+  "16.04": "17.04",
+  "16.05": "17.05",
+  "16.06": "17.06",
+  "16.07": "17.07"
+};
+
+// Id cambiati nella versione 7.0 (id delle versioni dalla 2.0 alla 6.x -> nuovo): percorso senza buchi, altre quest Q1-Q5.
+// Ci sono tutti gli step che esistevano nella 6.2, anche quelli rimasti uguali: un id salvato che qui non compare era di uno step eliminato e viene scartato.
+const ID_MAP_V3 = {
+  "0.01": "0.01",
+  "0.02": "0.02",
+  "0.08": "0.03",
+  "0.10": "0.04",
+  "0.07": "0.05",
+  "0.09": "0.06",
+  "0.11": "0.07",
+  "1.01": "1.01",
+  "1.02": "1.02",
+  "1.03": "1.03",
+  "1.04": "1.04",
+  "1.05": "1.05",
+  "1.06": "1.06",
+  "1.07": "1.07",
+  "1.08": "1.08",
+  "1.09": "1.09",
+  "1.10": "1.10",
+  "1.11": "1.11",
+  "1.12": "1.12",
+  "1.13": "1.13",
+  "1.14": "1.14",
+  "1.15": "1.15",
+  "2.01": "2.01",
+  "2.02": "2.02",
+  "2.03": "2.03",
+  "2.04": "2.04",
+  "2.05": "2.05",
+  "2.06": "2.06",
+  "3.01": "3.01",
+  "3.02": "3.02",
+  "3.02a": "3.03",
+  "3.03": "3.04",
+  "3.05": "3.05",
+  "4.01": "4.01",
+  "4.03": "4.02",
+  "4.03a": "4.03",
+  "4.04": "4.04",
+  "5.01": "5.01",
+  "5.02": "5.02",
+  "5.03": "5.03",
+  "5.04": "5.04",
+  "5.05": "5.05",
+  "5.06": "5.06",
+  "5.07": "5.07",
+  "6.01": "6.01",
+  "7.01": "7.01",
+  "7.02": "7.02",
+  "7.03": "7.03",
+  "0.03": "Q1.01",
+  "8.01": "Q1.02",
+  "8.02": "Q1.03",
+  "8.03": "Q1.04",
+  "8.04": "Q1.05",
+  "8.05": "Q1.06",
+  "8.06": "Q1.07",
+  "8.07": "Q1.08",
+  "8.08": "Q1.09",
+  "8.09": "Q1.10",
+  "8.10": "Q1.11",
+  "8.11": "Q1.12",
+  "8.12": "Q1.13",
+  "8.13": "Q1.14",
+  "8.14": "Q1.15",
+  "8.15": "Q1.16",
+  "8.16": "Q1.17",
+  "8.17": "Q1.18",
+  "8.18": "Q1.19",
+  "8.19": "Q1.20",
+  "0.04": "Q2.01",
+  "0.05": "Q2.02",
+  "0.06": "Q2.03",
+  "9.01": "Q2.04",
+  "9.02": "Q2.05",
+  "9.03": "Q2.06",
+  "9.04": "Q2.07",
+  "9.05": "Q2.08",
+  "9.06": "Q2.09",
+  "9.07": "Q2.10",
+  "9.08": "Q2.11",
+  "9.09": "Q2.12",
+  "9.10": "Q2.13",
+  "9.11": "Q2.14",
+  "9.12": "Q2.15",
+  "9.13": "Q2.16",
+  "9.14": "Q2.17",
+  "9.15": "Q2.18",
+  "9.16": "Q2.19",
+  "9.17": "Q2.20",
+  "9.18": "Q2.21",
+  "9.19": "Q2.22",
+  "9.20": "Q2.23",
+  "9.21": "Q2.24",
+  "9.22": "Q2.25",
+  "10.01": "8.01",
+  "10.02": "8.02",
+  "10.03": "8.03",
+  "10.04": "8.04",
+  "10.05": "8.05",
+  "10.06": "8.06",
+  "11.01": "9.01",
+  "11.02": "9.02",
+  "11.03": "9.03",
+  "11.04": "9.04",
+  "11.05": "9.05",
+  "11.06": "9.06",
+  "11.07": "9.07",
+  "11.08": "9.08",
+  "11.09": "9.09",
+  "11.10": "9.10",
+  "11.11": "9.11",
+  "11.12": "9.12",
+  "11.13": "9.13",
+  "11.14": "9.14",
+  "11.15": "9.15",
+  "12.01": "10.01",
+  "12.02": "10.02",
+  "12.03": "10.03",
+  "12.04": "10.04",
+  "13.01": "11.01",
+  "13.02": "11.02",
+  "13.03": "11.03",
+  "13.04": "11.04",
+  "13.05": "11.05",
+  "13.06": "11.06",
+  "13.07": "11.07",
+  "13.07a": "11.08",
+  "13.08": "Q3.01",
+  "13.09": "Q3.02",
+  "13.10": "Q3.03",
+  "13.11": "Q3.04",
+  "13.12": "Q3.05",
+  "13.13": "Q3.06",
+  "13.14": "Q3.07",
+  "13.15": "Q3.08",
+  "13.16": "Q3.09",
+  "13.17": "Q3.10",
+  "13.18": "Q3.11",
+  "13.19": "Q3.12",
+  "13.20": "Q3.13",
+  "13.21": "Q3.14",
+  "14.02": "12.01",
+  "14.03": "12.02",
+  "14.04": "12.03",
+  "14.05": "12.04",
+  "14.06": "12.05",
+  "14.07": "12.06",
+  "14.08": "12.07",
+  "14.08a": "12.08",
+  "14.09": "12.09",
+  "14.10": "12.10",
+  "14.11": "12.11",
+  "15.01": "13.01",
+  "15.03": "13.02",
+  "15.02": "13.03",
+  "15.04": "13.04",
+  "16.01": "14.01",
+  "16.02": "14.02",
+  "16.03": "14.03",
+  "16.04": "14.04",
+  "16.05": "14.05",
+  "16.06": "14.06",
+  "16.07": "14.07",
+  "16.08": "14.08",
+  "16.09": "14.09",
+  "16.10": "14.10",
+  "16.11": "14.11",
+  "16.12": "14.12",
+  "17.01": "Q4.01",
+  "17.02": "Q4.02",
+  "17.03": "Q4.03",
+  "17.04": "Q4.04",
+  "17.05": "Q4.05",
+  "17.06": "Q4.06",
+  "17.07": "Q4.07",
+  "R.01": "Q5.01",
+  "R.02": "Q5.02",
+  "R.03": "Q5.03",
+  "R.04": "Q5.04",
+  "R.05": "Q5.05",
+  "R.06": "Q5.06",
+  "R.07": "Q5.07",
+  "R.08": "Q5.08",
+  "R.09": "Q5.09",
+  "R.10": "Q5.10"
+};
+
+const PHASES = [
+  {
+    id: "0", branch: "common", title: "Preparativi", where: "Rune-Midgard",
+    intro: "Compra tutto prima di partire, così eviti viaggi avanti e indietro: prima quello che serve a tutti, poi quello che è solo consigliato. I comandi @ws, da incollare in chat, cercano chi vende l'oggetto nei negozi dei giocatori. Sul posto raccoglierai solo 20 Ordinary Branch, 1 Unidentified Mineral e, se non le compri (step 0.07), le pagine del Report.",
+    steps: [
+      { id: "0.01", q: ["ONW"], h: "300 Jellopy",
+        d: "Per Onward: li consegni al Promotional Staff di Aldebaran (step 1.02).",
+        copy: [{ label: "Cerca chi vende Jellopy", items: ["@ws 909"] }] },
+      { id: "0.02", q: ["ONW"], h: "1 Emerald e 1 Ruby",
+        d: "Per Onward: li consegni allo Staff di Geffen (step 1.03).",
+        copy: [{ label: "Cerca chi vende Emerald, Ruby", items: ["@ws 721","@ws 723"] }] },
+      { id: "0.03", q: ["PREP"], h: "Fly Wing, Butterfly Wing, pozioni HP e SP, Blue Gemstone",
+        d: "Scorte per tutto il percorso. Le Fly Wing servono soprattutto sui campi di El Dicastes. Le Blue Gemstone servono a chi apre i Warp Portal, una per portale: 20-30 bastano. Se le hai, una Green Butterfly Wing (Lighthalzen) e una Red Butterfly Wing (Rachel) ti risparmiano due viaggi lunghi nella fase 1." },
+      { id: "0.04", q: ["NS"], h: "20 Strong Vine dai giocatori",
+        d: "Per New Surroundings: le porti a Diego (step 5.01). Si trovano facilmente in vendita. Gli Ordinary Branch invece si prendono solo dagli alberi di spl_fild02 (step 3.04).",
+        copy: [{ label: "Cerca chi vende Strong Vine", items: ["@ws 6041"] }] },
+      { id: "0.05", q: ["CAT"], h: "Per il contratto Cat Hand: 200 Fresh Fish, 20 Fish Tail e 550.000 zeny",
+        d: "Il contratto, che firmi allo step 2.01 e vale per tutto l'account, dà save al campo, storage e teletrasporti tra campo, Manuk, Splendide, El Dicastes e città di Midgard: fa risparmiare molto tempo.\nI Fresh Fish li vendono i Tool Dealer delle città a 250 zeny l'uno (50.000 in tutto), per esempio quello di Prontera (/navi). Le Fish Tail cercale dai giocatori.",
+        navi: ["prt_in 126/76"],
+        copy: [{ label: "Cerca chi vende Fish Tail", items: ["@ws 1023"] }] },
+      { id: "0.06", q: ["PREP"], opt: true, h: "Piano dei /memo e del save per il Warp Portal",
+        d: "Per tutto il percorso conviene un personaggio con il Warp Portal: il tuo, o quello di un amico che ti accompagna. Chi apre i portali ha il proprio punto di save e fino a 3 memo, secondo il livello della skill.\nIl /memo non funziona in nessuna mappa del Nuovo Mondo, campo compreso, e nemmeno a Lighthalzen, a Juno e dentro il castello di Prontera. Un memo sulla stessa mappa del save è inutile, perché il portale porta al save; un nuovo /memo su una mappa già memorizzata sostituisce quello vecchio.\nPiano consigliato: save alla Kafra di Lighthalzen appena ci arrivi (step 1.06) e al campo finita Onward (step 2.01); un memo a Prontera, prima davanti al castello (step 1.01) e poi accanto al Warpra (step 1.08); un memo su ra_temple a Rachel (step 1.10).\nAl campo torni con il Warpra di una città (5.000 zeny). Dal campo riparti con il Warp Portal; senza, con i teletrasporti a pagamento di Fluffy Gyaruk verso le città di Midgard.\nQuando sposti il save puoi fare gratis un ultimo viaggio verso quello vecchio: apri un Warp Portal verso il punto di save, salva nel posto nuovo e solo dopo entra nel portale, che porta ancora al save vecchio (step 14.09 e Q3.05).",
+        tip: "Al punto di save torni con una Butterfly Wing o con Teleport 2, cioè la skill Teleport al livello 2: a Lighthalzen durante Onward, poi al campo." },
+      { id: "0.07", q: ["REP"], opt: true, h: "I 4 volumi del Report dai giocatori",
+        d: "Per saltare la raccolta delle pagine e i tentativi di Abidal: gli Expedition Report Vol1, Vol2, Vol3 e Vol4 si possono scambiare, e dopo lo step 8.06 li porti direttamente ad Abidal (step 10.03). In alternativa si comprano le pagine (Part of a Report): in media ne servono circa 95.",
+        copy: [{ label: "Cerca chi vende Expedition Report Vol1, Vol2, Vol3, Vol4", items: ["@ws 11013","@ws 11014","@ws 11015","@ws 11016"] }, { label: "Cerca chi vende Part of a Report", items: ["@ws 6040"] }] }
+    ]
+  },
+  {
+    id: "1", branch: "common", title: "Onward to the New World", where: "Prontera, Aldebaran, Geffen, Lighthalzen, Rachel",
+    intro: "Sblocca il Midgard Expedition Camp.",
+    steps: [
+      { id: "1.01", q: ["ONW"], h: "Recruiter for the Brave nel castello di Prontera",
+        d: "Digli che ti interessa la missione.",
+        navi: ["prt_castle 83/67"],
+        copy: [{ label: "Memo", items: ["/memo"] }],
+        tip: "Con il Warp Portal: prima di entrare fai /memo davanti all'ingresso del castello, dove torni negli step 1.05 e 1.08. Dentro il castello il /memo non funziona. Finché il save è a Prontera il portale porta alla Kafra del save e non al castello: il memo funziona da quando salvi a Lighthalzen (step 1.06)." },
+      { id: "1.02", q: ["ONW"], h: "Promotional Staff ad Aldebaran: consegna 300 Jellopy",
+        navi: ["aldebaran 127/138"],
+        tip: "Tra una città e l'altra usa il Warpra." },
+      { id: "1.03", q: ["ONW"], h: "Staff a Geffen: consegna l'Emerald, poi il Ruby",
+        navi: ["geffen 90/67"] },
+      { id: "1.04", q: ["ONW"], h: "Quarto Promotional Staff a Izlude",
+        d: "Controlla che tu abbia almeno Base Level 70 e ti rimanda dal Recruiter. Non confonderlo con il Promotional Staff di Prontera (163/53), che fa solo pubblicità.",
+        navi: ["izlude 99/136"] },
+      { id: "1.05", q: ["ONW"], h: "Torna dal Recruiter for the Brave",
+        d: "Ti manda a Lighthalzen a registrarti.",
+        navi: ["prt_castle 83/67"],
+        tip: "Usa il Warp Portal sul memo di Prontera (step 1.01). Se il save è ancora a Prontera ti porta alla Kafra: il castello resta a pochi passi." },
+      { id: "1.06", q: ["ONW"], h: "Lighthalzen: entra nel Rekenber HQ e parla con una guardia al piano di sopra",
+        d: "Per arrivare a Lighthalzen la prima volta hai tre modi: l'airship da Juno, una Green Butterfly Wing, oppure il Warpra, se hai già sbloccato il Bio Laboratory. Il Warp Portal non serve, perché a Lighthalzen il /memo non funziona. Non conviene fare apposta la quest del Bio Laboratory: dopo Onward torni a Lighthalzen una volta sola (step 13.02).",
+        navi: ["yuno 53/212","lighthalzen 164/100","lighthalzen 101/246","lhz_in01 124/234"],
+        tip: "Appena arrivi, salva alla Kafra di Lighthalzen (164/100): in questa fase ci torni quattro volte. Da qui in poi torni a Lighthalzen con una Butterfly Wing o Teleport 2, e il memo di Prontera ti porta davanti al castello." },
+      { id: "1.07", q: ["ONW"], h: "Sikaiz davanti alla scrivania",
+        d: "Ascolta il discorso, poi parlagli almeno altre tre volte, finché ti manda dall'Alliance Manager di Prontera.",
+        navi: ["lhz_in01 132/259"] },
+      { id: "1.08", q: ["ONW"], h: "Alliance Manager nel castello di Prontera",
+        d: "È nella sala a destra del Recruiter.",
+        navi: ["prt_castle 121/51","prontera 160/191"],
+        copy: [{ label: "Memo", items: ["/memo"] }],
+        tip: "Vai con il Warp Portal sul memo di Prontera. Uscito dal castello, rifai /memo accanto al Warpra (secondo /navi): sostituisce quello davanti al castello, dove torni una volta sola (step 13.01), mentre il Warpra ti servirà spesso. Poi torna a Lighthalzen con una Butterfly Wing o Teleport 2." },
+      { id: "1.09", q: ["ONW"], h: "Torna da Sikaiz",
+        d: "Parlagli almeno due volte: ti dà un messaggio per l'Alliance Manager di Rachel.",
+        navi: ["lhz_in01 132/259"] },
+      { id: "1.10", q: ["ONW"], h: "Alliance Manager di Arunafeltz, fuori dal tempio di Rachel",
+        d: "Per arrivare a Rachel: a piedi, con l'airship oppure con una Red Butterfly Wing. Se vai a piedi, appena finito lo step 1.09 torna al save, la Kafra di Lighthalzen, con una Butterfly Wing o Teleport 2: accorci un pezzo di strada.",
+        navi: ["ra_temple 119/113"],
+        copy: [{ label: "Memo", items: ["/memo"] }],
+        tip: "Arrivato, fai /memo qui su ra_temple: allo step 13.03 Nuria è sulla stessa mappa. Poi torna a Lighthalzen con una Butterfly Wing o Teleport 2." },
+      { id: "1.11", q: ["ONW"], h: "Sikaiz ti registra, poi scendi nella sala banchetti",
+        d: "Parla con Sikaiz almeno due volte: la seconda volta devi scrivere il nome del tuo personaggio.\nPoi scendi nella sala banchetti, accanto alle scale sulla destra: prima senti gli ufficiali complottare, poi parla con entrambi un paio di volte.",
+        navi: ["lhz_in01 132/259","lhz_in01 147/179"] },
+      { id: "1.12", q: ["ONW"], h: "Torna al piano di sopra e origlia Munkenro",
+        d: "Le guardie non ti fanno entrare: mettiti sul punto indicato. Se non senti nulla, vai avanti.",
+        navi: ["lhz_in01 148/257"] },
+      { id: "1.13", q: ["ONW"], h: "Guardia fuori dalla sala conferenze, poi Rift Guard",
+        d: "Fatti portare al Continental Guard Quarantine e parla con il Rift Guard: ti porta al Dimensional Gorge.",
+        navi: ["lhz_in01 130/231","moc_fild20 349/179"],
+        tip: "Chi ti aiuta nel test (step 1.14) deve essere nel tuo party e sulla stessa mappa, e deve poter entrare nel Dimensional Gorge. Negli script ufficiali il Rift Guard fa entrare solo chi è arrivato a questo punto di Onward o l'ha già completata. Chiedi quindi a giocatori che hanno già fatto Onward: non ricevono niente, ma possono uccidere per te." },
+      { id: "1.14", q: ["ONW"], h: "Munkenro: test dei 50 Allied Soldier",
+        d: "La mappa è istanziata. Il party leader avvia il test con tutti i membri sulla stessa mappa; il credito va solo a lui. 50 soldati in 20 minuti, progresso nel quest log.",
+        navi: ["moc_fild22b 230/197"],
+        tip: "Sii tu il party leader e fatti aiutare dagli amici a uccidere i soldati." },
+      { id: "1.15", q: ["ONW"], h: "Parla di nuovo con Munkenro",
+        d: "Ti manda nell'Ash Vacuum, al Midgard Expedition Camp. Onward completata.",
+        navi: ["mid_camp 186/242"],
+        tip: "Appena arrivi al campo parla con il Warpra Helper (il /navi qui sopra): registra il campo come destinazione del Warpra per tutti i personaggi del tuo account. Da quel momento ci torni con il Warpra di qualsiasi città per 5.000 zeny. Il Warpra Helper non teletrasporta e al campo il /memo non funziona: per ripartire servono il Warp Portal, una Butterfly Wing o i teletrasporti del contratto Cat Hand (step 2.01), che ti fa anche salvare qui." }
+    ]
+  },
+  {
+    id: "2", branch: "common", title: "Campo: avvio di New Surroundings", where: "Midgard Expedition Camp",
+    intro: "Ring of the Wise King non si può ancora iniziare: il meccanico lo avvia solo dopo che hai iniziato il Report from the New World (fase 8). Per ora apri New Surroundings.",
+    steps: [
+      { id: "2.01", q: ["CAT"], h: "Contratto Cat Hand con Fluffy Gyaruk",
+        d: "Con i 200 Fresh Fish, le 20 Fish Tail e i 550.000 zeny dello step 0.05. Si firma una volta sola per l'account.\nUna città del Nuovo Mondo va visitata a piedi almeno una volta prima di poterci andare in teletrasporto: parla con il suo Cat Hand Agent (step 3.03, 4.03 e 12.11). Lo Scaraba Hole si sblocca allo stesso modo (step 12.08).",
+        navi: ["mid_camp 190/242"],
+        tip: "Fai subito il save al campo: dai campi di caccia torni qui gratis con una Butterfly Wing o Teleport 2, senza passare da una città e dal Warpra." },
+      { id: "2.02", q: ["NS"], h: "Marian",
+        d: "Ti dà una Chocolate Pie e ti manda da Lugen.",
+        navi: ["mid_camp 222/283"] },
+      { id: "2.03", q: ["NS"], h: "Instructor Lugen",
+        d: "Devi registrarti nell'edificio centrale.",
+        navi: ["mid_camp 261/284"] },
+      { id: "2.04", q: ["NS"], h: "Receptionist Brink nell'edificio centrale",
+        d: "Ti dà una Chocolate Pie.",
+        navi: ["mid_campin 106/122"] },
+      { id: "2.05", q: ["NS"], h: "Torna da Lugen",
+        d: "Ti dà una Chocolate Pie e ti manda alle baracche.",
+        navi: ["mid_camp 261/284"] },
+      { id: "2.06", q: ["NS"], h: "Diego all'ingresso delle baracche: accetta la richiesta",
+        d: "Offriti di aiutarlo: vuole 20 Ordinary Branch e 20 Strong Vine. Adesso non consegni niente: li porti allo step 5.01. Questo dialogo serve prima degli alberi, perché solo dopo gli alberi di spl_fild02 iniziano a dare rami (step 3.04).",
+        navi: ["mid_camp 264/263"] }
+    ]
+  },
+  {
+    id: "3", branch: "common", title: "Giro a ovest", where: "spl_fild02",
+    intro: "Fata, rami e ritorno dal Camp Guard Captain. Le parole della fata e del gigante ti serviranno più avanti per la quest Ring of the Wise King (fase 9).",
+    steps: [
+      { id: "3.01", q: ["GO"], h: "Camp Guard a ovest: vai su spl_fild02",
+        navi: ["mid_camp 13/143"] },
+      { id: "3.02", q: ["FAIRY","RING"], h: "Small Fairy",
+        d: "Parlaci per Finding a Fairy. Le sue parole ti serviranno per il linguista e sono nello step 9.03.",
+        navi: ["spl_fild02 34/223"] },
+      { id: "3.03", q: ["CAT"], h: "Cat Hand Agent di Splendide",
+        d: "Splendide è la mappa subito a ovest della fata: entra e parla con il Cat Hand Agent. Da quel momento Fluffy Gyaruk, al campo, ti porta a Splendide per 17.000 zeny con «Teleport to Jotunheim Cities»: ti servirà allo step 11.01. Poi torna su spl_fild02 per gli alberi.",
+        navi: ["splendide 203/173"] },
+      { id: "3.04", q: ["NS"], h: "Alberi: clicca finché hai 20 Ordinary Branch",
+        d: "Ci sono 5 alberi (i punti qui sotto). Clicca lo stesso albero più volte: circa un clic su 9 dà un ramo buono, gli altri non danno niente o un ramo marcio. Funziona solo dopo aver parlato con Diego (step 2.06).",
+        navi: ["spl_fild02 380/196","spl_fild02 304/150","spl_fild02 347/76","spl_fild02 232/143","spl_fild02 182/235"] },
+      { id: "3.05", q: ["FAIRY"], h: "Camp Guard Captain",
+        navi: ["mid_camp 212/237"] }
+    ]
+  },
+  {
+    id: "4", branch: "common", title: "Giro a est", where: "man_fild01, man_fild03",
+    intro: "Liane e gigante.",
+    steps: [
+      { id: "4.01", q: ["GO"], h: "Camp Guard a est: vai su man_fild01",
+        navi: ["mid_camp 336/171"] },
+      { id: "4.02", q: ["FAIRY","RING"], h: "Tree Giant su man_fild03",
+        d: "Parlaci. Le sue parole ti serviranno per il linguista e sono nello step 9.03.",
+        navi: ["man_fild03 236/105"],
+        tip: "Passando da man_fild01, clicca qualche Mysterious Rock: per la quest Ring of the Wise King ti servirà 1 Unidentified Mineral (step 9.12), e negli script ufficiali le rocce lo danno anche prima di iniziare la quest. Spesso escono solo Stone." },
+      { id: "4.03", q: ["CAT"], h: "Cat Hand Agent di Manuk",
+        d: "Manuk è due mappe a est e una a sud del campo: entra in città e parla con il Cat Hand Agent. Da quel momento Fluffy Gyaruk, al campo, ti porta a Manuk per 22.000 zeny con «Teleport to Jotunheim Cities»: ti servirà negli step 12.05, 14.09 e 14.11.",
+        navi: ["manuk 275/147"] },
+      { id: "4.04", q: ["FAIRY"], h: "Torna al campo dal Camp Guard Captain",
+        d: "Finding a Fairy completata.",
+        navi: ["mid_camp 212/237"] }
+    ]
+  },
+  {
+    id: "5", branch: "common", title: "Campo: pali e consegne", where: "Midgard Expedition Camp",
+    intro: "I pali di Diego, poi le prime consegne di Lugen.",
+    steps: [
+      { id: "5.01", q: ["NS"], h: "Diego: consegna rami e liane",
+        navi: ["mid_camp 264/263"] },
+      { id: "5.02", q: ["NS"], h: "Ripara i due pali",
+        d: "Su ciascun palo: Attach the Tree Bar, poi Tie it with vines; ripeti finché è riparato, poi Knot it.",
+        navi: ["mid_camp 266/263","mid_camp 266/258"] },
+      { id: "5.03", q: ["NS"], h: "Diego, poi Lucas",
+        d: "Diego ti dà 5 Chocolate Pie e ti ritrovi nel tuo letto.\nLucas: scegli «Dangerous way?». Ti dà una Chocolate Pie.",
+        navi: ["mid_camp 264/263"] },
+      { id: "5.04", q: ["NS"], h: "Lugen, poi Marian",
+        d: "Marian ti dà 3 Supply Box.",
+        navi: ["mid_camp 261/284","mid_camp 222/283"] },
+      { id: "5.05", q: ["NS"], h: "Lugen, poi il primo box a Jan",
+        d: "Jan ti dà una Chocolate Pie.",
+        navi: ["mid_camp 261/284","mid_camp 162/298"] },
+      { id: "5.06", q: ["NS"], h: "Lugen, poi il secondo box a Gerard oltre il ponte ovest",
+        d: "Gerard ti dà una Chocolate Pie.",
+        navi: ["mid_camp 261/284","mid_camp 30/168"] },
+      { id: "5.07", q: ["NS"], h: "Lugen: il terzo box va ad Alberto",
+        d: "Lo consegni nel giro successivo.",
+        navi: ["mid_camp 261/284"] }
+    ]
+  },
+  {
+    id: "6", branch: "common", title: "Consegna ad Alberto", where: "man_fild01",
+    intro: "Il terzo box di Lugen.",
+    steps: [
+      { id: "6.01", q: ["NS"], h: "Alberto all'ingresso di man_fild01",
+        d: "Aiutalo ad aprire il box: ti dà una Chocolate Pie. Per arrivare su man_fild01 passa dal Camp Guard a est del campo.",
+        navi: ["mid_camp 336/171","man_fild01 80/248"] }
+    ]
+  },
+  {
+    id: "7", branch: "common", title: "Campo: chiudi New Surroundings", where: "Midgard Expedition Camp",
+    intro: "Ultime consegne di Lugen.",
+    steps: [
+      { id: "7.01", q: ["NS"], h: "Lugen: parlaci più volte finché ti dà la lettera per Otto",
+        d: "Quando ti chiede, scegli «Help.»: ti dà la lettera. Con “Just listen.” devi riparlargli e scegliere «Help him.».",
+        navi: ["mid_camp 261/284"] },
+      { id: "7.02", q: ["NS"], h: "Otto",
+        d: "Ti dà una lettera per Lugen e una Chocolate Pie.",
+        navi: ["mid_camp 123/290"] },
+      { id: "7.03", q: ["NS"], h: "Lugen",
+        d: "Consegnagli la lettera: ti dà 1 Old Purple Box e 5 Chocolate Pie. New Surroundings completata: ora Hibba Agip ti affida il Report (fase 8).",
+        navi: ["mid_camp 261/284"] }
+    ]
+  },
+  {
+    id: "Q1", branch: "common", opt: true, page: "altre", title: "Tripatriate Union's Feud", where: "Midgard Expedition Camp",
+    sum: "Premi: EXP e un First Aid Kit",
+    when: "Basta aver completato Onward to the New World (fase 1). È tutta al campo: il momento migliore è l'ora di attesa di Ring of the Wise King (step 9.14).",
+    intro: "L'United Research Official non si clicca: basta camminargli vicino. Non ancora provata su uaRO: se qualcosa non torna, scrivilo nella nota dello step.",
+    steps: [
+      { id: "Q1.01", q: ["TRI"], opt: true, h: "Materiali: 1 Folding Fan of Cat Ghost, 1 Flame Stone, 1 Old Frying Pan, 1 Squid Ink",
+        d: "Comprali prima di iniziare, così non interrompi la quest.",
+        copy: [{ label: "Cerca chi vende Folding Fan of Cat Ghost, Flame Stone, Old Frying Pan, Squid Ink", items: ["@ws 7262","@ws 7521","@ws 7031","@ws 1024"] }],
+        tip: "Il Flame Stone lo vendono gli NPC che hanno oggetti da ninja." },
+      { id: "Q1.02", q: ["TRI"], opt: true, h: "Avvicinati all'United Research Official",
+        d: "Entra dall'ingresso indicato. Ti chiede di parlare con chi gestisce i documenti.",
+        navi: ["mid_camp 163/234","mid_campin 376/120"] },
+      { id: "Q1.03", q: ["TRI"], opt: true, h: "Ryosen",
+        d: "Ti dà un Meeting Invitation da far firmare a Hue e Hansenne.",
+        navi: ["mid_camp 165/245"] },
+      { id: "Q1.04", q: ["TRI"], opt: true, h: "Hue: fallo firmare",
+        navi: ["mid_camp 247/255"] },
+      { id: "Q1.05", q: ["TRI"], opt: true, h: "Hansenne: fallo firmare",
+        navi: ["mid_camp 222/218"] },
+      { id: "Q1.06", q: ["TRI"], opt: true, h: "Ryosen",
+        navi: ["mid_camp 165/245"] },
+      { id: "Q1.07", q: ["TRI"], opt: true, h: "Avvicinati all'Official",
+        d: "Ti chiede di controllare i tre ricercatori.",
+        navi: ["mid_campin 376/120"] },
+      { id: "Q1.08", q: ["TRI"], opt: true, h: "Ryosen",
+        d: "Vuole un documento da Hansenne.",
+        navi: ["mid_camp 165/245"] },
+      { id: "Q1.09", q: ["TRI"], opt: true, h: "Hansenne",
+        d: "L'ha perso sul ponte ovest: devi pescarlo.",
+        navi: ["mid_camp 222/218"] },
+      { id: "Q1.10", q: ["TRI"], opt: true, h: "School of Fish: pesca finché ottieni il Messy File",
+        navi: ["mid_camp 69/135"],
+        warn: "Se hai consegnato 10 Piece of Fish al Ferocious Gorurug non puoi pescare fino a fine blocco (controlla la quest Today's Fishing Closed)." },
+      { id: "Q1.11", q: ["TRI"], opt: true, h: "Hansenne",
+        d: "Ti manda da Hue per restaurarlo.",
+        navi: ["mid_camp 222/218"] },
+      { id: "Q1.12", q: ["TRI"], opt: true, h: "Hue: consegna il Messy File e i 4 oggetti",
+        d: "Ti dà il Neat Report.",
+        navi: ["mid_camp 247/255"] },
+      { id: "Q1.13", q: ["TRI"], opt: true, h: "Ryosen",
+        d: "Vai dall'Official ad aspettare la riunione.",
+        navi: ["mid_camp 165/245"] },
+      { id: "Q1.14", q: ["TRI"], opt: true, h: "Avvicinati all'Official: inizia la riunione",
+        d: "Arrivano i Thief Bug e tutti escono. Rientra e uccidili tutti.",
+        navi: ["mid_campin 376/120"] },
+      { id: "Q1.15", q: ["TRI"], opt: true, h: "Avvicinati all'Official: la riunione riprende",
+        d: "Litigano per la torta e l'Official chiude la giornata." },
+      { id: "Q1.16", q: ["TRI"], opt: true, h: "Avvicinati ancora all'Official",
+        d: "Spieghi che Hansenne non c'entra." },
+      { id: "Q1.17", q: ["TRI"], opt: true, h: "Hansenne",
+        navi: ["mid_camp 222/218"] },
+      { id: "Q1.18", q: ["TRI"], opt: true, h: "Hue",
+        d: "Ti dà il report di Rune-Midgard per Ryosen.",
+        navi: ["mid_camp 247/255"] },
+      { id: "Q1.19", q: ["TRI"], opt: true, h: "Ryosen",
+        navi: ["mid_camp 165/245"] },
+      { id: "Q1.20", q: ["TRI"], opt: true, h: "United Research Official",
+        d: "Ti dà un First Aid Kit. Tripatriate completata.",
+        navi: ["mid_campin 376/120"] }
+    ]
+  },
+  {
+    id: "Q2", branch: "common", opt: true, page: "altre", title: "Pursuing Rayan Moore", where: "Campo, Morroc, Hugel, Juno",
+    sum: "Premi: EXP e un Old Purple Box",
+    when: "Basta aver completato Onward to the New World (fase 1). Ti porta fuori dal Nuovo Mondo, a Morroc, Hugel e Juno.",
+    intro: "Fai il save al campo prima di iniziare: allo step Q2.17 vieni rimandato al punto di save. Non ancora provata su uaRO: se qualcosa non torna, scrivilo nella nota dello step.",
+    steps: [
+      { id: "Q2.01", q: ["RAY"], opt: true, h: "Materiali: 30 Rune of Darkness e 30 Bloody Rune",
+        d: "Comprali prima di iniziare, così non interrompi la quest.",
+        copy: [{ label: "Cerca chi vende Rune of Darkness, Bloody Rune", items: ["@ws 7511","@ws 7563"] }] },
+      { id: "Q2.02", q: ["RAY"], opt: true, h: "Materiali: 30 Holy Water",
+        d: "Comprale prima di iniziare.",
+        copy: [{ label: "Cerca chi vende Holy Water", items: ["@ws 523"] }] },
+      { id: "Q2.03", q: ["RAY"], opt: true, h: "Materiali per il finale: 20 Potato e 30 Log",
+        d: "Solo per il finale facoltativo (step Q2.25, premio: 5 Sweet Potato).",
+        copy: [{ label: "Cerca chi vende Potato, Log", items: ["@ws 516","@ws 7201"] }] },
+      { id: "Q2.04", q: ["RAY"], opt: true, h: "Echinacea nell'edificio centrale",
+        d: "Ti manda ad aiutare Kidd.",
+        navi: ["mid_campin 68/185"] },
+      { id: "Q2.05", q: ["RAY"], opt: true, h: "Kidd",
+        d: "Alla seconda domanda rispondi «No, I don't mind at all», altrimenti devi ricominciare da Echinacea.",
+        navi: ["mid_camp 199/311"],
+        warn: "Alla seconda domanda rispondi No, I don't mind at all, altrimenti devi ricominciare da Echinacea." },
+      { id: "Q2.06", q: ["RAY"], opt: true, h: "Morroc: pub segreto degli Assassin, Bar Master",
+        d: "Parla con Jack (Sharp-Looking Boy) nel sud-ovest di Morroc: ti fa entrare nel pub.\nDentro prendi il passaggio a sud che porta alla sala del bar, poi chiedi al Bar Master di una missione: Rin riposa nel retro. Con il Bar Master scegli «About the mission».",
+        navi: ["morocc 43/108","que_job01 17/48","que_job01 82/91"],
+        copy: [{ label: "Memo", items: ["/memo"] }],
+        tip: "Prima di parlare con Jack fai /memo lì vicino: torni al pub negli step Q2.09 e Q2.21. È il tuo terzo slot di memo.",
+        warn: "“Order a Drink” ti fa comprare un drink a pagamento.",
+        verify: "Negli script ufficiali si entra da Jack a morocc 43/108: confermi?" },
+      { id: "Q2.07", q: ["RAY"], opt: true, h: "Rin, nella stanza a sud del retro",
+        d: "Scegli «Mr. Kidd sent me.» e offriti di aiutarla: vuole che indaghi sul luogo dell'imboscata.",
+        navi: ["que_job01 84/17"] },
+      { id: "Q2.08", q: ["RAY"], opt: true, h: "Mucchio di terra su hu_fild04",
+        d: "Scegli «Take a careful look.»: ricevi il Crystal of Feardom.",
+        navi: ["hu_fild04 235/103"] },
+      { id: "Q2.09", q: ["RAY"], opt: true, h: "Rin",
+        d: "Ti dà il Morocc Tracing Log.",
+        navi: ["que_job01 84/17"] },
+      { id: "Q2.10", q: ["RAY"], opt: true, h: "Kidd: consegna cristallo e registro",
+        navi: ["mid_camp 199/311"] },
+      { id: "Q2.11", q: ["RAY"], opt: true, h: "Kidd di nuovo: tocca il cristallo",
+        d: "Battaglia a tempo contro 5 Dandelion Member: hai 5 minuti. Negli script ufficiali entra una persona alla volta; se il tempo scade torni al campo e puoi riprovare riparlando con Kidd.",
+        warn: "Probabilmente sarai da solo: prepara pozioni.",
+        verify: "Su uaRO si entra da soli e si può riprovare?" },
+      { id: "Q2.12", q: ["RAY"], opt: true, h: "Cadavere: fruga nelle tasche",
+        d: "Ricevi il Sealed Scroll.",
+        navi: ["que_dan01 49/36"] },
+      { id: "Q2.13", q: ["RAY"], opt: true, h: "Kidd",
+        navi: ["mid_camp 199/311"] },
+      { id: "Q2.14", q: ["RAY"], opt: true, h: "Echinacea",
+        d: "Ti manda da Defaria.",
+        navi: ["mid_campin 68/185"] },
+      { id: "Q2.15", q: ["RAY"], opt: true, h: "Defaria: consegna 30 Rune of Darkness, 30 Bloody Rune, 30 Holy Water",
+        d: "Ricevi l'Unsealed Magic Spell.",
+        navi: ["mid_camp 256/272"] },
+      { id: "Q2.16", q: ["RAY"], opt: true, h: "Kidd, poi usa la pergamena",
+        d: "Doppio clic sull'Unsealed Magic Spell: finisci su yuno_fild09.",
+        navi: ["mid_camp 199/311"] },
+      { id: "Q2.17", q: ["RAY"], opt: true, h: "Sali sulla collina ed entra nell'edificio",
+        d: "Cammina dietro la tenda in fondo. Dopo il dialogo torni al punto di save.",
+        navi: ["yuno_fild09 234/133"] },
+      { id: "Q2.18", q: ["RAY"], opt: true, h: "Kidd",
+        d: "Vuole che torni alla casa e scenda nel seminterrato.",
+        navi: ["mid_camp 199/311"] },
+      { id: "Q2.19", q: ["RAY"], opt: true, h: "Uomo in fondo al seminterrato",
+        d: "Torna all'edificio sulla collina di yuno_fild09: negli script ufficiali lo stesso ingresso ora porta al seminterrato (que_dan02). Arriva Kidd e lo arresta.",
+        navi: ["yuno_fild09 234/133","que_dan02 115/53"],
+        tip: "Né yuno_fild09 né Juno permettono il /memo.",
+        verify: "Dall'edificio si scende direttamente al seminterrato? /navi funziona su que_dan02?" },
+      { id: "Q2.20", q: ["RAY"], opt: true, h: "Kidd",
+        d: "Ti dà un diario da portare a Rin.",
+        navi: ["mid_camp 199/311"] },
+      { id: "Q2.21", q: ["RAY"], opt: true, h: "Rin: segnati il tracking number",
+        d: "Il numero cambia per ogni giocatore: scrivilo nella nota di questo step o fai uno screenshot.",
+        navi: ["que_job01 84/17"] },
+      { id: "Q2.22", q: ["RAY"], opt: true, h: "Echinacea: dalle il tracking number, poi parlale di nuovo",
+        navi: ["mid_campin 68/185"] },
+      { id: "Q2.23", q: ["RAY"], opt: true, h: "Manager all'estremità sud del campo",
+        navi: ["mid_camp 191/206"] },
+      { id: "Q2.24", q: ["RAY"], opt: true, h: "Echinacea",
+        d: "Old Purple Box ed EXP. Rayan Moore completata.",
+        navi: ["mid_campin 68/185"] },
+      { id: "Q2.25", q: ["RAY"], opt: true, h: "Finale facoltativo: 5 Sweet Potato",
+        d: "Echinacea: scegli «Something is bothering me...».\nDefaria: scrivi la parola qui sotto, scegli «Just tell me what you know.» e poi «Yes!».\nDopo: Kidd, Defaria, Echinacea e di nuovo Defaria. Servono 20 Potato e 30 Log.",
+        navi: ["mid_camp 256/272","mid_camp 199/311","mid_campin 68/185"],
+        copy: [{ label: "Parola per Defaria", items: ["Dandelion"] }],
+        warn: "Con Defaria non scegliere “Haha, got you!”: perdi il 20% degli HP e devi rifare il dialogo." }
+    ]
+  },
+  {
+    id: "8", branch: "common", title: "Report from the New World: avvio", where: "Midgard Expedition Camp",
+    intro: "Con Onward e New Surroundings completate, Hibba Agip ti affida il Report. Serve anche per El Dicastes: dopo lo step 8.03 il meccanico può avviare Ring of the Wise King (fase 9), e dopo lo step 8.06 i mostri speciali e gli scout iniziano a darti le pagine (fase 10).",
+    steps: [
+      { id: "8.01", q: ["REP"], h: "Hibba Agip nell'edificio centrale",
+        d: "È sul lato nord del tavolo. Lui e Abidal parlano di quello che hai fatto; nel quest log compare Report to the Continent - Commander's Call.",
+        navi: ["mid_campin 90/121"] },
+      { id: "8.02", q: ["REP"], h: "Staff Officer Abidal, lato est del tavolo",
+        d: "Accetta la sua richiesta scegliendo «Yes.».",
+        navi: ["mid_campin 94/118"] },
+      { id: "8.03", q: ["REP"], h: "Hibba Agip",
+        d: "Ti dà un documento e ti manda dal messaggero.",
+        navi: ["mid_campin 90/121"] },
+      { id: "8.04", q: ["REP"], h: "Expedition Messenger: scegli Protect the report.",
+        d: "Qualcuno prova a rubare il report: scegli «Protect the report.». Negli script ufficiali, se lo proteggi, dopo ogni consegna di pagine esce sempre un volume; se lo consegni, una volta su 7 non esce niente.",
+        navi: ["mid_camp 206/286"] },
+      { id: "8.05", q: ["REP"], h: "Hibba Agip",
+        d: "Il report è distrutto: devi ritrovarne le pagine.",
+        navi: ["mid_campin 90/121"] },
+      { id: "8.06", q: ["REP"], h: "Abidal",
+        d: "Vuole le pagine a gruppi di 10. Da qui prosegui con Ring of the Wise King (fase 9): le pagine le raccogli nel frattempo, sulle stesse mappe delle gemme e del minerale (step 10.01), e le consegni quando ne hai almeno 10.",
+        navi: ["mid_campin 94/118"],
+        tip: "Gli Expedition Scout, uno su ciascuno dei 4 campi (step 10.01), ti danno qualche pagina quando chiedi, ma dopo devi aspettare 30 minuti prima di poter chiedere di nuovo a uno qualsiasi di loro. Se passi vicino a uno scout, per esempio su man_fild01, chiedi subito: così l'attesa parte prima e le pagine arrivano prima." }
+    ]
+  },
+  {
+    id: "9", branch: "common", title: "Ring of the Wise King", where: "Campo, spl_fild02, man_fild01, man_fild03",
+    intro: "Le gemme e il minerale sono sulle stesse mappe delle pagine del Report: mentre ci sei, uccidi i mostri speciali (step 10.01). Dopo lo step 9.14 parte un'ora di attesa: usala per raccogliere pagine.",
+    steps: [
+      { id: "9.01", q: ["RING"], h: "Schwartzvalt Mechanic fuori dal quartier generale",
+        d: "Ti parla del Ring of the Ancient Wise King, l'anello che fa capire la lingua di fate e giganti, e ti manda dal linguista. Se invece ti parla del Commander e non ti dà la quest, non hai ancora fatto lo step 8.03.",
+        navi: ["mid_camp 197/237"] },
+      { id: "9.02", q: ["RING"], h: "Arunafeltz Linguist, piano di sopra, stanza più a destra",
+        d: "Quando ti chiede chi sei, scegli «I am Me!»: l'altra risposta chiude il dialogo. Alla domanda successiva va bene qualsiasi risposta. Ti chiede di ascoltare la fata e il gigante e di ricordare ogni parola: se ci hai già parlato (step 3.02 e 4.02), riparlagli subito e passa allo step 9.03.",
+        navi: ["mid_campin 168/82"] },
+      { id: "9.03", q: ["RING"], h: "Linguist: ripeti le parole esatte",
+        d: "Ogni riga va in una finestra di dialogo separata, nell'ordine. Sono le parole esatte che il linguista controlla negli script ufficiali; il \"!!\" e i \"..\" finali si possono anche omettere.",
+        navi: ["mid_campin 168/82"],
+        copy: [{ label: "Fata", items: ["RLGHLRXLA TKANTLFDMS","WJACK TNAHRDNJSDMFH","WLSGHKWND !!"] }, { label: "Gigante", items: ["TJDTMFJDNS CJFDI","TKADLFDMF QKATOS","EKDTLSDML DLFMADMS.."] }] },
+      { id: "9.04", q: ["RING"], h: "Parla di nuovo con il Linguist",
+        d: "Non riesce a decifrarle e ti manda dal mago." },
+      { id: "9.05", q: ["RING"], h: "Rune Midgart's Magician",
+        d: "Vuole le gemme sepolte vicino alla fata e al gigante. Alla sua domanda va bene qualsiasi risposta: con «What if I go and retrieve them?» arrivi subito al punto.",
+        navi: ["mid_camp 147/256"] },
+      { id: "9.06", q: ["RING"], h: "Half Buried Gem vicino alla Small Fairy",
+        d: "Scegli «Dig out the Gem»: escono 10 Thief Bug. Uccidili tutti e ripeti finché ottieni la Red Jewel.",
+        navi: ["mid_camp 13/143","spl_fild02 27/218"],
+        tip: "Se il tuo personaggio fa pochi danni, per esempio perché ha poca STR, equipaggia l'arma con più attacco che hai: i Thief Bug sono deboli, ma sono 10 a ogni tentativo." },
+      { id: "9.07", q: ["RING"], h: "Half Buried Gem vicino al Tree Giant",
+        d: "Come sopra («Dig out the Gem»), finché ottieni la Blue Jewel.",
+        navi: ["mid_camp 336/171","man_fild03 227/109"] },
+      { id: "9.08", q: ["RING"], h: "Magician con le due gemme",
+        navi: ["mid_camp 147/256"] },
+      { id: "9.09", q: ["RING"], h: "Linguist",
+        d: "Ti manda dal meccanico. Se ti chiede cosa fare, scegli «Talk to him» o «Ask him what's going on.»: l'altra opzione chiude il dialogo.",
+        navi: ["mid_campin 168/82"] },
+      { id: "9.10", q: ["RING"], h: "Schwartzvalt Mechanic",
+        d: "Serve una gemma per memorizzare i dati: chiedi al mago.",
+        navi: ["mid_camp 197/237"] },
+      { id: "9.11", q: ["RING"], h: "Magician",
+        d: "Per creare la gemma che conserva i dati del traduttore gli serve 1 Unidentified Mineral, che trovi nelle rocce di man_fild01 (step 9.12).",
+        navi: ["mid_camp 147/256"] },
+      { id: "9.12", q: ["RING"], h: "Trova 1 Unidentified Mineral nelle rocce di man_fild01",
+        d: "Obiettivo: ottenere 1 Unidentified Mineral da portare al mago (step 9.13), che lo trasforma nella gemma per il traduttore del meccanico.\nIl minerale si trova nelle Mysterious Rock di man_fild01. Clicca una roccia: parte una barra di 10 secondi e ricevi un oggetto a caso; l'Unidentified Mineral esce circa una volta su 5, altrimenti ricevi Stone o una pietra elementale. Dopo, la roccia sparisce per 2 minuti. Passa di roccia in roccia e, appena hai il minerale, torna al campo.\nI /navi sono in ordine di percorso a partire dall'arrivo del Camp Guard (man_fild01 36/235): le prime 6 rocce sono vicine tra loro, le ultime 3 più lontane.",
+        navi: ["mid_camp 336/171","man_fild01 70/246","man_fild01 64/197","man_fild01 92/155","man_fild01 114/174","man_fild01 147/157","man_fild01 180/170","man_fild01 118/238","man_fild01 146/269","man_fild01 170/318"],
+        copy: [{ label: "Cerca chi vende Unidentified Mineral", items: ["@ws 6048"] }],
+        tip: "Puoi anche comprare l'Unidentified Mineral dai giocatori e saltare le rocce." },
+      { id: "9.13", q: ["RING"], h: "Magician",
+        d: "Consegnagli l'Unidentified Mineral. Aspetta qualche minuto o parlaci più volte finché ti dà la gemma.",
+        navi: ["mid_camp 147/256"] },
+      { id: "9.14", q: ["RING"], h: "Schwartzvalt Mechanic: parte l'ora di attesa",
+        d: "Nel quest log compare Language translation device.",
+        navi: ["mid_camp 197/237"] },
+      { id: "9.15", q: ["RING"], h: "Passata l'ora: Schwartzvalt Mechanic",
+        d: "Ricevi il Ring of the Ancient Wise King. Indossalo e tienilo sempre: su uaRO non si scambia e non va in storage.",
+        navi: ["mid_camp 197/237"] }
+    ]
+  },
+  {
+    id: "10", branch: "nest", title: "Report from the New World: le pagine", where: "Campo e campi di Splendide e Manuk",
+    intro: "La parte più lunga. Nei 30 minuti di attesa tra una richiesta e l'altra agli Expedition Scout, fai la fase 11 e la fase 12.",
+    steps: [
+      { id: "10.01", q: ["REP"], h: "Raccogli le pagine",
+        d: "Chiedi le pagine agli Expedition Scout, uno per campo (i /navi qui sotto): scegli «Ask about search results.» e ricevi da 0 a 5 pagine. Poi devi aspettare 30 minuti prima di chiedere di nuovo, a qualsiasi scout; il tempo passa anche se sei offline.\nNell'attesa puoi uccidere i mostri di questi campi: 14 per campo sono speciali, danno 1 pagina e ricompaiono dopo 10 minuti.",
+        navi: ["mid_camp 13/143","spl_fild02 295/368","spl_fild03 172/71","man_fild01 315/95","man_fild03 202/251"],
+        tip: "Il più comodo è lo scout di spl_fild02 (dal campo, Camp Guard a ovest): esci dal gioco lì vicino e rientra ogni 30 minuti. In media servono circa 95 pagine. Se hai già i 4 volumi (step 0.07), salta allo step 10.03." },
+      { id: "10.02", q: ["REP"], h: "Abidal: consegna le pagine a gruppi di 10",
+        d: "Scegli «Submit found pages.»: ogni consegna costa 10 pagine e ricompone a caso uno dei 4 volumi. Il terzo esce più spesso degli altri.",
+        navi: ["mid_campin 94/118"],
+        tip: "Lo stesso volume può uscire più volte di seguito. Se dopo ogni consegna metti il volume nello storage, quando esce di nuovo ne ricevi un'altra copia: per la quest non serve, ma si può vendere o scambiare. Prima dello step 10.03 riprendi dallo storage un volume per tipo.",
+        warn: "Se esce un volume che hai già nell'inventario, non ricevi niente e le 10 pagine sono perse." },
+      { id: "10.03", q: ["REP"], h: "Con tutti e 4 i volumi: Abidal, seconda opzione",
+        d: "Scegli «Check the report's resoration status.» (scritto così nel gioco): li riconosce e li rilega insieme.",
+        navi: ["mid_campin 94/118"],
+        warn: "Nell'inventario devi avere esattamente un volume per tipo: se hai due copie dello stesso volume, metti le copie in più nello storage, altrimenti Abidal non li rilega." },
+      { id: "10.04", q: ["REP"], h: "Hibba Agip: ricevi 3 copie del report finale",
+        d: "Con il report rilegato da Abidal (step 10.03) parla con Hibba Agip: nessuna scelta, lo prende e ti dà 3 Expedition Report, uno per ciascuno dei tre ufficiali della fase 13.",
+        navi: ["mid_campin 90/121"],
+        warn: "Tieni le 3 copie nell'inventario finché non le hai consegnate tutte: ogni ufficiale ne prende una. Se te ne manca una prima di aver consegnato la prima, riparla con Hibba Agip e te ne ridà 3; dopo la prima consegna non le sostituisce più." }
+    ]
+  },
+  {
+    id: "11", branch: "nest", title: "Two Tribes fino al dungeon", where: "Splendide, spl_fild02, spl_fild01",
+    intro: "Ring of the Ancient Wise King indossato. Per Guardian of Yggdrasil basta entrare nel dungeon (step 11.07) e parlare con il Warpra Helper (step 11.08). Il resto di Two Tribes non serve: è Q3, nella pagina Altre quest.",
+    steps: [
+      { id: "11.01", q: ["TT"], h: "Splendide: prima capanna a destra, Arc",
+        d: "A piedi: dal Camp Guard a ovest attraversa spl_fild02 fino a Splendide, che è subito a ovest.\nParla con Arc e scegli «Yes.».\nPoi riparlaci: scegli il tuo nome, «What favor?» e infine «Sure, I will do it.». Ti chiede di cercare la sua amica Terra, che segna la strada annodando le erbe.",
+        navi: ["mid_camp 13/143","splendide 228/162","spl_in01 32/306"],
+        tip: "Più veloce: Fluffy Gyaruk (mid_camp 190/242) ti porta a Splendide per 17.000 zeny con «Teleport to Jotunheim Cities», sbloccato allo step 3.03. Da Splendide usa direttamente l'ultimo /navi." },
+      { id: "11.02", q: ["TT"], h: "Erbe annodate che puntano a sud",
+        navi: ["spl_fild02 44/214"] },
+      { id: "11.03", q: ["TT"], h: "Erbe annodate che puntano a est",
+        navi: ["spl_fild02 123/106"] },
+      { id: "11.04", q: ["TT"], h: "Erbe annodate che puntano a nord",
+        navi: ["spl_fild02 330/192"] },
+      { id: "11.05", q: ["TT"], h: "Impronte verso nord",
+        navi: ["spl_fild02 328/322"] },
+      { id: "11.06", q: ["TT"], h: "Altre impronte su spl_fild01",
+        navi: ["spl_fild01 343/109"] },
+      { id: "11.07", q: ["TT"], h: "Entra nel Nidhoggur's Dungeon sotto lo Yggdrasil",
+        d: "Clicca le radici e scegli «Follow the trace.»: scivoli nel dungeon. Questo basta per Guardian of Yggdrasil.",
+        navi: ["spl_fild01 375/109"],
+        warn: "Scivolando nel dungeon perdi il 30% degli HP." },
+      { id: "11.08", q: ["GY"], h: "Warpra Helper al centro del dungeon",
+        d: "Parlaci: da quel momento il Warpra di qualsiasi città porta al Nidhogg's Dungeon tutti i personaggi del tuo account. Ti serve per tornare qui nella fase 14 e per il Nest (Q4), senza rifare la strada da spl_fild01. Per uscire dal dungeon usa una Butterfly Wing, oppure il Trunk of a Tree nell'angolo nord-ovest (secondo /navi), che ti riporta su spl_fild01.",
+        navi: ["nyd_dun01 141/150","nyd_dun01 61/233"] }
+    ]
+  },
+  {
+    id: "Q3", branch: "nest", opt: true, page: "altre", title: "Resto di Two Tribes", where: "Splendide, Manuk, dungeon dello Yggdrasil",
+    sum: "Premi: 15 Manuk Coin, 25 Splendide Coin ed EXP",
+    when: "Dopo lo step 11.08, quando sei già nel dungeon: riprende dal punto in cui Two Tribes si ferma nel percorso.",
+    intro: "Dà anche l'accesso ad altre quest. Ring of the Ancient Wise King indossato. Gli step vanno fatti nell'ordine in cui sono scritti, perché ogni NPC risponde solo quando hai fatto il passo precedente.\nSono dieci viaggi tra Splendide, Manuk e il dungeon. Il piano più economico costa circa 37.000 zeny di teletrasporti: sposti il save a Manuk (step Q3.05) e, le due volte che vai da Manuk a Splendide, passi dal campo e fai l'ultimo tratto a piedi, una mappa sola (step Q3.06 e Q3.14).\nSe paghi anche quei due tratti sono circa 70.000 zeny; circa 155.000 se resti salvato al campo e paghi Fluffy Gyaruk ogni volta.",
+    steps: [
+      { id: "Q3.01", q: ["TT"], opt: true, h: "Clicca il Petrified Sapha nell'angolo nord-ovest",
+        d: "Serve solo per il resto di Two Tribes, non per il Nest. Cliccalo e leggi fino alla fine: non trovi più tracce di Terra e decidi di tornare da Arc. L'uscita (Trunk of a Tree, secondo /navi) è poche celle più a nord e ti riporta su spl_fild01.",
+        navi: ["nyd_dun01 57/222","nyd_dun01 61/233"] },
+      { id: "Q3.02", q: ["TT"], opt: true, h: "Arc, due volte",
+        d: "Parla con Arc due volte: la prima gli racconti del gigante nella grotta, la seconda ti offri di andare a cercare Terra. In tutte e due le conversazioni ogni scelta ha una sola opzione. A fine quest (step Q3.14) ricevi 15 Manuk Coin, 25 Splendide Coin, EXP e l'accesso ad altre quest.",
+        navi: ["spl_in01 32/306"],
+        tip: "Dal dungeon a Splendide si va gratis a piedi: esci dal Trunk of a Tree (step Q3.01) e segui il /navi attraverso spl_fild02 verso ovest. In alternativa, Butterfly Wing fino al campo e Fluffy Gyaruk (17.000 zeny)." },
+      { id: "Q3.03", q: ["TT"], opt: true, h: "Petrified Sapha: tracce di Terra",
+        d: "Cliccalo di nuovo: attorno al gigante c'è polvere di Bradium, quindi Terra è stata qui. Decidi di cercarla a Manuk.",
+        navi: ["spl_fild01 375/109","nyd_dun01 57/222"],
+        tip: "Da Splendide al dungeon si va gratis a piedi fino alle radici (primo /navi): scegli «Go inside.» e a ogni ingresso perdi il 30% degli HP. In alternativa, Warp Portal a Prontera e Warpra (5.000 zeny)." },
+      { id: "Q3.04", q: ["TT"], opt: true, h: "Manuk: i due Villager",
+        d: "Parla con uno dei due Villager: discutono di una fata ferita arrivata in città. Va bene qualsiasi opzione.",
+        navi: ["manuk 278/177"],
+        tip: "Per arrivare a Manuk dal dungeon: Butterfly Wing fino al campo e Fluffy Gyaruk (22.000 zeny)." },
+      { id: "Q3.05", q: ["TT"], opt: true, h: "Snorren, due volte",
+        d: "Prima conversazione, quattro scelte in quest'ordine.\nUno: «About the Captured Fairy.» (“What is this place?” chiude il dialogo e devi riparlargli).\nDue: «Why do you want to talk to her?» o «Do you need an interpreter?», vanno bene entrambe.\nTre: «Your friend?», l'unica opzione.\nQuattro: «That could be right...» o «I don't see it that way...», vanno bene entrambe. Alla fine ti offri come interprete e Snorren va a chiedere a Luik.\nSeconda conversazione: riparlaci e scegli «Nothing gets past you...», l'unica opzione. Serve una cura per la Laphine ferita, e decidi di chiederla ad Arc.\nPrima di ripartire sposta il save a Manuk dal Cat Hand Agent (secondo /navi): nei prossimi step torni a Manuk altre tre volte, e con il save qui ci torni gratis con una Butterfly Wing o Teleport 2.",
+        navi: ["man_in01 175/59","manuk 275/147"],
+        tip: "Per partire gratis verso Splendide (step Q3.06) dopo aver spostato il save: prima di salvare apri un Warp Portal verso il punto di save, che è ancora il campo, a pochi passi dal Cat Hand Agent; salva a Manuk e solo dopo entra nel portale. Fai in fretta: il portale resta aperto pochi secondi." },
+      { id: "Q3.06", q: ["TT"], opt: true, h: "Arc: ricevi 3 Yggdrasil Berry",
+        d: "Ti dà 3 Yggdrasil Berry e ti manda a cercarne altre alle radici dello Yggdrasil.",
+        navi: ["mid_camp 13/143","splendide 228/162","spl_in01 32/306"],
+        tip: "Da Manuk a Splendide: con il Warp Portal aperto allo step Q3.05 arrivi gratis al campo. Da lì vai a piedi: dal Camp Guard a ovest (primo /navi) attraversa spl_fild02 fino a Splendide, che è subito a ovest; oppure paga Fluffy Gyaruk (17.000 zeny).\nSenza il portale: il Cat Hand Agent di Manuk (manuk 275/147), 17.000 zeny. Da Splendide usa direttamente l'ultimo /navi." },
+      { id: "Q3.07", q: ["TT"], opt: true, h: "Raccogli altre 3 Yggdrasil Berry su spl_fild01",
+        d: "Clicca i tre punti nell'ordine dei /navi: ognuno dà 1 Yggdrasil Berry e 1 Fruit of Mastela. Con le 3 di Arc arrivi a 6, il minimo che serve.",
+        navi: ["spl_fild01 356/42","spl_fild01 314/78","spl_fild01 328/26"],
+        warn: "Clicca ogni punto una volta sola: se lo riclicchi, una volta su due un insetto ti morde e perdi il 30% degli HP." },
+      { id: "Q3.08", q: ["TT"], opt: true, h: "Snorren: consegna le Yggdrasil Berry",
+        d: "Gliene servono almeno 6. Poi ti fa entrare nella stanza della prigioniera.",
+        navi: ["man_in01 175/59"],
+        tip: "Con il save a Manuk (step Q3.05) torni con una Butterfly Wing, gratis.",
+        warn: "Snorren prende tutte le Yggdrasil Berry che hai nell'inventario: se ne hai più di 6, metti prima le altre nello storage." },
+      { id: "Q3.09", q: ["TT"], opt: true, h: "Stanza dietro Snorren: Snorren, Captured Laphine, Luik",
+        d: "Entra dal passaggio accanto a Snorren (primo /navi). Dentro parla con tre NPC, in quest'ordine.\nSnorren: scegli il tuo nome.\nCaptured Laphine: «Who is HE?» o «Is your name Terra?», vanno bene entrambe; dopo la prima c'è anche «You are Terra. Right?», l'unica opzione.\nLuik: «To give it to a Sapha in a cave...» e poi «That's not true!», le uniche opzioni. Luik non ti crede: vuole una prova del gigante nella grotta.",
+        navi: ["man_in01 183/58","man_in01 17/128"] },
+      { id: "Q3.10", q: ["TT"], opt: true, h: "Petrified Sapha: prendi le prove",
+        d: "Scegli «Muffler» e poi «Fragment of Bradium», o viceversa: ricevi Shaggy Muffler e Bradium Fragments. “Hair” e “Pants” chiudono il dialogo.",
+        navi: ["nyd_dun01 57/222"],
+        tip: "Da Manuk al dungeon: Warp Portal a Prontera e Warpra (5.000 zeny)." },
+      { id: "Q3.11", q: ["TT"], opt: true, h: "Stanza dietro Snorren: mostra le prove",
+        d: "Parla con Snorren o con Luik e scegli «Calm down!», l'unica opzione: riconoscono la sciarpa di Ogen, e Snorren decide di seguirti nella grotta.",
+        navi: ["man_in01 183/58","man_in01 17/128"],
+        tip: "Con il save a Manuk torni con una Butterfly Wing, gratis." },
+      { id: "Q3.12", q: ["TT"], opt: true, h: "Petrified Sapha, con Snorren",
+        d: "Cliccalo con il Ring of the Ancient Wise King indossato: compare Snorren e riconosce l'amico Ogen. L'unica scelta è «You don't mean..?».",
+        navi: ["nyd_dun01 57/222"],
+        tip: "Da Manuk al dungeon: Warp Portal a Prontera e Warpra (5.000 zeny)." },
+      { id: "Q3.13", q: ["TT"], opt: true, h: "Snorren: 15 Manuk Coin",
+        d: "Ti dice che Terra è libera e ti dà 15 Manuk Coin.",
+        navi: ["man_in01 175/59"],
+        tip: "Con il save a Manuk torni con una Butterfly Wing, gratis." },
+      { id: "Q3.14", q: ["TT"], opt: true, h: "Arc, poi la yai di Terra: 25 Splendide Coin",
+        d: "Arc ti dice che Terra è tornata a casa.\nLa sua yai è a sud-est di Splendide (ultimo /navi): dentro parla con Arc o con Terra, scegli «Arc?» e poi «So that's what happened.», le uniche opzioni, e ricevi 25 Splendide Coin ed EXP. Two Tribes completata.",
+        navi: ["mid_camp 13/143","splendide 228/162","spl_in01 32/306","splendide 285/139"],
+        tip: "Da Manuk a Splendide spendi meno passando dal campo: Warp Portal a Prontera e Warpra fino al campo (5.000 zeny), rimetti il save al campo da Fluffy Gyaruk (mid_camp 190/242) e vai a Splendide a piedi dal Camp Guard a ovest (primo /navi), come nello step Q3.06. A quest finita il save è già al campo e ci torni con una Butterfly Wing.\nPiù rapido: il Cat Hand Agent di Manuk ti porta a Splendide per 17.000 zeny (da lì usa il terzo /navi). A quest finita torni al campo con il Warp Portal a Prontera e il Warpra (5.000 zeny), oppure con il Cat Hand Agent di Splendide (splendide 203/173, 19.000 zeny), e rimetti il save da Fluffy Gyaruk." }
+    ]
+  },
+  {
+    id: "12", branch: "dic", title: "El Dicastes: Sapha's Visit", where: "Campo, Manuk, Kamidal Tunnel, El Dicastes",
+    intro: "Serve indossato il Ring of the Ancient Wise King, l'anello che ricevi alla fine della fase 9 (step 9.15); il Report basta averlo avviato, non serve finirlo. Sui campi di El Dicastes ci sono Centipede e Dolomedes aggressivi che vedono gli hide e colpiscono fino a 16.000: tieni pronte le Fly Wing e vai con un amico.",
+    steps: [
+      { id: "12.01", q: ["SAPHA"], h: "Guard Aello nella tenda centrale",
+        d: "Sapha's Visit parte da lui: ti dice che il Sapha arrivato da Manuk vuole parlare con te e ti autorizza a entrare nella sua stanza. Nessuna scelta. Le Expedition Guard Ben e Maha, fuori nel campo, parlano dello stesso Sapha: non serve parlarci.",
+        navi: ["mid_campin 93/114"] },
+      { id: "12.02", q: ["SAPHA"], h: "Soldier al piano di sopra, fuori da una stanza sulla destra",
+        d: "Scegli «I have authorization.»: ti porta nella stanza. Con “Is that so.” resti fuori. Serve il Ring of the Ancient Wise King indossato.",
+        navi: ["mid_campin 111/120"] },
+      { id: "12.03", q: ["SAPHA"], h: "Hound e il Sapha from Manuk: parlaci tre volte",
+        d: "Sono davanti a te appena entri. Parla con uno dei due, il dialogo è lo stesso, tre volte di seguito.\nPrima volta: «Yes. He told me to meet the Sapha.» (unica opzione), «Same here.» (“A tree monster!” è solo scortese), «What are you implying?» (unica) e infine «El Dicastes?» o «Ravail?», va bene una qualsiasi; entra Hibba Agip e ti dice di passare da Inspector Doha.\nSeconda volta: «Invite? Visit? City?!» o «What is that suppose to mean, Hound?», una qualsiasi, poi «..You mean..» e «Never would have imagined.» (uniche): sei invitato a El Dicastes.\nTerza volta: nessuna scelta, il Sapha, che si chiama Vyhannus, ti manda da Guard Captain Avalanche a Manuk." },
+      { id: "12.04", q: ["SAPHA"], h: "Inspector Doha",
+        d: "È nella stanza accanto. Scegli «Came to meet the inspector.» (“Sorry.” chiude il dialogo), poi «Report case?», «Witness!» o «Who did it?» e «Same race? Cat?». Finita questa conversazione vai a Manuk (step 12.05).",
+        navi: ["mid_campin 168/170"],
+        warn: "Parlagli una volta sola: se gli riparli prosegue una quest facoltativa, Ahat's Secret, che non serve per El Dicastes." },
+      { id: "12.05", q: ["SAPHA"], h: "Manuk: Guard Captain Avalanche",
+        d: "Manuk è due mappe a est e una a sud del campo. Edificio all'estrema destra, scala di sinistra.\nCon il Ring of the Ancient Wise King indossato scegli «I've come with Vyhannus's invitation.», l'unica opzione: ti autorizza a passare dal tunnel. Non saltarlo, o le guardie di El Dicastes ti respingono.",
+        navi: ["mid_camp 336/171","manuk 309/142","man_in01 315/52"],
+        tip: "Più veloce: Fluffy Gyaruk (mid_camp 190/242) ti porta a Manuk per 22.000 zeny con «Teleport to Jotunheim Cities», sbloccato allo step 4.03." },
+      { id: "12.06", q: ["SAPHA"], h: "Entrance Manager a est di Manuk",
+        d: "Con il Ring of the Ancient Wise King indossato scegli «Yes.»: ti porta dentro il Kamidal Tunnel.",
+        navi: ["manuk 321/182"] },
+      { id: "12.07", q: ["SAPHA"], h: "Attraversa il tunnel da ovest a est",
+        d: "Al primo piano gli Scaraba non sono aggressivi." },
+      { id: "12.08", q: ["CAT"], h: "Cat Hand Agent nel tunnel, all'ingresso dello Scaraba Hole",
+        d: "È nell'angolo sud-est del tunnel. Parlaci: ti conferma che hai sbloccato il teletrasporto per lo Scaraba Hole, che da quel momento Fluffy Gyaruk, al campo, ti vende per 19.000 zeny. Non serve per El Dicastes né per il Nest: è una destinazione in più, se in futuro vorrai tornare nello Scaraba Hole.",
+        navi: ["dic_dun01 365/51"] },
+      { id: "12.09", q: ["SAPHA"], h: "dic_fild01: Capital City Guards a nord-est",
+        d: "Con il Ring of the Ancient Wise King indossato parla con una delle due guardie e scegli «Yes.», l'unica opzione: ti porta in città e ti dice di registrarti.",
+        navi: ["dic_fild01 147/281"],
+        warn: "Mostri pericolosi: Fly Wing pronte." },
+      { id: "12.10", q: ["SAPHA"], h: "Adventure Clerk Rhawyne: registrati",
+        d: "Si entra dall'ingresso indicato. Con il Ring of the Ancient Wise King indossato scegli «Register as an adventurer.»: ricevi la Light of El Dicastes, che ha la skill per tornare in città. Sapha's Visit completata. A El Dicastes e sui suoi campi il /memo e il Warp Portal non funzionano.",
+        navi: ["dicastes01 198/353","dic_in01 40/261"] },
+      { id: "12.11", q: ["CAT"], h: "Cat Hand Agent di El Dicastes",
+        d: "Parla con il Cat Hand Agent: da quel momento Fluffy Gyaruk, al campo, ti porta a El Dicastes per 24.000 zeny, senza rifare il tunnel.",
+        navi: ["dicastes01 200/194"],
+        tip: "Per ripartire: a El Dicastes il Warp Portal non funziona. Con il save al campo torni con una Butterfly Wing, gratis; altrimenti questo Cat Hand Agent ti porta al campo per 19.000 zeny." }
+    ]
+  },
+  {
+    id: "13", branch: "nest", title: "Report: consegne finali", where: "Prontera, Lighthalzen, Rachel, campo",
+    intro: "Porta una copia dell'Expedition Report a ciascuno dei tre ufficiali e torna da Hibba Agip: il Report completato serve per Guardian of Yggdrasil (fase 14). Nessuno dei tre fa scelte e l'ordine delle consegne è libero.\nGiro più corto, con il save al campo: Prontera con il Warp Portal sul memo, Lighthalzen con il Warpra fino a Juno e l'airship, Rachel con il Warp Portal sul memo di ra_temple, ritorno al campo con una Butterfly Wing. Paghi solo il tratto fino a Lighthalzen.",
+    steps: [
+      { id: "13.01", q: ["REP"], h: "Laur nel castello di Prontera",
+        d: "Dal campo vai con il Warp Portal sul memo di Prontera: il castello è a nord della città (primo /navi). Laur, l'aiutante del ministro, prende una copia del report: nessuna scelta.",
+        navi: ["prontera 156/360","prt_castle 88/165"] },
+      { id: "13.02", q: ["REP"], h: "Gerhart al banco del Rekenber HQ a Lighthalzen",
+        d: "Prende una copia del report: nessuna scelta. Il Rekenber HQ è l'edificio dove ti sei registrato nella fase 1 (terzo /navi).",
+        navi: ["prontera 160/191","yuno 53/212","lighthalzen 101/246","lhz_in01 110/174"],
+        tip: "Da Prontera a Lighthalzen: torna al Warpra (primo /navi), fatti portare a Juno e prendi l'airship (secondo /navi). Più veloce con una Green Butterfly Wing, o direttamente con il Warpra se hai sbloccato il Bio Laboratory. A Lighthalzen il /memo non funziona." },
+      { id: "13.03", q: ["REP"], h: "Nuria davanti all'ingresso del tempio di Rachel",
+        d: "Da Lighthalzen apri il Warp Portal sul memo di ra_temple (step 1.10): Nuria è sulla stessa mappa. Prende l'ultima copia: nessuna scelta.",
+        navi: ["ra_temple 122/174"] },
+      { id: "13.04", q: ["REP"], h: "Hibba Agip",
+        d: "Nessuna scelta: ricevi 3 First Aid Kit e Base EXP (250.000 negli script ufficiali). Report from the New World completato: ora puoi iniziare Guardian of Yggdrasil (fase 14).",
+        navi: ["mid_campin 90/121"],
+        tip: "Da Rachel al campo: Butterfly Wing, con il save al campo. Senza: Warp Portal a Prontera e Warpra (5.000 zeny)." }
+    ]
+  },
+  {
+    id: "14", branch: "nest", title: "Guardian of Yggdrasil", where: "Dungeon dello Yggdrasil, campo, Prontera, Manuk",
+    intro: "Serve il Report completato (step 13.04). Trovi il cancello del Nest, lo racconti al campo e a Prontera, poi ottieni da una tribù il permesso di entrare: finita questa fase hai l'accesso al Nidhoggur's Nest. La guida segue il ramo Sapha: si fa tutto a Manuk, nell'edificio di Guard Captain Avalanche, con il Ring of the Ancient Wise King indossato.\nSono otto viaggi tra dungeon, campo, Prontera e Manuk: costano circa 32.000 zeny se sposti il save a Manuk allo step 14.09 e usi il trucco del Warp Portal descritto lì (10.000 se la prima volta vai a Manuk a piedi), circa 54.000 se resti salvato al campo e paghi Fluffy Gyaruk a ogni andata a Manuk.\nIl Nest vero e proprio, da fare in party per battere Nidhoggur's Shadow, è Q4, nella pagina Altre quest.",
+    steps: [
+      { id: "14.01", q: ["GY"], h: "Entra nel dungeon dello Yggdrasil",
+        d: "Obiettivo dei prossimi quattro step: arrivare al cancello del Nest, al secondo piano del dungeon.\nDal campo il modo più rapido è il Warp Portal sul memo di Prontera e poi il Warpra (primo /navi), che per 5.000 zeny ti porta al centro del primo piano: funziona dopo aver parlato con il Warpra Helper (step 11.08).\nGratis ma più lungo: a piedi dal Camp Guard a ovest fino alle radici su spl_fild01 (secondo e terzo /navi), dove scegli «Go inside.».",
+        navi: ["prontera 160/191","mid_camp 13/143","spl_fild01 375/109"],
+        warn: "Entrando dalle radici perdi il 30% degli HP." },
+      { id: "14.02", q: ["GY"], h: "Portale a ore 3",
+        d: "Il portale per il secondo piano è sul lato est del primo piano. Non compare sulla minimappa: i portali segnati lì sono solo uscite.",
+        navi: ["nyd_dun01 255/142"] },
+      { id: "14.03", q: ["GY"], h: "Strange Device e attraversamento del burrone",
+        d: "Al secondo piano vai a est fino al precipizio e usa lo Strange Device: scegli «Control.».\nSul vuoto ci sono dei cerchi: quelli sicuri vengono segnalati da un effetto, pochi alla volta e per una decina di secondi. Attraversa in fretta verso est passando solo su quelli segnalati: i successivi si accendono mentre avanzi. Un cerchio sbagliato ti porta nella parte sud-est del primo piano e devi tornare qui.\nSe il congegno risponde “The device has already been activated.”, l'ha appena usato qualcun altro: aspetta un minuto e riprova.",
+        navi: ["nyd_dun02 138/273"] },
+      { id: "14.04", q: ["GY"], h: "Yggdrasil Gatekeeper",
+        d: "Dopo il burrone segui scale e radici fino al grande cancello di pietra e scegli «Move closer to look more carefully.»: una forza ti respinge e capisci che devi chiedere aiuto al campo. Inizia Guardian of Yggdrasil. “Step back.” chiude il dialogo.\nSe avevi già guardato il cancello in passato non compare nessuna scelta: basta parlarci di nuovo.",
+        navi: ["nyd_dun02 99/200"],
+        warn: "Fallo con il Report completato (step 13.04): altrimenti allo step 14.05 Hibba Agip non ti dà l'opzione giusta e devi tornare qui a riparlare con il Gatekeeper." },
+      { id: "14.05", q: ["GY"], h: "Hibba Agip",
+        d: "Scegli «I found a weird portal below the mine cave.», la seconda voce: ti manda dallo storico del campo. “I just want to say hello.” chiude il dialogo.",
+        navi: ["mid_campin 90/121"],
+        tip: "Dal cancello al campo: Butterfly Wing, con il save al campo. Senza: Butterfly Wing fino alla tua città e Warpra (5.000 zeny)." },
+      { id: "14.06", q: ["GY"], h: "Historian Magnifier",
+        d: "È all'aperto, a nord-est del campo. Nessuna scelta: pensa che tu abbia trovato l'ingresso dello Yggdrasil e ti manda dalla sua assistente nella biblioteca di Prontera.",
+        navi: ["mid_camp 271/299"] },
+      { id: "14.07", q: ["GY"], h: "Assistant Naomi nella biblioteca ovest di Prontera",
+        d: "Scegli «Help her just this once.», la seconda voce, e leggi fino alla fine: ti lascia i libri dello storico. “Look busy, and take a step back.” chiude il dialogo.\nSe le riparli puoi sfogliare due libri, ma non serve leggerli.",
+        navi: ["prontera 120/264","prt_in 171/94"],
+        tip: "Dal campo a Prontera: Warp Portal sul memo." },
+      { id: "14.08", q: ["GY"], h: "Historian Magnifier",
+        d: "Scegli «I read all the stories.», la seconda voce: ti chiede di sentire cosa sanno le tribù della grotta; ne basta una. “Not yet.” chiude il dialogo.",
+        navi: ["mid_camp 271/299"],
+        tip: "Da Prontera al campo: Butterfly Wing, con il save al campo. Senza: il Warpra (5.000 zeny)." },
+      { id: "14.09", q: ["GY"], h: "Ramo Sapha a Manuk: Laphine Prisoner, poi Neat Etorr",
+        d: "Indossa il Ring of the Ancient Wise King, altrimenti non capisci cosa dicono. L'edificio è quello di Guard Captain Avalanche (secondo /navi).\nLaphine Prisoner (terzo /navi): scegli «What's in the cave to the north?», la seconda voce; le altre tre non fanno avanzare la quest.\nMentre ti allontani, i soldati ti portano da Neat Etorr (quarto /navi): scegli «Don't know what he's talking about, and ask for details.», la seconda voce; con “Leave quietly.” il dialogo si chiude e devi riparlargli.\nPrima di ripartire sposta il save a Manuk dal Cat Hand Agent (quinto /navi): torni qui allo step 14.11 e, se farai il Nest, per il premio (step Q4.07), e con il save a Manuk ci arrivi gratis con una Butterfly Wing.\nRamo Laphine in alternativa: Grumbling Soldier a Splendide (splendide 198/178, «What's with the cave up north?»), poi Commander Lebiordirr (spl_in01 110/60, «I intend to stay. For good reasons.»).",
+        navi: ["mid_camp 336/171","manuk 309/142","man_in01 291/62","man_in01 311/57","manuk 275/147"],
+        tip: "Dal campo a Manuk: a piedi è gratis (primi due /navi: Manuk è due mappe a est e una a sud del campo). Più veloce: Fluffy Gyaruk (mid_camp 190/242) ti ci porta per 22.000 zeny con «Teleport to Jotunheim Cities».\nPer tornare gratis al campo dopo aver spostato il save: prima di salvare apri un Warp Portal verso il punto di save, che è ancora il campo, a pochi passi dal Cat Hand Agent; salva a Manuk e solo dopo entra nel portale. Fai in fretta: il portale resta aperto pochi secondi." },
+      { id: "14.10", q: ["GY"], h: "Historian Magnifier, poi Hibba Agip",
+        d: "Historian Magnifier (primo /navi): nessuna scelta, ti dice di riferire al comandante.\nHibba Agip (secondo /navi): «Tell the story.», l'unica opzione; poi «Sapha», che è la seconda voce (la prima è “Laphine”); infine conferma con «Choose Sapha.»: ti manda a chiedere ufficialmente aiuto ai Sapha. Con “Think again.” il dialogo si chiude senza scegliere e puoi riparlargli.",
+        navi: ["mid_camp 271/299","mid_campin 90/121"],
+        tip: "Da Manuk al campo: se allo step 14.09 hai aperto il Warp Portal prima di salvare, ci arrivi gratis. Altrimenti, con il save a Manuk: Warp Portal a Prontera e Warpra (5.000 zeny), oppure il Cat Hand Agent di Manuk (19.000 zeny). Con il save al campo: Butterfly Wing.",
+        warn: "La scelta della tribù è definitiva e «Sapha» è la seconda voce: se per sbaglio clicchi “Laphine”, alla conferma scegli “Think again.” e riparlagli." },
+      { id: "14.11", q: ["GY"], h: "Ramo Sapha: Neat Etorr, poi due volte il Laphine Prisoner",
+        d: "Con il Ring of the Ancient Wise King indossato.\nNeat Etorr (secondo /navi): sei scelte di seguito, ognuna con una sola opzione; alla fine accetta di collaborare e ti lascia interrogare la prigioniera.\nLaphine Prisoner (terzo /navi), due volte di seguito: la prima c'è una sola scelta, «Guardian's Nest?», e ti spiega cos'è il Nest; la seconda, senza scelte, ti segna come servitore del Guardiano e ti insegna la formula che apre il cancello.\nRamo Laphine in alternativa: Commander Lebiordirr, poi due volte Aide Arioss (spl_in01 104/56).",
+        navi: ["manuk 309/142","man_in01 311/57","man_in01 291/62"],
+        tip: "Dal campo a Manuk, con il save a Manuk (step 14.09): Butterfly Wing, gratis. Con il save al campo: Fluffy Gyaruk (22.000 zeny) o a piedi." },
+      { id: "14.12", q: ["GY"], h: "Yggdrasil Gatekeeper: 'Guardian's spell'!",
+        d: "Torna al cancello per la strada degli step 14.02 e 14.03 e scegli «'Guardian's spell'!»: il Gatekeeper ti accetta come servitore del Guardiano e da ora ti fa entrare nel Nest. “Take a step back.” chiude il dialogo.\nOra hai tutti i requisiti per il Nidhoggur's Nest. Per entrarci in party e battere Nidhoggur's Shadow segui Q4, nella pagina Altre quest: ogni compagno deve aver fatto anche lui la fase 14 fino a qui.",
+        navi: ["prontera 160/191","nyd_dun01 255/142","nyd_dun02 138/273","nyd_dun02 99/200"],
+        tip: "Da Manuk al dungeon: Warp Portal a Prontera e Warpra (primo /navi, 5.000 zeny)." }
+    ]
+  },
+  {
+    id: "Q4", branch: "nest", opt: true, page: "altre", title: "Nidhoggur's Nest", where: "Istanza nel dungeon dello Yggdrasil",
+    sum: "Premi: l'MVP Nidhoggur's Shadow, 10 Manuk Coin ed EXP",
+    when: "Dopo lo step 14.12, con un party di almeno 2 persone collegate, tutte di livello 70 o più. Ogni membro deve aver fatto Guardian of Yggdrasil fino allo step 14.12.",
+    intro: "Dentro avete 4 ore. Dal momento in cui entri devi aspettare 3 giorni prima di poter aprire un altro Nest, anche se il tentativo fallisce: entrate quando siete pronti a finire.\nAlcuni mostri usano Waterball e Frost Driver: meglio resistenza all'acqua e un'armatura che eviti il congelamento.\nAl cancello si arriva come nello step 14.12: Warpra fino al dungeon, portale a est, Strange Device. Non ancora provata su uaRO: se qualcosa non torna, scrivilo nella nota dello step.",
+    steps: [
+      { id: "Q4.01", q: ["NEST"], opt: true, h: "Il party leader parla con lo Yggdrasil Gatekeeper",
+        d: "Con il party al cancello, il leader sceglie «Please allow me to enter.», la prima voce: il Gatekeeper crea il Nest.\nPoi tutti, leader compreso, riparlano con il Gatekeeper e scelgono «I want to go in.».\nSe invece chiede dove sono gli altri servitori, nel party non ci sono almeno 2 persone collegate, o qualcuno è sotto il livello 70.",
+        navi: ["nyd_dun02 99/200"],
+        verify: "Appena entrato, nel quest log compaiono “Nidhoggur's Nest” con una scadenza di 3 giorni e “Nidhoggur's Nest Time Limit” di 4 ore, come negli script ufficiali?" },
+      { id: "Q4.02", q: ["NEST"], opt: true, h: "Murdered Yggdrasilid, la Laphine a terra al centro della sala",
+        d: "È a 213/277 nell'istanza. Deve parlarci il party leader: la prova parte solo con lui.\nScelte nell'ordine: «What do you mean?», la seconda voce (“Who are you?” fa ripetere la domanda); poi «Nidhoggur's Shadow?» e «Is there nothing else we can do?», le uniche opzioni; infine «Leave it to us.».\nCompaiono 12 Nidhoggur's Guardian e partono 30 minuti per ucciderli.",
+        warn: "“We can't do it.” chiude il dialogo: il leader deve riparlarle e rifare le scelte." },
+      { id: "Q4.03", q: ["NEST"], opt: true, h: "Uccidi 12 Nidhoggur's Guardian",
+        d: "Hanno l'aspetto di Rhyncho e Phylla ma si chiamano Nidhoggur's Guardian: i mostri con il nome Rhyncho o Phylla non contano. Compaiono attorno alla sala, tra 200/200 e 255/280.\nUccidili uno alla volta: ucciderne più insieme può bloccare il contatore.\nMorto l'ultimo, un annuncio dice che sono stati sconfitti tutti e si apre il portale per il secondo piano.",
+        warn: "Avete 30 minuti dalla fine del dialogo dello step Q4.02. Se scadono, tutto il party viene portato al campo e il Nest è perso: bisogna aspettare i 3 giorni." },
+      { id: "Q4.04", q: ["NEST"], opt: true, h: "Portale a nord, piano 2, labirinto",
+        d: "Il portale si apre a nord della sala (195/320). Al secondo piano attraversa il labirinto verso nord fino a 199/178: da lì vieni portato davanti alla stanza del boss.",
+        warn: "Da quando passi il portale per il secondo piano, se esci dal Nest in qualsiasi modo (Butterfly Wing, ritorno al save dopo la morte) il Gatekeeper non ti fa più rientrare fino alla fine dei 3 giorni. Se muori, aspetta che un compagno ti resusciti." },
+      { id: "Q4.05", q: ["NEST"], opt: true, h: "Nidhoggur's Shadow",
+        d: "Il boss compare solo quando il party leader avanza verso nord (199/268): fate passare lui per primo.\nDopo 3 minuti tutto il party viene spostato in una di quattro stanze laterali: all'arrivo perdi dal 50 all'80% degli HP o metà degli SP e prendi uno status negativo (Bleeding, Freeze, Sleep con Confusion, oppure Poison).\nLì ci sono 5 Nidhoggur's Guardian: finché sono vivi le uscite ti riportano al centro della stanza. Uccisi tutti, tornate dal boss; dopo altri 3 minuti succede di nuovo. Se non li uccidete entro 3 minuti venite spostati in un'altra stanza, con altri 5." },
+      { id: "Q4.06", q: ["GY"], opt: true, h: "World Tree Yggdrasil nella stanza finale",
+        d: "Compare vicino a dove è morto il boss (202/324). Ogni membro del party deve parlarci e scegliere «Please let me out.»: è questa scelta che fa avanzare Guardian of Yggdrasil, e ti porta fuori davanti al cancello.\nCon “I want to look around for a while.” resti dentro e puoi riparlarci.",
+        warn: "Non uscire in un altro modo (Butterfly Wing, Teleport): senza «Please let me out.» non puoi ritirare il premio dello step Q4.07 e nel Nest non rientri." },
+      { id: "Q4.07", q: ["GY"], opt: true, h: "Ricompensa a Manuk: Neat Etorr",
+        d: "Con il Ring of the Ancient Wise King indossato.\nDue scelte, ognuna con una sola opzione: «Explain the sudden leave of the Guardian.» e «Pass along the World Tree Yggdrasil's message.».\nRicevi 10 Manuk Coin ed EXP (negli script ufficiali 150.000 Base EXP e 35.000 Job EXP). Guardian of Yggdrasil completata.\nPassati i 3 giorni puoi rifare il Nest dallo step Q4.01, e dopo ogni Nest completato Neat Etorr ti ridà questo premio.",
+        navi: ["manuk 309/142","man_in01 311/57"],
+        tip: "Dal cancello a Manuk, con il save a Manuk (step 14.09): Butterfly Wing, gratis. Con il save al campo: Butterfly Wing e Fluffy Gyaruk (22.000 zeny). A quest finita rimetti il save al campo da Fluffy Gyaruk: per tornarci, Warp Portal a Prontera e Warpra (5.000 zeny)." }
+    ]
+  },
+  {
+    id: "Q5", branch: "backup", opt: true, page: "altre", title: "Attitude to the New World", where: "Campo, man_fild01",
+    sum: "Premi: EXP",
+    when: "Basta aver completato Onward to the New World (fase 1).",
+    intro: "Il Horn of Tendrilion dell'ultimo step viene dal Tendrilion, un mostro di tipo boss, aggressivo, con un solo spawn su spl_fild03. Non ancora provata su uaRO: se qualcosa non torna, scrivilo nella nota dello step.",
+    steps: [
+      { id: "Q5.01", q: ["ATT"], opt: true, h: "Monster Scholar Rumis Block",
+        navi: ["mid_camp 188/254"] },
+      { id: "Q5.02", q: ["ATT"], opt: true, h: "Camp Guard a est",
+        navi: ["mid_camp 336/171"] },
+      { id: "Q5.03", q: ["ATT"], opt: true, h: "1 Strong Vine da un Nepenthes, poi Rumis",
+        d: "Poi vuole 1 Empty Bottle, 5 Holy Water e 30 Sticky Mucus.",
+        navi: ["mid_camp 188/254"] },
+      { id: "Q5.04", q: ["ATT"], opt: true, h: "Botanist Terris",
+        d: "Gli porti il campione; poi uccidi 30 Pinguicula.",
+        navi: ["mid_camp 240/270"] },
+      { id: "Q5.05", q: ["ATT"], opt: true, h: "Terris: uccidi 10 Cornus",
+        navi: ["mid_camp 240/270"] },
+      { id: "Q5.06", q: ["ATT"], opt: true, h: "Terris: pianta il Decaying Stem",
+        d: "Vai alla fine del ponte ovest, parla con Terris, pianta lo stelo nella terra e riparlaci.",
+        navi: ["mid_camp 52/148"] },
+      { id: "Q5.07", q: ["ATT"], opt: true, h: "Rumis, poi il Frozen Tree",
+        d: "Rumis ti aspetta oltre il ponte est. Il Frozen Tree vuole 20 Horn of Hillslion.",
+        navi: ["mid_camp 188/254","man_fild01 63/259","man_fild01 92/229"] },
+      { id: "Q5.08", q: ["ATT"], opt: true, h: "Frozen Tree con i 20 corni, poi Rumis",
+        d: "Poi uccidi 10 Tatacho.",
+        navi: ["man_fild01 92/229","mid_camp 188/254"] },
+      { id: "Q5.09", q: ["ATT"], opt: true, h: "Rumis: domande",
+        d: "Proprietario del cappello: Tatacho. Taglia: scrivi qualsiasi cosa.",
+        navi: ["mid_camp 188/254"],
+        copy: [{ label: "Risposta", items: ["Tatacho"] }] },
+      { id: "Q5.10", q: ["ATT"], opt: true, h: "Rumis: consegna 1 Horn of Tendrilion",
+        d: "Ultimo passo della quest.",
+        navi: ["mid_camp 188/254"] }
+    ]
+  }
+];
+
+</script>
+<script>
+(function () {
+  "use strict";
+
+  const BRANCH_VAR = { common: "var(--common)", nest: "var(--nest)", dic: "var(--dic)", backup: "var(--backup)" };
+  // Fasi e step con hidden: true restano nei dati ma non vengono mostrati né contati.
+  const SHOWN = PHASES.filter(function (p) { return !p.hidden; }).map(function (p) {
+    return Object.assign({}, p, { steps: p.steps.filter(function (s) { return !s.hidden; }) });
+  }).filter(function (p) { return p.steps.length; });
+  const ALL = [];
+  // foldable: step facoltativo isolato in una fase obbligatoria, mostrato su una riga che si apre al clic.
+  SHOWN.forEach(function (p) { p.steps.forEach(function (s) { ALL.push(Object.assign({ phase: p, foldable: !!s.opt && !p.opt && !s.group, folds: [] }, s)); }); });
+  // Due pagine nello stesso file: "percorso" (le fasi che servono) e "altre" (fasi con page: "altre", quest indipendenti).
+  function pageOf(p) { return p.page === "altre" ? "altre" : "percorso"; }
+  // "Vai al prossimo passo" guarda solo gli step del percorso.
+  const MAIN = ALL.filter(function (s) { return pageOf(s.phase) === "percorso"; });
+  let view = "percorso";
+
+  const state = { done: {}, notes: {}, hide: false, theme: null, open: {} };
+  let storageOk = true;
+  const stepEls = {};
+  const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const IDS_VERSION = 3;
+  // Converte spunte e note salvate con gli id vecchi: prima della 2.0 (ID_MAP_V2), poi prima della 7.0 (ID_MAP_V3).
+  // Nel secondo passaggio un id che non è nella mappa era di uno step eliminato: va scartato, perché oggi
+  // lo stesso numero può indicare un altro step.
+  function migrateIds(obj, idsVersion) {
+    if (!obj || typeof obj !== "object") return {};
+    let cur = obj;
+    if (idsVersion < 2) {
+      const v2 = {};
+      Object.keys(cur).forEach(function (k) { v2[ID_MAP_V2[k] || k] = cur[k]; });
+      cur = v2;
+    }
+    if (idsVersion < 3) {
+      const v3 = {};
+      Object.keys(cur).forEach(function (k) { if (ID_MAP_V3[k]) v3[ID_MAP_V3[k]] = cur[k]; });
+      cur = v3;
+    }
+    return cur;
+  }
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const s = JSON.parse(raw);
+        applySaved(s);
+        if (!(s.ids >= IDS_VERSION)) {
+          // Prima di riscrivere i dati con gli id nuovi, ne tiene una copia così com'erano.
+          try { localStorage.setItem(STORAGE_KEY + "-ids" + (Number(s.ids) || 1), raw); } catch (e2) {}
+          save();
+        }
+      }
+    } catch (e) { storageOk = false; }
+  }
+  function applySaved(s) {
+    if (!s || typeof s !== "object") return false;
+    const idsVersion = Number(s.ids) || 1;
+    state.done = migrateIds((s.done && typeof s.done === "object") ? s.done : {}, idsVersion);
+    state.notes = migrateIds((s.notes && typeof s.notes === "object") ? s.notes : {}, idsVersion);
+    state.hide = !!s.hide;
+    state.theme = (s.theme === "light" || s.theme === "dark") ? s.theme : null;
+    // I blocchi aperti a mano sono salvati per id: dopo una rinumerazione si riparte dai default.
+    state.open = (idsVersion >= IDS_VERSION && s.open && typeof s.open === "object") ? s.open : {};
+    return true;
+  }
+  function save() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ guide: "uaro-nw", v: GUIDE_VERSION, ids: IDS_VERSION, done: state.done, notes: state.notes, hide: state.hide, theme: state.theme, open: state.open }));
+    } catch (e) {
+      if (storageOk) { storageOk = false; toast("Questo browser non salva i progressi: usa Altro, Backup dei progressi"); }
+    }
+  }
+
+  function el(tag, attrs) {
+    const e = document.createElement(tag);
+    if (attrs) {
+      Object.keys(attrs).forEach(function (k) {
+        const v = attrs[k];
+        if (v === null || v === undefined || v === false) return;
+        if (k === "class") e.className = v;
+        else if (k === "text") e.textContent = v;
+        else if (k === "style") e.setAttribute("style", v);
+        else e.setAttribute(k, v === true ? "" : v);
+      });
+    }
+    for (let i = 2; i < arguments.length; i++) {
+      const kids = [].concat(arguments[i]);
+      kids.forEach(function (c) {
+        if (c === null || c === undefined || c === false) return;
+        e.append(c.nodeType ? c : document.createTextNode(String(c)));
+      });
+    }
+    return e;
+  }
+  function safeId(id) { return id.replace(/[^A-Za-z0-9]/g, "-"); }
+  // Un "\n" nel testo manda a capo: ogni riga diventa un paragrafo.
+  function paras(cls, text) { return String(text).split("\n").map(function (t) { return el("p", { class: cls }, t); }); }
+  function questNames(s) { return s.q.map(function (k) { return QUESTS[k] ? QUESTS[k].name : k; }).join(" + "); }
+
+  let toastTimer = null;
+  function toast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove("show"); }, 1800);
+  }
+
+  function fallbackCopy(text) {
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", "");
+      ta.style.position = "fixed"; ta.style.top = "0"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      const ok = document.execCommand("copy");
+      ta.remove();
+      return ok;
+    } catch (e) { return false; }
+  }
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(function () { return true; }, function () { return fallbackCopy(text); });
+    }
+    return Promise.resolve(fallbackCopy(text));
+  }
+
+  function chip(text) {
+    const b = el("button", { class: "chip", type: "button", title: "Clicca per copiare" }, text);
+    b.addEventListener("click", function () {
+      copyText(text).then(function (ok) {
+        if (ok) {
+          b.classList.add("copied");
+          setTimeout(function () { b.classList.remove("copied"); }, 1200);
+          toast("Copiato: " + text);
+        } else {
+          openDialog({ title: "Copia manuale", text: "Il browser ha bloccato la copia automatica: seleziona il testo e premi Ctrl+C.", value: text, action: null });
+        }
+      });
+    });
+    return b;
+  }
+
+  function qTag(key) {
+    const q = QUESTS[key] || { name: key, color: "#777" };
+    if (q.url) return el("a", { class: "qtag", href: q.url, target: "_blank", rel: "noopener", style: "--q:" + q.color, title: "Apri la guida della quest" }, q.name);
+    return el("span", { class: "qtag", style: "--q:" + q.color }, q.name);
+  }
+
+  function buildLegend() {
+    [["legend", "percorso"], ["legendAltre", "altre"]].forEach(function (pair) {
+      const lg = document.getElementById(pair[0]);
+      const used = {};
+      ALL.forEach(function (s) { if (pageOf(s.phase) === pair[1]) s.q.forEach(function (k) { used[k] = true; }); });
+      Object.keys(QUESTS).forEach(function (k) { if (QUESTS[k].url && used[k]) lg.append(qTag(k)); });
+    });
+  }
+
+  // Blocchi richiudibili: fasi facoltative ("p:8"), gruppi di step ("g:0.03"), step facoltativi isolati ("s:2.01").
+  // state.open ricorda solo le scelte fatte a mano; senza una scelta vale il default del blocco.
+  const folds = {};
+  const groups = [];
+  function setFold(key, open, byUser) {
+    if (!folds[key]) return;
+    folds[key].apply(open);
+    if (byUser) { state.open[key] = open; save(); }
+  }
+  function applyFolds() {
+    Object.keys(folds).forEach(function (key) {
+      const saved = state.open[key];
+      folds[key].apply(typeof saved === "boolean" ? saved : folds[key].byDefault());
+    });
+  }
+  // Una fase o un gruppo facoltativo resta aperto da solo finché è iniziato ma non finito.
+  function foldDetails(key, det, steps) {
+    det.querySelector("summary").addEventListener("click", function (e) { e.preventDefault(); setFold(key, !det.open, true); });
+    folds[key] = {
+      apply: function (open) { det.open = open; },
+      byDefault: function () {
+        const d = steps.filter(function (s) { return state.done[s.id]; }).length;
+        return d > 0 && d < steps.length;
+      }
+    };
+  }
+  // Apre i blocchi che contengono lo step, senza cambiare le scelte salvate.
+  function reveal(id) {
+    const s = ALL.find(function (x) { return x.id === id; });
+    if (s) s.folds.forEach(function (key) { setFold(key, true, false); });
+  }
+
+  function buildStep(s) {
+    const cbId = "cb-" + safeId(s.id);
+    const li = el("li", { class: "step" + (s.foldable ? " foldable collapsed" : ""), id: "step-" + safeId(s.id), "data-id": s.id });
+    const cb = el("input", { type: "checkbox", id: cbId });
+    cb.checked = !!state.done[s.id];
+    cb.addEventListener("change", function () {
+      if (cb.checked) state.done[s.id] = Date.now(); else delete state.done[s.id];
+      save(); update();
+    });
+
+    const body = el("div", { class: "body" });
+    const head = el("div", { class: "head" }, el("label", { for: cbId }, el("span", { class: "sid" }, s.id), el("span", { class: "hl" }, s.h)));
+    // Tutto il resto dello step: in uno step facoltativo isolato compare solo quando lo si apre.
+    const more = el("div", { class: "step-more" });
+    body.append(head, more);
+    if (s.foldable) {
+      const key = "s:" + s.id;
+      const toggle = el("button", { class: "step-toggle", type: "button", "aria-expanded": "false", title: "Mostra o nascondi i dettagli di questo step facoltativo" }, "facoltativo");
+      toggle.addEventListener("click", function () { setFold(key, li.classList.contains("collapsed"), true); });
+      head.append(toggle);
+      s.folds.push(key);
+      folds[key] = {
+        apply: function (open) { li.classList.toggle("collapsed", !open); toggle.setAttribute("aria-expanded", open ? "true" : "false"); },
+        byDefault: function () { return !!(state.notes[s.id] && state.notes[s.id].trim()); }
+      };
+    }
+    more.append(el("div", { class: "meta" },
+      s.q.map(qTag),
+      (s.opt && !s.foldable && pageOf(s.phase) !== "altre") ? el("span", { class: "badge opt" }, "facoltativo") : null,
+      s.verify ? el("span", { class: "badge ver" }, "da verificare") : null,
+      el("span", { class: "now-label" }, "Prossimo passo")
+    ));
+    if (s.d) paras("d", s.d).forEach(function (x) { more.append(x); });
+    if (s.navi && s.navi.length) more.append(el("div", { class: "chips" }, s.navi.map(function (n) { return chip("/navi " + n); })));
+    if (s.copy) s.copy.forEach(function (g) {
+      more.append(el("div", { class: "copygroup" }, el("span", { class: "copygroup-label" }, g.label), el("div", { class: "chips" }, g.items.map(chip))));
+    });
+    if (s.tip) more.append(el("p", { class: "note-line tip" }, el("strong", null, "Consiglio: "), s.tip));
+    if (s.warn) more.append(el("p", { class: "note-line warn" }, el("strong", null, "Attenzione: "), s.warn));
+    if (s.verify) more.append(el("p", { class: "note-line verify" }, el("strong", null, "Da verificare: "), s.verify));
+
+    const noteId = "note-" + safeId(s.id);
+    const hasNote = !!(state.notes[s.id] && state.notes[s.id].trim());
+    const btn = el("button", { class: "note-btn", type: "button", "aria-expanded": hasNote ? "true" : "false", "aria-controls": noteId }, hasNote ? "Nota" : "Aggiungi una nota");
+    const ta = el("textarea", { class: "note", id: noteId, placeholder: "Cosa è successo? Coordinate diverse, NPC che non risponde, passaggio in più…", "aria-label": "Nota per lo step " + s.id });
+    ta.value = state.notes[s.id] || "";
+    ta.hidden = !hasNote;
+    btn.addEventListener("click", function () {
+      ta.hidden = !ta.hidden;
+      btn.setAttribute("aria-expanded", ta.hidden ? "false" : "true");
+      if (!ta.hidden) ta.focus();
+    });
+    let saveTimer = null;
+    ta.addEventListener("input", function () {
+      const v = ta.value;
+      if (v.trim()) state.notes[s.id] = v; else delete state.notes[s.id];
+      li.classList.toggle("has-note", !!v.trim());
+      btn.textContent = v.trim() ? "Nota" : "Aggiungi una nota";
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(save, 300);
+    });
+    const clearBtn = el("button", { class: "note-btn note-clear", type: "button", "aria-label": "Cancella la nota dello step " + s.id }, "Cancella nota");
+    clearBtn.addEventListener("click", function () {
+      clearTimeout(saveTimer);
+      delete state.notes[s.id];
+      ta.value = "";
+      ta.hidden = true;
+      btn.textContent = "Aggiungi una nota";
+      btn.setAttribute("aria-expanded", "false");
+      li.classList.remove("has-note");
+      save();
+      toast("Nota cancellata");
+      btn.focus();
+    });
+    // Visibile solo se prima di questo step ci sono step obbligatori non spuntati (vedi update).
+    const markBtn = el("button", { class: "note-btn mark-prev", type: "button", hidden: true, title: "Spunta tutti gli step obbligatori prima di questo" }, "Segna fatti i precedenti");
+    markBtn.addEventListener("click", function () {
+      const idx = ALL.findIndex(function (x) { return x.id === s.id; });
+      const prev = ALL.slice(0, idx).filter(function (x) { return !x.opt && !state.done[x.id]; });
+      if (!prev.length) return;
+      if (!confirm("Step obbligatori da segnare come fatti prima del " + s.id + ": " + prev.length + ". Gli step facoltativi restano come sono. Procedo?")) return;
+      const now = Date.now();
+      prev.forEach(function (x) { state.done[x.id] = now; });
+      save(); update();
+      toast("Step segnati come fatti: " + prev.length);
+    });
+    more.append(el("div", { class: "notebox" }, btn, clearBtn, markBtn, ta));
+
+    li.append(cb, body);
+    stepEls[s.id] = { li: li, cb: cb, ta: ta, btn: btn, mark: markBtn };
+    return li;
+  }
+
+  // Rende cliccabili i riferimenti scritti nei testi: step ("9.03", "3.02a", "Q4.07"), fasi ("fase 10") e quest ("Q3").
+  const XREF_RE = /(?<![\dA-Za-z.\/])((?:Q\d{1,2}|\d{1,2})\.\d{2}(?:[a-z](?![a-zà-ÿ]))?)(?!\d|\.\d)|\bfase (\d{1,2}[a-z]?)\b|\b(Q\d{1,2})\b(?!\.\d)/g;
+  // Mostra una delle due pagine. La pagina resta scritta nell'indirizzo (#altre), così un ricaricamento non la cambia.
+  function setView(v) {
+    view = v === "altre" ? "altre" : "percorso";
+    document.body.setAttribute("data-view", view);
+    document.getElementById("btnView").textContent = view === "altre" ? "Torna al percorso" : "Altre quest";
+    document.getElementById("routeTitle").textContent = view === "altre" ? "Altre quest" : "Percorso";
+    const select = document.getElementById("phaseSelect");
+    select.textContent = "";
+    select.append(el("option", { value: "" }, view === "altre" ? "Vai alla quest…" : "Vai alla fase…"));
+    SHOWN.forEach(function (p) {
+      if (pageOf(p) === view) select.append(el("option", { value: p.id }, p.id + ". " + p.title + (p.opt && view !== "altre" ? " (facoltativa)" : "")));
+    });
+  }
+  function rememberView() {
+    try { history.replaceState(null, "", "#" + view); } catch (e) { location.hash = view; }
+  }
+  // Pagina indicata dall'indirizzo: #altre, #percorso, oppure l'ancora di una fase (#phase-8).
+  function viewFromHash() {
+    let h = location.hash.slice(1);
+    try { h = decodeURIComponent(h); } catch (e) {}
+    if (h === "altre" || h === "percorso") return h;
+    const p = SHOWN.find(function (x) { return "phase-" + x.id === h; });
+    return p ? pageOf(p) : null;
+  }
+  function showPageOf(p) {
+    if (pageOf(p) === view) return;
+    setView(pageOf(p));
+    rememberView();
+  }
+  function goToPhase(pid) {
+    const p = SHOWN.find(function (x) { return x.id === pid; });
+    const target = document.getElementById("phase-" + pid);
+    if (!p || !target) return;
+    showPageOf(p);
+    setFold("p:" + pid, true, false);
+    target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
+  }
+  function goToStep(id) {
+    const r = stepEls[id];
+    if (!r) return;
+    showPageOf(ALL.find(function (x) { return x.id === id; }).phase);
+    if (r.li.classList.contains("hidden")) { state.hide = false; save(); update(); }
+    reveal(id);
+    r.li.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+    r.li.classList.remove("flash");
+    void r.li.offsetWidth;
+    r.li.classList.add("flash");
+  }
+  function linkifyText(text) {
+    const out = [];
+    let last = 0;
+    for (const m of text.matchAll(XREF_RE)) {
+      let a = null;
+      if (m[1] && stepEls[m[1]]) {
+        const id = m[1];
+        a = el("a", { class: "xref", href: "#step-" + safeId(id), title: "Vai allo step " + id }, id);
+        a.addEventListener("click", function (e) { e.preventDefault(); goToStep(id); });
+      } else if ((m[2] || m[3]) && document.getElementById("phase-" + (m[2] || m[3]))) {
+        const pid = m[2] || m[3];
+        a = el("a", { class: "xref", href: "#phase-" + pid, title: (m[3] ? "Vai alla quest " : "Vai alla fase ") + pid }, m[0]);
+        a.addEventListener("click", function (e) { e.preventDefault(); goToPhase(pid); });
+      }
+      if (!a) continue;
+      if (m.index > last) out.push(text.slice(last, m.index));
+      out.push(a);
+      last = m.index + m[0].length;
+    }
+    if (!out.length) return null;
+    if (last < text.length) out.push(text.slice(last));
+    return out;
+  }
+  function linkifyElement(root) {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(function (n) {
+      const parts = linkifyText(n.nodeValue);
+      if (parts) n.replaceWith.apply(n, parts);
+    });
+  }
+  // Sottolinea le opzioni di dialogo da scegliere, scritte nei testi tra «virgolette basse».
+  // Le opzioni da evitare e i messaggi del gioco stanno tra “virgolette alte” e restano come sono.
+  function markChoices(root) {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(function (n) {
+      const parts = n.nodeValue.split(/(«[^»]*»)/).filter(Boolean);
+      if (!parts.some(function (t) { return t.charAt(0) === "«"; })) return;
+      n.replaceWith.apply(n, parts.map(function (t) { return t.charAt(0) === "«" ? el("span", { class: "pick" }, t) : t; }));
+    });
+  }
+  function linkifyAll() {
+    document.querySelectorAll(".hero li, .only-dic, .phase-intro, .step .d, .step .note-line").forEach(function (e) {
+      markChoices(e);
+      linkifyElement(e);
+    });
+  }
+
+  function buildPhases() {
+    const wrap = document.getElementById("phases");
+    const route = document.getElementById("routeList");
+    const select = document.getElementById("phaseSelect");
+    SHOWN.forEach(function (p) {
+      const b = p.opt ? "var(--backup)" : (BRANCH_VAR[p.branch] || "var(--common)");
+      const altre = pageOf(p) === "altre";
+      const sec = el("section", { class: "phase", id: "phase-" + p.id, "data-page": pageOf(p), style: "--b:" + b, "aria-labelledby": "ph-title-" + p.id });
+      const ol = el("ol", { class: "steps" });
+      let group = null;
+      p.steps.forEach(function (s) {
+        const item = ALL.find(function (x) { return x.id === s.id; });
+        if (p.opt) item.folds.push("p:" + p.id);
+        if (!s.group) { group = null; ol.append(buildStep(item)); return; }
+        // Step consecutivi con lo stesso group stanno in un blocco richiudibile dentro la fase.
+        if (!group || group.name !== s.group) {
+          const members = p.steps.filter(function (x) { return x.group === s.group; });
+          const count = el("span", { class: "phase-count" });
+          const inner = el("ol", { class: "steps" });
+          const det = el("details", { class: "fold fold-small" },
+            el("summary", { class: "fold-bar" },
+              el("span", { class: "fold-arrow", "aria-hidden": "true" }),
+              el("span", { class: "fold-title" }, s.group),
+              el("span", { class: "fold-tag" }, "Facoltativi"),
+              count),
+            el("div", { class: "fold-body" }, inner));
+          const gli = el("li", { class: "step-group" }, det);
+          ol.append(gli);
+          group = { name: s.group, key: "g:" + s.id, ol: inner, li: gli, count: count, steps: members };
+          foldDetails(group.key, det, members);
+          groups.push(group);
+        }
+        item.folds.push(group.key);
+        group.ol.append(buildStep(item));
+      });
+      if (p.opt) {
+        // Fase facoltativa: chiusa è una riga sola con bordo tratteggiato, aperta mostra introduzione e step.
+        const det = el("details", { class: "fold" },
+          el("summary", { class: "fold-bar" },
+            el("span", { class: "fold-arrow", "aria-hidden": "true" }),
+            el("span", { class: "phase-num", "aria-hidden": "true" }, p.id),
+            el("h2", { class: "phase-title", id: "ph-title-" + p.id }, p.title),
+            el("span", { class: "phase-where" }, [p.where, p.sum].filter(Boolean).join(" · ")),
+            altre ? null : el("span", { class: "fold-tag" }, "Facoltativa"),
+            el("span", { class: "phase-count", id: "pc-" + p.id })),
+          el("div", { class: "fold-body" },
+            p.when ? el("p", { class: "phase-intro" }, el("strong", null, "Quando farla: "), p.when) : null,
+            p.intro ? paras("phase-intro", p.intro) : null, ol));
+        sec.append(det);
+        foldDetails("p:" + p.id, det, p.steps);
+      } else {
+        sec.append(el("div", { class: "phase-head" },
+          el("span", { class: "phase-num", "aria-hidden": "true" }, p.id),
+          el("div", null, el("h2", { class: "phase-title", id: "ph-title-" + p.id }, p.title), el("div", { class: "phase-where" }, p.where)),
+          el("span", { class: "phase-count", id: "pc-" + p.id })
+        ));
+        if (p.intro) paras("phase-intro", p.intro).forEach(function (x) { sec.append(x); });
+        sec.append(ol);
+      }
+      wrap.append(sec);
+
+      const link = el("a", { href: "#phase-" + p.id }, el("span", null, p.id + ". " + p.title), el("span", { class: "count", id: "rc-" + p.id }));
+      if (p.opt) link.addEventListener("click", function () { setFold("p:" + p.id, true, false); });
+      route.append(el("li", { id: "rt-" + p.id, "data-page": pageOf(p), class: (p.opt && !altre) ? "optional" : null, style: "--b:" + b }, link));
+    });
+    // Le voci del menu le scrive setView: cambiano con la pagina.
+    select.addEventListener("change", function () {
+      if (!select.value) return;
+      goToPhase(select.value);
+      select.value = "";
+    });
+  }
+
+  function currentStep() {
+    return ALL.find(function (s) { return !s.opt && !state.done[s.id]; }) || null;
+  }
+  // Ultimo step raggiunto con "Vai al prossimo passo": un altro clic passa al successivo non fatto.
+  let nextCursor = null;
+  function nextTarget() {
+    const first = currentStep();
+    if (!first) return null;
+    const from = nextCursor ? MAIN.findIndex(function (s) { return s.id === nextCursor; }) : -1;
+    // Mai prima del primo obbligatorio non fatto: lì dietro restano solo facoltativi lasciati indietro.
+    if (from < MAIN.findIndex(function (s) { return s.id === first.id; })) return first;
+    for (let i = from + 1; i < MAIN.length; i++) {
+      const s = MAIN[i];
+      if (state.done[s.id]) continue;
+      // Un facoltativo conta solo se lo step subito prima è fatto: vuol dire che ci sei arrivato.
+      if (s.opt && !state.done[MAIN[i - 1].id]) continue;
+      return s;
+    }
+    return first;
+  }
+
+  function update() {
+    const cur = currentStep();
+    let missingBefore = false;
+    ALL.forEach(function (s) {
+      const r = stepEls[s.id];
+      const done = !!state.done[s.id];
+      r.cb.checked = done;
+      r.li.classList.toggle("done", done);
+      r.li.classList.toggle("current", !!cur && cur.id === s.id);
+      r.li.classList.toggle("hidden", state.hide && done);
+      r.li.classList.toggle("has-note", !!(state.notes[s.id] && state.notes[s.id].trim()));
+      // Nelle altre quest "i precedenti" non ha senso: sono fuori dall'ordine del percorso.
+      r.mark.hidden = !missingBefore || pageOf(s.phase) === "altre";
+      if (!s.opt && !done) missingBefore = true;
+    });
+    let reqDone = 0, reqTotal = 0;
+    SHOWN.forEach(function (p) {
+      const req = p.steps.filter(function (s) { return !s.opt; });
+      const pool = req.length ? req : p.steps;
+      const d = pool.filter(function (s) { return state.done[s.id]; }).length;
+      reqDone += req.filter(function (s) { return state.done[s.id]; }).length;
+      reqTotal += req.length;
+      const label = d + "/" + pool.length;
+      document.getElementById("pc-" + p.id).textContent = label;
+      document.getElementById("rc-" + p.id).textContent = label;
+      const rt = document.getElementById("rt-" + p.id);
+      rt.classList.toggle("complete", pool.length > 0 && d === pool.length);
+      rt.classList.toggle("active", !!cur && cur.phase.id === p.id);
+    });
+    groups.forEach(function (g) {
+      const d = g.steps.filter(function (s) { return state.done[s.id]; }).length;
+      g.count.textContent = d + "/" + g.steps.length;
+      g.li.classList.toggle("hidden", state.hide && d === g.steps.length);
+    });
+    document.getElementById("progressText").textContent = reqDone + " di " + reqTotal + " step obbligatori" + (cur ? ", prossimo: " + cur.id : ", tutto fatto!");
+    document.getElementById("progressFill").style.width = (reqTotal ? (reqDone / reqTotal * 100) : 0) + "%";
+    const hideBtn = document.getElementById("btnHide");
+    hideBtn.setAttribute("aria-pressed", state.hide ? "true" : "false");
+    hideBtn.textContent = state.hide ? "Mostra i fatti" : "Nascondi i fatti";
+    document.getElementById("btnNext").disabled = !cur;
+  }
+
+  function syncInputs() {
+    ALL.forEach(function (s) {
+      const r = stepEls[s.id];
+      r.ta.value = state.notes[s.id] || "";
+      const has = !!r.ta.value.trim();
+      r.ta.hidden = !has;
+      r.btn.textContent = has ? "Nota" : "Aggiungi una nota";
+      r.btn.setAttribute("aria-expanded", has ? "true" : "false");
+    });
+    applyTheme();
+    applyFolds();
+    update();
+  }
+
+  function applyTheme() {
+    if (state.theme) document.documentElement.setAttribute("data-theme", state.theme);
+    else document.documentElement.removeAttribute("data-theme");
+  }
+
+  function buildExport(withBackup) {
+    const lines = [];
+    const now = new Date();
+    const req = ALL.filter(function (s) { return !s.opt; });
+    const reqDone = req.filter(function (s) { return state.done[s.id]; }).length;
+    const cur = currentStep();
+    lines.push("Export guida uaRO Nuovo Mondo, versione " + GUIDE_VERSION + ", " + now.toLocaleString("it-IT"));
+    lines.push("Progresso: " + reqDone + " di " + req.length + " step obbligatori");
+    lines.push(cur ? "Prossimo step: " + cur.id + " [" + questNames(cur) + "] " + cur.h : "Tutti gli step obbligatori completati");
+    const optDone = ALL.filter(function (s) { return s.opt && state.done[s.id]; }).map(function (s) { return s.id; });
+    if (optDone.length) lines.push("Facoltativi fatti: " + optDone.join(", "));
+    lines.push("");
+    lines.push("NOTE SUGLI STEP");
+    const noted = ALL.filter(function (s) { return state.notes[s.id] && state.notes[s.id].trim(); });
+    if (!noted.length) lines.push("(nessuna nota)");
+    noted.forEach(function (s) {
+      lines.push(s.id + " [" + questNames(s) + "] " + s.h + (state.done[s.id] ? " (fatto)" : " (non ancora fatto)"));
+      if (s.verify) lines.push("  Da verificare: " + s.verify);
+      state.notes[s.id].trim().split(/\r?\n/).forEach(function (l, i) { lines.push((i ? "        " : "  Nota: ") + l); });
+    });
+    lines.push("");
+    lines.push("STEP DA VERIFICARE FATTI SENZA NOTE (quindi andati come scritto)");
+    const okVer = ALL.filter(function (s) { return s.verify && state.done[s.id] && !(state.notes[s.id] || "").trim(); }).map(function (s) { return s.id; });
+    lines.push(okVer.length ? okVer.join(", ") : "(nessuno)");
+    if (withBackup) {
+      lines.push("");
+      lines.push("BACKUP DEI PROGRESSI (per recuperare spunte e note: Altro, Ripristina da backup, e incolla questo export)");
+      lines.push(backupText());
+    }
+    return lines.join("\n");
+  }
+
+  function backupText() {
+    return JSON.stringify({ guide: "uaro-nw", v: GUIDE_VERSION, ids: IDS_VERSION, done: state.done, notes: state.notes });
+  }
+  // Accetta il backup da solo oppure un export delle note fatto con la casella del backup, che lo contiene in una riga.
+  function parseBackup(raw) {
+    let parsed = null;
+    try { parsed = JSON.parse(raw); } catch (e) {
+      const m = raw.match(/^\{"guide":"uaro-nw".*\}\s*$/m);
+      if (m) { try { parsed = JSON.parse(m[0]); } catch (e2) { parsed = null; } }
+    }
+    if (!parsed || parsed.guide !== "uaro-nw" || typeof parsed.done !== "object") return null;
+    return parsed;
+  }
+  function downloadText(name, text) {
+    try {
+      const url = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
+      const a = el("a", { href: url, download: name });
+      document.body.append(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      return true;
+    } catch (e) { return false; }
+  }
+
+  let dialogAction = null;
+  let dialogCheck = null;
+  // o.check (facoltativo): { label, checked, onChange } aggiunge una casella accanto ai pulsanti.
+  function openDialog(o) {
+    const d = document.getElementById("dialog");
+    document.getElementById("dialogTitle").textContent = o.title;
+    document.getElementById("dialogText").textContent = o.text;
+    const area = document.getElementById("dialogArea");
+    area.value = o.value || "";
+    area.readOnly = !o.editable;
+    const act = document.getElementById("dialogAction");
+    dialogAction = o.action;
+    act.hidden = !o.action;
+    act.textContent = o.actionLabel || "";
+    dialogCheck = o.check ? o.check.onChange : null;
+    document.getElementById("dialogCheckWrap").hidden = !o.check;
+    if (o.check) {
+      document.getElementById("dialogCheck").checked = !!o.check.checked;
+      document.getElementById("dialogCheckLabel").textContent = o.check.label;
+    }
+    if (typeof d.showModal === "function") d.showModal(); else d.setAttribute("open", "");
+    if (o.editable) area.focus(); else { area.focus(); area.select(); }
+  }
+  function closeDialog() {
+    const d = document.getElementById("dialog");
+    if (typeof d.close === "function") d.close(); else d.removeAttribute("open");
+  }
+
+  function wire() {
+    document.getElementById("btnNext").addEventListener("click", function () {
+      const target = nextTarget();
+      if (!target) return;
+      const idx = function (id) { return MAIN.findIndex(function (s) { return s.id === id; }); };
+      if (nextCursor && idx(target.id) <= idx(nextCursor)) toast("Dopo non c'è altro da fare: torno al primo passo non fatto");
+      nextCursor = target.id;
+      goToStep(target.id);
+      stepEls[target.id].cb.focus({ preventScroll: true });
+    });
+    document.getElementById("btnHide").addEventListener("click", function () { state.hide = !state.hide; save(); update(); });
+    document.getElementById("btnView").addEventListener("click", function () {
+      setView(view === "altre" ? "percorso" : "altre");
+      rememberView();
+      window.scrollTo(0, 0);
+    });
+    // Link "#altre" nei testi, voci dell'elenco a sinistra, pulsanti avanti e indietro del browser.
+    window.addEventListener("hashchange", function () {
+      const target = document.getElementById(location.hash.slice(1));
+      const v = viewFromHash();
+      if (!v || v === view) return;
+      setView(v);
+      if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+    });
+    document.getElementById("btnExport").addEventListener("click", function () {
+      let text = buildExport(false);
+      const copyAgain = function () { copyText(text).then(function (k) { toast(k ? "Copiato" : "Copia non riuscita: seleziona il testo"); }); };
+      copyText(text).then(function (ok) {
+        openDialog({
+          title: "Note per Claude",
+          text: ok ? "Testo copiato negli appunti: incollalo nella chat con Claude insieme al file HTML." : "Seleziona il testo, copialo e incollalo nella chat con Claude insieme al file HTML.",
+          value: text, action: copyAgain, actionLabel: "Copia di nuovo",
+          check: {
+            label: "Aggiungi il backup di spunte e note", checked: false,
+            onChange: function (on) {
+              text = buildExport(on);
+              document.getElementById("dialogArea").value = text;
+              copyAgain();
+            }
+          }
+        });
+      });
+    });
+    document.getElementById("btnBackup").addEventListener("click", function () {
+      closeMore();
+      const text = backupText();
+      const d = new Date();
+      const name = "uaro-nuovo-mondo-backup-" + d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0") + ".txt";
+      const saved = downloadText(name, text);
+      copyText(text).then(function (ok) {
+        openDialog({
+          title: "Backup dei progressi",
+          text: (saved ? "Il browser scarica il file " + name + ": conservalo. " : "Salva questo testo in un file. ") + (ok ? "Il testo è anche copiato negli appunti. " : "") + "Con Ripristina da backup recuperi spunte e note, anche su un altro browser o dopo aver cancellato i dati del browser.",
+          value: text, action: function () { copyText(text).then(function (k) { toast(k ? "Copiato" : "Copia non riuscita: seleziona il testo"); }); }, actionLabel: "Copia di nuovo"
+        });
+      });
+    });
+    document.getElementById("btnRestore").addEventListener("click", function () {
+      closeMore();
+      openDialog({
+        title: "Ripristina da backup",
+        text: "Incolla qui il contenuto di un file di backup, oppure un export delle note fatto con la casella del backup spuntata. Le spunte e le note attuali verranno sostituite.",
+        value: "", editable: true, actionLabel: "Ripristina",
+        action: function () {
+          const parsed = parseBackup(document.getElementById("dialogArea").value.trim());
+          if (!parsed) {
+            toast("Testo non valido: incolla il backup completo, dalla prima all'ultima graffa");
+            return;
+          }
+          const idsVersion = Number(parsed.ids) || 1;
+          state.done = migrateIds(parsed.done || {}, idsVersion);
+          state.notes = migrateIds(parsed.notes || {}, idsVersion);
+          save(); syncInputs(); closeDialog();
+          toast("Progressi ripristinati");
+        }
+      });
+    });
+    document.getElementById("btnClearNotes").addEventListener("click", function () {
+      closeMore();
+      const n = Object.keys(state.notes).filter(function (k) { return (state.notes[k] || "").trim(); }).length;
+      if (!n) { toast("Non ci sono note da cancellare"); return; }
+      if (!confirm("Cancellare tutte le " + n + " note? Le spunte restano. Esporta prima le note se non le hai ancora mandate a Claude.")) return;
+      state.notes = {};
+      save(); syncInputs();
+      toast("Note cancellate");
+    });
+    document.getElementById("btnTheme").addEventListener("click", function () {
+      closeMore();
+      const dark = state.theme ? state.theme === "dark" : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      state.theme = dark ? "light" : "dark";
+      save(); applyTheme();
+    });
+    document.getElementById("btnReset").addEventListener("click", function () {
+      closeMore();
+      if (!confirm("Azzerare tutte le spunte e le note? Consiglio: fai prima un backup.")) return;
+      state.done = {}; state.notes = {};
+      save(); syncInputs();
+      toast("Guida azzerata");
+    });
+    document.getElementById("dialogClose").addEventListener("click", closeDialog);
+    document.getElementById("dialogAction").addEventListener("click", function () { if (dialogAction) dialogAction(); });
+    document.getElementById("dialogCheck").addEventListener("change", function (e) { if (dialogCheck) dialogCheck(e.target.checked); });
+    document.addEventListener("click", function (e) {
+      const more = document.querySelector(".more");
+      if (more.open && !more.contains(e.target)) more.open = false;
+    });
+  }
+  function closeMore() { document.querySelector(".more").open = false; }
+
+  function measureTopbar() {
+    const tb = document.querySelector(".topbar");
+    if (tb) document.documentElement.style.setProperty("--topbar-offset", tb.offsetHeight + "px");
+  }
+  window.addEventListener("resize", measureTopbar);
+
+  load();
+  applyTheme();
+  buildLegend();
+  buildPhases();
+  applyFolds();
+  linkifyAll();
+  wire();
+  // La pagina iniziale viene dall'indirizzo: ?vista=altre oppure #altre (usato dal file uaro_altre_quest.html).
+  setView(new URLSearchParams(location.search).get("vista") === "altre" ? "altre" : (viewFromHash() || "percorso"));
+  update();
+  measureTopbar();
+})();
+</script>
+</body>
+</html>
