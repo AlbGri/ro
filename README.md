@@ -35,7 +35,7 @@ restano nel suo browser: non c'e' nulla di condiviso da proteggere.
 | Percorso | Contenuto |
 |---|---|
 | `index.html` | home: elenco dei servizi |
-| `gate.js` | codice di accesso, incluso da ogni pagina |
+| `gate.js` | codice di accesso e tema chiaro o scuro, incluso da ogni pagina |
 | `tools/set-access-code.mjs` | imposta l'impronta del codice di accesso |
 | `timers/` | applicazione web dei timer; in `timers/desktop/` la versione desktop in Python |
 | `guide/` | guide in un solo file HTML ciascuna; in `guide/strumenti/` gli script Node che le validano |
@@ -48,7 +48,13 @@ guida funziona anche senza.
 
 1. Una cartella sua, con una pagina che include il codice di accesso
    nell'`<head>`: `<script src="../gate.js"></script>`.
-2. Una scheda nella home, in `index.html`.
+2. Lo stile delle altre pagine (colori e caratteri della guida Nuovo Mondo), un
+   pulsante Home verso la scelta dei servizi e uno per il tema, che chiama
+   `toggleTheme()`.
+3. Una scheda nella home, in `index.html`.
+
+Il tema scelto vale per tutto il sito: `gate.js` lo ricorda e lo applica a ogni
+pagina con l'attributo `data-theme`; senza una scelta decide il sistema.
 
 ## Prova in locale
 
