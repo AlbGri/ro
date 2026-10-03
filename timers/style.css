@@ -284,6 +284,22 @@ button {
   font-size: 17px;
 }
 
+/* Con il mouse i pulsanti hanno la misura di quelli della guida. Le misure
+   qui sopra, piu' alte, restano dove si usa il dito. */
+@media (pointer: fine) {
+  .ghost,
+  .primary {
+    padding: 7px 12px;
+    font-size: 0.92rem;
+    line-height: 1.2;
+  }
+
+  .icon {
+    width: 34px;
+    height: 34px;
+  }
+}
+
 .fab {
   position: fixed;
   right: 16px;

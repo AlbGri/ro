@@ -97,7 +97,7 @@ function scheduleSave() {
 function saveNow() {
   if (saveHandle !== null) clearTimeout(saveHandle);
   saveHandle = null;
-  if (!save(store)) toast("Could not save: storage is full or blocked.");
+  if (!save(store)) toast("Salvataggio non riuscito: la memoria del browser è piena o bloccata.");
 }
 
 // ---------------------------------------------------------------- toast -----
@@ -137,12 +137,12 @@ function createRow(timerId) {
   el.className = "timer";
   el.dataset.id = timerId;
   el.innerHTML = `
-    <button class="sound" type="button" aria-label="Toggle sound"></button>
+    <button class="sound" type="button" aria-label="Attiva o disattiva il suono"></button>
     <span class="name"></span>
     <div class="meta"><span class="map"></span><span class="category"></span></div>
     <div class="times"><span class="time"></span><span class="spawn"></span><span class="maxspawn"></span></div>
     <span class="left"></span>
-    <button class="menu" type="button" aria-label="Actions">&#8942;</button>`;
+    <button class="menu" type="button" aria-label="Azioni">&#8942;</button>`;
   list.append(el);
   return el;
 }
@@ -227,7 +227,7 @@ function runAlerts(now) {
     if (!timer.acked && timer.state(now) !== TimerState.PENDING) pending += 1;
     if (!timer.alertDue(now, maxAlerts)) continue;
     playBeep(store.settings.volume);
-    notify(`${timer.name} is up`, timer.mappa || "Spawn window open", timer.name);
+    notify(`${timer.name}: spawn aperto`, timer.mappa || "Finestra di spawn aperta", timer.name);
     timer.registerAlert(now, store.settings.alertRepeatSeconds);
     changed = true;
   }
@@ -263,7 +263,7 @@ function setupTimeZone() {
   const select = $("zone-select");
   const auto = document.createElement("option");
   auto.value = "";
-  auto.textContent = `Automatic (${browserTimeZone()})`;
+  auto.textContent = `Automatico (${browserTimeZone()})`;
   select.append(auto);
   for (const [zone, label] of ZONES) {
     const option = document.createElement("option");
@@ -275,7 +275,7 @@ function setupTimeZone() {
   const saved = loadTimeZone();
   if (saved !== null) setTimeZone(saved);
   select.value = getTimeZone() ?? "";
-  $("zone-detected").textContent = `Your browser reports ${browserTimeZone()}.`;
+  $("zone-detected").textContent = `Il tuo browser dichiara ${browserTimeZone()}.`;
   refreshZoneLabel();
 
   select.addEventListener("change", () => {
@@ -318,8 +318,8 @@ function openEditor(timerId) {
   refreshDatalists();
 
   const timer = timerId === null ? null : store.timers.get(timerId);
-  $("editor-title").textContent = timer === null ? "New timer" : "Edit timer";
-  $("editor-submit").textContent = timer === null ? "Add" : "Save";
+  $("editor-title").textContent = timer === null ? "Nuovo timer" : "Modifica timer";
+  $("editor-submit").textContent = timer === null ? "Aggiungi" : "Salva";
   editorForm.reset();
   if (timer !== null) {
     $("field-name").value = timer.name;
@@ -354,13 +354,13 @@ function applyPreset() {
 function readEditor() {
   const dmin = parseMinutes($("field-min").value);
   if (dmin === null) {
-    showEditorError("Min must be a positive duration, like 190 or 1h30.");
+    showEditorError("Min deve essere una durata positiva, come 190 o 1h30.");
     return null;
   }
   const rawMax = $("field-max").value.trim();
   const dmax = rawMax === "" ? dmin : parseMinutes(rawMax);
   if (dmax === null) {
-    showEditorError("Max is not a valid duration. Leave it empty for a fixed timer.");
+    showEditorError("Max non è una durata valida. Lascialo vuoto per un timer fisso.");
     return null;
   }
 
@@ -369,7 +369,7 @@ function readEditor() {
   if (rawTime !== "") {
     const clock = parseHHMM(rawTime);
     if (clock === null) {
-      showEditorError("Time must look like 23:50. Leave it empty to start now.");
+      showEditorError("L'ora va scritta come 23:50. Lasciala vuota per partire da adesso.");
       return null;
     }
     start = localAt(clock.hour, clock.minute);
@@ -469,7 +469,7 @@ function refresh(timerId) {
 function removeTimers(timerIds) {
   const payloads = store.remove(timerIds);
   if (payloads.length === 0) return;
-  pushUndo(payloads, `${payloads.length} timer${payloads.length > 1 ? "s" : ""} removed`);
+  pushUndo(payloads, `${payloads.length} timer ${payloads.length > 1 ? "rimossi" : "rimosso"}`);
   if (timerIds.includes(selectedId)) selectedId = null;
   saveNow();
   tick();
@@ -479,11 +479,11 @@ function clearExpired() {
   const now = nowLocal();
   const ids = store.staleIds(now, PURGE_MIN_AGE);
   if (ids.length === 0) {
-    toast("Nothing to clear: no window closed over an hour ago.");
+    toast("Niente da togliere: nessuna finestra chiusa da più di un'ora.");
     return;
   }
   const payloads = store.archiveIds(ids, now);
-  pushUndo(payloads, `${payloads.length} timer${payloads.length > 1 ? "s" : ""} archived`);
+  pushUndo(payloads, `${payloads.length} timer ${payloads.length > 1 ? "archiviati" : "archiviato"}`);
   saveNow();
   tick();
 }
@@ -491,19 +491,19 @@ function clearExpired() {
 function pushUndo(payloads, label) {
   undoStack.push({ payloads, label });
   if (undoStack.length > MAX_UNDO) undoStack.shift();
-  toast(label, "Undo", undo);
+  toast(label, "Annulla", undo);
 }
 
 function undo() {
   const entry = undoStack.pop();
   if (entry === undefined) {
-    toast("Nothing to undo.");
+    toast("Niente da annullare.");
     return;
   }
   store.restore(entry.payloads);
   saveNow();
   tick();
-  toast("Restored.");
+  toast("Ripristinato.");
 }
 
 function toggleSound(timerId) {
@@ -521,8 +521,8 @@ function refreshAlertsButton() {
   const audioMissing = !unlockedOnce;
   $("btn-alerts").hidden = !audioMissing;
   $("btn-notifications").textContent = notificationsReady()
-    ? "Notifications enabled"
-    : "Enable notifications";
+    ? "Notifiche attive"
+    : "Attiva le notifiche";
   $("btn-notifications").disabled = notificationsReady();
 }
 
@@ -548,10 +548,10 @@ async function chooseImport(file) {
     applySettings();
     saveNow();
     tick();
-    toast(`Imported ${store.timers.size} timers.`);
+    toast(`Importati ${store.timers.size} timer.`);
   } catch (error) {
     console.error(error);
-    toast("That file is not a Ragnarok Timers export.");
+    toast("Quel file non è un'esportazione dei timer.");
   }
 }
 
@@ -626,7 +626,7 @@ function bindEvents() {
   $("btn-notifications").addEventListener("click", async () => {
     const granted = await requestNotifications();
     refreshAlertsButton();
-    if (!granted) toast("Notifications are blocked in the browser settings.");
+    if (!granted) toast("Le notifiche sono bloccate nelle impostazioni del browser.");
   });
 
   $("btn-clear").addEventListener("click", () => {
@@ -707,26 +707,26 @@ function installSteps() {
     return `
       <p>In <strong>Safari</strong>:</p>
       <ol>
-        <li>Tap the <strong>Share</strong> button, the square with an arrow.</li>
-        <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
-        <li>Confirm with <strong>Add</strong>.</li>
+        <li>Tocca il pulsante <strong>Condividi</strong>, il quadrato con la freccia.</li>
+        <li>Scorri in basso e tocca <strong>Aggiungi alla schermata Home</strong>.</li>
+        <li>Conferma con <strong>Aggiungi</strong>.</li>
       </ol>
-      <p class="hint">Only Safari can do this on iPhone and iPad. Notifications
-      work only once the app is installed this way.</p>`;
+      <p class="hint">Su iPhone e iPad lo può fare solo Safari. Le notifiche
+      funzionano solo dopo aver installato l'applicazione in questo modo.</p>`;
   }
   if (/Android/.test(ua)) {
     return `
-      <p>From the browser menu:</p>
+      <p>Dal menu del browser:</p>
       <ol>
-        <li>Tap the <strong>&#8942;</strong> menu, top right.</li>
-        <li>Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li>
-        <li>Confirm.</li>
+        <li>Tocca il menu <strong>&#8942;</strong>, in alto a destra.</li>
+        <li>Tocca <strong>Installa app</strong> o <strong>Aggiungi a schermata Home</strong>.</li>
+        <li>Conferma.</li>
       </ol>`;
   }
   return `
-    <p>From the browser menu, look for <strong>Install</strong> or
-    <strong>Add to Home screen</strong>. In Chrome and Edge the same command is
-    the icon at the right end of the address bar.</p>`;
+    <p>Nel menu del browser cerca <strong>Installa</strong> o
+    <strong>Aggiungi a schermata Home</strong>. In Chrome e in Edge lo stesso
+    comando è l'icona in fondo a destra nella barra dell'indirizzo.</p>`;
 }
 
 /** Mostra il pulsante di installazione, con il prompt nativo dove esiste. */
@@ -768,13 +768,13 @@ function openActions(timerId) {
 // -------------------------------------------------------------------- avvio -
 
 function init() {
-  $("version").textContent = `Version ${VERSION}`;
+  $("version").textContent = `Versione ${VERSION}`;
 
   if (!storageAvailable()) {
-    toast("Private browsing: timers will be lost when you close this tab.");
+    toast("Navigazione privata: i timer si perdono alla chiusura di questa scheda.");
   } else {
     const { fromBackup } = load(store);
-    if (fromBackup) toast("Main data was unreadable: restored from the backup copy.");
+    if (fromBackup) toast("Dati principali illeggibili: recuperati dalla copia di sicurezza.");
   }
 
   applySettings();
@@ -787,7 +787,7 @@ function init() {
 
   if (!isReturningVisitor()) {
     markVisited();
-    toast("Timers are saved in this browser only. Export a file to keep a copy.");
+    toast("I timer sono salvati solo in questo browser. Esporta un file per tenerne una copia.");
   }
 
   if ("serviceWorker" in navigator) {

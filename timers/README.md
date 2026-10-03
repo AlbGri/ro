@@ -6,7 +6,7 @@ Applicazione desktop in tkinter, senza dipendenze esterne: registri l'ora dell'u
 
 Esiste anche una [versione web](#versione-web) installabile come applicazione, pensata per il telefono, che tiene i dati nel browser e scambia file con quella desktop.
 
-L'interfaccia e' in inglese; commenti, docstring e documentazione sono in italiano.
+L'interfaccia dell'applicazione desktop e' in inglese, quella della versione web in italiano come il resto del sito; commenti, docstring e documentazione sono in italiano. Le sezioni che seguono usano i nomi dell'applicazione desktop.
 
 ## Finestre di respawn
 
@@ -86,17 +86,22 @@ sulla schermata iniziale e utilizzabile offline.
 I dati stanno in `localStorage`, quindi restano nel browser che li ha scritti:
 non c'e' sincronizzazione fra dispositivi e cancellare i dati del sito cancella
 i timer. Il formato e' pero' identico a quello dell'applicazione desktop, e i
-comandi `Export data` e `Import data` spostano i timer da una all'altra.
+comandi `Esporta i dati` e `Importa i dati` spostano i timer da una all'altra.
 
 Il layout e' unico: su telefono ogni timer e' una scheda, da 760px in su le
 stesse celle diventano le colonne della tabella.
+
+Le scritte sono in italiano. Le colonne si chiamano `Suono`, `Nome`, `Mappa`,
+`Categoria`, `Ora`, `Spawn`, `Spawn max` e `Manca`, e corrispondono nell'ordine a
+`Sound`, `Name`, `Map`, `Category`, `Time`, `Spawn`, `Max. Spawn` e `Left` del
+desktop. I termini del gioco, come `Spawn` e `MvP`, restano in inglese.
 
 Differenze rispetto al desktop, tutte volute:
 
 | Desktop | Web |
 |---|---|
 | doppio clic su una cella per modificarla | un form unico, dal doppio clic o dal menu `⋮` |
-| conferma prima di rimuovere | rimozione immediata con `Undo` nel messaggio |
+| conferma prima di rimuovere | rimozione immediata con `Annulla` nel messaggio |
 | `Ctrl+D`, `Ctrl+R` | `d`, `r`, piu' `n` per un timer nuovo. Nel browser quelle combinazioni sono gia' occupate |
 | colore di categoria per ordine di apparizione | colore derivato dal nome, uguale su ogni dispositivo |
 | allarme sonoro e lampeggio della barra | suono, notifica di sistema e titolo della scheda lampeggiante |
@@ -107,15 +112,15 @@ L'intestazione mostra un orologio con il fuso in uso. Non e' un ornamento: la
 modalita' anti tracciamento di Firefox, Tor e alcune VPN dichiarano UTC invece
 del fuso reale, e in quel caso ogni orario digitato viene collocato con ore di
 scarto. Il sintomo non e' evidente, perche' anche la rilettura usa il fuso
-sbagliato e le colonne `Time` e `Spawn` restano coerenti fra loro: se ne accorge
-solo il contatore `Left`.
+sbagliato e le colonne `Ora` e `Spawn` restano coerenti fra loro: se ne accorge
+solo il contatore `Manca`.
 
 Toccando l'orologio si sceglie la propria citta'. La scelta e' salvata su quel
 dispositivo e non viaggia con i dati esportati, perche' descrive dove ci si
 trova e non i timer. Cambiare fuso non sposta i timer gia' creati: quelli
 inseriti con il fuso sbagliato vanno corretti a mano.
 
-Il pulsante `Install` in alto compare solo quando l'applicazione non e' gia'
+Il pulsante `Installa` in alto compare solo quando l'applicazione non e' gia'
 installata: dove il browser lo permette apre l'installazione automatica, altrove
 mostra le istruzioni del sistema riconosciuto, perche' Safari non emette
 `beforeinstallprompt` e la voce resta nascosta nel menu di condivisione.
@@ -125,7 +130,7 @@ Limiti del browser, da conoscere prima di affidarcisi:
 - **gli allarmi suonano solo con la pagina aperta**: una PWA chiusa non puo'
   svegliarsi da sola senza un server che invii notifiche push
 - il suono parte solo dopo la prima interazione con la pagina, da cui il
-  pulsante `Enable alerts`
+  pulsante `Attiva avvisi`
 - su iPhone le notifiche funzionano solo se l'applicazione e' stata installata
   sulla schermata iniziale
 

@@ -1,7 +1,8 @@
 {
-  "name": "Ragnarok Timers",
-  "short_name": "RO Timers",
-  "description": "Respawn window timers for Ragnarok Online MvPs and quests.",
+  "name": "Timer di respawn",
+  "lang": "it",
+  "short_name": "Timer RO",
+  "description": "Timer delle finestre di respawn per MvP e quest di Ragnarok Online.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",

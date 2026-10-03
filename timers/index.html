@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="it">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Ragnarok Timers</title>
-    <meta name="description" content="Respawn window timers for Ragnarok Online MvPs and quests." />
+    <title>Timer di respawn</title>
+    <meta name="description" content="Timer delle finestre di respawn per MvP e quest di Ragnarok Online." />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f7f1" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1b2420" />
     <link rel="manifest" href="manifest.webmanifest" />
@@ -23,69 +23,69 @@
   </head>
   <body>
     <header class="topbar">
-      <a class="ghost compact home" href="../" title="Back to the list of services">Home</a>
-      <button id="clock" class="clock" aria-label="Change time zone" title="Change time zone">
+      <a class="ghost compact home" href="../" title="Torna alla scelta dei servizi">Home</a>
+      <button id="clock" class="clock" aria-label="Cambia fuso orario" title="Cambia fuso orario">
         <span id="clock-time">--:--:--</span>
         <span id="clock-zone" class="clock-zone"></span>
       </button>
       <div class="topbar-actions">
         <button id="btn-alerts" class="ghost warn compact" hidden>
-          <span class="short">Alerts</span><span class="long">Enable alerts</span>
+          <span class="short">Avvisi</span><span class="long">Attiva avvisi</span>
         </button>
         <button id="btn-install" class="ghost compact" hidden>
-          <span class="short">Install</span><span class="long">Install app</span>
+          <span class="short">Installa</span><span class="long">Installa app</span>
         </button>
-        <button id="btn-settings" class="icon" aria-label="Settings" title="Settings">&#9881;</button>
+        <button id="btn-settings" class="icon" aria-label="Impostazioni" title="Impostazioni">&#9881;</button>
       </div>
     </header>
 
     <main>
       <div class="list-head" aria-hidden="true">
-        <span class="col-sound">Sound</span>
-        <span class="col-name">Name</span>
-        <span class="col-map">Map</span>
-        <span class="col-category">Category</span>
-        <span class="col-time">Time</span>
+        <span class="col-sound">Suono</span>
+        <span class="col-name">Nome</span>
+        <span class="col-map">Mappa</span>
+        <span class="col-category">Categoria</span>
+        <span class="col-time">Ora</span>
         <span class="col-spawn">Spawn</span>
-        <span class="col-maxspawn">Max. Spawn</span>
-        <span class="col-left">Left</span>
+        <span class="col-maxspawn">Spawn max</span>
+        <span class="col-left">Manca</span>
         <span class="col-menu"></span>
       </div>
       <ul id="timer-list" class="timers"></ul>
-      <p id="empty-state" class="empty">No timers yet. Tap <strong>Add</strong> to create the first one.</p>
+      <p id="empty-state" class="empty">Ancora nessun timer. Tocca <strong>Aggiungi</strong> per creare il primo.</p>
     </main>
 
-    <button id="btn-add" class="fab" aria-label="Add timer">
-      <span aria-hidden="true">+</span><span class="fab-label">Add</span>
+    <button id="btn-add" class="fab" aria-label="Aggiungi timer">
+      <span aria-hidden="true">+</span><span class="fab-label">Aggiungi</span>
     </button>
 
     <div id="toast" class="toast" role="status" aria-live="polite" hidden>
       <span id="toast-text"></span>
-      <button id="toast-action" class="ghost" hidden>Undo</button>
+      <button id="toast-action" class="ghost" hidden>Annulla</button>
     </div>
 
     <dialog id="editor" class="sheet">
       <form id="editor-form" method="dialog">
-        <h2 id="editor-title">New timer</h2>
+        <h2 id="editor-title">Nuovo timer</h2>
 
-        <label for="field-name">Name</label>
+        <label for="field-name">Nome</label>
         <input id="field-name" name="name" list="names" autocomplete="off" placeholder="Atroce" />
 
         <div class="row">
           <div>
-            <label for="field-map">Map</label>
+            <label for="field-map">Mappa</label>
             <input id="field-map" name="map" list="maps" autocomplete="off" placeholder="ve_fild01" />
           </div>
           <div>
-            <label for="field-category">Category</label>
+            <label for="field-category">Categoria</label>
             <input id="field-category" name="category" list="categories" autocomplete="off" placeholder="MvP" />
           </div>
         </div>
 
         <div class="row">
           <div>
-            <label for="field-time">Time</label>
-            <input id="field-time" name="time" inputmode="numeric" autocomplete="off" placeholder="now" />
+            <label for="field-time">Ora</label>
+            <input id="field-time" name="time" inputmode="numeric" autocomplete="off" placeholder="adesso" />
           </div>
           <div>
             <label for="field-min">Min</label>
@@ -96,12 +96,12 @@
             <input id="field-max" name="max" inputmode="decimal" autocomplete="off" placeholder="370" />
           </div>
         </div>
-        <p class="hint">Minutes, or <code>1h30</code> and <code>3:10</code>. Leave <strong>Max</strong> empty for a fixed countdown.</p>
+        <p class="hint">Minuti, oppure <code>1h30</code> e <code>3:10</code>. Lascia vuoto <strong>Max</strong> per un conto alla rovescia fisso.</p>
         <p id="editor-error" class="error" hidden></p>
 
         <menu>
-          <button type="button" class="ghost" data-close>Cancel</button>
-          <button type="submit" class="primary" id="editor-submit">Add</button>
+          <button type="button" class="ghost" data-close>Annulla</button>
+          <button type="submit" class="primary" id="editor-submit">Aggiungi</button>
         </menu>
       </form>
 
@@ -113,76 +113,77 @@
     <dialog id="actions" class="sheet">
       <h2 id="actions-title">Timer</h2>
       <div class="stack">
-        <button type="button" class="ghost" data-action="edit">Edit</button>
-        <button type="button" class="ghost" data-action="duplicate">+1 (duplicate from now)</button>
-        <button type="button" class="ghost" data-action="refresh">Restart from now</button>
-        <button type="button" class="ghost danger" data-action="remove">Remove</button>
+        <button type="button" class="ghost" data-action="edit">Modifica</button>
+        <button type="button" class="ghost" data-action="duplicate">+1 (duplica da adesso)</button>
+        <button type="button" class="ghost" data-action="refresh">Riparti da adesso</button>
+        <button type="button" class="ghost danger" data-action="remove">Rimuovi</button>
       </div>
       <menu>
-        <button type="button" class="ghost" data-close>Close</button>
+        <button type="button" class="ghost" data-close>Chiudi</button>
       </menu>
     </dialog>
 
     <dialog id="timezone" class="sheet">
-      <h2>Time zone</h2>
+      <h2>Fuso orario</h2>
       <p class="hint">
-        The times you type are read in this zone. If the clock above does not
-        match the clock on your wall, pick your city here: some browsers and VPNs
-        report the wrong zone, and every timer would be off by the difference.
+        Gli orari che scrivi vengono letti in questo fuso. Se l'orologio in alto
+        non corrisponde a quello di casa tua, scegli qui la tua città: alcuni
+        browser e VPN dichiarano un fuso sbagliato, e ogni timer sarebbe spostato
+        della differenza.
       </p>
 
-      <label for="zone-select">City</label>
+      <label for="zone-select">Città</label>
       <select id="zone-select"></select>
 
       <p class="hint" id="zone-detected"></p>
       <p class="hint">
-        Changing the zone does not move timers created before: check their
-        <strong>Time</strong> and fix the ones that look wrong.
+        Cambiare fuso non sposta i timer già creati: controlla la loro
+        <strong>Ora</strong> e correggi quelli che sembrano sbagliati.
       </p>
 
       <menu>
-        <button type="button" class="ghost" data-close>Close</button>
+        <button type="button" class="ghost" data-close>Chiudi</button>
       </menu>
     </dialog>
 
     <dialog id="install" class="sheet">
-      <h2>Install on this device</h2>
+      <h2>Installa su questo dispositivo</h2>
       <div id="install-steps"></div>
       <menu>
-        <button type="button" class="ghost" data-close>Close</button>
+        <button type="button" class="ghost" data-close>Chiudi</button>
       </menu>
     </dialog>
 
     <dialog id="settings" class="sheet">
-      <h2>Settings</h2>
+      <h2>Impostazioni</h2>
 
-      <label for="field-volume">Alarm volume: <output id="volume-value">60</output></label>
+      <label for="field-volume">Volume dell'allarme: <output id="volume-value">60</output></label>
       <input id="field-volume" type="range" min="0" max="100" step="5" />
 
       <label class="check">
         <input id="field-wakelock" type="checkbox" />
-        Keep the screen awake while open
+        Tieni lo schermo acceso finché la pagina è aperta
       </label>
 
       <div class="stack">
-        <button type="button" class="ghost" id="btn-notifications">Enable notifications</button>
-        <button type="button" class="ghost" id="btn-clear">Clear expired</button>
-        <button type="button" class="ghost" id="btn-export">Export data</button>
-        <button type="button" class="ghost" id="btn-import">Import data</button>
-        <button type="button" class="ghost" id="btn-theme">Light / dark theme</button>
+        <button type="button" class="ghost" id="btn-notifications">Attiva le notifiche</button>
+        <button type="button" class="ghost" id="btn-clear">Togli gli scaduti</button>
+        <button type="button" class="ghost" id="btn-export">Esporta i dati</button>
+        <button type="button" class="ghost" id="btn-import">Importa i dati</button>
+        <button type="button" class="ghost" id="btn-theme">Cambia tema chiaro/scuro</button>
         <input id="file-import" type="file" accept="application/json,.json" hidden />
       </div>
 
       <p class="hint">
-        Timers live in this browser only. Nothing is uploaded, and clearing site
-        data deletes them: export a file to move them to another device or to the
-        desktop app.
+        I timer restano solo in questo browser. Niente viene inviato, e
+        cancellando i dati del sito si perdono: esporta un file per portarli su un
+        altro dispositivo o nell'applicazione desktop.
       </p>
-      <p class="hint">Alarms only ring while this page is open.</p>
+      <p class="hint">Gli allarmi suonano solo con questa pagina aperta.</p>
       <p class="hint" id="version"></p>
 
       <menu>
-        <button type="button" class="ghost" data-close>Close</button>
+        <button type="button" class="ghost" data-close>Chiudi</button>
       </menu>
     </dialog>
 

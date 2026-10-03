@@ -189,10 +189,10 @@
         gate.innerHTML = `
           <form class="gate-box">
             <h1>Ragnarok</h1>
-            <label for="gate-code">Access code</label>
+            <label for="gate-code">Codice di accesso</label>
             <input id="gate-code" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" />
-            <p id="gate-error" hidden>Wrong code.</p>
-            <button type="submit">Enter</button>
+            <p id="gate-error" hidden>Codice sbagliato.</p>
+            <button type="submit">Entra</button>
           </form>`;
         document.body.append(gate);
 

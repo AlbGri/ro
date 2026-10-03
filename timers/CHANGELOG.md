@@ -2,8 +2,12 @@
 
 ## [1.1.3] - 2026-10-03
 
-Ritocchi alla versione web per renderla omogenea con la guida.
+La versione web diventa omogenea con la guida, nella lingua e nell'aspetto.
+L'applicazione desktop resta in inglese.
 
+- Interfaccia web in italiano, come il resto del sito: scritte, messaggi, istruzioni di installazione, nomi delle citta' dei fusi orari. I termini del gioco, come `Spawn` e `MvP`, restano in inglese
+- Con il mouse i pulsanti hanno la misura di quelli della guida; restano piu' alti sui dispositivi a tocco
+- Il pulsante del tema ha la stessa scritta in tutto il sito, `Cambia tema chiaro/scuro`
 - Il pulsante Home e' una scritta, come nella guida, al posto dell'icona
 - Messaggio a comparsa con i colori invertiti, come quello della guida
 - Nelle impostazioni il testo di aiuto non e' piu' attaccato all'ultimo pulsante, e la casella di spunta ha il colore del sito
