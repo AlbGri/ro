@@ -80,6 +80,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   padding: 7px 12px; cursor: pointer; font-size: .92rem; line-height: 1.2;
 }
 .btn:hover { border-color: var(--muted); }
+a.btn { text-decoration: none; }
 .btn.primary { background: var(--bradium); border-color: var(--bradium); color: #fff; font-weight: 700; }
 :root[data-theme="dark"] .btn.primary { color: #1B1530; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #1B1530; } }
@@ -322,6 +323,7 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
 <body>
 <header class="topbar">
   <div class="topbar-inner">
+    <a class="btn" href="../index.html" title="Torna alla scelta dei servizi">Home</a>
     <span class="brand">Nuovo Mondo</span>
     <div class="progress" aria-live="polite">
       <span class="progress-text" id="progressText">Caricamento…</span>
@@ -427,7 +429,7 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
 </dialog>
 
 <script>
-const GUIDE_VERSION = "7.3";
+const GUIDE_VERSION = "7.4";
 const STORAGE_KEY = "uaro-nw-guide";
 
 const QUESTS = {
