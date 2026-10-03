@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4] - 2026-10-03
+
+Il repository cambia nome, da `ragnarok` a `ro`, e con lui l'indirizzo del sito.
+
+- Nuovo indirizzo della versione web: `albgri.github.io/ro/timers/`. Quello della 1.1.1 non funziona piu'; i timer salvati nel browser restano validi
+- Il collegamento per scaricare l'applicazione per Windows punta al repository con il nome nuovo
+
 ## [1.1.3] - 2026-10-03
 
 La versione web diventa omogenea con la guida, nella lingua e nell'aspetto.

@@ -1,14 +1,14 @@
 # Ragnarok
 
 Strumenti e guide per Ragnarok Online in un solo sito statico, servito da
-GitHub Pages: `https://albgri.github.io/ragnarok/`.
+GitHub Pages: `https://albgri.github.io/ro/`.
 
 La home chiede un codice di accesso e poi fa scegliere il servizio.
 
 | Servizio | Indirizzo | Cartella |
 |---|---|---|
-| Timer di respawn per MvP e quest, web e desktop | `/ragnarok/timers/`; l'eseguibile per Windows e' nelle [release](https://github.com/AlbGri/ragnarok/releases) | [`timers/`](timers/README.md) |
-| Guida uaRO "Nuovo Mondo", passo per passo | `/ragnarok/guide/nuovo-mondo.html` | `guide/` |
+| Timer di respawn per MvP e quest, web e desktop | `/ro/timers/`; l'eseguibile per Windows e' nelle [release](https://github.com/AlbGri/ro/releases) | [`timers/`](timers/README.md) |
+| Guida uaRO "Nuovo Mondo", passo per passo | `/ro/guide/nuovo-mondo.html` | `guide/` |
 
 Tutto e' HTML, CSS e JavaScript senza framework ne' passaggi di build: le
 pagine vengono servite cosi' come sono nel repository.

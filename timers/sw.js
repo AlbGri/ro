@@ -6,7 +6,7 @@
  * disallineati fra loro. Va tenuta uguale a `VERSION` di `core.js`.
  */
 
-const VERSION = "1.1.3";
+const VERSION = "1.1.4";
 const CACHE_PREFIX = "ragnarok-timers-";
 const CACHE = `${CACHE_PREFIX}${VERSION}`;
 

@@ -80,7 +80,7 @@ Il salvataggio e' atomico e mantiene una copia `.bak`: se il file principale ris
 
 I file in questa cartella sono l'applicazione web, in HTML, CSS e JavaScript,
 senza framework ne' passaggi di build: GitHub Pages li serve cosi' come sono
-all'indirizzo `albgri.github.io/ragnarok/timers/`. E' una PWA: installabile
+all'indirizzo `albgri.github.io/ro/timers/`. E' una PWA: installabile
 sulla schermata iniziale e utilizzabile offline.
 
 I dati stanno in `localStorage`, quindi restano nel browser che li ha scritti:
@@ -206,7 +206,7 @@ Compress-Archive -Path "dist\RagnarokTimers\*" -DestinationPath "RagnarokTimers-
 
 Lo zip si pubblica come release del repository, con il tag `timers-v` seguito
 dalla versione. L'eseguibile pubblicato si scarica dalle
-[release](https://github.com/AlbGri/ragnarok/releases); la home del sito e le
+[release](https://github.com/AlbGri/ro/releases); la home del sito e le
 impostazioni dei timer hanno un collegamento diretto allo zip, da aggiornare a
 ogni nuova release.
 
