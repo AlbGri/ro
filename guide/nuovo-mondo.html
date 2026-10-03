@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
 <title>uaRO – Nuovo Mondo passo per passo</title>
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
 <script src="../gate.js"></script>
@@ -430,7 +431,7 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
 </dialog>
 
 <script>
-const GUIDE_VERSION = "7.7";
+const GUIDE_VERSION = "7.8";
 const STORAGE_KEY = "uaro-nw-guide";
 
 const QUESTS = {
@@ -774,8 +775,8 @@ const PHASES = [
         d: "Per Onward: li consegni al Promotional Staff di Aldebaran (step 1.02).",
         copy: [{ label: "Cerca chi vende Jellopy", items: ["@ws 909"] }] },
       { id: "0.02", q: ["ONW"], h: "1 Emerald e 1 Ruby",
-        d: "Per Onward: li consegni allo Staff di Geffen (step 1.03).\nLi vende il Jeweler a 6.000 zeny l'uno: quello di Morroc (primo /navi) o quello di Lighthalzen (secondo).",
-        navi: ["moc_ruins 110/105","lhz_in02 105/21"] },
+        d: "Per Onward: li consegni allo Staff di Geffen (step 1.03).\nLi vende il Jeweler di Morroc a 6.000 zeny l'uno (/navi).",
+        navi: ["moc_ruins 110/105"] },
       { id: "0.03", q: ["PREP"], h: "Fly Wing, Butterfly Wing, pozioni HP e SP, Blue Gemstone",
         d: "Scorte per tutto il percorso. Le Fly Wing servono soprattutto sui campi di El Dicastes. Le Blue Gemstone servono a chi apre i Warp Portal, una per portale: 20-30 bastano. Se le hai, una Green Butterfly Wing (Lighthalzen) e una Red Butterfly Wing (Rachel) ti risparmiano due viaggi lunghi nella fase 1." },
       { id: "0.04", q: ["NS"], h: "20 Strong Vine dai giocatori",
@@ -975,8 +976,7 @@ const PHASES = [
       { id: "Q1.01", q: ["TRI"], opt: true, h: "Materiali: 1 Folding Fan of Cat Ghost, 1 Flame Stone, 1 Old Frying Pan, 1 Squid Ink",
         d: "Comprali prima di iniziare, così non interrompi la quest.\nIl Flame Stone lo vende Jackie, nella locanda ovest di Prontera, a 15 zeny (/navi). Gli altri tre cercali dai giocatori.",
         navi: ["prt_in 233/136"],
-        copy: [{ label: "Cerca chi vende Folding Fan of Cat Ghost, Old Frying Pan, Squid Ink", items: ["@ws 7262","@ws 7031","@ws 1024"] }],
-        verify: "Jackie vende il Flame Stone a 15 zeny, come dice il wiki uaRO?" },
+        copy: [{ label: "Cerca chi vende Folding Fan of Cat Ghost, Old Frying Pan, Squid Ink", items: ["@ws 7262","@ws 7031","@ws 1024"] }] },
       { id: "Q1.02", q: ["TRI"], opt: true, h: "Avvicinati all'United Research Official",
         d: "Entra dall'ingresso indicato. Ti chiede di parlare con chi gestisce i documenti.",
         navi: ["mid_camp 163/234","mid_campin 376/120"] },
@@ -1043,9 +1043,8 @@ const PHASES = [
         copy: [{ label: "Cerca chi vende Holy Water", items: ["@ws 523"] }] },
       { id: "Q2.03", q: ["RAY"], opt: true, h: "Materiali per il finale: 20 Potato e 30 Log",
         d: "Solo per il finale facoltativo (step Q2.25, premio: 5 Sweet Potato).\nLe Potato le vende il Vegetable Gardener di Prontera a 15 zeny l'una (/navi). I Log cercali dai giocatori.",
-        navi: ["prontera 48/58"],
-        copy: [{ label: "Cerca chi vende Log", items: ["@ws 7201"] }],
-        verify: "Negli script ufficiali le Potato le vende il Vegetable Gardener a prontera 48/58: confermi?" },
+        navi: ["prontera 101/49"],
+        copy: [{ label: "Cerca chi vende Log", items: ["@ws 7201"] }] },
       { id: "Q2.04", q: ["RAY"], opt: true, h: "Echinacea nell'edificio centrale",
         d: "Ti manda ad aiutare Kidd.",
         navi: ["mid_campin 68/185"] },
@@ -1428,28 +1427,29 @@ const PHASES = [
     id: "Q4", branch: "nest", opt: true, page: "altre", title: "Nidhoggur's Nest", where: "Istanza nel dungeon dello Yggdrasil",
     sum: "Premi: l'MVP Nidhoggur's Shadow, 10 Manuk Coin ed EXP",
     when: "Dopo lo step 14.12, con un party di almeno 2 persone collegate, tutte di livello 70 o più. Ogni membro deve aver fatto Guardian of Yggdrasil fino allo step 14.12.",
-    intro: "Dentro avete 4 ore. Dal momento in cui entri devi aspettare 3 giorni prima di poter aprire un altro Nest, anche se il tentativo fallisce: entrate quando siete pronti a finire.\nAlcuni mostri usano Waterball e Frost Driver: meglio resistenza all'acqua e un'armatura che eviti il congelamento.\nAl cancello si arriva come nello step 14.12: Warpra fino al dungeon, portale a est, Strange Device. Non ancora provata su uaRO: se qualcosa non torna, scrivilo nella nota dello step.",
+    intro: "Dentro avete 4 ore. Su uaRO il Nest si fa una volta a settimana per account: il limite si azzera il lunedì alle 00:00 dell'ora del server, che è due ore indietro rispetto a quella italiana (da noi le 02:00). Sullo stesso PC si può fare fino a 6 volte, con account diversi. Entrate quando siete pronti a finire.\nAlcuni mostri usano Waterball e Frost Driver: meglio resistenza all'acqua e un'armatura che eviti il congelamento.\nAl cancello si arriva come nello step 14.12: Warpra fino al dungeon, portale a est, Strange Device. Non ancora provata su uaRO: se qualcosa non torna, scrivilo nella nota dello step.",
     steps: [
       { id: "Q4.01", q: ["NEST"], opt: true, h: "Il party leader parla con lo Yggdrasil Gatekeeper",
-        d: "Con il party al cancello, il leader sceglie «Please allow me to enter.», la prima voce: il Gatekeeper crea il Nest.\nPoi tutti, leader compreso, riparlano con il Gatekeeper e scelgono «I want to go in.».\nSe invece chiede dove sono gli altri servitori, nel party non ci sono almeno 2 persone collegate, o qualcuno è sotto il livello 70.",
+        d: "Prima di partire ognuno scrive @instanceinfo in chat: dice se questa settimana può ancora entrare nel Nest.\nCon il party al cancello, il leader sceglie «Please allow me to enter.», la prima voce: il Gatekeeper crea il Nest.\nPoi tutti, leader compreso, riparlano con il Gatekeeper e scelgono «I want to go in.».\nSe invece chiede dove sono gli altri servitori, nel party non ci sono almeno 2 persone collegate, o qualcuno è sotto il livello 70.",
         navi: ["nyd_dun02 99/200"],
-        verify: "Appena entrato, nel quest log compaiono “Nidhoggur's Nest” con una scadenza di 3 giorni e “Nidhoggur's Nest Time Limit” di 4 ore, come negli script ufficiali?" },
+        copy: [{ label: "Controlla se puoi entrare", items: ["@instanceinfo"] }],
+        verify: "Appena entrato, nel quest log compare “Nidhoggur's Nest Time Limit” di 4 ore, come negli script ufficiali?" },
       { id: "Q4.02", q: ["NEST"], opt: true, h: "Murdered Yggdrasilid, la Laphine a terra al centro della sala",
         d: "È a 213/277 nell'istanza. Deve parlarci il party leader: la prova parte solo con lui.\nScelte nell'ordine: «What do you mean?», la seconda voce (“Who are you?” fa ripetere la domanda); poi «Nidhoggur's Shadow?» e «Is there nothing else we can do?», le uniche opzioni; infine «Leave it to us.».\nCompaiono 12 Nidhoggur's Guardian e partono 30 minuti per ucciderli.",
         warn: "“We can't do it.” chiude il dialogo: il leader deve riparlarle e rifare le scelte." },
       { id: "Q4.03", q: ["NEST"], opt: true, h: "Uccidi 12 Nidhoggur's Guardian",
         d: "Hanno l'aspetto di Rhyncho e Phylla ma si chiamano Nidhoggur's Guardian: i mostri con il nome Rhyncho o Phylla non contano. Compaiono attorno alla sala, tra 200/200 e 255/280.\nUccidili uno alla volta: ucciderne più insieme può bloccare il contatore.\nMorto l'ultimo, un annuncio dice che sono stati sconfitti tutti e si apre il portale per il secondo piano.",
-        warn: "Avete 30 minuti dalla fine del dialogo dello step Q4.02. Se scadono, tutto il party viene portato al campo e il Nest è perso: bisogna aspettare i 3 giorni." },
+        warn: "Avete 30 minuti dalla fine del dialogo dello step Q4.02. Se scadono, tutto il party viene portato al campo e il Nest è perso: si riprova dopo l'azzeramento del lunedì." },
       { id: "Q4.04", q: ["NEST"], opt: true, h: "Portale a nord, piano 2, labirinto",
         d: "Il portale si apre a nord della sala (195/320). Al secondo piano attraversa il labirinto verso nord fino a 199/178: da lì vieni portato davanti alla stanza del boss.",
-        warn: "Da quando passi il portale per il secondo piano, se esci dal Nest in qualsiasi modo (Butterfly Wing, ritorno al save dopo la morte) il Gatekeeper non ti fa più rientrare fino alla fine dei 3 giorni. Se muori, aspetta che un compagno ti resusciti." },
+        warn: "Da quando passi il portale per il secondo piano, se esci dal Nest in qualsiasi modo (Butterfly Wing, ritorno al save dopo la morte) il Gatekeeper non ti fa più rientrare fino all'azzeramento del lunedì. Se muori, aspetta che un compagno ti resusciti." },
       { id: "Q4.05", q: ["NEST"], opt: true, h: "Nidhoggur's Shadow",
         d: "Il boss compare solo quando il party leader avanza verso nord (199/268): fate passare lui per primo.\nDopo 3 minuti tutto il party viene spostato in una di quattro stanze laterali: all'arrivo perdi dal 50 all'80% degli HP o metà degli SP e prendi uno status negativo (Bleeding, Freeze, Sleep con Confusion, oppure Poison).\nLì ci sono 5 Nidhoggur's Guardian: finché sono vivi le uscite ti riportano al centro della stanza. Uccisi tutti, tornate dal boss; dopo altri 3 minuti succede di nuovo. Se non li uccidete entro 3 minuti venite spostati in un'altra stanza, con altri 5." },
       { id: "Q4.06", q: ["GY"], opt: true, h: "World Tree Yggdrasil nella stanza finale",
         d: "Compare vicino a dove è morto il boss (202/324). Ogni membro del party deve parlarci e scegliere «Please let me out.»: è questa scelta che fa avanzare Guardian of Yggdrasil, e ti porta fuori davanti al cancello.\nCon “I want to look around for a while.” resti dentro e puoi riparlarci.",
         warn: "Non uscire in un altro modo (Butterfly Wing, Teleport): senza «Please let me out.» non puoi ritirare il premio dello step Q4.07 e nel Nest non rientri." },
       { id: "Q4.07", q: ["GY"], opt: true, h: "Ricompensa a Manuk: Neat Etorr",
-        d: "Con il Ring of the Ancient Wise King indossato.\nDue scelte, ognuna con una sola opzione: «Explain the sudden leave of the Guardian.» e «Pass along the World Tree Yggdrasil's message.».\nRicevi 10 Manuk Coin ed EXP (negli script ufficiali 150.000 Base EXP e 35.000 Job EXP). Guardian of Yggdrasil completata.\nPassati i 3 giorni puoi rifare il Nest dallo step Q4.01, e dopo ogni Nest completato Neat Etorr ti ridà questo premio.",
+        d: "Con il Ring of the Ancient Wise King indossato.\nDue scelte, ognuna con una sola opzione: «Explain the sudden leave of the Guardian.» e «Pass along the World Tree Yggdrasil's message.».\nRicevi 10 Manuk Coin ed EXP (negli script ufficiali 150.000 Base EXP e 35.000 Job EXP). Guardian of Yggdrasil completata.\nDalla settimana dopo puoi rifare il Nest dallo step Q4.01, e dopo ogni Nest completato Neat Etorr ti ridà questo premio.",
         navi: ["manuk 309/142","man_in01 311/57"],
         tip: "Dal cancello a Manuk, con il save a Manuk (step 14.09): Butterfly Wing, gratis. Con il save al campo: Butterfly Wing e Fluffy Gyaruk (22.000 zeny). A quest finita rimetti il save al campo da Fluffy Gyaruk: per tornarci, Warp Portal a Prontera e Warpra (5.000 zeny)." }
     ]
