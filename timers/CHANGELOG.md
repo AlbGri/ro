@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.3] - 2026-10-03
+
+Ritocchi alla versione web per renderla omogenea con la guida.
+
+- Il pulsante Home e' una scritta, come nella guida, al posto dell'icona
+- Messaggio a comparsa con i colori invertiti, come quello della guida
+- Nelle impostazioni il testo di aiuto non e' piu' attaccato all'ultimo pulsante, e la casella di spunta ha il colore del sito
+- A larghezza desktop il pulsante Add non copre piu' l'ultima riga della lista
+- Sotto i 350 px di larghezza l'orologio scende su una seconda riga dell'intestazione
+
 ## [1.1.2] - 2026-10-03
 
 La versione web prende lo stile del resto del sito. L'applicazione desktop non cambia.

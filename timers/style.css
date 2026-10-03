@@ -107,20 +107,14 @@ body {
   border-bottom: 1px solid var(--line);
 }
 
-/* Torna alla scelta del servizio: occupa la prima colonna, che altrimenti e' vuota. */
+/* Torna alla scelta del servizio, con la stessa scritta della guida: occupa la
+   prima colonna, che altrimenti e' vuota. */
 .home {
   grid-column: 1;
   justify-self: start;
-  display: grid;
-  place-items: center;
   border-radius: 8px;
   color: inherit;
-  line-height: 1;
   text-decoration: none;
-}
-
-.home:hover {
-  border-color: var(--fg-muted);
 }
 
 /*
@@ -206,9 +200,8 @@ body {
 
   /* Home, orologio e tre pulsanti devono stare in 360px. Il selettore con
      `.topbar` serve a vincere su `.icon` e `.ghost`, dichiarati piu' sotto. */
-  .topbar .home {
-    width: 30px;
-    border-color: transparent;
+  .clock {
+    padding: 2px 4px;
   }
 
   .topbar-actions {
@@ -216,7 +209,29 @@ body {
   }
 
   .topbar .compact {
-    padding: 8px 9px;
+    padding: 8px;
+  }
+
+  .topbar .icon {
+    width: 36px;
+  }
+}
+
+/* Sotto i 350px non ci stanno piu' su una riga: l'orologio scende sotto. */
+@media (max-width: 349px) {
+  .topbar {
+    grid-template-columns: auto 1fr;
+  }
+
+  .topbar-actions {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .clock {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: center;
   }
 }
 
@@ -460,12 +475,13 @@ button {
   align-items: center;
   gap: 12px;
   max-width: min(92vw, 460px);
-  padding: 12px 14px;
+  padding: 10px 16px;
   transform: translateX(-50%);
-  background: var(--bg-alt);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: 0 10px 30px rgb(0 0 0 / 0.2);
+  /* Colori invertiti, come il messaggio a comparsa della guida. */
+  background: var(--fg);
+  border-radius: 8px;
+  color: var(--bg);
+  font-size: 14px;
 }
 
 /* `display: flex` qui sopra vince sull'attributo `hidden`: senza questa regola
@@ -476,7 +492,13 @@ button {
 
 .toast .ghost {
   padding: 6px 12px;
-  color: var(--accent);
+  background: transparent;
+  border-color: color-mix(in srgb, var(--bg) 50%, transparent);
+  font-weight: 700;
+}
+
+.toast .ghost:hover {
+  border-color: var(--bg);
 }
 
 /* -------------------------------------------------------------- dialog --- */
@@ -488,7 +510,7 @@ button {
   padding: 20px 18px calc(20px + env(safe-area-inset-bottom));
   background: var(--bg-alt);
   border: 1px solid var(--line);
-  border-radius: var(--radius) var(--radius) 0 0;
+  border-radius: 12px 12px 0 0;
   color: var(--fg);
 }
 
@@ -560,6 +582,12 @@ button {
   font-size: 15px !important;
 }
 
+.check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
 .stack {
   display: flex;
   flex-direction: column;
@@ -581,7 +609,8 @@ button {
   margin: 0;
 }
 
-.hint {
+/* Con `.sheet` davanti, altrimenti la regola qui sopra azzera il margine. */
+.sheet .hint {
   margin: 12px 0 0;
   color: var(--fg-muted);
   font-size: 13px;
@@ -593,7 +622,7 @@ button {
   border-radius: 4px;
 }
 
-.error {
+.sheet .error {
   margin: 12px 0 0;
   color: var(--danger);
   font-size: 13px;
@@ -610,8 +639,9 @@ button {
 /* ------------------------------------------------------------ desktop --- */
 
 @media (min-width: 760px) {
+  /* Abbastanza da far scorrere l'ultima riga sopra il pulsante Add. */
   body {
-    padding-bottom: 40px;
+    padding-bottom: 96px;
   }
 
   main {
@@ -689,7 +719,7 @@ button {
 
   .sheet {
     margin: auto;
-    border-radius: var(--radius);
+    border-radius: 12px;
   }
 
   .fab {
