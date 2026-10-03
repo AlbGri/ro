@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>uaRO – Nuovo Mondo passo per passo</title>
+<script src="../gate.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -329,7 +330,7 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
     <div class="actions">
       <button class="btn primary" id="btnNext" type="button" title="Clicca di nuovo per passare al successivo non fatto">Vai al prossimo passo</button>
       <button class="btn" id="btnHide" type="button" aria-pressed="false">Nascondi i fatti</button>
-      <button class="btn" id="btnExport" type="button">Esporta note per Claude</button>
+      <button class="btn" id="btnExport" type="button">Esporta note per l'admin</button>
       <button class="btn" id="btnView" type="button" title="Passa dal percorso alle quest che non servono, e ritorno">Altre quest</button>
       <details class="more">
         <summary class="btn">Altro</summary>
@@ -388,8 +389,8 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
             <li>Clicca un /navi o un comando: viene copiato, e lo incolli nella chat del gioco.</li>
             <li>Spunta gli step fatti. Vai al prossimo passo ti porta al primo non fatto; cliccalo di nuovo per saltare quelli lasciati indietro.</li>
             <li>Nei dialoghi scegli l'opzione sottolineata, come «Yes.»; quelle tra virgolette alte, come “No.”, sono da evitare.</li>
-            <li>Uno step con l'etichetta facoltativo non conta nel progresso. Se qualcosa non torna, scrivilo nella nota dello step e usa Esporta note per Claude.</li>
-            <li>Spunte e note restano in questo browser, finché il file non cambia nome o cartella. Se cancelli i dati del browser si perdono: prima fai un backup dal menu Altro.</li>
+            <li>Uno step con l'etichetta facoltativo non conta nel progresso. Se qualcosa non torna, scrivilo nella nota dello step e usa Esporta note per l'admin.</li>
+            <li>Spunte e note restano in questo browser. Se cancelli i dati del browser si perdono: prima fai un backup dal menu Altro.</li>
           </ul>
         </div>
         <div>
@@ -426,7 +427,7 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
 </dialog>
 
 <script>
-const GUIDE_VERSION = "7.2";
+const GUIDE_VERSION = "7.3";
 const STORAGE_KEY = "uaro-nw-guide";
 
 const QUESTS = {
@@ -2140,8 +2141,8 @@ const PHASES = [
       const copyAgain = function () { copyText(text).then(function (k) { toast(k ? "Copiato" : "Copia non riuscita: seleziona il testo"); }); };
       copyText(text).then(function (ok) {
         openDialog({
-          title: "Note per Claude",
-          text: ok ? "Testo copiato negli appunti: incollalo nella chat con Claude insieme al file HTML." : "Seleziona il testo, copialo e incollalo nella chat con Claude insieme al file HTML.",
+          title: "Note per l'admin",
+          text: ok ? "Testo copiato negli appunti: mandalo all'admin." : "Seleziona il testo, copialo e mandalo all'admin.",
           value: text, action: copyAgain, actionLabel: "Copia di nuovo",
           check: {
             label: "Aggiungi il backup di spunte e note", checked: false,
@@ -2192,7 +2193,7 @@ const PHASES = [
       closeMore();
       const n = Object.keys(state.notes).filter(function (k) { return (state.notes[k] || "").trim(); }).length;
       if (!n) { toast("Non ci sono note da cancellare"); return; }
-      if (!confirm("Cancellare tutte le " + n + " note? Le spunte restano. Esporta prima le note se non le hai ancora mandate a Claude.")) return;
+      if (!confirm("Cancellare tutte le " + n + " note? Le spunte restano. Esporta prima le note se non le hai ancora mandate all'admin.")) return;
       state.notes = {};
       save(); syncInputs();
       toast("Note cancellate");
@@ -2233,7 +2234,7 @@ const PHASES = [
   applyFolds();
   linkifyAll();
   wire();
-  // La pagina iniziale viene dall'indirizzo: ?vista=altre oppure #altre (usato dal file uaro_altre_quest.html).
+  // La pagina iniziale viene dall'indirizzo: ?vista=altre oppure #altre (usato dai link che aprono direttamente le altre quest).
   setView(new URLSearchParams(location.search).get("vista") === "altre" ? "altre" : (viewFromHash() || "percorso"));
   update();
   measureTopbar();
