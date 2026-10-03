@@ -430,7 +430,7 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
 </dialog>
 
 <script>
-const GUIDE_VERSION = "7.6";
+const GUIDE_VERSION = "7.7";
 const STORAGE_KEY = "uaro-nw-guide";
 
 const QUESTS = {
@@ -768,14 +768,14 @@ const ID_MAP_V3 = {
 const PHASES = [
   {
     id: "0", branch: "common", title: "Preparativi", where: "Rune-Midgard",
-    intro: "Compra tutto prima di partire, così eviti viaggi avanti e indietro: prima quello che serve a tutti, poi quello che è solo consigliato. I comandi @ws, da incollare in chat, cercano chi vende l'oggetto nei negozi dei giocatori. Sul posto raccoglierai solo 20 Ordinary Branch, 1 Unidentified Mineral e, se non le compri (step 0.07), le pagine del Report.",
+    intro: "Compra tutto prima di partire, così eviti viaggi avanti e indietro: prima quello che serve a tutti, poi quello che è solo consigliato. I comandi @ws, da incollare in chat, cercano chi vende l'oggetto nei negozi dei giocatori; dove c'è un /navi, l'oggetto lo vende un NPC. Sul posto raccoglierai solo 20 Ordinary Branch, 1 Unidentified Mineral e, se non le compri (step 0.07), le pagine del Report.",
     steps: [
       { id: "0.01", q: ["ONW"], h: "300 Jellopy",
         d: "Per Onward: li consegni al Promotional Staff di Aldebaran (step 1.02).",
         copy: [{ label: "Cerca chi vende Jellopy", items: ["@ws 909"] }] },
       { id: "0.02", q: ["ONW"], h: "1 Emerald e 1 Ruby",
-        d: "Per Onward: li consegni allo Staff di Geffen (step 1.03).",
-        copy: [{ label: "Cerca chi vende Emerald, Ruby", items: ["@ws 721","@ws 723"] }] },
+        d: "Per Onward: li consegni allo Staff di Geffen (step 1.03).\nLi vende il Jeweler a 6.000 zeny l'uno: quello di Morroc (primo /navi) o quello di Lighthalzen (secondo).",
+        navi: ["moc_ruins 110/105","lhz_in02 105/21"] },
       { id: "0.03", q: ["PREP"], h: "Fly Wing, Butterfly Wing, pozioni HP e SP, Blue Gemstone",
         d: "Scorte per tutto il percorso. Le Fly Wing servono soprattutto sui campi di El Dicastes. Le Blue Gemstone servono a chi apre i Warp Portal, una per portale: 20-30 bastano. Se le hai, una Green Butterfly Wing (Lighthalzen) e una Red Butterfly Wing (Rachel) ti risparmiano due viaggi lunghi nella fase 1." },
       { id: "0.04", q: ["NS"], h: "20 Strong Vine dai giocatori",
@@ -973,9 +973,10 @@ const PHASES = [
     intro: "L'United Research Official non si clicca: basta camminargli vicino. Non ancora provata su uaRO: se qualcosa non torna, scrivilo nella nota dello step.",
     steps: [
       { id: "Q1.01", q: ["TRI"], opt: true, h: "Materiali: 1 Folding Fan of Cat Ghost, 1 Flame Stone, 1 Old Frying Pan, 1 Squid Ink",
-        d: "Comprali prima di iniziare, così non interrompi la quest.",
-        copy: [{ label: "Cerca chi vende Folding Fan of Cat Ghost, Flame Stone, Old Frying Pan, Squid Ink", items: ["@ws 7262","@ws 7521","@ws 7031","@ws 1024"] }],
-        tip: "Il Flame Stone lo vendono gli NPC che hanno oggetti da ninja." },
+        d: "Comprali prima di iniziare, così non interrompi la quest.\nIl Flame Stone lo vende Jackie, nella locanda ovest di Prontera, a 15 zeny (/navi). Gli altri tre cercali dai giocatori.",
+        navi: ["prt_in 233/136"],
+        copy: [{ label: "Cerca chi vende Folding Fan of Cat Ghost, Old Frying Pan, Squid Ink", items: ["@ws 7262","@ws 7031","@ws 1024"] }],
+        verify: "Jackie vende il Flame Stone a 15 zeny, come dice il wiki uaRO?" },
       { id: "Q1.02", q: ["TRI"], opt: true, h: "Avvicinati all'United Research Official",
         d: "Entra dall'ingresso indicato. Ti chiede di parlare con chi gestisce i documenti.",
         navi: ["mid_camp 163/234","mid_campin 376/120"] },
@@ -1041,8 +1042,10 @@ const PHASES = [
         d: "Comprale prima di iniziare.",
         copy: [{ label: "Cerca chi vende Holy Water", items: ["@ws 523"] }] },
       { id: "Q2.03", q: ["RAY"], opt: true, h: "Materiali per il finale: 20 Potato e 30 Log",
-        d: "Solo per il finale facoltativo (step Q2.25, premio: 5 Sweet Potato).",
-        copy: [{ label: "Cerca chi vende Potato, Log", items: ["@ws 516","@ws 7201"] }] },
+        d: "Solo per il finale facoltativo (step Q2.25, premio: 5 Sweet Potato).\nLe Potato le vende il Vegetable Gardener di Prontera a 15 zeny l'una (/navi). I Log cercali dai giocatori.",
+        navi: ["prontera 48/58"],
+        copy: [{ label: "Cerca chi vende Log", items: ["@ws 7201"] }],
+        verify: "Negli script ufficiali le Potato le vende il Vegetable Gardener a prontera 48/58: confermi?" },
       { id: "Q2.04", q: ["RAY"], opt: true, h: "Echinacea nell'edificio centrale",
         d: "Ti manda ad aiutare Kidd.",
         navi: ["mid_campin 68/185"] },
