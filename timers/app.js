@@ -55,9 +55,6 @@ const SAVE_DEBOUNCE_MS = 400;
 const PURGE_MIN_AGE = HOUR;
 const MAX_UNDO = 20;
 
-const SOUND_ON = "☑";
-const SOUND_OFF = "☐";
-
 const store = new TimerStore();
 /** @type {Map<string, {el: HTMLElement, cache: string}>} Cache di rendering. */
 const rows = new Map();
@@ -136,8 +133,9 @@ function createRow(timerId) {
   const el = document.createElement("li");
   el.className = "timer";
   el.dataset.id = timerId;
+  // La casella sta in un'etichetta piu' grande di lei, per prenderla con il dito.
   el.innerHTML = `
-    <button class="sound" type="button" aria-label="Attiva o disattiva il suono"></button>
+    <label class="sound"><input type="checkbox" aria-label="Suono" /></label>
     <span class="name"></span>
     <div class="meta"><span class="map"></span><span class="category"></span></div>
     <div class="times"><span class="time"></span><span class="spawn"></span><span class="maxspawn"></span></div>
@@ -163,7 +161,6 @@ function renderRow(timerId, timer, now) {
 
   const state = timer.state(now);
   const cells = {
-    sound: timer.sound ? SOUND_ON : SOUND_OFF,
     name: timer.name,
     map: timer.mappa,
     category: timer.categoria,
@@ -172,14 +169,14 @@ function renderRow(timerId, timer, now) {
     maxspawn: timer.isFixed ? NO_TIME : formatClock(timer.closeAt),
     left: formatLeft(timer, now),
   };
-  const signature = `${Object.values(cells).join("")}|${state}|${selectedId === timerId}`;
+  const signature = `${Object.values(cells).join("")}|${timer.sound}|${state}|${selectedId === timerId}`;
   if (row.cache === signature) return;
   row.cache = signature;
 
   for (const [key, value] of Object.entries(cells)) {
     row.el.querySelector(`.${key}`).textContent = value;
   }
-  row.el.querySelector(".sound").setAttribute("aria-pressed", String(timer.sound));
+  row.el.querySelector(".sound input").checked = timer.sound;
   row.el.dataset.state = state;
   row.el.classList.toggle("selected", selectedId === timerId);
   row.el.style.setProperty("--cat", categoryColor(timer.categoria));
@@ -571,7 +568,8 @@ function bindEvents() {
     if (row === null) return;
     const timerId = row.dataset.id;
     if (event.target.closest(".sound") !== null) {
-      toggleSound(timerId);
+      // Il clic sull'etichetta ne genera un secondo sulla casella: conta solo quello.
+      if (event.target.matches("input")) toggleSound(timerId);
       return;
     }
     if (event.target.closest(".menu") !== null) {

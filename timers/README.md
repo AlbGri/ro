@@ -204,6 +204,12 @@ Distribuzione:
 Compress-Archive -Path "dist\RagnarokTimers\*" -DestinationPath "RagnarokTimers-v1.0.0-windows.zip"
 ```
 
+Lo zip si pubblica come release del repository, con il tag `timers-v` seguito
+dalla versione. L'eseguibile pubblicato si scarica dalle
+[release](https://github.com/AlbGri/ragnarok/releases); la home del sito e le
+impostazioni dei timer hanno un collegamento diretto allo zip, da aggiornare a
+ogni nuova release.
+
 ## Compatibilita'
 
 Sviluppato e testato su Windows 11. Su Linux l'allarme sonoro richiede `aplay` (pacchetto `alsa-utils`) e il lampeggio della barra delle applicazioni non e' disponibile.

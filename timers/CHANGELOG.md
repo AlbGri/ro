@@ -8,6 +8,9 @@ L'applicazione desktop resta in inglese.
 - Interfaccia web in italiano, come il resto del sito: scritte, messaggi, istruzioni di installazione, nomi delle citta' dei fusi orari. I termini del gioco, come `Spawn` e `MvP`, restano in inglese
 - Con il mouse i pulsanti hanno la misura di quelli della guida; restano piu' alti sui dispositivi a tocco
 - Il pulsante del tema ha la stessa scritta in tutto il sito, `Cambia tema chiaro/scuro`
+- Nella colonna `Suono` una casella di spunta vera, come quelle della guida, al posto dei caratteri ☑ e ☐: prende il colore della riga
+- Icona nuova, la stessa per tutto il sito, al posto dell'orologio con i colori di prima
+- Nelle impostazioni, collegamento per scaricare l'applicazione per Windows
 - Il pulsante Home e' una scritta, come nella guida, al posto dell'icona
 - Messaggio a comparsa con i colori invertiti, come quello della guida
 - Nelle impostazioni il testo di aiuto non e' piu' attaccato all'ultimo pulsante, e la casella di spunta ha il colore del sito

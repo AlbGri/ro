@@ -373,17 +373,21 @@ button {
 
 .sound {
   grid-area: sound;
+  display: grid;
+  place-items: center;
   min-width: 44px;
-  padding: 8px;
-  background: none;
-  border: none;
-  color: var(--fg-muted);
-  font-size: 20px;
-  line-height: 1;
+  min-height: 36px;
+  cursor: pointer;
 }
 
-.sound[aria-pressed="true"] {
-  color: var(--fg);
+/* Una casella vera, come quelle degli step della guida: li' prende il colore
+   della fase, qui quello della riga. */
+.sound input {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--row);
+  cursor: pointer;
 }
 
 .name {
@@ -630,6 +634,12 @@ button {
   margin: 12px 0 0;
   color: var(--fg-muted);
   font-size: 13px;
+}
+
+.hint a {
+  color: var(--accent);
+  font-weight: 700;
+  text-underline-offset: 2px;
 }
 
 .hint code {

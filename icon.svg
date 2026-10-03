@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Icona del sito: una gelatina sorridente, disegnata da zero con i colori del sito. -->
+  <path
+    d="M268 70c-6 40 32 62 80 90 72 42 114 102 104 172-12 78-90 120-196 120S72 410 60 332c-10-70 32-130 104-172 36-20 72-32 104-90z"
+    fill="#f08a72"
+    stroke="#a3402c"
+    stroke-width="18"
+    stroke-linejoin="round"
+  />
+  <ellipse cx="170" cy="236" rx="34" ry="17" transform="rotate(-30 170 236)" fill="#fff" opacity="0.55" />
+  <ellipse cx="196" cy="304" rx="16" ry="26" fill="#1d2821" />
+  <ellipse cx="316" cy="304" rx="16" ry="26" fill="#1d2821" />
+  <path d="M222 366q34 30 68 0" fill="none" stroke="#1d2821" stroke-width="14" stroke-linecap="round" />
+</svg>

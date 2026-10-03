@@ -7,7 +7,7 @@ La home chiede un codice di accesso e poi fa scegliere il servizio.
 
 | Servizio | Indirizzo | Cartella |
 |---|---|---|
-| Timer di respawn per MvP e quest, web e desktop | `/ragnarok/timers/` | [`timers/`](timers/README.md) |
+| Timer di respawn per MvP e quest, web e desktop | `/ragnarok/timers/`; l'eseguibile per Windows e' nelle [release](https://github.com/AlbGri/ragnarok/releases) | [`timers/`](timers/README.md) |
 | Guida uaRO "Nuovo Mondo", passo per passo | `/ragnarok/guide/nuovo-mondo.html` | `guide/` |
 
 Tutto e' HTML, CSS e JavaScript senza framework ne' passaggi di build: le
@@ -36,7 +36,9 @@ restano nel suo browser: non c'e' nulla di condiviso da proteggere.
 |---|---|
 | `index.html` | home: elenco dei servizi |
 | `gate.js` | codice di accesso e tema chiaro o scuro, incluso da ogni pagina |
+| `icon.svg` | icona del sito, la stessa per tutte le pagine |
 | `tools/set-access-code.mjs` | imposta l'impronta del codice di accesso |
+| `tools/make-icons.mjs` | rigenera da `icon.svg` i PNG che servono ai timer installati come applicazione |
 | `timers/` | applicazione web dei timer; in `timers/desktop/` la versione desktop in Python |
 | `guide/` | guide in un solo file HTML ciascuna; in `guide/strumenti/` gli script Node che le validano |
 
