@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ragnarok</title>
+    <meta name="theme-color" content="#1e1e1e" />
+    <script src="gate.js"></script>
+    <style>
+      :root {
+        --bg: #1e1e1e;
+        --bg-alt: #2b2b2b;
+        --fg: #e8e8e8;
+        --fg-muted: #8a8a8a;
+        --accent: #4a7fb5;
+        color-scheme: dark;
+      }
+
+      body {
+        margin: 0;
+        padding: 48px 20px;
+        background: var(--bg);
+        color: var(--fg);
+        font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+
+      main {
+        max-width: 480px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin: 0 0 32px;
+        font-size: 24px;
+      }
+
+      h2 {
+        margin: 28px 0 10px;
+        color: var(--fg-muted);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .card {
+        display: block;
+        margin-bottom: 10px;
+        padding: 16px;
+        background: var(--bg-alt);
+        border: 1px solid transparent;
+        border-radius: 10px;
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .card:hover,
+      .card:focus-visible {
+        border-color: var(--accent);
+        outline: none;
+      }
+
+      .card strong {
+        display: block;
+        font-size: 16px;
+      }
+
+      .card span {
+        color: var(--fg-muted);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Ragnarok</h1>
+
+      <!-- Un servizio nuovo: una cartella sua, gate.js nel suo <head>, una scheda qui. -->
+      <section>
+        <h2>Timers</h2>
+        <a class="card" href="timers/">
+          <strong>Respawn timers</strong>
+          <span>Respawn windows for MvPs and quests.</span>
+        </a>
+      </section>
+
+      <section>
+        <h2>Guides</h2>
+        <a class="card" href="guide/nuovo-mondo.html" lang="it">
+          <strong>Nuovo Mondo</strong>
+          <span>uaRO, passo per passo: da Onward to the New World a El Dicastes e all'accesso al Nidhoggur's Nest.</span>
+        </a>
+      </section>
+    </main>
+  </body>
+</html>
