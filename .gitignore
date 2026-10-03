@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# Conda / venv
+.venv/
+.conda/
+
+# PyInstaller
+*.manifest
+*.spec.bak
+
+# IDE
+.vscode/
+.idea/
+
+# Claude
+.claude/
+CLAUDE.md
+
+# Documenti locali
+_local/
+STATO_PROGETTO.md
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Dati e log dell'utente (timer desktop)
+ragnarok_timers.json
+ragnarok_timers.json.bak
+ragnarok_timers.json.tmp
+ragnarok_timers.log*
+
+# Archivi di distribuzione
+*.zip
+
+# Fonti della guida: copie di script rAthena e cache delle mappe, solo in locale
+guide/fonti/
