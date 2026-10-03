@@ -6,8 +6,9 @@
  * disallineati fra loro. Va tenuta uguale a `VERSION` di `core.js`.
  */
 
-const VERSION = "1.1.0";
-const CACHE = `ragnarok-timers-${VERSION}`;
+const VERSION = "1.1.1";
+const CACHE_PREFIX = "ragnarok-timers-";
+const CACHE = `${CACHE_PREFIX}${VERSION}`;
 
 const ASSETS = [
   "./",
@@ -29,11 +30,19 @@ self.addEventListener("install", (event) => {
   );
 });
 
+// Le cache sono dell'intero albgri.github.io, non di questa cartella: si
+// cancellano solo le versioni vecchie dei timer, non quelle di altri servizi.
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))))
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter((key) => key.startsWith(CACHE_PREFIX) && key !== CACHE)
+            .map((key) => caches.delete(key)),
+        ),
+      )
       .then(() => self.clients.claim()),
   );
 });

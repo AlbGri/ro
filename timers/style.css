@@ -488,54 +488,6 @@ button {
   padding: 0;
 }
 
-/* --------------------------------------------------------------- gate --- */
-
-body.locked > *:not(.gate) {
-  display: none;
-}
-
-.gate {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100dvh;
-  padding: 24px;
-}
-
-.gate-box {
-  width: 100%;
-  max-width: 320px;
-  text-align: center;
-}
-
-.gate-box h1 {
-  margin: 0 0 24px;
-  font-size: 20px;
-}
-
-.gate-box label {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--fg-muted);
-  font-size: 13px;
-}
-
-.gate-box input {
-  width: 100%;
-  padding: 12px;
-  background: var(--bg-alt);
-  border: 1px solid #ffffff22;
-  border-radius: 8px;
-  color: var(--fg);
-  font-size: 16px;
-  text-align: center;
-}
-
-.gate-box .primary {
-  width: 100%;
-  margin-top: 16px;
-}
-
 /* ------------------------------------------------------------ desktop --- */
 
 @media (min-width: 760px) {

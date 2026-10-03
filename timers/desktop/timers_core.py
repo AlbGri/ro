@@ -28,7 +28,7 @@ from functools import lru_cache
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 
 log = logging.getLogger(__name__)
 

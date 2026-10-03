@@ -37,7 +37,6 @@ import {
   setWakeLock,
   unlockAudio,
 } from "./alerts.js";
-import { requireAccess } from "../gate.js";
 import {
   exportFile,
   importFile,
@@ -796,4 +795,5 @@ function init() {
   }
 }
 
-requireAccess().then(init);
+// `accessGranted` la espone gate.js, caricato dall'<head> prima di questo modulo.
+window.accessGranted.then(init);
