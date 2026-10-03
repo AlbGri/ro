@@ -21,6 +21,7 @@ from timers_core import (
     local_at,
     make_beep,
     now_local,
+    parse_beeps,
     parse_geometry,
     parse_hhmm,
     parse_minutes,
@@ -233,8 +234,41 @@ def test_round_trip_del_timer():
     timer = make_timer(minutes_ago=10, dmin=190, dmax=370)
     timer.alerts_sent = 3
     timer.sound = False
+    timer.beeps = 4
     ricostruito = Timer.from_dict(timer.to_dict())
     assert ricostruito == timer
+
+
+@pytest.mark.parametrize(
+    "value,expected",
+    [
+        (3, 3),
+        ("3", 3),
+        (" 12 ", 12),
+        (3.0, 3),
+        (None, 1),
+        ("", 1),
+        ("0", 1),
+        ("-2", 1),
+        ("2.5", 1),
+        ("abc", 1),
+        (True, 1),
+        (500, 99),
+    ],
+)
+def test_parse_beeps(value, expected):
+    assert parse_beeps(value) == expected
+
+
+def test_timer_senza_campo_beeps_suona_una_volta():
+    """I file scritti prima della colonna Bip hanno un solo bip per timer."""
+    payload = {
+        "name": "Atroce",
+        "start": now_local().isoformat(),
+        "duration_min_minutes": 190,
+        "duration_max_minutes": 370,
+    }
+    assert Timer.from_dict(payload).beeps == 1
 
 
 def test_timer_senza_campo_sound_ha_il_suono_attivo():

@@ -1,6 +1,6 @@
 /*
  * Un solo markup per due layout: su telefono ogni timer e' una scheda, da
- * 760px in su le stesse celle diventano le colonne della tabella grazie a
+ * 880px in su le stesse celle diventano le colonne della tabella grazie a
  * `display: contents` sui raggruppamenti.
  */
 
@@ -342,7 +342,7 @@ button {
   grid-template-columns: auto minmax(0, 1fr) auto auto;
   grid-template-areas:
     "sound name left menu"
-    "sound meta times menu";
+    "beeps meta times menu";
   align-items: center;
   gap: 2px 10px;
   padding: 10px 12px;
@@ -376,7 +376,7 @@ button {
   display: grid;
   place-items: center;
   min-width: 44px;
-  min-height: 36px;
+  min-height: 28px;
   cursor: pointer;
 }
 
@@ -388,6 +388,31 @@ button {
   margin: 0;
   accent-color: var(--row);
   cursor: pointer;
+}
+
+/* Quante volte suona l'allarme. Sul telefono sta sotto la casella del suono,
+   per non togliere larghezza a nome e mappa. */
+.beeps {
+  grid-area: beeps;
+  justify-self: center;
+  width: 40px;
+  padding: 2px 0;
+  background: var(--bg-alt);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: inherit;
+  font: inherit;
+  /* Sotto i 16px iOS ingrandisce la pagina quando il campo prende il fuoco. */
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  text-align: center;
+}
+
+@media (pointer: fine) {
+  .beeps {
+    font-size: 14px;
+  }
 }
 
 .name {
@@ -664,7 +689,9 @@ button {
 
 /* ------------------------------------------------------------ desktop --- */
 
-@media (min-width: 760px) {
+/* La soglia e' la larghezza minima della tabella: colonne fisse, distanze e
+   margini fanno 876px, e sotto la riga uscirebbe dallo schermo. */
+@media (min-width: 880px) {
   /* Abbastanza da far scorrere l'ultima riga sopra il pulsante Add. */
   body {
     padding-bottom: 96px;
@@ -679,7 +706,7 @@ button {
   .list-head,
   .timer {
     display: grid;
-    grid-template-columns: 56px minmax(120px, 1.4fr) minmax(80px, 1fr) 110px 64px 70px 92px 100px 40px;
+    grid-template-columns: 56px 44px minmax(120px, 1.4fr) minmax(80px, 1fr) 110px 64px 70px 92px 100px 40px;
     align-items: center;
     gap: 0 8px;
   }
@@ -748,12 +775,14 @@ button {
     border-radius: 12px;
   }
 
+  /* Allineato al bordo della tabella; `max` lo tiene dentro lo schermo quando
+     la finestra e' piu' stretta dei 1000px della tabella. */
   .fab {
-    right: calc(50% - 500px + 16px);
+    right: max(16px, calc(50% - 500px + 16px));
   }
 }
 
-@media (max-width: 759px) {
+@media (max-width: 879px) {
   .fab-label {
     display: none;
   }

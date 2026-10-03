@@ -9,7 +9,7 @@
  * epoch, le durate `dmin` e `dmax` sono minuti.
  */
 
-export const VERSION = "1.1.4";
+export const VERSION = "1.2.0";
 export const DATA_VERSION = 4;
 
 export const DEFAULT_CATEGORIES = ["MvP", "Quest"];
@@ -19,6 +19,9 @@ export const HISTORY_KEYS = ["nome", "mappa", "categoria"];
 export const CATEGORY_RENAMES = { Mostro: "MvP", MVP: "MvP" };
 
 export const MAX_ARCHIVE = 200;
+
+// Tetto alla colonna Bip: due cifre, e a un bip ogni 15 secondi sono gia' 25 minuti.
+export const MAX_BEEPS = 99;
 
 export const MINUTE = 60_000;
 export const HOUR = 60 * MINUTE;
@@ -304,6 +307,19 @@ export function parseMinutes(text) {
 }
 
 /**
+ * Interpreta quante volte deve suonare l'allarme di un timer.
+ *
+ * @param {unknown} value Testo della colonna Bip, o valore letto dal file dati.
+ * @returns {number} Un intero da 1 a MAX_BEEPS: 1 se il valore manca, e' vuoto
+ *   o non e' un numero intero.
+ */
+export function parseBeeps(value) {
+  const text = String(value ?? "").trim();
+  if (!/^[0-9]+$/.test(text)) return 1;
+  return Math.min(Math.max(Number(text), 1), MAX_BEEPS);
+}
+
+/**
  * Formatta una durata in H:MM:SS, oppure MM:SS se sotto l'ora.
  *
  * @param {number} totalSeconds Durata in secondi.
@@ -451,6 +467,8 @@ export class Timer {
    * @param {number} fields.dmin Durata minima in minuti.
    * @param {number} fields.dmax Durata massima in minuti.
    * @param {boolean} [fields.sound] False se questo timer non deve suonare.
+   * @param {number} [fields.beeps] Quante volte suona al massimo l'allarme di
+   *   questo timer.
    * @param {boolean} [fields.acked] True se l'utente ha preso atto dell'allarme.
    * @param {number} [fields.alertsSent] Quanti allarmi sono gia' stati emessi.
    * @param {?number} [fields.nextAlert] Istante del prossimo allarme.
@@ -463,6 +481,7 @@ export class Timer {
     dmin,
     dmax,
     sound = true,
+    beeps = 1,
     acked = false,
     alertsSent = 0,
     nextAlert = null,
@@ -474,6 +493,7 @@ export class Timer {
     this.dmin = dmin;
     this.dmax = dmax;
     this.sound = sound;
+    this.beeps = beeps;
     this.acked = acked;
     this.alertsSent = alertsSent;
     this.nextAlert = nextAlert;
@@ -612,6 +632,7 @@ export class Timer {
       duration_min_minutes: this.dmin,
       duration_max_minutes: this.dmax,
       sound: this.sound,
+      beeps: this.beeps,
       acked: this.acked,
       alerts_sent: this.alertsSent,
     };
@@ -657,6 +678,7 @@ export class Timer {
       dmin,
       dmax,
       sound: Boolean(payload.sound ?? true),
+      beeps: parseBeeps(payload.beeps),
       acked: Boolean(payload.acked ?? payload.notified ?? false),
       alertsSent: toNumber(payload.alerts_sent) ?? 0,
     });

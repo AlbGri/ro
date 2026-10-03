@@ -488,6 +488,7 @@ class TimerApp:
             copy = Timer(
                 name=source.name, mappa=source.mappa, categoria=source.categoria,
                 start=now, dmin=source.dmin, dmax=source.dmax, sound=source.sound,
+                beeps=source.beeps,
             )
             self._add_row(self.store.add(copy))
         self._save()

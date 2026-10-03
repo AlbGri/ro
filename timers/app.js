@@ -23,6 +23,7 @@ import {
   getTimeZone,
   localAt,
   nowLocal,
+  parseBeeps,
   parseHHMM,
   parseMinutes,
   setTimeZone,
@@ -136,6 +137,8 @@ function createRow(timerId) {
   // La casella sta in un'etichetta piu' grande di lei, per prenderla con il dito.
   el.innerHTML = `
     <label class="sound"><input type="checkbox" aria-label="Suono" /></label>
+    <input class="beeps" inputmode="numeric" maxlength="2" autocomplete="off"
+      aria-label="Numero di bip" title="Quante volte suona l'allarme" />
     <span class="name"></span>
     <div class="meta"><span class="map"></span><span class="category"></span></div>
     <div class="times"><span class="time"></span><span class="spawn"></span><span class="maxspawn"></span></div>
@@ -169,7 +172,7 @@ function renderRow(timerId, timer, now) {
     maxspawn: timer.isFixed ? NO_TIME : formatClock(timer.closeAt),
     left: formatLeft(timer, now),
   };
-  const signature = `${Object.values(cells).join("")}|${timer.sound}|${state}|${selectedId === timerId}`;
+  const signature = `${Object.values(cells).join("")}|${timer.sound}|${timer.beeps}|${state}|${selectedId === timerId}`;
   if (row.cache === signature) return;
   row.cache = signature;
 
@@ -177,6 +180,9 @@ function renderRow(timerId, timer, now) {
     row.el.querySelector(`.${key}`).textContent = value;
   }
   row.el.querySelector(".sound input").checked = timer.sound;
+  // Il campo non va riscritto mentre ci si scrive dentro.
+  const beeps = row.el.querySelector(".beeps");
+  if (document.activeElement !== beeps) beeps.value = String(timer.beeps);
   row.el.dataset.state = state;
   row.el.classList.toggle("selected", selectedId === timerId);
   row.el.style.setProperty("--cat", categoryColor(timer.categoria));
@@ -199,7 +205,8 @@ function render(now) {
   for (const [timerId, timer] of ordered) renderRow(timerId, timer, now);
 
   const order = ordered.map(([timerId]) => timerId).join(",");
-  if (order !== currentOrder) {
+  // Spostare una riga toglierebbe il fuoco al campo dei bip mentre ci si scrive.
+  if (order !== currentOrder && !document.activeElement?.matches(".beeps")) {
     currentOrder = order;
     // append sposta i nodi gia' presenti: la lista si riordina senza ricrearla.
     list.append(...ordered.map(([timerId]) => rows.get(timerId).el));
@@ -216,13 +223,14 @@ function render(now) {
  * @param {number} now Istante corrente.
  */
 function runAlerts(now) {
-  const maxAlerts = store.settings.repeatAlert ? store.settings.alertMaxCount : 1;
   let changed = false;
   let pending = 0;
 
   for (const timer of store.timers.values()) {
     if (!timer.acked && timer.state(now) !== TimerState.PENDING) pending += 1;
-    if (!timer.alertDue(now, maxAlerts)) continue;
+    // Quante volte suonare lo dice la colonna Bip del timer: `repeat_alert` e
+    // `alert_max_count` delle impostazioni valgono solo per l'applicazione desktop.
+    if (!timer.alertDue(now, timer.beeps)) continue;
     playBeep(store.settings.volume);
     notify(`${timer.name}: spawn aperto`, timer.mappa || "Finestra di spawn aperta", timer.name);
     timer.registerAlert(now, store.settings.alertRepeatSeconds);
@@ -444,6 +452,7 @@ function duplicate(timerId) {
     dmin: timer.dmin,
     dmax: timer.dmax,
     sound: timer.sound,
+    beeps: timer.beeps,
   });
   selectedId = store.add(copy);
   saveNow();
@@ -511,6 +520,21 @@ function toggleSound(timerId) {
   tick();
 }
 
+/**
+ * Imposta quante volte suona l'allarme di un timer.
+ *
+ * @param {string} timerId Identificatore del timer.
+ * @param {HTMLInputElement} input Campo della riga: viene riscritto con il
+ *   valore accettato, 1 se era vuoto o non era un numero.
+ */
+function setBeeps(timerId, input) {
+  const timer = store.timers.get(timerId);
+  if (timer === undefined) return;
+  timer.beeps = parseBeeps(input.value);
+  input.value = String(timer.beeps);
+  scheduleSave();
+}
+
 // -------------------------------------------------------------- impostazioni
 
 /** Aggiorna il pulsante che chiede il permesso per suono e notifiche. */
@@ -572,6 +596,8 @@ function bindEvents() {
       if (event.target.matches("input")) toggleSound(timerId);
       return;
     }
+    // Scrivere il numero di bip non vale come aver visto il timer.
+    if (event.target.matches(".beeps")) return;
     if (event.target.closest(".menu") !== null) {
       openActions(timerId);
       return;
@@ -581,7 +607,18 @@ function bindEvents() {
 
   list.addEventListener("dblclick", (event) => {
     const row = event.target.closest(".timer");
-    if (row !== null && event.target.closest("button") === null) openEditor(row.dataset.id);
+    if (row !== null && event.target.closest("button, .sound, .beeps") === null) {
+      openEditor(row.dataset.id);
+    }
+  });
+
+  list.addEventListener("change", (event) => {
+    if (!event.target.matches(".beeps")) return;
+    setBeeps(event.target.closest(".timer").dataset.id, event.target);
+  });
+  list.addEventListener("keydown", (event) => {
+    // Invio conferma il numero, come l'uscita dal campo.
+    if (event.key === "Enter" && event.target.matches(".beeps")) event.target.blur();
   });
 
   $("btn-add").addEventListener("click", () => openEditor(null));

@@ -28,6 +28,7 @@ import {
   localAt,
   msFromParts,
   nowLocal,
+  parseBeeps,
   parseHHMM,
   parseMinutes,
   setTimeZone,
@@ -322,7 +323,37 @@ describe("serializzazione", () => {
     const timer = makeTimer({ minutesAgo: 10, dmin: 190, dmax: 370 });
     timer.alertsSent = 3;
     timer.sound = false;
+    timer.beeps = 4;
     assert.deepStrictEqual(Timer.fromDict(timer.toDict()), timer);
+  });
+
+  it("legge il numero di bip", () => {
+    const casi = [
+      [3, 3],
+      ["3", 3],
+      [" 12 ", 12],
+      [3.0, 3],
+      [null, 1],
+      [undefined, 1],
+      ["", 1],
+      ["0", 1],
+      ["-2", 1],
+      ["2.5", 1],
+      ["abc", 1],
+      [true, 1],
+      [500, 99],
+    ];
+    for (const [valore, atteso] of casi) assert.equal(parseBeeps(valore), atteso);
+  });
+
+  it("suona una volta sui file scritti prima della colonna Bip", () => {
+    const payload = {
+      name: "Atroce",
+      start: toLocalISO(nowLocal()),
+      duration_min_minutes: 190,
+      duration_max_minutes: 370,
+    };
+    assert.equal(Timer.fromDict(payload).beeps, 1);
   });
 
   it("scrive una data ISO rileggibile", () => {

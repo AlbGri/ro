@@ -88,13 +88,19 @@ non c'e' sincronizzazione fra dispositivi e cancellare i dati del sito cancella
 i timer. Il formato e' pero' identico a quello dell'applicazione desktop, e i
 comandi `Esporta i dati` e `Importa i dati` spostano i timer da una all'altra.
 
-Il layout e' unico: su telefono ogni timer e' una scheda, da 760px in su le
+Il layout e' unico: su telefono ogni timer e' una scheda, da 880px in su le
 stesse celle diventano le colonne della tabella.
 
-Le scritte sono in italiano. Le colonne si chiamano `Suono`, `Nome`, `Mappa`,
-`Categoria`, `Ora`, `Spawn`, `Spawn max` e `Manca`, e corrispondono nell'ordine a
-`Sound`, `Name`, `Map`, `Category`, `Time`, `Spawn`, `Max. Spawn` e `Left` del
-desktop. I termini del gioco, come `Spawn` e `MvP`, restano in inglese.
+Le scritte sono in italiano. Le colonne si chiamano `Suono`, `Bip`, `Nome`,
+`Mappa`, `Categoria`, `Ora`, `Spawn`, `Spawn max` e `Manca`. Tolta `Bip`, che il
+desktop non ha, corrispondono nell'ordine a `Sound`, `Name`, `Map`, `Category`,
+`Time`, `Spawn`, `Max. Spawn` e `Left`. I termini del gioco, come `Spawn` e
+`MvP`, restano in inglese.
+
+La colonna `Bip` dice quante volte suona l'allarme di quel timer, una ogni 15
+secondi finche' la riga non viene toccata: si scrive un numero da 1 a 99, e il
+campo vuoto vale 1. Il numero viaggia nel file dati (campo `beeps` del timer):
+l'applicazione desktop lo conserva ma non lo usa.
 
 Differenze rispetto al desktop, tutte volute:
 
@@ -105,6 +111,7 @@ Differenze rispetto al desktop, tutte volute:
 | `Ctrl+D`, `Ctrl+R` | `d`, `r`, piu' `n` per un timer nuovo. Nel browser quelle combinazioni sono gia' occupate |
 | colore di categoria per ordine di apparizione | colore derivato dal nome, uguale su ogni dispositivo |
 | allarme sonoro e lampeggio della barra | suono, notifica di sistema e titolo della scheda lampeggiante |
+| `Repeat alert` nelle impostazioni, uguale per tutti i timer | colonna `Bip`, un numero di ripetizioni per ogni timer |
 
 ### Fuso orario
 

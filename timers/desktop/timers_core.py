@@ -28,7 +28,7 @@ from functools import lru_cache
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-__version__ = "1.1.4"
+__version__ = "1.2.0"
 
 log = logging.getLogger(__name__)
 
@@ -44,6 +44,10 @@ CATEGORY_RENAMES = {"Mostro": "MvP", "MVP": "MvP"}
 
 MAX_ARCHIVE = 200
 
+# Tetto alla colonna Bip della versione web: due cifre, e a un bip ogni 15
+# secondi sono gia' 25 minuti.
+MAX_BEEPS = 99
+
 # Un HH:MM inserito a mano che cade oltre questo margine nel futuro viene letto
 # come "ieri": serve per le uccisioni a cavallo della mezzanotte.
 FUTURE_TOLERANCE = timedelta(hours=12)
@@ -51,6 +55,7 @@ FUTURE_TOLERANCE = timedelta(hours=12)
 TIME_RE = re.compile(r"^([0-1]?[0-9]|2[0-3])[:.]([0-5][0-9])$")
 DURATION_HM_RE = re.compile(r"(\d+)\s*[h:]\s*(\d{1,2})")
 DURATION_H_RE = re.compile(r"(\d+(?:\.\d+)?)\s*h")
+BEEPS_RE = re.compile(r"[0-9]+")
 GEOMETRY_RE = re.compile(r"^(\d+)x(\d+)(?:\+(-?\d+)\+(-?\d+))?$")
 
 # Quanti pixel della finestra devono restare dentro lo schermo perche' la barra
@@ -182,6 +187,25 @@ def parse_minutes(text: str) -> float | None:
             except ValueError:
                 return None
     return value if value > 0 else None
+
+
+def parse_beeps(value: object) -> int:
+    """Interpreta quante volte deve suonare l'allarme di un timer.
+
+    Args:
+        value: Valore letto dal file dati, o testo inserito dall'utente.
+
+    Returns:
+        Un intero da 1 a MAX_BEEPS: 1 se il valore manca, e' vuoto o non e' un
+        numero intero.
+    """
+    # Nel JSON 3.0 e 3 sono lo stesso numero, e la versione web li legge uguali.
+    if isinstance(value, float) and value.is_integer():
+        value = int(value)
+    text = "" if value is None else str(value).strip()
+    if not BEEPS_RE.fullmatch(text):
+        return 1
+    return min(max(int(text), 1), MAX_BEEPS)
 
 
 def format_duration(total_seconds: float) -> str:
@@ -425,6 +449,9 @@ class Timer:
         dmin: Durata minima prima dell'apertura della finestra.
         dmax: Durata massima, oltre la quale la finestra e' chiusa.
         sound: False se questo timer non deve emettere allarmi sonori.
+        beeps: Quante volte suona al massimo l'allarme nella versione web. Qui
+            le ripetizioni le decidono le impostazioni: il campo si conserva
+            per non perderlo nel file condiviso.
         acked: True se l'utente ha preso atto dell'allarme.
         alerts_sent: Quanti allarmi sono gia' stati emessi.
         next_alert: Istante del prossimo allarme, None se non programmato.
@@ -437,6 +464,7 @@ class Timer:
     dmin: timedelta
     dmax: timedelta
     sound: bool = True
+    beeps: int = 1
     acked: bool = False
     alerts_sent: int = 0
     next_alert: datetime | None = None
@@ -550,6 +578,7 @@ class Timer:
             "duration_min_minutes": self.dmin.total_seconds() / 60,
             "duration_max_minutes": self.dmax.total_seconds() / 60,
             "sound": self.sound,
+            "beeps": self.beeps,
             "acked": self.acked,
             "alerts_sent": self.alerts_sent,
         }
@@ -594,6 +623,7 @@ class Timer:
             dmin=timedelta(minutes=dmin),
             dmax=timedelta(minutes=dmax),
             sound=bool(payload.get("sound", True)),
+            beeps=parse_beeps(payload.get("beeps")),
             acked=bool(payload.get("acked", payload.get("notified", False))),
             alerts_sent=int(payload.get("alerts_sent", 0)),
         )

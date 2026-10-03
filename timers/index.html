@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex" />
     <title>Timer di respawn</title>
     <meta name="description" content="Timer delle finestre di respawn per MvP e quest di Ragnarok Online." />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f7f1" />
@@ -42,6 +43,7 @@
     <main>
       <div class="list-head" aria-hidden="true">
         <span class="col-sound">Suono</span>
+        <span class="col-beeps">Bip</span>
         <span class="col-name">Nome</span>
         <span class="col-map">Mappa</span>
         <span class="col-category">Categoria</span>
@@ -178,6 +180,11 @@
         I timer restano solo in questo browser. Niente viene inviato, e
         cancellando i dati del sito si perdono: esporta un file per portarli su un
         altro dispositivo o nell'applicazione desktop.
+      </p>
+      <p class="hint">
+        Il numero accanto alla casella del suono dice quante volte suona
+        l'allarme di quel timer: una ogni 15 secondi, finché non tocchi la riga.
+        Vuoto vale 1.
       </p>
       <p class="hint">
         Gli allarmi suonano solo con questa pagina aperta. Con

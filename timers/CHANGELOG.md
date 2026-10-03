@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0] - 2026-10-04
+
+Nella versione web ogni timer decide quante volte suona il suo allarme.
+L'applicazione desktop non cambia.
+
+- Nuova colonna `Bip`, accanto a `Suono`: un numero da 1 a 99, che dice quante volte suona l'allarme di quel timer, una ogni 15 secondi finche' la riga non viene toccata. Il campo vuoto vale 1
+- L'allarme non si ripete piu' da solo sei volte: i timer gia' salvati suonano una volta, finche' non si scrive un numero piu' alto
+- Il numero di bip viaggia nel file dati (campo `beeps`). L'applicazione desktop lo conserva ma non lo usa: li' le ripetizioni restano quelle di `Repeat alert`
+- La tabella a colonne compare da 880 px di larghezza, non piu' da 760: sotto, le righe uscivano dallo schermo a destra
+- Fra 880 e 970 px il pulsante `Aggiungi` non finisce piu' fuori dallo schermo
+- La pagina chiede ai motori di ricerca di non essere indicizzata, come il resto del sito
+
 ## [1.1.4] - 2026-10-03
 
 Il repository cambia nome, da `ragnarok` a `ro`, e con lui l'indirizzo del sito.
