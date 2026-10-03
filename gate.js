@@ -188,7 +188,7 @@
         gate.className = "gate";
         gate.innerHTML = `
           <form class="gate-box">
-            <h1>Ragnarok</h1>
+            <h1>ro-tools</h1>
             <label for="gate-code">Codice di accesso</label>
             <input id="gate-code" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" />
             <p id="gate-error" hidden>Codice sbagliato.</p>

@@ -1,4 +1,4 @@
-# Ragnarok
+# ro-tools
 
 Strumenti e guide per Ragnarok Online in un solo sito statico, servito da
 GitHub Pages: `https://albgri.github.io/ro/`.
