@@ -8,6 +8,8 @@
  *
  * Girando prima che la pagina venga disegnata, e' anche il posto dove si
  * applica il tema chiaro o scuro scelto dall'utente, uguale per tutto il sito.
+ * Per questo i due `<meta name="theme-color">` di una pagina stanno prima di
+ * questo script.
  *
  * Nel sorgente sta solo l'impronta SHA-256 del codice, non il codice: chi apre
  * il repository o gli strumenti per sviluppatori non lo legge scritto in chiaro.
@@ -53,6 +55,21 @@
       // Senza localStorage la scelta vale per questa sola apertura.
     }
   };
+
+  // Il colore della barra del browser sul telefono: ogni pagina lo dichiara due
+  // volte, per il sistema chiaro e per quello scuro, prima di questo script.
+  // Con un tema scelto a mano vale in entrambi i casi quello scelto. Si osserva
+  // l'attributo perche' la guida lo cambia con codice suo.
+  const syncThemeColor = () => {
+    const metas = [...document.querySelectorAll('meta[name="theme-color"][media]')];
+    for (const meta of metas) meta.dataset.color ??= meta.content;
+    const theme = root.dataset.theme;
+    const chosen = theme && metas.find((meta) => meta.getAttribute("media").includes(theme));
+    for (const meta of metas) meta.content = (chosen || meta).dataset.color;
+  };
+
+  syncThemeColor();
+  new MutationObserver(syncThemeColor).observe(root, { attributeFilter: ["data-theme"] });
 
   // -------------------------------------------------------------- accesso ---
 

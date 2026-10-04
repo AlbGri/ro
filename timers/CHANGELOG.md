@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2] - 2026-10-04
+
+Sul telefono il colore della barra del browser segue il tema scelto a mano.
+L'applicazione desktop non cambia.
+
+- Con `Cambia tema chiaro/scuro` la barra del browser prende il colore del tema scelto; prima restava su quello del sistema. Vale per tutto il sito
+
 ## [1.2.1] - 2026-10-04
 
 L'intestazione della versione web si allinea alla tabella, come nella guida.
