@@ -8,7 +8,7 @@ La home chiede un codice di accesso e poi fa scegliere il servizio.
 | Servizio | Indirizzo | Cartella |
 |---|---|---|
 | Timer di respawn per MvP e quest, web e desktop | `/ro/timers/`; l'eseguibile per Windows e' nelle [release](https://github.com/AlbGri/ro/releases) | [`timers/`](timers/README.md) |
-| Guida uaRO "Nuovo Mondo", passo per passo | `/ro/guide/nuovo-mondo.html` | `guide/` |
+| Guida uaRO "Nuovo Mondo", passo per passo | `/ro/guide/nuovo-mondo.html` | `guide/`, con il suo [changelog](guide/CHANGELOG.md) |
 
 Tutto e' HTML, CSS e JavaScript senza framework ne' passaggi di build: le
 pagine vengono servite cosi' come sono nel repository.
@@ -52,7 +52,8 @@ guida funziona anche senza.
    nell'`<head>`: `<script src="../gate.js"></script>`.
 2. Lo stile delle altre pagine (colori e caratteri della guida Nuovo Mondo), un
    pulsante Home verso la scelta dei servizi e uno per il tema, che chiama
-   `toggleTheme()`.
+   `toggleTheme()`. I due `<meta name="theme-color">`, per il sistema chiaro e
+   per quello scuro, vanno prima di `gate.js`, che li allinea al tema scelto.
 3. Una scheda nella home, in `index.html`.
 
 Il tema scelto vale per tutto il sito: `gate.js` lo ricorda e lo applica a ogni
