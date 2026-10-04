@@ -31,7 +31,7 @@ const prima = [
   'window.esito = function (t) { document.getElementById("esito").textContent += String(t) + String.fromCharCode(10); };',
   'window.addEventListener("error", function (e) { window.esito("ERRORE: " + e.message); });',
   // Ogni prova parte da zero, oppure dai dati salvati di --semina (per provare la conversione di dati vecchi).
-  'try { ["", "-ids1", "-ids2"].forEach(function (x) { localStorage.removeItem("uaro-nw-guide-PROVA" + x); }); localStorage.removeItem("ragnarok/theme-PROVA"); } catch (e) {}',
+  'try { ["", "-ids1", "-ids2", "-ids3"].forEach(function (x) { localStorage.removeItem("uaro-nw-guide-PROVA" + x); }); localStorage.removeItem("ragnarok/theme-PROVA"); } catch (e) {}',
   semina ? 'try { localStorage.setItem("uaro-nw-guide-PROVA", ' + JSON.stringify(fs.readFileSync(semina, "utf8").trim()) + '); } catch (e) {}' : ''
 ].join("\n");
 let html = fs.readFileSync(GUIDA, "utf8");

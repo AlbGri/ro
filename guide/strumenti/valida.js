@@ -67,6 +67,11 @@ if (g.script[0].includes("const ID_MAP_V3")) {
   const valori = Object.values(v3);
   if (new Set(valori).size !== valori.length) err("ID_MAP_V3 manda due id vecchi sullo stesso id nuovo");
 } else err("manca ID_MAP_V3: serve a convertire spunte e note salvate prima della versione 7.0");
+if (g.script[0].includes("const ID_MAP_V4")) {
+  const v4 = new Function(g.script[0] + ";return ID_MAP_V4;")();
+  const valori = Object.values(v4);
+  if (new Set(valori).size !== valori.length) err("ID_MAP_V4 manda due id vecchi sullo stesso id nuovo");
+} else err("manca ID_MAP_V4: serve a convertire spunte e note salvate prima della versione 8.0");
 visibili.forEach(s => ["h", "d", "tip", "warn", "verify"].forEach(k => controllaTesto("step " + s.id + " (" + k + ")", s[k])));
 
 // Pagina "Altre quest": le sue fasi (page: "altre") non devono entrare nel progresso del percorso
