@@ -3,6 +3,10 @@
 Le versioni della guida `nuovo-mondo.html`. Il numero e' quello scritto in
 testa a ogni export delle note.
 
+## [8.3] - 2026-10-04
+
+- In cima al percorso, tolta la frase che rimandava alla pagina Altre quest: ci si arriva dal pulsante `Altre quest`
+
 ## [8.2] - 2026-10-04
 
 - Tripatriate Union's Feud (Q1): nuovo step Q1.21 con gli scambi che la quest sblocca, 5 Mystic Horn, 5 Peaked Hat o 5 Fur per un cibo con bonus
