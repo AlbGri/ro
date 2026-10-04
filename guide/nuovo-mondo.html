@@ -433,7 +433,7 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
 </dialog>
 
 <script>
-const GUIDE_VERSION = "8.1";
+const GUIDE_VERSION = "8.2";
 const STORAGE_KEY = "uaro-nw-guide";
 
 const QUESTS = {
@@ -1165,9 +1165,9 @@ const PHASES = [
   },
   {
     id: "Q1", branch: "common", opt: true, page: "altre", title: "Tripatriate Union's Feud", where: "Midgard Expedition Camp",
-    sum: "Premi: EXP e un First Aid Kit",
+    sum: "Premi: EXP, un First Aid Kit e gli scambi di oggetti con cibi che danno bonus",
     when: "Basta aver completato Onward to the New World (fase 1). È tutta al campo: il momento migliore è l'ora di attesa di Ring of the Wise King (step 9.14).",
-    intro: "L'United Research Official non si clicca: basta camminargli vicino. Non ancora provata su uaRO: se qualcosa non torna, scrivilo nella nota dello step.",
+    intro: "Completarla sblocca gli scambi con i tre ricercatori del campo: 5 oggetti lasciati dai mostri del Nuovo Mondo per un cibo che dà un bonus per 10 minuti (step Q1.21).\nL'United Research Official non si clicca: basta camminargli vicino. Non ancora provata su uaRO: se qualcosa non torna, scrivilo nella nota dello step.",
     steps: [
       { id: "Q1.01", q: ["TRI"], opt: true, h: "Materiali: 1 Folding Fan of Cat Ghost, 1 Flame Stone, 1 Old Frying Pan, 1 Squid Ink",
         d: "Comprali prima di iniziare, così non interrompi la quest.\nIl Flame Stone lo vende Jackie, nella locanda ovest di Prontera, a 15 zeny (/navi). Gli altri tre cercali dai giocatori.",
@@ -1221,8 +1221,13 @@ const PHASES = [
       { id: "Q1.19", q: ["TRI"], opt: true, h: "Ryosen",
         navi: ["mid_camp 165/245"] },
       { id: "Q1.20", q: ["TRI"], opt: true, h: "United Research Official",
-        d: "Ti dà un First Aid Kit. Tripatriate completata.",
-        navi: ["mid_campin 376/120"] }
+        d: "Ti dà un First Aid Kit. Tripatriate completata: da ora Ryosen, Hansenne e Hue fanno gli scambi dello step Q1.21.",
+        navi: ["mid_campin 376/120"] },
+      { id: "Q1.21", q: ["TRI"], opt: true, h: "Scambi con Ryosen, Hansenne e Hue: 5 oggetti per un cibo con bonus",
+        d: "A quest completata i tre ricercatori scambiano 5 oggetti lasciati dai mostri del Nuovo Mondo con 1 cibo, che dà un bonus per 10 minuti. Lo scambio si ripete quante volte vuoi. In ogni dialogo l'opzione giusta è la seconda voce.\nRyosen: 5 Mystic Horn (dai Cornus, nei campi di Splendide) per 1 Rune Strawberry Cake, ATK +5 e MATK +5. Scegli «Oh, ok, I'll give you!», poi «Yeah... I'll exchange.».\nHansenne: 5 Peaked Hat (dai Tatacho, nei campi di Manuk) per 1 Arunafeltz Desert Sandwich, CRIT +7. Scegli «Sure.» due volte.\nHue: 5 Fur (dai Tatacho e dagli Hillslion, nei campi di Manuk) per 1 Schwartzwald Pine Jubilee, HIT +10 e FLEE +20. Scegli «Oh, I'll give you Fur.», poi «Sure.».",
+        navi: ["mid_camp 165/245","mid_camp 222/218","mid_camp 247/255"],
+        copy: [{ label: "Cerca chi vende Mystic Horn, Peaked Hat, Fur", items: ["@ws 6023","@ws 6021","@ws 6020"] }],
+        verify: "Negli script ufficiali chi ha già 5 pezzi di un cibo nell'inventario non può riceverne altri finché non li usa o li mette nello storage: su uaRO succede?" }
     ]
   },
   {
