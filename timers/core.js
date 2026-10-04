@@ -9,7 +9,7 @@
  * epoch, le durate `dmin` e `dmax` sono minuti.
  */
 
-export const VERSION = "1.2.0";
+export const VERSION = "1.2.1";
 export const DATA_VERSION = 4;
 
 export const DEFAULT_CATEGORIES = ["MvP", "Quest"];

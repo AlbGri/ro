@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.2.1] - 2026-10-04
+
+L'intestazione della versione web si allinea alla tabella, come nella guida.
+L'applicazione desktop non cambia.
+
+- Su uno schermo largo il pulsante Home e i pulsanti di destra stanno sopra i bordi della tabella, invece di finire ai due estremi della finestra
+- Accanto a Home c'e' il nome della pagina, `Timer di respawn`, come nella guida; sul telefono non c'e' posto e resta nascosto
+- Nella home le due schede si chiamano `Timer di respawn` e `Timer di respawn per Windows`, ognuna con la sua versione: quella da scaricare e' la 1.0.0, piu' vecchia della versione web
+- Nelle impostazioni il collegamento all'applicazione per Windows ha lo stesso nome e la stessa versione
+
 ## [1.2.0] - 2026-10-04
 
 Nella versione web ogni timer decide quante volte suona il suo allarme.

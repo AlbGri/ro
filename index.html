@@ -145,6 +145,11 @@
         color: var(--muted);
         font-size: 0.95rem;
       }
+
+      .card .version {
+        font-family: var(--sans);
+        font-weight: 400;
+      }
     </style>
   </head>
   <body>
@@ -158,15 +163,15 @@
       <section>
         <h2>Timer</h2>
         <a class="card" href="timers/">
-          <strong>Timer di respawn</strong>
+          <strong>Timer di respawn <span class="version" id="timers-version"></span></strong>
           <span>Finestre di respawn di MvP e quest.</span>
         </a>
-        <!-- A ogni nuova release dell'eseguibile va aggiornato l'indirizzo, qui e nelle impostazioni dei timer. -->
+        <!-- A ogni nuova release dell'eseguibile vanno aggiornati l'indirizzo e la versione, qui e nelle impostazioni dei timer. -->
         <a
           class="card"
           href="https://github.com/AlbGri/ro/releases/download/timers-v1.0.0/RagnarokTimers-v1.0.0-windows.zip"
         >
-          <strong>Timer per Windows</strong>
+          <strong>Timer di respawn per Windows <span class="version">(v1.0.0)</span></strong>
           <span>Scarica l'applicazione desktop, in inglese: gli allarmi suonano anche con il browser chiuso.</span>
         </a>
       </section>
@@ -179,5 +184,11 @@
         </a>
       </section>
     </main>
+
+    <!-- La versione della scheda si legge dal codice dei timer, cosi' non resta indietro. -->
+    <script type="module">
+      import { VERSION } from "./timers/core.js";
+      document.getElementById("timers-version").textContent = `(v${VERSION})`;
+    </script>
   </body>
 </html>

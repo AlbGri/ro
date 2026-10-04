@@ -24,19 +24,24 @@
   </head>
   <body>
     <header class="topbar">
-      <a class="ghost compact home" href="../" title="Torna alla scelta dei servizi">Home</a>
-      <button id="clock" class="clock" aria-label="Cambia fuso orario" title="Cambia fuso orario">
-        <span id="clock-time">--:--:--</span>
-        <span id="clock-zone" class="clock-zone"></span>
-      </button>
-      <div class="topbar-actions">
-        <button id="btn-alerts" class="ghost warn compact" hidden>
-          <span class="short">Avvisi</span><span class="long">Attiva avvisi</span>
+      <div class="topbar-inner">
+        <div class="topbar-start">
+          <a class="ghost compact home" href="../" title="Torna alla scelta dei servizi">Home</a>
+          <span class="brand">Timer di respawn</span>
+        </div>
+        <button id="clock" class="clock" aria-label="Cambia fuso orario" title="Cambia fuso orario">
+          <span id="clock-time">--:--:--</span>
+          <span id="clock-zone" class="clock-zone"></span>
         </button>
-        <button id="btn-install" class="ghost compact" hidden>
-          <span class="short">Installa</span><span class="long">Installa app</span>
-        </button>
-        <button id="btn-settings" class="icon" aria-label="Impostazioni" title="Impostazioni">&#9881;</button>
+        <div class="topbar-actions">
+          <button id="btn-alerts" class="ghost warn compact" hidden>
+            <span class="short">Avvisi</span><span class="long">Attiva avvisi</span>
+          </button>
+          <button id="btn-install" class="ghost compact" hidden>
+            <span class="short">Installa</span><span class="long">Installa app</span>
+          </button>
+          <button id="btn-settings" class="icon" aria-label="Impostazioni" title="Impostazioni">&#9881;</button>
+        </div>
       </div>
     </header>
 
@@ -190,7 +195,7 @@
         Gli allarmi suonano solo con questa pagina aperta. Con
         <a
           href="https://github.com/AlbGri/ro/releases/download/timers-v1.0.0/RagnarokTimers-v1.0.0-windows.zip"
-          >l'applicazione per Windows</a
+          >Timer di respawn per Windows (v1.0.0)</a
         >, in inglese, suonano anche con il browser chiuso.
       </p>
       <p class="hint" id="version"></p>
