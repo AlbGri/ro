@@ -21,6 +21,7 @@ import {
   TimerStore,
   categoryColor,
   formatClock,
+  formatClockSeconds,
   formatDuration,
   formatLeft,
   formatMinutes,
@@ -120,12 +121,14 @@ describe("rendering", () => {
 
 describe("orari HH:MM", () => {
   it("interpreta gli orari validi", () => {
-    assert.deepEqual(parseHHMM("23:50"), { hour: 23, minute: 50 });
-    assert.deepEqual(parseHHMM("09.05"), { hour: 9, minute: 5 });
+    assert.deepEqual(parseHHMM("23:50"), { hour: 23, minute: 50, second: 0 });
+    assert.deepEqual(parseHHMM("09.05"), { hour: 9, minute: 5, second: 0 });
+    assert.deepEqual(parseHHMM("23:50:30"), { hour: 23, minute: 50, second: 30 });
+    assert.deepEqual(parseHHMM("9.05.07"), { hour: 9, minute: 5, second: 7 });
   });
 
   it("rifiuta gli orari non validi", () => {
-    for (const testo of ["24:00", "12:60", "1250", "", "abc"]) {
+    for (const testo of ["24:00", "12:60", "1250", "", "abc", "12:30:60", "12:30:5", "12:30:"]) {
       assert.equal(parseHHMM(testo), null, testo);
     }
   });
@@ -198,6 +201,8 @@ describe("fuso orario", () => {
     for (const zone of ["Europe/Rome", "UTC", "Asia/Manila"]) {
       setTimeZone(zone);
       assert.equal(formatClock(localAt(18, 34)), "18:34", zone);
+      assert.equal(formatClockSeconds(localAt(18, 34, 27)), "18:34:27", zone);
+      assert.equal(formatClockSeconds(localAt(18, 34)), "18:34:00", zone);
     }
   });
 

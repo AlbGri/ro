@@ -353,7 +353,7 @@ function openEditor(timerId) {
     $("field-name").value = timer.name;
     $("field-map").value = timer.mappa;
     $("field-category").value = timer.categoria;
-    $("field-time").value = formatClock(timer.start);
+    $("field-time").value = formatClockSeconds(timer.start);
     $("field-min").value = formatMinutes(timer.dmin);
     $("field-max").value = timer.isFixed ? "" : formatMinutes(timer.dmax);
   }
@@ -403,19 +403,24 @@ function readEditor() {
   }
 
   const rawTime = $("field-time").value.trim();
+  const edited = editingId === null ? undefined : store.timers.get(editingId);
   let start = nowLocal();
-  if (rawTime !== "") {
+  if (edited !== undefined && rawTime === formatClockSeconds(edited.start)) {
+    // Ora non toccata: resta l'istante esatto. Rileggerla dal campo perderebbe
+    // i millesimi e il giorno, e la differenza riarmerebbe l'allarme.
+    start = edited.start;
+  } else if (rawTime !== "") {
     const clock = parseHHMM(rawTime);
     if (clock === null) {
       showEditorError(
         tr(
-          "L'ora va scritta come 23:50. Lasciala vuota per partire da adesso.",
-          "The time must look like 23:50. Leave it empty to start from now.",
+          "L'ora va scritta come 23:50 o 23:50:30. Lasciala vuota per partire da adesso.",
+          "The time must look like 23:50 or 23:50:30. Leave it empty to start from now.",
         ),
       );
       return null;
     }
-    start = localAt(clock.hour, clock.minute);
+    start = localAt(clock.hour, clock.minute, clock.second);
   }
 
   return {

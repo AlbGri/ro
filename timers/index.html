@@ -124,7 +124,7 @@
         </div>
 
         <div class="row">
-          <div>
+          <div class="field-wide">
             <label for="field-time" data-en="Time">Ora</label>
             <input
               id="field-time"
@@ -146,9 +146,15 @@
         </div>
         <p
           class="hint"
-          data-en="Minutes, or <code>1h30</code> and <code>3:10</code>. Leave <strong>Max</strong> empty for a fixed countdown."
+          data-en="<strong>Time</strong>: when the MvP died or you finished the quest, like <code>23:50</code> or <code>23:50:30</code>. Empty means now."
         >
-          Minuti, oppure <code>1h30</code> e <code>3:10</code>. Lascia vuoto <strong>Max</strong> per un conto alla rovescia fisso.
+          <strong>Ora</strong>: quando è morto il MvP o hai finito la quest, come <code>23:50</code> o <code>23:50:30</code>. Vuota vale adesso.
+        </p>
+        <p
+          class="hint"
+          data-en="<strong>Min</strong> and <strong>Max</strong>: minutes until the respawn, or <code>1h30</code> and <code>3:10</code>. Leave <strong>Max</strong> empty for a fixed countdown."
+        >
+          <strong>Min</strong> e <strong>Max</strong>: minuti che mancano al respawn, oppure <code>1h30</code> e <code>3:10</code>. Lascia vuoto <strong>Max</strong> per un conto alla rovescia fisso.
         </p>
         <p id="editor-error" class="error" hidden></p>
 

@@ -648,6 +648,11 @@ button {
   min-width: 0;
 }
 
+/* Il campo Ora: a 320px `23:50:30` in un terzo della riga verrebbe tagliato. */
+.row > .field-wide {
+  flex: 1.3;
+}
+
 .check {
   display: flex !important;
   align-items: center;

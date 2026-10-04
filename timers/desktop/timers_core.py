@@ -28,7 +28,7 @@ from functools import lru_cache
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-__version__ = "1.3.0"
+__version__ = "1.4.0"
 
 log = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ MAX_BEEPS = 99
 # come "ieri": serve per le uccisioni a cavallo della mezzanotte.
 FUTURE_TOLERANCE = timedelta(hours=12)
 
-TIME_RE = re.compile(r"^([0-1]?[0-9]|2[0-3])[:.]([0-5][0-9])$")
+TIME_RE = re.compile(r"^([0-1]?[0-9]|2[0-3])[:.]([0-5][0-9])(?:[:.]([0-5][0-9]))?$")
 DURATION_HM_RE = re.compile(r"(\d+)\s*[h:]\s*(\d{1,2})")
 DURATION_H_RE = re.compile(r"(\d+(?:\.\d+)?)\s*h")
 BEEPS_RE = re.compile(r"[0-9]+")
@@ -126,34 +126,36 @@ def as_aware(moment: datetime) -> datetime:
     return moment.astimezone() if moment.tzinfo is None else moment
 
 
-def parse_hhmm(text: str) -> tuple[int, int] | None:
-    """Interpreta un orario nel formato HH:MM.
+def parse_hhmm(text: str) -> tuple[int, int, int] | None:
+    """Interpreta un orario nel formato HH:MM, con i secondi facoltativi.
 
     Args:
-        text: Testo inserito dall'utente, per esempio "23:50" o "23.50".
+        text: Testo inserito dall'utente, per esempio "23:50", "23.50" o "23:50:30".
 
     Returns:
-        La coppia (ora, minuti), oppure None se il testo non e' un orario valido.
+        La terna (ora, minuti, secondi), con i secondi a 0 se mancano, oppure
+        None se il testo non e' un orario valido.
     """
     match = TIME_RE.match(text.strip())
     if not match:
         return None
-    return int(match.group(1)), int(match.group(2))
+    return int(match.group(1)), int(match.group(2)), int(match.group(3) or 0)
 
 
-def local_at(hour: int, minute: int) -> datetime:
+def local_at(hour: int, minute: int, second: int = 0) -> datetime:
     """Costruisce l'istante piu' plausibile per un orario inserito a mano.
 
     Args:
         hour: Ora del giorno, da 0 a 23.
         minute: Minuti, da 0 a 59.
+        second: Secondi, da 0 a 59.
 
     Returns:
         L'istante di oggi corrispondente, oppure quello di ieri se cade oltre
         FUTURE_TOLERANCE nel futuro. Senza questa correzione un'uccisione delle
         23:50 registrata alle 00:05 partirebbe fra quasi 24 ore.
     """
-    base = datetime.now().replace(hour=hour, minute=minute, second=0, microsecond=0)
+    base = datetime.now().replace(hour=hour, minute=minute, second=second, microsecond=0)
     moment = base.astimezone()
     if moment - now_local() > FUTURE_TOLERANCE:
         moment = (base - timedelta(days=1)).astimezone()

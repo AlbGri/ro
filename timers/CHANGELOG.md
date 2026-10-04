@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.4.0] - 2026-10-04
+
+Nella versione web l'ora di un timer si puo' scrivere con i secondi.
+L'applicazione desktop pubblicata non cambia.
+
+- Il campo `Ora` accetta anche i secondi, `23:50:30` oltre a `23:50`, sia in un timer nuovo sia in modifica
+- In modifica il campo mostra l'ora completa di secondi. Se non la tocchi, il timer resta dov'era: prima salvare una modifica al solo nome poteva spostare la partenza all'inizio del minuto e far risuonare l'allarme
+- Sotto i campi una riga spiega che cosa scrivere in `Ora`: quando e' morto il MvP o hai finito la quest
+
 ## [1.3.0] - 2026-10-04
 
 La versione web e' anche in inglese. L'applicazione desktop non cambia.

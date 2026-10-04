@@ -129,7 +129,7 @@ L'applicazione usa solo la libreria standard: per eseguirla non serve installare
 Compila il form e premi `Add` o `Invio`:
 
 - **Name, Map, Category**: campi con storico e completamento automatico. La categoria determina il colore della riga e per impostazione predefinita e' `MvP`.
-- **Time**: ora dell'uccisione in formato `HH:MM`. Se lo lasci vuoto parte da adesso. Un orario che risulterebbe oltre 12 ore nel futuro viene letto come "ieri", cosi' un'uccisione delle 23:50 registrata dopo mezzanotte non parte fra un giorno.
+- **Time**: ora dell'uccisione in formato `HH:MM`, o `HH:MM:SS` nella versione web. Se lo lasci vuoto parte da adesso. Un orario che risulterebbe oltre 12 ore nel futuro viene letto come "ieri", cosi' un'uccisione delle 23:50 registrata dopo mezzanotte non parte fra un giorno.
 - **Min / Max**: durata della finestra in minuti. Accetta `190`, `90,5`, `1h30`, `3:10`. Lasciando `Max` vuoto il timer e' a durata fissa.
 
 Scrivendo un nome gia' usato, mappa, categoria e durate vengono compilate con i valori dell'ultima volta. I preset si imparano dai timer che crei: non c'e' una tabella di respawn precaricata, perche' i tempi variano da server a server.

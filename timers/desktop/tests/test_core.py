@@ -74,12 +74,22 @@ def test_parse_minutes_formati_non_validi(text):
     assert parse_minutes(text) is None
 
 
-@pytest.mark.parametrize("text,expected", [("23:50", (23, 50)), ("09.05", (9, 5))])
+@pytest.mark.parametrize(
+    "text,expected",
+    [
+        ("23:50", (23, 50, 0)),
+        ("09.05", (9, 5, 0)),
+        ("23:50:30", (23, 50, 30)),
+        ("9.05.07", (9, 5, 7)),
+    ],
+)
 def test_parse_hhmm_validi(text, expected):
     assert parse_hhmm(text) == expected
 
 
-@pytest.mark.parametrize("text", ["24:00", "12:60", "1250", "", "abc"])
+@pytest.mark.parametrize(
+    "text", ["24:00", "12:60", "1250", "", "abc", "12:30:60", "12:30:5", "12:30:"]
+)
 def test_parse_hhmm_non_validi(text):
     assert parse_hhmm(text) is None
 
@@ -119,6 +129,11 @@ def test_local_at_permette_programmazione_a_breve():
     now = now_local()
     fra_un_ora = now + timedelta(hours=1)
     assert local_at(fra_un_ora.hour, fra_un_ora.minute) > now
+
+
+def test_local_at_conserva_i_secondi():
+    assert local_at(18, 34, 27).strftime("%H:%M:%S") == "18:34:27"
+    assert local_at(18, 34).second == 0
 
 
 # ------------------------------------------------ finestra di respawn -------

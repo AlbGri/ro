@@ -9,7 +9,7 @@
  * epoch, le durate `dmin` e `dmax` sono minuti.
  */
 
-export const VERSION = "1.3.0";
+export const VERSION = "1.4.0";
 export const DATA_VERSION = 4;
 
 export const DEFAULT_CATEGORIES = ["MvP", "Quest"];
@@ -30,7 +30,7 @@ export const HOUR = 60 * MINUTE;
 // come "ieri": serve per le uccisioni a cavallo della mezzanotte.
 export const FUTURE_TOLERANCE = 12 * HOUR;
 
-const TIME_RE = /^([0-1]?[0-9]|2[0-3])[:.]([0-5][0-9])$/;
+const TIME_RE = /^([0-1]?[0-9]|2[0-3])[:.]([0-5][0-9])(?:[:.]([0-5][0-9]))?$/;
 const DURATION_HM_RE = /^(\d+)\s*[h:]\s*(\d{1,2})$/;
 const DURATION_H_RE = /^(\d+(?:\.\d+)?)\s*h$/;
 const GEOMETRY_RE = /^(\d+)x(\d+)(?:\+(-?\d+)\+(-?\d+))?$/;
@@ -191,13 +191,14 @@ export function zoneOffsetMinutes(ms) {
  * @param {number} day Giorno del mese.
  * @param {number} hour Ora del giorno.
  * @param {number} minute Minuti.
+ * @param {number} [second] Secondi.
  * @returns {number} Millisecondi epoch.
  */
-export function msFromParts(year, month, day, hour, minute) {
+export function msFromParts(year, month, day, hour, minute, second = 0) {
   if (activeZone === null) {
-    return new Date(year, month - 1, day, hour, minute, 0, 0).getTime();
+    return new Date(year, month - 1, day, hour, minute, second, 0).getTime();
   }
-  const naive = Date.UTC(year, month - 1, day, hour, minute, 0, 0);
+  const naive = Date.UTC(year, month - 1, day, hour, minute, second, 0);
   // Il primo scostamento e' quello di un istante sbagliato di qualche ora: a
   // cavallo del cambio dell'ora legale la seconda passata lo corregge.
   const ms = naive - zoneOffsetMinutes(naive) * 60000;
@@ -249,15 +250,17 @@ export function parseISO(text) {
 }
 
 /**
- * Interpreta un orario nel formato HH:MM.
+ * Interpreta un orario nel formato HH:MM, con i secondi facoltativi.
  *
- * @param {string} text Testo inserito dall'utente, per esempio "23:50" o "23.50".
- * @returns {?{hour: number, minute: number}} null se il testo non e' un orario valido.
+ * @param {string} text Testo inserito dall'utente, per esempio "23:50", "23.50"
+ *   o "23:50:30".
+ * @returns {?{hour: number, minute: number, second: number}} null se il testo
+ *   non e' un orario valido. Senza secondi, `second` vale 0.
  */
 export function parseHHMM(text) {
   const match = TIME_RE.exec(String(text).trim());
   if (!match) return null;
-  return { hour: Number(match[1]), minute: Number(match[2]) };
+  return { hour: Number(match[1]), minute: Number(match[2]), second: Number(match[3] ?? 0) };
 }
 
 /**
@@ -265,20 +268,21 @@ export function parseHHMM(text) {
  *
  * @param {number} hour Ora del giorno, da 0 a 23.
  * @param {number} minute Minuti, da 0 a 59.
+ * @param {number} [second] Secondi, da 0 a 59.
  * @returns {number} L'istante di oggi corrispondente, oppure quello di ieri se
  *   cade oltre FUTURE_TOLERANCE nel futuro. Senza questa correzione
  *   un'uccisione delle 23:50 registrata alle 00:05 partirebbe fra quasi 24 ore.
  */
-export function localAt(hour, minute) {
+export function localAt(hour, minute, second = 0) {
   const now = nowLocal();
   const today = partsIn(now);
-  const moment = msFromParts(today.year, today.month, today.day, hour, minute);
+  const moment = msFromParts(today.year, today.month, today.day, hour, minute, second);
   if (moment - now <= FUTURE_TOLERANCE) return moment;
 
   // Un giorno prima nel fuso attivo, non 24 ore prima: a cavallo del cambio
   // dell'ora legale i due valori non coincidono.
   const yesterday = partsIn(moment - 24 * HOUR);
-  return msFromParts(yesterday.year, yesterday.month, yesterday.day, hour, minute);
+  return msFromParts(yesterday.year, yesterday.month, yesterday.day, hour, minute, second);
 }
 
 /**
@@ -359,7 +363,8 @@ export function formatClock(ms) {
 }
 
 /**
- * Orario corrente completo di secondi, per l'orologio dell'intestazione.
+ * Orario completo di secondi, per l'orologio dell'intestazione e per il campo
+ * Ora del form.
  *
  * @param {number} ms Millisecondi epoch.
  * @returns {string} L'orario nel formato HH:MM:SS.
