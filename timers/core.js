@@ -9,7 +9,7 @@
  * epoch, le durate `dmin` e `dmax` sono minuti.
  */
 
-export const VERSION = "1.2.2";
+export const VERSION = "1.3.0";
 export const DATA_VERSION = 4;
 
 export const DEFAULT_CATEGORIES = ["MvP", "Quest"];
@@ -59,27 +59,27 @@ export function nowLocal() {
 /** @type {?string} Fuso attivo in formato IANA, null per quello del browser. */
 let activeZone = null;
 
-/** Fusi proposti nell'interfaccia, con l'etichetta mostrata. */
+/** Fusi proposti nell'interfaccia, con l'etichetta in italiano e in inglese. */
 export const ZONES = [
-  ["Europe/Rome", "Roma"],
-  ["Europe/London", "Londra"],
-  ["Europe/Madrid", "Madrid"],
-  ["Europe/Berlin", "Berlino"],
-  ["Europe/Lisbon", "Lisbona"],
-  ["Europe/Athens", "Atene"],
-  ["Europe/Moscow", "Mosca"],
-  ["Europe/Istanbul", "Istanbul"],
-  ["America/New_York", "New York"],
-  ["America/Sao_Paulo", "San Paolo"],
-  ["America/Los_Angeles", "Los Angeles"],
-  ["Asia/Jakarta", "Giacarta"],
-  ["Asia/Bangkok", "Bangkok"],
-  ["Asia/Singapore", "Singapore"],
-  ["Asia/Manila", "Manila"],
-  ["Asia/Seoul", "Seul"],
-  ["Asia/Tokyo", "Tokyo"],
-  ["Australia/Sydney", "Sydney"],
-  ["UTC", "UTC"],
+  ["Europe/Rome", "Roma", "Rome"],
+  ["Europe/London", "Londra", "London"],
+  ["Europe/Madrid", "Madrid", "Madrid"],
+  ["Europe/Berlin", "Berlino", "Berlin"],
+  ["Europe/Lisbon", "Lisbona", "Lisbon"],
+  ["Europe/Athens", "Atene", "Athens"],
+  ["Europe/Moscow", "Mosca", "Moscow"],
+  ["Europe/Istanbul", "Istanbul", "Istanbul"],
+  ["America/New_York", "New York", "New York"],
+  ["America/Sao_Paulo", "San Paolo", "São Paulo"],
+  ["America/Los_Angeles", "Los Angeles", "Los Angeles"],
+  ["Asia/Jakarta", "Giacarta", "Jakarta"],
+  ["Asia/Bangkok", "Bangkok", "Bangkok"],
+  ["Asia/Singapore", "Singapore", "Singapore"],
+  ["Asia/Manila", "Manila", "Manila"],
+  ["Asia/Seoul", "Seul", "Seoul"],
+  ["Asia/Tokyo", "Tokyo", "Tokyo"],
+  ["Australia/Sydney", "Sydney", "Sydney"],
+  ["UTC", "UTC", "UTC"],
 ];
 
 /**

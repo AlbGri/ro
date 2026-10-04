@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.0] - 2026-10-04
+
+La versione web e' anche in inglese. L'applicazione desktop non cambia.
+
+- Nelle impostazioni il pulsante `English` porta tutte le scritte in inglese, e `Italiano` le riporta in italiano. La scelta vale per tutto il sito: home, schermata del codice e timer
+- Senza una scelta il sito resta in italiano: la lingua del browser non conta
+- In inglese le colonne si chiamano `Sound`, `Beeps`, `Name`, `Map`, `Category`, `Time`, `Spawn`, `Max. Spawn` e `Left`
+- Il nome dell'applicazione installata sul telefono resta `Timer di respawn` in entrambe le lingue
+- La guida Nuovo Mondo resta solo in italiano: in inglese la sua scheda nella home lo dice
+
 ## [1.2.2] - 2026-10-04
 
 Sul telefono il colore della barra del browser segue il tema scelto a mano.

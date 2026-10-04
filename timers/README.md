@@ -4,7 +4,7 @@ Timer per le finestre di respawn di MvP e quest di Ragnarok Online: registri l'o
 
 Le applicazioni sono due, con lo stesso formato dei dati:
 
-- la [versione web](#versione-web), su `albgri.github.io/ro/timers/`: in italiano come il resto del sito, installabile su telefono e computer. Oggi le novita' arrivano li'
+- la [versione web](#versione-web), su `albgri.github.io/ro/timers/`: in italiano o in inglese, installabile su telefono e computer. Oggi le novita' arrivano li'
 - l'[applicazione desktop](#applicazione-desktop) per Windows, in tkinter e senza dipendenze esterne: in inglese, con un allarme sonoro e il lampeggio nella barra delle applicazioni che avvisano anche con il browser chiuso. L'eseguibile pubblicato nelle [release](https://github.com/AlbGri/ro/releases) e' piu' vecchio della versione web
 
 Commenti, docstring e documentazione sono in italiano.
@@ -40,11 +40,13 @@ comandi `Esporta i dati` e `Importa i dati` spostano i timer da una all'altra.
 Il layout e' unico: su telefono ogni timer e' una scheda, da 880px in su le
 stesse celle diventano le colonne della tabella.
 
-Le scritte sono in italiano. Le colonne si chiamano `Suono`, `Bip`, `Nome`,
-`Mappa`, `Categoria`, `Ora`, `Spawn`, `Spawn max` e `Manca`. Tolta `Bip`, che il
-desktop non ha, corrispondono nell'ordine a `Sound`, `Name`, `Map`, `Category`,
-`Time`, `Spawn`, `Max. Spawn` e `Left`. I termini del gioco, come `Spawn` e
-`MvP`, restano in inglese.
+Le scritte sono in italiano; il pulsante `English` nelle impostazioni le porta
+in inglese, e la scelta vale per tutto il sito. In italiano le colonne si
+chiamano `Suono`, `Bip`, `Nome`, `Mappa`, `Categoria`, `Ora`, `Spawn`,
+`Spawn max` e `Manca`; in inglese `Sound`, `Beeps`, `Name`, `Map`, `Category`,
+`Time`, `Spawn`, `Max. Spawn` e `Left`, che tolta `Beeps` sono i nomi
+dell'applicazione desktop. I termini del gioco, come `Spawn` e `MvP`, restano
+in inglese.
 
 La colonna `Bip` dice quante volte suona l'allarme di quel timer, una ogni 15
 secondi finche' la riga non viene toccata: si scrive un numero da 1 a 99, e il
