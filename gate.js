@@ -1,5 +1,5 @@
 /**
- * Codice di accesso e tema, comuni a tutto il sito.
+ * Codice di accesso, tema e lingua, comuni a tutto il sito.
  *
  * Ogni pagina lo include nell'<head> con `<script src="../gate.js"></script>`:
  * finche' il codice non viene inserito il contenuto resta coperto dalla
@@ -9,7 +9,7 @@
  * Girando prima che la pagina venga disegnata, e' anche il posto dove si
  * applica il tema chiaro o scuro scelto dall'utente, uguale per tutto il sito.
  * Per questo i due `<meta name="theme-color">` di una pagina stanno prima di
- * questo script.
+ * questo script. Per lo stesso motivo qui si applica la lingua scelta.
  *
  * Nel sorgente sta solo l'impronta SHA-256 del codice, non il codice: chi apre
  * il repository o gli strumenti per sviluppatori non lo legge scritto in chiaro.
@@ -70,6 +70,61 @@
 
   syncThemeColor();
   new MutationObserver(syncThemeColor).observe(root, { attributeFilter: ["data-theme"] });
+
+  // --------------------------------------------------------------- lingua ---
+
+  // Come il tema, la lingua scelta vale per tutto il sito e sta in una chiave
+  // sua. Senza una scelta il sito e' in italiano: l'inglese si sceglie con il
+  // pulsante, la lingua del browser non conta.
+  const LANG_KEY = "ragnarok/lang";
+
+  let english = false;
+  try {
+    english = localStorage.getItem(LANG_KEY) === "en";
+  } catch {
+    // Senza localStorage il sito resta in italiano.
+  }
+
+  /** Sceglie fra le due versioni di una scritta: `tr("Chiudi", "Close")`. */
+  const tr = (it, en) => (english ? en : it);
+  window.tr = tr;
+
+  /** Passa dall'italiano all'inglese e viceversa, e ricarica la pagina. */
+  window.toggleLang = () => {
+    try {
+      localStorage.setItem(LANG_KEY, english ? "it" : "en");
+    } catch {
+      // Senza localStorage la scelta non si puo' ricordare: resta l'italiano.
+      return;
+    }
+    location.reload();
+  };
+
+  // Una pagina tradotta lo dichiara con `data-bilingual` su <html> e tiene
+  // l'inglese accanto all'italiano: `data-en` per il contenuto di un elemento,
+  // `data-en-title` e simili per gli attributi. La sostituzione avviene appena
+  // la pagina e' stata letta: prima dei moduli, che trovano gia' le scritte
+  // giuste, e prima che venga disegnata. Fino ad allora la pagina resta
+  // nascosta, per non mostrare l'italiano per un istante.
+  const EN_ATTRIBUTES = ["title", "aria-label", "placeholder", "content"];
+
+  if (english && root.hasAttribute("data-bilingual")) {
+    root.lang = "en";
+    root.style.visibility = "hidden";
+    document.addEventListener(
+      "readystatechange",
+      () => {
+        for (const el of document.querySelectorAll("[data-en]")) el.innerHTML = el.dataset.en;
+        for (const name of EN_ATTRIBUTES) {
+          for (const el of document.querySelectorAll(`[data-en-${name}]`)) {
+            el.setAttribute(name, el.getAttribute(`data-en-${name}`));
+          }
+        }
+        root.style.visibility = "";
+      },
+      { once: true },
+    );
+  }
 
   // -------------------------------------------------------------- accesso ---
 
@@ -148,6 +203,17 @@
       font: inherit;
       font-weight: 700;
       cursor: pointer;
+    }
+    .gate-box .gate-lang {
+      width: auto;
+      margin: 24px 0 0;
+      padding: 7px 12px;
+      background: var(--gate-surface);
+      border-color: var(--gate-line);
+      color: var(--gate-ink);
+      font-size: 0.92rem;
+      font-weight: 400;
+      line-height: 1.2;
     }`;
 
   /**
@@ -206,16 +272,18 @@
         gate.innerHTML = `
           <form class="gate-box">
             <h1>ro-tools</h1>
-            <label for="gate-code">Codice di accesso</label>
+            <label for="gate-code">${tr("Codice di accesso", "Access code")}</label>
             <input id="gate-code" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" />
-            <p id="gate-error" hidden>Codice sbagliato.</p>
-            <button type="submit">Entra</button>
+            <p id="gate-error" hidden>${tr("Codice sbagliato.", "Wrong code.")}</p>
+            <button type="submit">${tr("Entra", "Enter")}</button>
+            <button type="button" class="gate-lang">${tr("English", "Italiano")}</button>
           </form>`;
         document.body.append(gate);
 
         const input = gate.querySelector("#gate-code");
         const error = gate.querySelector("#gate-error");
         input.focus();
+        gate.querySelector(".gate-lang").addEventListener("click", window.toggleLang);
 
         gate.querySelector("form").addEventListener("submit", async (event) => {
           event.preventDefault();

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="it">
+<html lang="it" data-bilingual>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -72,8 +72,15 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-wrap: wrap;
         gap: 16px;
         margin-bottom: 28px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
       }
 
       h1 {
@@ -141,7 +148,8 @@
         line-height: 1.15;
       }
 
-      .card span {
+      .card > span,
+      .card .version {
         color: var(--muted);
         font-size: 0.95rem;
       }
@@ -156,31 +164,50 @@
     <main>
       <header>
         <h1>ro-tools</h1>
-        <button type="button" onclick="toggleTheme()">Cambia tema chiaro/scuro</button>
+        <div class="actions">
+          <button type="button" onclick="toggleLang()" data-en="Italiano">English</button>
+          <button type="button" onclick="toggleTheme()" data-en="Switch light/dark theme">
+            Cambia tema chiaro/scuro
+          </button>
+        </div>
       </header>
 
-      <!-- Un servizio nuovo: una cartella sua, gate.js nel suo <head>, una scheda qui. -->
+      <!-- Un servizio nuovo: una cartella sua, gate.js nel suo <head>, una scheda qui.
+           Ogni scritta ha l'inglese accanto, in data-en: lo applica gate.js. -->
       <section>
-        <h2>Timer</h2>
+        <h2 data-en="Timers">Timer</h2>
         <a class="card" href="timers/">
-          <strong>Timer di respawn <span class="version" id="timers-version"></span></strong>
-          <span>Finestre di respawn di MvP e quest.</span>
+          <strong>
+            <span data-en="Respawn timers">Timer di respawn</span>
+            <span class="version" id="timers-version"></span>
+          </strong>
+          <span data-en="Respawn windows for MvPs and quests.">Finestre di respawn di MvP e quest.</span>
         </a>
         <!-- A ogni nuova release dell'eseguibile vanno aggiornati l'indirizzo e la versione, qui e nelle impostazioni dei timer. -->
         <a
           class="card"
           href="https://github.com/AlbGri/ro/releases/download/timers-v1.0.0/RagnarokTimers-v1.0.0-windows.zip"
         >
-          <strong>Timer di respawn per Windows <span class="version">(v1.0.0)</span></strong>
-          <span>Scarica l'applicazione desktop, in inglese: gli allarmi suonano anche con il browser chiuso.</span>
+          <strong>
+            <span data-en="Respawn timers for Windows">Timer di respawn per Windows</span>
+            <span class="version">(v1.0.0)</span>
+          </strong>
+          <span data-en="Download the desktop app: alarms ring even with the browser closed.">
+            Scarica l'applicazione desktop, in inglese: gli allarmi suonano anche con il browser chiuso.
+          </span>
         </a>
       </section>
 
       <section>
-        <h2>Guide</h2>
+        <h2 data-en="Guides">Guide</h2>
+        <!-- La guida e' solo in italiano: in inglese la scheda lo dice. -->
         <a class="card" href="guide/nuovo-mondo.html">
           <strong>Nuovo Mondo</strong>
-          <span>uaRO, passo per passo: da Onward to the New World a El Dicastes e all'accesso al Nidhoggur's Nest.</span>
+          <span
+            data-en="uaRO, step by step, in Italian: from Onward to the New World to El Dicastes and access to the Nidhoggur's Nest."
+          >
+            uaRO, passo per passo: da Onward to the New World a El Dicastes e all'accesso al Nidhoggur's Nest.
+          </span>
         </a>
       </section>
     </main>

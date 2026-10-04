@@ -35,7 +35,7 @@ restano nel suo browser: non c'e' nulla di condiviso da proteggere.
 | Percorso | Contenuto |
 |---|---|
 | `index.html` | home: elenco dei servizi |
-| `gate.js` | codice di accesso e tema chiaro o scuro, incluso da ogni pagina |
+| `gate.js` | codice di accesso, tema chiaro o scuro e lingua, incluso da ogni pagina |
 | `icon.svg` | icona del sito, la stessa per tutte le pagine |
 | `tools/set-access-code.mjs` | imposta l'impronta del codice di accesso |
 | `tools/make-icons.mjs` | rigenera da `icon.svg` i PNG che servono ai timer installati come applicazione |
@@ -55,9 +55,28 @@ guida funziona anche senza.
    `toggleTheme()`. I due `<meta name="theme-color">`, per il sistema chiaro e
    per quello scuro, vanno prima di `gate.js`, che li allinea al tema scelto.
 3. Una scheda nella home, in `index.html`.
+4. Le scritte in italiano e in inglese (vedi sotto) e un pulsante per la lingua,
+   che chiama `toggleLang()`.
 
 Il tema scelto vale per tutto il sito: `gate.js` lo ricorda e lo applica a ogni
 pagina con l'attributo `data-theme`; senza una scelta decide il sistema.
+
+### Lingua
+
+Il sito e' in italiano; home, schermata del codice e timer hanno anche
+l'inglese, che si sceglie con il pulsante `English` e vale per tutto il sito.
+La lingua del browser non conta. La guida Nuovo Mondo e' solo in italiano.
+
+Le due lingue stanno una accanto all'altra, senza un file di traduzioni:
+
+- una pagina tradotta ha `data-bilingual` su `<html>`. L'italiano e' il testo
+  della pagina, l'inglese sta nell'attributo `data-en` dello stesso elemento, o
+  in `data-en-title`, `data-en-aria-label`, `data-en-placeholder` e
+  `data-en-content` per gli attributi. Li applica `gate.js`
+- nel JavaScript una scritta si sceglie con `tr("Chiudi", "Close")`, anche lei
+  di `gate.js`
+
+Cambiare lingua ricarica la pagina.
 
 ## Prova in locale
 
