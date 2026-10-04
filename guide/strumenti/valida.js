@@ -62,16 +62,16 @@ g.PHASES.forEach(p => {
   if (altre !== /^Q\d{1,2}$/.test(p.id)) err("la fase " + p.id + " ha un id che non corrisponde alla sua pagina (le altre quest si chiamano Q1, Q2...)");
   p.steps.forEach(s => { if (!s.id.startsWith(p.id + ".")) err("lo step " + s.id + " non ha il prefisso della sua fase " + p.id); });
 });
-if (g.script[0].includes("const ID_MAP_V3")) {
-  const v3 = new Function(g.script[0] + ";return ID_MAP_V3;")();
-  const valori = Object.values(v3);
-  if (new Set(valori).size !== valori.length) err("ID_MAP_V3 manda due id vecchi sullo stesso id nuovo");
-} else err("manca ID_MAP_V3: serve a convertire spunte e note salvate prima della versione 7.0");
-if (g.script[0].includes("const ID_MAP_V4")) {
-  const v4 = new Function(g.script[0] + ";return ID_MAP_V4;")();
-  const valori = Object.values(v4);
-  if (new Set(valori).size !== valori.length) err("ID_MAP_V4 manda due id vecchi sullo stesso id nuovo");
-} else err("manca ID_MAP_V4: serve a convertire spunte e note salvate prima della versione 8.0");
+[["ID_MAP_V3", "7.0"], ["ID_MAP_V4", "8.0"], ["ID_MAP_V5", "9.0"]].forEach(([nome, versione]) => {
+  if (!g.script[0].includes("const " + nome)) return err("manca " + nome + ": serve a convertire spunte e note salvate prima della versione " + versione);
+  const valori = Object.values(new Function(g.script[0] + ";return " + nome + ";")());
+  if (new Set(valori).size !== valori.length) err(nome + " manda due id vecchi sullo stesso id nuovo");
+});
+// L'ultima mappa deve arrivare agli id di oggi: uno step che non c'è perderebbe spunta e nota alla conversione.
+{
+  const v5 = Object.values(new Function(g.script[0] + ";return ID_MAP_V5;")());
+  v5.filter(id => !ids.includes(id)).forEach(id => err("ID_MAP_V5 porta a uno step che non esiste: " + id));
+}
 visibili.forEach(s => ["h", "d", "tip", "warn", "verify"].forEach(k => controllaTesto("step " + s.id + " (" + k + ")", s[k])));
 
 // Pagina "Altre quest": le sue fasi (page: "altre") non devono entrare nel progresso del percorso

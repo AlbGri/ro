@@ -3,6 +3,16 @@
 Le versioni della guida `nuovo-mondo.html`. Il numero e' quello scritto in
 testa a ogni export delle note.
 
+## [9.0] - 2026-10-04
+
+Le consegne di Lugen stanno tutte in una fase, e il percorso va dalla fase 0 alla 12.
+
+- Le fasi 5, 6 e 7 diventano la fase 5, `Campo: pali e consegne di Lugen`: la consegna ad Alberto e' lo step 5.08 (prima 6.01), gli ultimi tre step con Lugen e Otto sono dal 5.09 al 5.11 (prima dal 7.01 al 7.03)
+- Le fasi dalla 8 alla 14 scalano di due: il Report parte dalla fase 6, Ring of the Wise King e' la 7, El Dicastes la 8, Guardian of Yggdrasil la 12. Dentro la fase gli step tengono il loro numero: il 14.09 diventa 12.09
+- Spunte, note e backup fatti con i numeri di prima vengono convertiti da soli
+- Chi vuole solo El Dicastes si ferma alla fase 8
+- Le altre quest, da Q1 a Q5, non cambiano
+
 ## [8.3] - 2026-10-04
 
 - In cima al percorso, tolta la frase che rimandava alla pagina Altre quest: ci si arriva dal pulsante `Altre quest`
