@@ -433,7 +433,7 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
 </dialog>
 
 <script>
-const GUIDE_VERSION = "9.0";
+const GUIDE_VERSION = "9.1";
 const STORAGE_KEY = "uaro-nw-guide";
 
 const QUESTS = {
@@ -1273,7 +1273,7 @@ const PHASES = [
         d: "Parlaci per Finding a Fairy. Le sue parole ti serviranno per il linguista e sono nello step 7.03.",
         navi: ["spl_fild02 34/223"] },
       { id: "3.03", q: ["CAT"], h: "Cat Hand Agent di Splendide",
-        d: "Splendide è la mappa subito a ovest della fata: entra e parla con il Cat Hand Agent. Da quel momento Fluffy Gyaruk, al campo, ti porta a Splendide per 17.000 zeny con «Teleport to Jotunheim Cities»: ti servirà allo step 10.01. Poi torna su spl_fild02 per gli alberi.",
+        d: "Splendide è la mappa subito a ovest della fata: entra e parla con il Cat Hand Agent. Da quel momento Fluffy Gyaruk, al campo, ti porta a Splendide per 17.000 zeny con «Teleport to Jotunheim Cities»: ti servirà allo step 10.01. Basta parlarci: non salvare a Splendide, il save ti serve al campo. Poi torna su spl_fild02 per gli alberi.",
         navi: ["splendide 203/173"] },
       { id: "3.04", q: ["NS"], h: "Alberi: clicca finché hai 20 Ordinary Branch",
         d: "Ci sono 5 alberi (i punti qui sotto). Clicca lo stesso albero più volte: circa un clic su 9 dà un ramo buono, gli altri non danno niente o un ramo marcio. Funziona solo dopo aver parlato con Diego (step 2.06).",
@@ -1295,7 +1295,7 @@ const PHASES = [
         navi: ["man_fild03 236/105"],
         tip: "Passando da man_fild01, clicca qualche Mysterious Rock: per la quest Ring of the Wise King ti servirà 1 Unidentified Mineral (step 7.12), e negli script ufficiali le rocce lo danno anche prima di iniziare la quest. Spesso escono solo Stone." },
       { id: "4.03", q: ["CAT"], h: "Cat Hand Agent di Manuk",
-        d: "Manuk è due mappe a est e una a sud del campo: entra in città e parla con il Cat Hand Agent. Da quel momento Fluffy Gyaruk, al campo, ti porta a Manuk per 22.000 zeny con «Teleport to Jotunheim Cities»: ti servirà negli step 8.05, 12.09 e 12.11.",
+        d: "Manuk è due mappe a est e una a sud del campo: entra in città e parla con il Cat Hand Agent. Da quel momento Fluffy Gyaruk, al campo, ti porta a Manuk per 22.000 zeny con «Teleport to Jotunheim Cities»: ti servirà negli step 8.05, 12.09 e 12.11. Basta parlarci: non salvare a Manuk, il save ti serve al campo.",
         navi: ["manuk 275/147"] },
       { id: "4.04", q: ["FAIRY"], h: "Torna al campo dal Camp Guard Captain",
         d: "Torna con una Butterfly Wing o Teleport 2. Finding a Fairy completata.",
@@ -1314,10 +1314,10 @@ const PHASES = [
         navi: ["mid_camp 266/263","mid_camp 266/258"],
         warn: "“Leave it.” fa scivolare i rami: quel palo va rifatto da capo." },
       { id: "5.03", q: ["NS"], h: "Diego, poi Lucas",
-        d: "Diego ti dà 5 Chocolate Pie e ti porta nelle baracche, sul tuo letto, dove compare il messaggio del risveglio. Se non compare, scendi dal letto e risalici: senza, Lucas non ti parla.\nLucas è accanto al letto (secondo /navi): scegli «Dangerous way?», la prima voce. Ti dà una Chocolate Pie.",
+        d: "Diego ti dà 5 Chocolate Pie e ti porta nelle baracche, sul tuo letto, dove compare il messaggio del risveglio. Se non compare, scendi dal letto e risalici: senza, Lucas non ti parla.\nLucas è accanto al letto (secondo /navi): scegli «Dangerous way?», la prima voce.",
         navi: ["mid_camp 264/263","mid_campin 295/128"] },
       { id: "5.04", q: ["NS"], h: "Lugen, poi Marian",
-        d: "Marian ti dà 3 Supply Box.",
+        d: "Lugen ti dà una Chocolate Pie e ti manda da Marian, che ti dà 3 Supply Box.",
         navi: ["mid_camp 261/284","mid_camp 222/283"] },
       { id: "5.05", q: ["NS"], h: "Lugen, poi il primo box a Jan",
         d: "Jan ti dà una Chocolate Pie.",
@@ -1616,7 +1616,7 @@ const PHASES = [
         d: "Si entra dall'ingresso indicato. Con il Ring of the Ancient Wise King indossato scegli «Register as an adventurer.»: ricevi la Light of El Dicastes, che ha la skill per tornare in città. Sapha's Visit completata. A El Dicastes e sui suoi campi il /memo e il Warp Portal non funzionano.",
         navi: ["dicastes01 198/353","dic_in01 40/261"] },
       { id: "8.11", q: ["CAT"], h: "Cat Hand Agent di El Dicastes",
-        d: "Parla con il Cat Hand Agent: da quel momento Fluffy Gyaruk, al campo, ti porta a El Dicastes per 24.000 zeny, senza rifare il tunnel.",
+        d: "Parla con il Cat Hand Agent: da quel momento Fluffy Gyaruk, al campo, ti porta a El Dicastes per 24.000 zeny, senza rifare il tunnel. Basta parlarci: non serve salvare a El Dicastes.",
         navi: ["dicastes01 200/194"],
         tip: "Per ripartire: a El Dicastes il Warp Portal non funziona. Con il save al campo torni con una Butterfly Wing, gratis; altrimenti questo Cat Hand Agent ti porta al campo per 19.000 zeny." }
     ]

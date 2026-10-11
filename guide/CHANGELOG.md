@@ -3,6 +3,11 @@
 Le versioni della guida `nuovo-mondo.html`. Il numero e' quello scritto in
 testa a ogni export delle note.
 
+## [9.1] - 2026-10-11
+
+- Step 3.03, 4.03 e 8.11: ai Cat Hand Agent di Splendide, Manuk ed El Dicastes basta parlare, senza salvare li'
+- Step 5.03 e 5.04: la Chocolate Pie la da' Lugen, non Lucas
+
 ## [9.0] - 2026-10-04
 
 Le consegne di Lugen stanno tutte in una fase, e il percorso va dalla fase 0 alla 12.
