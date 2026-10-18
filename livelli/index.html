@@ -94,7 +94,7 @@ legend { padding: 0 6px; font-family: var(--serif); font-weight: 700; font-size:
 .field > span, .hint { font-size: .88rem; color: var(--muted); }
 .row { display: flex; gap: 12px; flex-wrap: wrap; }
 .row > .field { flex: 1 1 100px; }
-.row > .field.wide { flex: 2 1 140px; }
+.row > .field.wide { flex: 2 1 160px; }
 input[type="number"], select {
   width: 100%; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg);
 }
@@ -203,6 +203,7 @@ details.steps li.kill { color: var(--muted); font-style: italic; }
           <label class="check"><input type="radio" name="rinato" value="no" checked> Non rinato</label>
           <label class="check"><input type="radio" name="rinato" value="si"> Rinato</label>
         </div>
+        <p class="hint">Con un Bow Mercenary e l'accesso al Moscovia Dungeon si arriva al 40 cacciando i Les, senza spendere zeny: poi scrivi 40 come livello attuale.</p>
         <div class="row">
           <label class="field"><span>Livello attuale</span><input type="number" name="livello" min="1" max="98" value="1"></label>
           <label class="field"><span>Percentuale</span><input type="number" name="percentuale" min="0" max="99.9" step="0.1" value="0"></label>
@@ -218,13 +219,10 @@ details.steps li.kill { color: var(--muted); font-style: italic; }
           <label class="field"><span>Livello job</span><input type="number" name="job" min="1" max="70" value="1"></label>
           <label class="field"><span>Cambio classe al job</span><input type="number" name="cambioJob" min="40" max="50" value="50"></label>
         </div>
-        <label class="field"><span>Salgo uccidendo mostri fino al livello</span><input type="number" name="caccia" min="2" max="98"></label>
-        <p class="hint">Facoltativo: se prima delle quest sali di livello cacciando, scrivi fino a quale. Il piano parte da lì.</p>
-        <label class="check"><input type="checkbox" name="mercenario"> <span>Ho un mercenario arciere (Bow Mercenary) e l'accesso al Moscovia Dungeon: caccio i Les fino al 40</span></label>
       </fieldset>
 
       <fieldset>
-        <legend>Bonus EXP</legend>
+        <legend>Opzioni</legend>
         <label class="check"><input type="checkbox" name="weekend"> <span>Weekend (+50%)</span></label>
         <label class="field"><span>Manuale</span>
           <select name="manuale">
@@ -234,16 +232,17 @@ details.steps li.kill { color: var(--muted); font-style: italic; }
           </select>
         </label>
         <p class="hint" id="moltiplicatore"></p>
-      </fieldset>
-
-      <fieldset>
-        <legend>Opzioni</legend>
-        <label class="check"><input type="checkbox" name="medusa"> <span>Medusa x150: tre consegne da 50 al Miner, dal livello 75 al 97</span></label>
         <label class="check"><input type="checkbox" name="rabbocchi">
           <span>Completo il livello uccidendo mostri quando manca meno del <input class="inline" type="number" name="soglia" min="1" max="50" value="10">%</span>
         </label>
         <label class="field"><span>Peso di un cambio di quest (zeny)</span><input type="number" name="cambio" min="0" step="1000" value="30000"></label>
         <p class="hint">Non si paga: rappresenta il viaggio verso un altro NPC. Il piano passa a un'altra quest solo se fa risparmiare almeno questi zeny. A 0 cambia quest anche per pochi zeny.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Cacce pronte</legend>
+        <p class="hint">Quest di caccia già completate. Si prendono solo entro i loro livelli, ma si consegnano a qualsiasi livello: il trucco è completarle prima di rinascere e consegnarle da rinato quando il piano lo dice, anche sotto il livello minimo.</p>
+        <div id="cacce"></div>
       </fieldset>
     </div>
 

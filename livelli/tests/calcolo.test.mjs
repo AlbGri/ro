@@ -7,9 +7,10 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import { aggiungiExp, aggiungiJob, calcolaPiano, moltiplicatore, seguiJob } from "../calcolo.js";
-import { EXP_NORMALE, EXP_RINATO, JOB_PRIMA, JOB_SECONDA, JOB_SECONDA_RINATO, MEDUSA, QUEST } from "../dati.js";
+import { EXP_NORMALE, EXP_RINATO, JOB_PRIMA, JOB_SECONDA, JOB_SECONDA_RINATO, CACCE, QUEST } from "../dati.js";
 
 const quest = (id) => QUEST.find((q) => q.id === id);
+const caccia = (id) => CACCE.find((c) => c.id === id);
 
 describe("moltiplicatore", () => {
   it("somma weekend e manuale", () => {
@@ -47,7 +48,7 @@ describe("aggiungiExp", () => {
   });
 
   it("Medusa in tre consegne separate: dall'80 allo 0% all'83, con il manuale 100%", () => {
-    const guadagno = MEDUSA.base * 2;
+    const guadagno = caccia("medusa").base * 2;
     let stato = { livello: 80, exp: 0 };
     for (let i = 0; i < 3; i++) stato = aggiungiExp(EXP_NORMALE, stato.livello, stato.exp, guadagno);
     assert.equal(stato.livello, 83);
@@ -157,14 +158,23 @@ describe("calcolaPiano", () => {
     for (const p of uccisioni) assert.ok(p.mancante <= EXP_NORMALE[p.da.livello - 1] * 0.1);
   });
 
-  it("la Medusa si usa al massimo tre volte, fra il 75 e il 97", () => {
-    const piano = calcolaPiano({
-      rinato: true, livello: 74, obiettivo: 84, manuale: 100, medusa: true,
-      oggetti: { antelope: { prezzo: 672 } },
-    });
-    const medusa = piano.tappe.filter((t) => t.tipo === "medusa");
-    assert.equal(medusa.reduce((n, t) => n + t.consegne, 0), 3);
-    for (const t of medusa) assert.ok(t.da.livello >= 75 && t.a.livello <= 97);
+  it("le cacce pronte si consegnano tutte, ognuna in una tappa sola", () => {
+    const pronte = { goat: 2, titan: 1, medusa: 3 };
+    const piano = calcolaPiano({ rinato: true, livello: 70, obiettivo: 84, manuale: 100, cacce: pronte });
+    for (const [id, consegne] of Object.entries(pronte)) {
+      const tappe = piano.tappe.filter((t) => t.tipo === "caccia" && t.caccia.id === id);
+      assert.equal(tappe.length, 1, id);
+      assert.equal(tappe[0].consegne, consegne, id);
+    }
+    const senza = calcolaPiano({ rinato: true, livello: 70, obiettivo: 84, manuale: 100 });
+    assert.ok(piano.zeny < senza.zeny);
+  });
+
+  it("una caccia completata si consegna anche sotto il livello minimo della quest", () => {
+    const piano = calcolaPiano({ rinato: true, livello: 50, obiettivo: 70, manuale: 100, cacce: { titan: 3 } });
+    const titan = piano.tappe.filter((t) => t.tipo === "caccia");
+    assert.ok(titan.length > 0);
+    assert.ok(titan.every((t) => t.da.livello < caccia("titan").min));
   });
 
   it("sotto il livello minimo delle quest non c'e' piano", () => {
@@ -233,6 +243,14 @@ describe("job", () => {
   it("gia' al job del cambio si cambia classe prima di cominciare", () => {
     const { tappe } = seguiJob(piano(), { rinato: false, job: 50, cambio: 50, manuale: 100 });
     assert.equal(tappe[0].tipo, "classe");
+  });
+
+  it("il cambio di classe non lascia tappe senza consegne", () => {
+    const opzioni = { rinato: true, livello: 40, obiettivo: 84, manuale: 100, cambio: 30000, rabbocco: 10 };
+    const p = calcolaPiano({ ...opzioni, cacce: { goat: 3, titan: 3, medusa: 3 } });
+    const { tappe } = seguiJob(p, { ...opzioni, job: 1, cambio: 50 });
+    assert.ok(tappe.some((t) => t.tipo === "classe"));
+    for (const t of tappe) if (t.tipo === "quest" || t.tipo === "caccia") assert.ok(t.consegne > 0);
   });
 
   it("in seconda classe non si cambia piu' e al massimo la job EXP si perde", () => {

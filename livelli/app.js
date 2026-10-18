@@ -6,10 +6,9 @@
  */
 
 import { calcolaPiano, jobMassimo, moltiplicatore, percentualeDi, percentualeJob, seguiJob } from "./calcolo.js";
-import { EXP_NORMALE, EXP_RINATO, MEDUSA, QUEST } from "./dati.js";
+import { CACCE, EXP_NORMALE, EXP_RINATO, QUEST, UCCISIONI_PER_CONSEGNA } from "./dati.js";
 
 const STORAGE_KEY = "ragnarok-livelli/stato";
-const CACCIA_CON_MERCENARIO = 40;
 
 const form = document.getElementById("form");
 const pianoEl = document.getElementById("piano");
@@ -38,6 +37,16 @@ document.getElementById("items").innerHTML =
       </label>
     </div>`,
   ).join("");
+
+document.getElementById("cacce").innerHTML = CACCE.map(
+  (c) => `
+    <label class="field"><span>${escape(c.mostro)} (${escape(c.npc)}, si prende ai livelli ${c.min}-${c.max})</span>
+      <select name="caccia-${c.id}">
+        <option value="0">Nessuna</option>
+        ${[1, 2, 3].map((n) => `<option value="${n}">${n * UCCISIONI_PER_CONSEGNA} uccisi</option>`).join("")}
+      </select>
+    </label>`,
+).join("");
 
 // ----------------------------------------------------------- salvataggio ---
 
@@ -87,7 +96,6 @@ function leggi() {
   const f = form.elements;
   const livello = intero(f.livello.value, 1, 98, 1);
   const percentuale = Math.min(99.9, Math.max(0, Number(f.percentuale.value) || 0));
-  const caccia = intero(f.caccia.value, 2, 98, null);
   const oggetti = {};
   for (const q of QUEST) {
     const prezzo = f[`prezzo-${q.id}`].value;
@@ -106,11 +114,9 @@ function leggi() {
     livello,
     percentuale,
     obiettivo: intero(f.obiettivo.value, 2, 99, 84),
-    caccia: caccia !== null && caccia > livello ? caccia : null,
-    mercenario: f.mercenario.checked,
     weekend: f.weekend.checked,
     manuale: Number(f.manuale.value),
-    medusa: f.medusa.checked,
+    cacce: Object.fromEntries(CACCE.map((c) => [c.id, Number(f[`caccia-${c.id}`].value)])),
     rabbocco: f.rabbocchi.checked ? intero(f.soglia.value, 1, 50, 10) : null,
     cambio: intero(f.cambio.value, 0, 1e9, 0),
     oggetti,
@@ -168,16 +174,17 @@ function disegnaTappa(numeroTappa, tappa, scelte, tabella) {
         `<p class="note-line tip"><strong>Mostri:</strong> quando al livello manca meno del ${scelte.rabbocco}%, uccidi qualche ${escape(q.mostro)} sulla mappa invece di consegnare. In questa tappa capita ${tappa.rabbocchi} volt${tappa.rabbocchi === 1 ? "a" : "e"}.</p>`,
       );
     }
-  } else if (tappa.tipo === "medusa") {
-    titolo = `Medusa al ${MEDUSA.npc}`;
+  } else if (tappa.tipo === "caccia") {
+    const c = tappa.caccia;
+    titolo = `${c.mostro} a ${c.npc}`;
     parti.push(
-      `<p>${tappa.consegne} consegn${tappa.consegne === 1 ? "a" : "e"} da ${MEDUSA.uccisioni} Medusa uccise. Ogni consegna conta da sola per il limite del livello.</p>`,
-      `<div class="chips"><span class="chip-label">${MEDUSA.npc}</span>${chip(`/navi ${MEDUSA.navi}`)}</div>`,
-      `<p class="stage-range">Città da cui partire: ${MEDUSA.citta} (da verificare).</p>`,
+      `<p>${tappa.consegne} consegn${tappa.consegne === 1 ? "a" : "e"} da ${UCCISIONI_PER_CONSEGNA} ${escape(c.mostro)} uccisi. Ogni consegna conta da sola per il limite del livello.</p>`,
+      `<div class="chips"><span class="chip-label">${escape(c.npc)}</span>${chip(`/navi ${c.navi}`)}</div>`,
+      `<p class="stage-range">Città da cui partire: ${escape(c.citta)} (da verificare).</p>`,
     );
     if (scelte.rinato) {
       parti.push(
-        `<p class="note-line tip"><strong>Trucco:</strong> prendi le tre quest e uccidi le 150 Medusa prima di rinascere (la quest si prende fino al livello ${MEDUSA.max}), poi consegnale qui da rinato.</p>`,
+        `<p class="note-line tip"><strong>Trucco:</strong> prendi la quest prima di rinascere (si prende ai livelli ${c.min}-${c.max}) e uccidi i mostri; da rinato la consegni qui, a qualsiasi livello.</p>`,
       );
     }
     if (tappa.rabbocchi > 0) {
@@ -255,25 +262,10 @@ function disegnaSpesa(spesa) {
   return `<div class="spesa"><h3>Da comprare</h3><ul>${righe.join("")}</ul></div>`;
 }
 
-function disegnaCaccia(scelte) {
-  const testo = scelte.mercenario
-    ? `<p>Les al Moscovia Dungeon, con il Double Strafe del mercenario arciere. Il Warpra delle città porta al Moscovia Dungeon per 5.000 zeny, dopo che hai parlato una volta con il Warpra Helper del posto.</p>`
-    : `<p>Caccia dove preferisci fino al livello ${scelte.caccia}.</p>`;
-  return `
-    <article class="stage">
-      <div class="stage-num">0</div>
-      <div>
-        <h3 class="stage-title">A caccia</h3>
-        <div class="stage-range">Dal ${scelte.livello} al ${scelte.caccia}</div>
-        ${testo}
-      </div>
-    </article>`;
-}
-
 /** Perche' non c'e' un piano: si parte sotto il livello minimo delle quest. */
 function spiegaVuoto(partenza) {
   const minimo = Math.min(...QUEST.map((q) => q.min));
-  return `Sotto il livello ${minimo} non ci sono quest: sali uccidendo mostri fino al ${minimo} e scrivilo nel campo «Salgo uccidendo mostri fino al livello». Ora parti dal ${partenza}.`;
+  return `Sotto il livello ${minimo} non ci sono quest: sali uccidendo mostri fino al ${minimo}. Ora parti dal ${partenza}.`;
 }
 
 function aggiorna() {
@@ -283,19 +275,14 @@ function aggiorna() {
     `EXP delle quest: ×${molt.toLocaleString("it-IT")}`;
 
   const tabella = scelte.rinato ? EXP_RINATO : EXP_NORMALE;
-  const partenza = scelte.caccia ?? scelte.livello;
-  if (partenza >= scelte.obiettivo) {
-    pianoEl.innerHTML = `<p class="summary">Sei già all'obiettivo, o ci arrivi cacciando.</p>`;
+  if (scelte.livello >= scelte.obiettivo) {
+    pianoEl.innerHTML = `<p class="summary">Sei già all'obiettivo.</p>`;
     return;
   }
 
-  const piano = calcolaPiano({
-    ...scelte,
-    livello: partenza,
-    percentuale: scelte.caccia ? 0 : scelte.percentuale,
-  });
+  const piano = calcolaPiano(scelte);
   if (!piano) {
-    pianoEl.innerHTML = `<p class="empty">${escape(spiegaVuoto(partenza))}</p>`;
+    pianoEl.innerHTML = `<p class="empty">${escape(spiegaVuoto(scelte.livello))}</p>`;
     return;
   }
 
@@ -306,13 +293,7 @@ function aggiorna() {
   const html = [
     `<p class="summary">Dal ${stato(piano.partenza)} al ${stato(piano.arrivo)}: <strong>${numero(piano.consegne)}</strong> consegne in ${tappe} tapp${tappe === 1 ? "a" : "e"}, <strong>${numero(piano.zeny)}</strong> zeny di oggetti. Alla fine: job ${statoJob(scelte.rinato, job.finale)} della ${nomeClasse(job.finale.classe)}.</p>`,
   ];
-  if (scelte.caccia) {
-    html.push(
-      `<p class="note-line verify"><strong>Job:</strong> il calcolo non conta la job EXP della caccia iniziale. Quando arrivi al livello ${scelte.caccia}, aggiorna nel modulo livello, classe e job.</p>`,
-    );
-  }
   html.push(disegnaSpesa(piano.spesa));
-  if (scelte.caccia) html.push(disegnaCaccia(scelte));
   job.tappe.forEach((t, i) =>
     html.push(t.tipo === "classe" ? disegnaClasse(i + 1, t, tabella) : disegnaTappa(i + 1, t, scelte, tabella)),
   );
@@ -322,11 +303,7 @@ function aggiorna() {
 // ------------------------------------------------------------- eventi ---
 
 let attesa;
-form.addEventListener("input", (event) => {
-  // Con il mercenario si caccia fino al 40, se non e' scritto altro.
-  if (event.target.name === "mercenario" && event.target.checked && form.elements.caccia.value === "") {
-    form.elements.caccia.value = CACCIA_CON_MERCENARIO;
-  }
+form.addEventListener("input", () => {
   salva();
   clearTimeout(attesa);
   attesa = setTimeout(aggiorna, 250);

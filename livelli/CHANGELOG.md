@@ -2,6 +2,13 @@
 
 Le versioni della pagina `livelli/`.
 
+## [1.2] - 2026-10-18
+
+- Tolti il campo della caccia iniziale e la casella del mercenario: conta solo il livello attuale, con una nota sui Les del Moscovia Dungeon con il Bow Mercenary
+- Bonus EXP, livello completato con i mostri e peso di un cambio di quest stanno insieme nel riquadro Opzioni
+- Nuovo riquadro Cacce pronte: Goat, Ice Titan e Medusa, da 50 a 150 uccisi. Una caccia completata si consegna a qualsiasi livello, anche sotto il minimo per prenderla: il piano sceglie quando, e la consegna in una tappa sola
+- Il cambio di classe compare prima della consegna successiva, senza lasciare tappe vuote
+
 ## [1.1] - 2026-10-18
 
 - Senza scrivere niente il piano dice quanti oggetti comprare: un prezzo lasciato vuoto vale quello dell'NPC o una stima

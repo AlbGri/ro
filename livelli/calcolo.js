@@ -5,8 +5,8 @@
  * comprare; passare a un altro NPC costa in piu' un prezzo fisso, che conta il
  * viaggio e impedisce piani che saltano da un NPC all'altro per pochi zeny.
  * La ricerca prova tutte le sequenze di consegne, scartando quelle che
- * un'altra batte su tutto (stesso livello, piu' EXP, meno costo, meno
- * consegne, piu' oggetti ancora in inventario) e quelle che anche nel caso
+ * un'altra batte su tutto (stesso livello, piu' EXP, meno costo, piu' cacce e
+ * oggetti ancora da usare) e quelle che anche nel caso
  * migliore costerebbero piu' del piano gia' trovato: il risultato e' il piano
  * col costo minore e, a parita', con meno consegne.
  */
@@ -18,8 +18,9 @@ import {
   JOB_PRIMA_RINATO,
   JOB_SECONDA,
   JOB_SECONDA_RINATO,
+  CACCE,
+  CONSEGNE_MASSIME,
   LIVELLO_MASSIMO,
-  MEDUSA,
   QUEST,
 } from "./dati.js";
 
@@ -67,6 +68,10 @@ function aggiungiFinoA(tabella, massimo, livello, exp, guadagno) {
   }
   return { livello, exp, persa };
 }
+
+// Ogni consegna costa in piu' un millesimo di zeny: a parita' di zeny vince il piano
+// con meno consegne, senza mai cambiare la scelta fra piani che differiscono di uno zeny.
+const PER_CONSEGNA = 0.001;
 
 /** Coda a priorita' minima (heap binario) con un confronto dato. */
 class Coda {
@@ -123,7 +128,8 @@ class Coda {
  * @param {number} opzioni.obiettivo Livello da raggiungere.
  * @param {boolean} [opzioni.weekend=false] Bonus del weekend.
  * @param {number} [opzioni.manuale=0] Manuale attivo: 0, 50 o 100.
- * @param {boolean} [opzioni.medusa=false] Tre consegne della caccia alle Medusa disponibili.
+ * @param {Object<string, number>} [opzioni.cacce={}] Per id di caccia: quante consegne
+ *   da 50 uccisioni sono pronte, da 0 a 3. Si consegnano a qualsiasi livello.
  * @param {?number} [opzioni.rabbocco=null] Se un numero: quando al livello manca al piu'
  *   questa percentuale lo si completa uccidendo mostri, senza consegne.
  * @param {number} [opzioni.cambio=0] Zeny che vale passare a un altro NPC: entra
@@ -142,7 +148,7 @@ export function calcolaPiano(opzioni) {
     obiettivo,
     weekend = false,
     manuale = 0,
-    medusa = false,
+    cacce = {},
     rabbocco = null,
     cambio = 0,
     oggetti = {},
@@ -162,7 +168,28 @@ export function calcolaPiano(opzioni) {
   }
   let contatori = 0;
   for (const q of quest) if (q.posseduti > 0) q.resto = contatori++;
-  const guadagnoMedusa = Math.floor(MEDUSA.base * molt);
+  // Cacce pronte: consegne gratis, una per volta, a qualsiasi livello: la quest e'
+  // gia' completata e i suoi livelli contano solo per prenderla.
+  const pronte = CACCE.map((c) => ({
+    ...c,
+    consegne: Math.min(CONSEGNE_MASSIME, Math.max(0, Math.floor(cacce[c.id] ?? 0))),
+    guadagno: Math.floor(c.base * molt),
+  })).filter((c) => c.consegne > 0);
+
+  // EXP che una consegna di caccia perde per il limite di un livello, nel livello
+  // migliore da l in poi partendo da 0. Una caccia si consegna solo se non spreca
+  // di piu': consegnarla prima, sprecando tanto, non conviene mai in pratica e
+  // moltiplicherebbe gli stati da provare.
+  for (const c of pronte) {
+    c.sprecoMinimo = new Array(obiettivo + 1).fill(Infinity);
+    for (let l = obiettivo - 1; l >= 1; l--) {
+      const spreco = Math.max(0, c.guadagno - (2 * tabella[l - 1] - 1));
+      c.sprecoMinimo[l] = Math.min(c.sprecoMinimo[l + 1], spreco);
+    }
+  }
+  /** EXP delle consegne di caccia ancora da fare, dalla piu' grande. */
+  const restanti = (usate) =>
+    pronte.flatMap((c, i) => new Array(c.consegne - usate[i]).fill(c.guadagno)).sort((a, b) => b - a);
 
   /** Zeny di una consegna con `rimasti` oggetti ancora in inventario. */
   const prezzoConsegna = (q, rimasti) => Math.max(0, q.quantita - rimasti) * q.prezzo;
@@ -183,7 +210,10 @@ export function calcolaPiano(opzioni) {
   /** Costo minimo per finire da `stato`: l'EXP gratis va tolta, il resto al prezzo migliore. */
   const limiteInferiore = (stato) => {
     let gratis = 0;
-    if (medusa) gratis += (MEDUSA.consegne - stato.medusa) * guadagnoMedusa;
+    // Una consegna di caccia perde almeno lo spreco minimo dei livelli che restano.
+    pronte.forEach((c, i) => {
+      gratis += (c.consegne - stato.cacce[i]) * (c.guadagno - c.sprecoMinimo[stato.livello]);
+    });
     if (rabbocco !== null) gratis += (mancaDa[stato.livello] * rabbocco) / 100;
     for (const q of quest) {
       if (q.resto >= 0) gratis += (stato.rimasti[q.resto] / q.quantita) * q.guadagno;
@@ -211,10 +241,11 @@ export function calcolaPiano(opzioni) {
       risultato.push({
         livello: dopo.livello,
         exp: dopo.exp,
-        costo: stato.costo + zeny + (stato.ultima === q.id ? 0 : cambio),
+        costo: stato.costo + zeny + (stato.ultima === q.id ? 0 : cambio) + PER_CONSEGNA,
         zeny: stato.zeny + zeny,
         consegne: stato.consegne + 1,
-        medusa: stato.medusa,
+        cacce: stato.cacce,
+        gratis: stato.gratis,
         rimasti: nuoviRimasti,
         ultima: q.id,
         padre: stato,
@@ -222,20 +253,41 @@ export function calcolaPiano(opzioni) {
       });
     }
 
-    if (medusa && stato.medusa < MEDUSA.consegne && l >= MEDUSA.min && l <= MEDUSA.max) {
-      const dopo = aggiungiExp(tabella, l, exp, guadagnoMedusa);
-      risultato.push({
-        ...stato,
-        livello: dopo.livello,
-        exp: dopo.exp,
-        costo: stato.costo + (stato.ultima === "medusa" ? 0 : cambio),
-        consegne: stato.consegne + 1,
-        medusa: stato.medusa + 1,
-        ultima: "medusa",
-        padre: stato,
-        mossa: { tipo: "medusa", zeny: 0, persa: dopo.persa },
-      });
-    }
+    // Una caccia si consegna in una volta sola, con un solo viaggio: 1, 2 o 3
+    // consegne di fila, e fra una e l'altra le uccisioni che completano un livello
+    // (gratis, quindi sempre). Poi la caccia e' chiusa: tiene basso il numero di
+    // combinazioni da provare.
+    pronte.forEach((c, i) => {
+      if (stato.cacce[i] >= c.consegne) return;
+      const usate = stato.cacce.slice();
+      usate[i] = c.consegne;
+      const passi = [];
+      let ora = { livello: l, exp };
+      for (let k = 1; k <= c.consegne - stato.cacce[i]; k++) {
+        const dopo = aggiungiExp(tabella, ora.livello, ora.exp, c.guadagno);
+        if (dopo.livello < obiettivo && dopo.persa > c.sprecoMinimo[ora.livello]) break;
+        passi.push({ tipo: "caccia", da: ora, a: { livello: dopo.livello, exp: dopo.exp }, persa: dopo.persa });
+        ora = { livello: dopo.livello, exp: dopo.exp };
+        const mancante = ora.livello < obiettivo ? tabella[ora.livello - 1] - ora.exp : Infinity;
+        if (rabbocco !== null && mancante <= (tabella[ora.livello - 1] * rabbocco) / 100) {
+          passi.push({ tipo: "rabbocco", da: ora, a: { livello: ora.livello + 1, exp: 0 }, persa: 0, mancante });
+          ora = { livello: ora.livello + 1, exp: 0 };
+        }
+        risultato.push({
+          ...stato,
+          livello: ora.livello,
+          exp: ora.exp,
+          costo: stato.costo + (stato.ultima === c.id ? 0 : cambio) + k * PER_CONSEGNA,
+          consegne: stato.consegne + k,
+          cacce: usate,
+          gratis: restanti(usate),
+          ultima: c.id,
+          padre: stato,
+          mossa: { tipo: "caccia", caccia: c, zeny: 0, passi: passi.slice() },
+        });
+        if (ora.livello >= obiettivo) break;
+      }
+    });
 
     const mancante = tabella[l - 1] - exp;
     if (rabbocco !== null && l < LIVELLO_MASSIMO && mancante <= (tabella[l - 1] * rabbocco) / 100) {
@@ -250,7 +302,7 @@ export function calcolaPiano(opzioni) {
     return risultato;
   };
 
-  const migliorDi = (a, b) => a.costo < b.costo || (a.costo === b.costo && a.consegne < b.consegne);
+  const migliorDi = (a, b) => a.costo < b.costo;
 
   const iniziale = {
     livello,
@@ -258,7 +310,8 @@ export function calcolaPiano(opzioni) {
     costo: 0,
     zeny: 0,
     consegne: 0,
-    medusa: 0,
+    cacce: pronte.map(() => 0),
+    gratis: restanti(pronte.map(() => 0)),
     rimasti: quest.filter((q) => q.resto >= 0).map((q) => q.posseduti),
     ultima: null,
     padre: null,
@@ -267,7 +320,7 @@ export function calcolaPiano(opzioni) {
   if (livello >= obiettivo) return componiPiano(iniziale, tabella, quest);
 
   // Un primo piano qualsiasi fa da tetto e permette di scartare subito i rami
-  // che costerebbero di piu': uccisioni e Medusa appena si puo', altrimenti la
+  // che costerebbero di piu': uccisioni e cacce appena si puo', altrimenti la
   // quest che costa meno per punto di EXP, restando dallo stesso NPC a parita'.
   let migliore = null;
   for (let stato = iniziale; stato; ) {
@@ -292,12 +345,14 @@ export function calcolaPiano(opzioni) {
   }
 
   // Due stati allo stesso livello: `a` batte `b` se ha almeno la stessa EXP,
-  // costa meno anche contando il passaggio all'NPC di `b`, e non ha usato piu'
-  // consegne, Medusa o oggetti posseduti.
+  // costa meno anche contando il passaggio all'NPC di `b`, e gli restano almeno le
+  // stesse cacce e gli stessi oggetti posseduti.
   const domina = (a, b) => {
     const passaggio = a.ultima === b.ultima ? 0 : cambio;
-    if (a.exp < b.exp || a.costo + passaggio > b.costo || a.consegne > b.consegne) return false;
-    if (a.medusa > b.medusa) return false;
+    if (a.exp < b.exp || a.costo + passaggio > b.costo) return false;
+    // Una consegna di caccia piu' grande vale almeno quanto una piu' piccola.
+    if (a.gratis.length < b.gratis.length) return false;
+    for (let i = 0; i < b.gratis.length; i++) if (a.gratis[i] < b.gratis[i]) return false;
     for (let i = 0; i < contatori; i++) if (a.rimasti[i] < b.rimasti[i]) return false;
     return true;
   };
@@ -350,34 +405,40 @@ function componiPiano(finale, tabella, quest) {
   let inSospeso = [];
   let tappa = null;
 
+  // Una mossa di caccia contiene gia' i suoi passi; le altre sono un passo solo.
+  const elementari = [];
   for (let i = 1; i < stati.length; i++) {
     const prima = stati[i - 1];
     const dopo = stati[i];
     const mossa = dopo.mossa;
-    const passo = {
-      tipo: mossa.tipo,
-      da: { livello: prima.livello, exp: prima.exp },
-      a: { livello: dopo.livello, exp: dopo.exp },
-      persa: mossa.persa,
-      zeny: mossa.zeny,
-      dallInventario: 0,
-      comprati: 0,
-    };
-    if (mossa.tipo === "rabbocco") {
-      passo.mancante = mossa.mancante;
+    const passi = mossa.passi ?? [
+      {
+        tipo: mossa.tipo,
+        da: { livello: prima.livello, exp: prima.exp },
+        a: { livello: dopo.livello, exp: dopo.exp },
+        persa: mossa.persa,
+        mancante: mossa.mancante,
+      },
+    ];
+    for (const p of passi) elementari.push({ mossa, passo: { ...p, zeny: 0, dallInventario: 0, comprati: 0 } });
+  }
+
+  for (const { mossa, passo } of elementari) {
+    if (passo.tipo === "rabbocco") {
       if (tappa) tappa.passi.push(passo);
       else inSospeso.push(passo);
       continue;
     }
     if (mossa.tipo === "quest") {
       const q = mossa.quest;
+      passo.zeny = mossa.zeny;
       passo.dallInventario = Math.min(q.quantita, rimasti.get(q.id));
       passo.comprati = q.quantita - passo.dallInventario;
       rimasti.set(q.id, rimasti.get(q.id) - passo.dallInventario);
     }
-    const chiave = mossa.tipo === "medusa" ? "medusa" : mossa.quest.id;
+    const chiave = mossa.tipo === "caccia" ? mossa.caccia.id : mossa.quest.id;
     if (!tappa || tappa.chiave !== chiave) {
-      tappa = { chiave, tipo: mossa.tipo, quest: mossa.quest ?? null, passi: inSospeso };
+      tappa = { chiave, tipo: mossa.tipo, quest: mossa.quest ?? null, caccia: mossa.caccia ?? null, passi: inSospeso };
       inSospeso = [];
       tappe.push(tappa);
     }
@@ -492,7 +553,9 @@ export function seguiJob(piano, opzioni) {
     return true;
   };
 
-  cambiaSePronto(piano.partenza);
+  // Il cambio di classe va prima della consegna successiva: le uccisioni che
+  // completano un livello restano nella tappa in cui capitano.
+  let ultimo = piano.partenza;
   for (const tappa of piano.tappe) {
     let passi = [];
     const chiudi = () => {
@@ -500,23 +563,25 @@ export function seguiJob(piano, opzioni) {
       passi = [];
     };
     for (const passo of tappa.passi) {
+      if (passo.tipo !== "rabbocco" && stato.classe === 1 && stato.livello >= cambio) {
+        chiudi();
+        cambiaSePronto(passo.da);
+      }
       const da = { ...stato };
       let persaPasso = 0;
       if (passo.tipo !== "rabbocco") {
-        const base = passo.tipo === "medusa" ? MEDUSA.job : tappa.quest.job;
+        const base = passo.tipo === "caccia" ? tappa.caccia.job : tappa.quest.job;
         const dopo = aggiungiJob(tabelle[stato.classe - 1], stato.livello, stato.exp, Math.floor(base * molt));
         stato = { classe: stato.classe, livello: dopo.livello, exp: dopo.exp };
         persaPasso = dopo.persa;
         persa += persaPasso;
       }
       passi.push({ ...passo, job: { da, a: { ...stato }, persa: persaPasso } });
-      if (stato.classe === 1 && stato.livello >= cambio) {
-        chiudi();
-        cambiaSePronto(passo.a);
-      }
+      ultimo = passo.a;
     }
     chiudi();
   }
+  cambiaSePronto(ultimo);
   return { tappe, finale: stato, persa };
 }
 

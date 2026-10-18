@@ -126,10 +126,26 @@ export const QUEST = [
 ];
 
 /**
- * Caccia alle Medusa: tre quest da 50 uccisioni, consegnate una per volta, e
- * ognuna conta come un guadagno di EXP a se' per il limite del livello.
+ * Quest di caccia che si possono preparare, per esempio prima di rinascere: si
+ * prendono entro i livelli `min`-`max`, si uccidono i mostri e si consegnano
+ * dopo, a qualsiasi livello, anche sotto il minimo (visto in gioco con la
+ * Medusa). Una caccia da 150 sono tre consegne da 50, e ognuna conta come un
+ * guadagno di EXP a se' per il limite del livello. Premi per 50 uccisioni.
  */
-export const MEDUSA = {
-  npc: "Miner", navi: "beach_dun 269/71", min: 75, max: 97,
-  consegne: 3, uccisioni: 50, base: 2062800, job: 1409100, citta: "Comodo",
-};
+export const UCCISIONI_PER_CONSEGNA = 50;
+export const CONSEGNE_MASSIME = 3;
+
+export const CACCE = [
+  {
+    id: "goat", npc: "Vegetable Farmer", navi: "ein_fild06 82/171", min: 70, max: 85,
+    mostro: "Goat", base: 1033956, job: 620620, citta: "Einbroch",
+  },
+  {
+    id: "titan", npc: "Henry", navi: "ice_dun03 140/26", min: 70, max: 95,
+    mostro: "Ice Titan", base: 3640000, job: 2600000, citta: "Rachel",
+  },
+  {
+    id: "medusa", npc: "Miner", navi: "beach_dun 269/71", min: 75, max: 97,
+    mostro: "Medusa", base: 2062800, job: 1409100, citta: "Comodo",
+  },
+];
