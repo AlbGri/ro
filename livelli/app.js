@@ -24,7 +24,7 @@ document.getElementById("items").innerHTML =
   `<div class="item head"><span>Oggetto</span><span>Quest</span><span>Ne ho</span><span>Prezzo (zeny)</span></div>` +
   QUEST.map(
     (q) => `
-    <div class="item">
+    <div class="item" data-quest="${q.id}">
       <div><span class="name">${escape(q.oggetto)}</span> <span class="sub">${q.quantita} a consegna</span></div>
       <div class="sub sub-npc">${escape(q.npc)}, livelli ${q.min}-${q.max}</div>
       <label class="mobile" data-label="Ne ho">
@@ -270,6 +270,11 @@ function spiegaVuoto(partenza) {
 
 function aggiorna() {
   const scelte = leggi();
+  // Nella tabella solo gli oggetti delle quest che servono fra il livello e l'obiettivo.
+  for (const q of QUEST) {
+    const riga = form.querySelector(`[data-quest="${q.id}"]`);
+    riga.hidden = q.max < scelte.livello || q.min >= scelte.obiettivo;
+  }
   const molt = moltiplicatore(scelte.weekend, scelte.manuale);
   document.getElementById("moltiplicatore").textContent =
     `EXP delle quest: ×${molt.toLocaleString("it-IT")}`;

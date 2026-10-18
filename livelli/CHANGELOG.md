@@ -2,6 +2,10 @@
 
 Le versioni della pagina `livelli/`.
 
+## [1.3] - 2026-10-18
+
+- Nella tabella degli oggetti compaiono solo quelli delle quest che servono fra il livello attuale e l'obiettivo
+
 ## [1.2] - 2026-10-18
 
 - Tolti il campo della caccia iniziale e la casella del mercenario: conta solo il livello attuale, con una nota sui Les del Moscovia Dungeon con il Bow Mercenary
