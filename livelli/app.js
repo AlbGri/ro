@@ -74,7 +74,11 @@ function ripristina() {
   } catch {
     return;
   }
-  if (!stato) return;
+  if (stato) applica(stato);
+}
+
+/** Rimette nel modulo le scelte salvate. */
+function applica(stato) {
   for (const el of form.elements) {
     if (!el.name || !(el.name in stato)) continue;
     if (el.type === "radio") el.checked = el.value === stato[el.name];
@@ -300,12 +304,6 @@ function disegnaManuali(scelte) {
     <p class="verdetto">${verdetto}</p>`;
 }
 
-/** Perche' non c'e' un piano: si parte sotto il livello minimo delle quest. */
-function spiegaVuoto(partenza) {
-  const minimo = Math.min(...QUEST.map((q) => q.min));
-  return `Sotto il livello ${minimo} non ci sono quest: sali uccidendo mostri fino al ${minimo}. Ora parti dal ${partenza}.`;
-}
-
 function aggiorna() {
   const scelte = leggi();
   // In seconda classe non c'e' un altro cambio, e il job massimo dipende dalla classe.
@@ -329,9 +327,22 @@ function aggiorna() {
     return;
   }
 
+  // Sotto il primo livello delle quest si sale uccidendo mostri: il piano, e il
+  // confronto dei manuali, partono da li' (prima la pagina non mostrava niente).
+  const minimo = Math.min(...QUEST.map((q) => q.min));
+  const daiMostri = scelte.livello < minimo;
+  if (daiMostri) {
+    if (scelte.obiettivo <= minimo) {
+      pianoEl.innerHTML = `<p class="empty">Le quest cominciano dal livello ${minimo}: fino al ${scelte.obiettivo} si sale solo uccidendo mostri.</p>`;
+      confronto.innerHTML = "";
+      return;
+    }
+    Object.assign(scelte, { livello: minimo, percentuale: 0 });
+  }
+
   const piano = calcolaPiano(scelte);
   if (!piano) {
-    pianoEl.innerHTML = `<p class="empty">${escape(spiegaVuoto(scelte.livello))}</p>`;
+    pianoEl.innerHTML = `<p class="empty">Nessun piano possibile con queste scelte.</p>`;
     confronto.innerHTML = "";
     return;
   }
@@ -342,6 +353,9 @@ function aggiorna() {
   // Le tappe del piano, prima che il cambio di classe ne spezzi una.
   const tappe = piano.tappe.length;
   const html = [
+    daiMostri
+      ? `<p class="note-line tip"><strong>Fino al ${minimo}:</strong> sotto il livello ${minimo} non ci sono quest ripetibili, si sale uccidendo mostri. Il piano parte dal ${minimo} allo 0%.</p>`
+      : "",
     `<p class="summary">Dal ${stato(piano.partenza)} al ${stato(piano.arrivo)}: <strong>${numero(piano.consegne)}</strong> consegne in ${tappe} tapp${tappe === 1 ? "a" : "e"}, <strong>${numero(piano.zeny)}</strong> zeny di oggetti. Alla fine: job ${statoJob(scelte.rinato, job.finale)} della ${nomeClasse(job.finale.classe)}.</p>`,
   ];
   html.push(disegnaSpesa(piano.spesa));
@@ -363,18 +377,61 @@ form.addEventListener("submit", (event) => event.preventDefault());
 
 const toast = document.getElementById("toast");
 let toastTimer;
+function avvisa(testo, durata = 1800) {
+  toast.textContent = testo;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), durata);
+}
+
 pianoEl.addEventListener("click", async (event) => {
   const bottone = event.target.closest("[data-copy]");
   if (!bottone) return;
   try {
     await navigator.clipboard.writeText(bottone.dataset.copy);
-    toast.textContent = `Copiato: ${bottone.dataset.copy}`;
+    avvisa(`Copiato: ${bottone.dataset.copy}`);
   } catch {
-    toast.textContent = "Non riesco a copiare: selezionalo a mano.";
+    avvisa("Non riesco a copiare: selezionalo a mano.");
   }
-  toast.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove("show"), 1800);
+});
+
+// Backup e ripristino in un file, dal menu Altro come nelle altre pagine.
+document.getElementById("btnBackup").addEventListener("click", () => {
+  salva();
+  let testo;
+  try {
+    testo = localStorage.getItem(STORAGE_KEY);
+  } catch {
+    testo = null;
+  }
+  const blob = new Blob([testo ?? "{}"], { type: "application/json" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `livelli-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+  avvisa(`Il browser scarica ${link.download}: conservalo, e con Ripristina da backup recuperi i dati.`, 3500);
+});
+
+const file = document.getElementById("file");
+document.getElementById("btnRipristina").addEventListener("click", () => file.click());
+file.addEventListener("change", async () => {
+  const scelto = file.files[0];
+  file.value = "";
+  if (!scelto) return;
+  let stato;
+  try {
+    stato = JSON.parse(await scelto.text());
+    if (!stato || typeof stato !== "object" || Array.isArray(stato)) throw new Error("formato");
+  } catch {
+    avvisa("Il file non è un backup di questa pagina.", 3500);
+    return;
+  }
+  if (!confirm("Sostituire i dati della pagina con quelli del file?")) return;
+  applica(stato);
+  salva();
+  aggiorna();
+  avvisa("Dati ripristinati.");
 });
 
 ripristina();

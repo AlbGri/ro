@@ -73,6 +73,17 @@ button, input, select { font: inherit; color: inherit; }
 }
 .btn:hover { border-color: var(--muted); }
 a.btn { text-decoration: none; }
+/* Menu Altro, copiato dalla guida */
+.more { position: relative; }
+.more > summary { list-style: none; }
+.more > summary::-webkit-details-marker { display: none; }
+.more-menu {
+  position: absolute; right: 0; top: calc(100% + 6px); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 10px; padding: 6px; display: grid; gap: 4px; min-width: 220px;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--ink) 18%, transparent);
+}
+.more-menu .btn { text-align: left; border-color: transparent; }
+.more-menu .btn:hover { background: var(--surface-2); }
 
 main { max-width: 960px; margin: 0 auto; padding: 28px 20px 80px; }
 .hero { padding-bottom: 20px; border-bottom: 1px solid var(--line); }
@@ -195,7 +206,17 @@ details.steps li.kill { color: var(--muted); font-style: italic; }
   <div class="topbar-inner">
     <a class="btn" href="../index.html" title="Torna alla scelta dei servizi">Home</a>
     <span class="brand">Livelli</span>
-    <button class="btn" type="button" onclick="toggleTheme()">Cambia tema chiaro/scuro</button>
+    <!-- Menu Altro, uguale in ogni pagina: voci della pagina, backup, lingua, tema. Lo chiude gate.js. -->
+    <details class="more">
+      <summary class="btn">Altro</summary>
+      <div class="more-menu">
+        <button class="btn" type="button" id="btnBackup">Backup dei dati</button>
+        <button class="btn" type="button" id="btnRipristina">Ripristina da backup</button>
+        <button class="btn" type="button" onclick="toggleLang()" data-lang>English</button>
+        <button class="btn" type="button" onclick="toggleTheme()">Cambia tema chiaro/scuro</button>
+      </div>
+    </details>
+    <input type="file" id="file" accept=".json,application/json" hidden>
   </div>
 </header>
 

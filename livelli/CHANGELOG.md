@@ -2,6 +2,13 @@
 
 Le versioni della pagina `livelli/`.
 
+## [1.10] - 2026-10-18
+
+- In alto a destra il menu Altro, uguale in tutte le pagine del sito, con Backup dei dati, Ripristina da backup, English e Cambia tema chiaro/scuro
+- Backup e ripristino delle scelte in un file: prima restavano solo nel browser
+- La pagina resta in italiano; in inglese lo dice in cima
+- Sotto il livello 10, dove non ci sono quest ripetibili, il piano parte dal 10 allo 0% invece di non comparire, e compare anche il confronto dei manuali
+
 ## [1.9] - 2026-10-18
 
 - I campi «Ne ho» e «Prezzo» degli oggetti sono alla stessa altezza; sul telefono il menu della classe è alto come i campi accanto
