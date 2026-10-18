@@ -2,6 +2,12 @@
 
 Le versioni della pagina `party/`.
 
+## [1.2] - 2026-10-18
+
+- Sotto l'istanza, un campo per ogni posto obbligatorio: per esempio 0 Gypsy/Dancer se il Professor passa gli SP, o 3 High Priest. Composizione standard la rimette com'era
+- Un posto tolto dalla composizione standard resta il primo fra i liberi: senza Gypsy/Dancer obbligatoria, una Gypsy/Dancer per run entra prima del secondo Sniper
+- La composizione scelta resta salvata ed entra nel backup
+
 ## [1.1] - 2026-10-18
 
 - Nei posti liberi, a parità di entrate, prima gli Sniper, poi gli High Priest, poi i Priest, poi tutti gli altri. Priest è una classe nuova nell'elenco

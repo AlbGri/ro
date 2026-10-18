@@ -23,8 +23,26 @@ const escape = (s) =>
 const nuovoPersonaggio = () => ({ nome: "", classe: "" });
 const nuovoAccount = () => ({ personaggi: [nuovoPersonaggio()] });
 
-let stato = { istanza: ISTANZE[0].id, giocatori: [], jolly: [] };
+let stato = { istanza: ISTANZE[0].id, composizione: {}, giocatori: [], jolly: [] };
 const istanza = () => ISTANZE.find((i) => i.id === stato.istanza);
+
+/**
+ * L'istanza con la composizione scelta nella pagina: quanti posti obbligatori di
+ * ogni ruolo. Un posto tolto rispetto allo standard resta desiderato, il primo
+ * fra i liberi (Alberto, 18/10/2026: senza Gypsy/Dancer obbligatoria, una Gypsy
+ * "come primo pg necessario extra prima del secondo sniper").
+ */
+function istanzaScelta() {
+  const i = istanza();
+  const scelta = stato.composizione[i.id] ?? {};
+  return {
+    ...i,
+    posti: i.posti.map((p) => {
+      const quanti = scelta[p.ruolo] ?? p.quanti;
+      return { ...p, quanti, standard: p.quanti, desiderati: Math.max(0, p.quanti - quanti) };
+    }),
+  };
+}
 
 /**
  * Lo stato da un oggetto letto (localStorage o file), con i campi mancanti a posto.
@@ -37,8 +55,18 @@ function normalizza(dati) {
       nome: String(p?.nome ?? ""),
       classe: String(p?.classe ?? ""),
     }));
+  // Della composizione restano solo i numeri validi dei posti che l'istanza conosce.
+  const composizione = {};
+  for (const i of ISTANZE) {
+    const letta = dati.composizione?.[i.id] ?? {};
+    for (const p of i.posti) {
+      const n = letta[p.ruolo];
+      if (Number.isInteger(n) && n >= 0 && n <= i.maxParty && n !== p.quanti) (composizione[i.id] ??= {})[p.ruolo] = n;
+    }
+  }
   return {
     istanza: ISTANZE.some((i) => i.id === dati.istanza) ? dati.istanza : ISTANZE[0].id,
+    composizione,
     giocatori: dati.giocatori.map((g) => ({
       nome: String(g?.nome ?? ""),
       presente: g?.presente !== false,
@@ -90,12 +118,33 @@ function disegnaIstanza() {
   istanzaEl.innerHTML = ISTANZE.map(
     (x) => `<option value="${x.id}"${x.id === i.id ? " selected" : ""}>${escape(x.nome)}</option>`,
   ).join("");
+  document.getElementById("composizioneCampi").innerHTML =
+    i.posti
+      .map(
+        (p) => `<label><span>${escape(p.nome)}</span><input type="number" min="0" max="${i.maxParty}" step="1" value="${istanzaScelta().posti.find((x) => x.ruolo === p.ruolo).quanti}" data-posto="${p.ruolo}" aria-label="Posti obbligatori di ${escape(p.nome)}"></label>`,
+      )
+      .join("") +
+    `<button class="btn small" type="button" data-azione="composizione-standard" id="composizioneStandard">Composizione standard</button>`;
+  disegnaComposizione();
+}
+
+/** Le scritte che dipendono dalla composizione scelta. */
+function disegnaComposizione() {
+  const i = istanzaScelta();
+  const obbligatori = i.posti.filter((p) => p.quanti > 0);
+  const tolti = i.posti.filter((p) => p.desiderati > 0);
+  document.getElementById("composizioneStandard").hidden = !i.posti.some((p) => p.quanti !== p.standard);
   document.getElementById("composizione").textContent =
     `${i.nome}: ogni run ha al massimo ${i.maxParty} persone e deve avere ` +
-    i.posti.map((p) => `${p.quanti} ${p.nome}`).join(", ") +
-    `. Gli altri posti sono liberi, per qualsiasi classe. Un id macchina entra al massimo ${i.maxRun} volte, ogni volta con un account diverso.`;
+    obbligatori.map((p) => `${p.quanti} ${p.nome}`).join(", ") +
+    ". Gli altri posti sono liberi, per qualsiasi classe" +
+    (tolti.length
+      ? `; ${tolti.map((p) => p.nome).join(" e ")}, tolt${tolti.length === 1 ? "o" : "i"} dalla composizione standard, ${tolti.length === 1 ? "è il primo" : "sono i primi"} fra i liberi`
+      : "") +
+    `. Un id macchina entra al massimo ${i.maxRun} volte, ogni volta con un account diverso.`;
   document.getElementById("ordine").textContent =
     "Le run migliori: prima il numero di run, poi far entrare tutti il più possibile, " +
+    (tolti.length ? "poi i posti tolti dalla composizione standard, " : "") +
     i.preferiti.map((p) => `poi più ${p.nome}${p.perche ? ` (${p.perche})` : ""}, `).join("") +
     "poi run equilibrate.";
 }
@@ -191,7 +240,16 @@ function aggiorna() {
     risultatoEl.innerHTML = `<p class="empty">Nessun giocatore presente.</p>`;
     return;
   }
-  const i = istanza();
+  const i = istanzaScelta();
+  const obbligatori = i.posti.reduce((n, p) => n + p.quanti, 0);
+  if (obbligatori === 0 || obbligatori > i.maxParty) {
+    risultatoEl.innerHTML = `<p class="empty">${
+      obbligatori === 0
+        ? "Metti almeno un posto obbligatorio nella composizione."
+        : `I posti obbligatori sono ${obbligatori}, più delle ${i.maxParty} persone di una run.`
+    }</p>`;
+    return;
+  }
   const esito = calcolaRun(presenti, jolly, i);
   // Nel riepilogo solo il primo preferito: degli altri il conto comprenderebbe i posti obbligatori.
   const preferiti = (conti) => (i.preferiti.length ? `, ${conti[0]} ${i.preferiti[0].nome}` : "");
@@ -282,6 +340,20 @@ document.addEventListener("input", (event) => {
 
 const file = document.getElementById("file");
 
+// I posti della composizione: si ridisegnano solo le scritte, per non togliere il fuoco al campo.
+document.getElementById("composizioneCampi").addEventListener("input", (event) => {
+  const ruolo = event.target.dataset.posto;
+  const i = istanza();
+  const posto = i.posti.find((p) => p.ruolo === ruolo);
+  const n = Number(event.target.value);
+  if (!posto || event.target.value === "" || !Number.isInteger(n) || n < 0 || n > i.maxParty) return;
+  const scelta = (stato.composizione[i.id] ??= {});
+  if (n === posto.quanti) delete scelta[ruolo];
+  else scelta[ruolo] = n;
+  disegnaComposizione();
+  cambiato(false);
+});
+
 istanzaEl.addEventListener("change", () => {
   stato.istanza = istanzaEl.value;
   disegnaIstanza();
@@ -318,6 +390,10 @@ document.addEventListener("click", (event) => {
     case "togli-jolly":
       if (!confirm(`Togliere ${stato.jolly[d.j].nome || "il jolly"}?`)) return;
       stato.jolly.splice(d.j, 1);
+      break;
+    case "composizione-standard":
+      delete stato.composizione[istanza().id];
+      disegnaIstanza();
       break;
     case "esporta":
       esporta();

@@ -5,8 +5,10 @@
  * (un client alla volta); ogni account, jolly compresi, entra una volta sola;
  * una run ha al massimo `maxParty` persone e copre i posti obbligatori.
  *
- * Ordine di preferenza: piu' run complete, piu' entrate, piu' personaggi dei
- * ruoli preferiti nell'ordine dell'istanza (Sniper, poi High Priest, poi
+ * Ordine di preferenza: piu' run complete, piu' entrate, piu' posti desiderati
+ * coperti (quelli tolti dalla composizione standard, `desiderati` di un posto:
+ * restano i primi fra i liberi, fino a quanti ne mancano per run), piu'
+ * personaggi dei ruoli preferiti nell'ordine dell'istanza (Sniper, poi High Priest, poi
  * Priest), entrate divise fra i giocatori, meno jolly; poi run di grandezza
  * simile e Sniper divisi fra le run.
  *
@@ -113,12 +115,14 @@ export function calcolaRun(giocatori, jolly, istanza = ISTANZE[0]) {
 function cerca(giocatori, jolly, istanza, nRun, minEntrate) {
   const posti = istanza.posti;
   const serve = posti.map((p) => p.quanti * nRun);
+  // Fin dove si contano i personaggi di un ruolo: i posti obbligatori piu' quelli desiderati.
+  const tetto = posti.map((p, i) => serve[i] + (p.desiderati ?? 0) * nRun);
   // Con al piu' maxParty presenti il limite di persone non si raggiunge mai.
   const conLimite = giocatori.length > istanza.maxParty;
   const maxEntrate = istanza.maxParty * nRun;
 
-  // Stato in un numero: posti coperti per ruolo (fermi a quanti ne servono), entrate se c'e' il limite, jolly.
-  const basi = [...serve.map((n) => n + 1), conLimite ? maxEntrate + 1 : 1];
+  // Stato in un numero: posti coperti per ruolo (fermi al tetto), entrate se c'e' il limite, jolly.
+  const basi = [...tetto.map((n) => n + 1), conLimite ? maxEntrate + 1 : 1];
   const pesoJolly = 2 ** jolly.length;
   const chiave = (coperti, entrate, maschera) => {
     let k = 0;
@@ -179,7 +183,7 @@ function cerca(giocatori, jolly, istanza, nRun, minEntrate) {
         if (conLimite && entrate > maxEntrate) continue;
         // La chiave senza creare array: e' il punto in cui passa quasi tutto il tempo.
         let k = 0;
-        for (let i = 0; i < posti.length; i++) k = k * basi[i] + Math.min(serve[i], stato.coperti[i] + scelta.aggiunti[i]);
+        for (let i = 0; i < posti.length; i++) k = k * basi[i] + Math.min(tetto[i], stato.coperti[i] + scelta.aggiunti[i]);
         const maschera = stato.maschera | scelta.maschera;
         k = (k * basi[posti.length] + (conLimite ? entrate : 0)) * pesoJolly + maschera;
         const punti = stato.punti + scelta.punti;
@@ -189,7 +193,7 @@ function cerca(giocatori, jolly, istanza, nRun, minEntrate) {
           continue;
         }
         if (scartati.has(k)) continue;
-        const coperti = stato.coperti.map((c, i) => Math.min(serve[i], c + scelta.aggiunti[i]));
+        const coperti = stato.coperti.map((c, i) => Math.min(tetto[i], c + scelta.aggiunti[i]));
         if (!speranza(coperti, maschera, g + 1, entrate)) {
           scartati.add(k);
           continue;
@@ -201,10 +205,17 @@ function cerca(giocatori, jolly, istanza, nRun, minEntrate) {
     strati.push(strato);
   }
 
+  // I desiderati dipendono solo dallo stato: contano dopo le entrate, prima del resto del punteggio.
   let migliore = null;
   for (const [k, stato] of strato) {
     if (stato.coperti.some((c, i) => c < serve[i])) continue;
-    if (!migliore || stato.punti > migliore.punti) migliore = { chiave: k, punti: stato.punti };
+    const candidato = { chiave: k, entrate: stato.entrate, desiderati: stato.coperti.reduce((n, c, i) => n + c - serve[i], 0), punti: stato.punti };
+    if (
+      !migliore ||
+      (candidato.entrate - migliore.entrate || candidato.desiderati - migliore.desiderati || candidato.punti - migliore.punti) > 0
+    ) {
+      migliore = candidato;
+    }
   }
   if (!migliore) return null;
 
@@ -220,9 +231,13 @@ function cerca(giocatori, jolly, istanza, nRun, minEntrate) {
 
 /**
  * Passo 2: divide i contributi in `nRun` run. Ogni posto obbligatorio e' un
- * nodo con esattamente `nRun` archi, uno per run; i liberi sono nodi da `nRun`
- * archi riempiti prima con i preferiti, nel loro ordine. Gli archi si colorano con l'algoritmo
- * dei cammini alternati (Konig): ogni colore, cioe' run, ha un arco per nodo.
+ * nodo con esattamente `nRun` archi, uno per run; ogni posto desiderato un nodo
+ * con i personaggi di quel ruolo che ci sono, completato con i liberi meno
+ * preziosi; gli altri liberi sono nodi da `nRun` archi, riempiti prima con i
+ * preferiti, nel loro ordine. Gli archi si colorano con l'algoritmo dei cammini
+ * alternati (Konig): ogni colore, cioe' run, ha al piu' un arco per nodo. Cosi'
+ * le run hanno i posti obbligatori, i desiderati e al piu' una persona di
+ * differenza; `pareggia` divide poi i preferiti.
  */
 function dividi(scelti, istanza, nRun) {
   const nodiGiocatore = new Map();
@@ -240,11 +255,30 @@ function dividi(scelti, istanza, nRun) {
       }
     }
   }
+  const buchi = [];
+  for (const posto of istanza.posti) {
+    for (let q = 0; q < (posto.desiderati ?? 0); q++) {
+      const nodo = nuovoDestro();
+      let archiNodo = 0;
+      for (let r = 0; r < nRun; r++) {
+        const i = restanti.findIndex((c) => c.ruolo === posto.ruolo);
+        if (i < 0) break;
+        archi.push({ contributo: restanti.splice(i, 1)[0], destro: nodo });
+        archiNodo++;
+      }
+      for (let r = archiNodo; r < nRun; r++) buchi.push(nodo);
+    }
+  }
   const rango = (c) => {
     const i = istanza.preferiti.findIndex((p) => p.ruolo === c.ruolo);
     return i < 0 ? istanza.preferiti.length : i;
   };
   restanti.sort((a, b) => rango(a) - rango(b));
+  // I buchi dei posti desiderati prendono i liberi meno preziosi, dalla fine.
+  for (const nodo of buchi) {
+    if (restanti.length === 0) break;
+    archi.push({ contributo: restanti.pop(), destro: nodo });
+  }
   restanti.forEach((c, i) => {
     if (i % nRun === 0) nuovoDestro();
     archi.push({ contributo: c, destro: destri.length - 1 });
@@ -289,7 +323,54 @@ function dividi(scelti, istanza, nRun) {
 
   const run = [...Array(nRun)].map(() => []);
   for (const arco of archi) run[arco.colore].push(arco.contributo);
+  pareggia(run, istanza);
   return run;
+}
+
+/**
+ * Divide i preferiti fra le run scambiando due membri di run diverse, finche'
+ * serve: le persone per run non cambiano, e uno scambio vale solo se le due run
+ * tengono posti obbligatori e desiderati. Conta il primo preferito (lo Sniper),
+ * poi gli altri nel loro ordine.
+ */
+function pareggia(run, istanza) {
+  const conta = (membri, ruolo) => membri.filter((m) => m.ruolo === ruolo).length;
+  const desiderati = (membri) =>
+    istanza.posti.reduce((n, p) => n + Math.min(Math.max(0, conta(membri, p.ruolo) - p.quanti), p.desiderati ?? 0), 0);
+  const copre = (membri) => istanza.posti.every((p) => conta(membri, p.ruolo) >= p.quanti);
+  const squilibrio = () => istanza.preferiti.map((p) => run.reduce((n, m) => n + conta(m, p.ruolo) ** 2, 0));
+  const meno = (a, b) => {
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return a[i] < b[i];
+    return false;
+  };
+  const presente = (membri, giocatore, tranne) => membri.some((m) => m !== tranne && m.giocatore === giocatore);
+
+  for (let migliorato = true; migliorato; ) {
+    migliorato = false;
+    for (let a = 0; a < run.length; a++) {
+      for (let b = a + 1; b < run.length; b++) {
+        for (const x of [...run[a]]) {
+          for (const y of [...run[b]]) {
+            if (x.ruolo === y.ruolo || !run[a].includes(x)) continue;
+            if (presente(run[b], x.giocatore, y) || presente(run[a], y.giocatore, x)) continue;
+            const prima = { squilibrio: squilibrio(), desiderati: desiderati(run[a]) + desiderati(run[b]) };
+            const scambia = () => {
+              run[a][run[a].indexOf(x)] = y;
+              run[b][run[b].indexOf(y)] = x;
+            };
+            scambia();
+            const valido = copre(run[a]) && copre(run[b]) && desiderati(run[a]) + desiderati(run[b]) >= prima.desiderati;
+            if (valido && meno(squilibrio(), prima.squilibrio)) {
+              migliorato = true;
+              break;
+            }
+            run[a][run[a].indexOf(y)] = x;
+            run[b][run[b].indexOf(x)] = y;
+          }
+        }
+      }
+    }
+  }
 }
 
 /** Le run nel formato del risultato, con chi resta fuori e perche'. */

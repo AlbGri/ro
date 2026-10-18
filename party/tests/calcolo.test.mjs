@@ -48,7 +48,12 @@ function punteggio(run, istanza) {
   let jolly = 0;
   let persone2 = 0;
   let preferiti2 = 0;
+  let desiderati = 0;
   for (const membri of run) {
+    for (const p of istanza.posti) {
+      const ci = membri.filter((m) => m.ruolo === p.ruolo).length;
+      desiderati += Math.min(Math.max(0, ci - p.quanti), p.desiderati ?? 0);
+    }
     istanza.preferiti.forEach((p, k) => (preferiti[k] += membri.filter((m) => m.ruolo === p.ruolo).length));
     const pref = membri.filter((m) => m.ruolo === istanza.preferiti[0].ruolo).length;
     jolly += membri.filter((m) => m.jolly !== null).length;
@@ -59,7 +64,7 @@ function punteggio(run, istanza) {
   const totale = [...entrate.values()].reduce((a, b) => a + b, 0);
   const quadrati = [...entrate.values()].reduce((a, b) => a + b * b, 0);
   // + 0 trasforma -0 in 0, che deepEqual distingue.
-  return [run.length, totale, ...preferiti, -quadrati, -jolly, -persone2, -preferiti2].map((x) => x + 0);
+  return [run.length, totale, desiderati, ...preferiti, -quadrati, -jolly, -persone2, -preferiti2].map((x) => x + 0);
 }
 
 /** Il punteggio migliore provando tutte le ripartizioni. */
@@ -220,7 +225,10 @@ describe("confronto con la ricerca esaustiva", () => {
 
   it("300 casi casuali: stesso punteggio e regole rispettate", () => {
     for (let n = 0; n < 300; n++) {
-      const istanza = { ...piccola, maxParty: 2 + intero(3), maxRun: 1 + intero(3) };
+      // Composizione casuale: un posto tolto diventa desiderato, ma almeno uno resta obbligatorio.
+      const tolto = intero(3);
+      const posti = piccola.posti.map((p, i) => (i === tolto ? { ...p, quanti: 0, desiderati: 1 } : p));
+      const istanza = { ...piccola, posti, maxParty: 2 + intero(3), maxRun: 1 + intero(3) };
       // Casi piccoli: la ricerca esaustiva cresce come (scelte per run) ^ (run x giocatori).
       const nGiocatori = istanza.maxRun === 3 ? 2 + intero(2) : 2 + intero(3);
       const giocatori = [...Array(nGiocatori)].map((_, g) =>
