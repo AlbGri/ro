@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>uaRO – Livelli fino all'84</title>
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#F5F7F1">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1B2420">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<script src="../gate.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Colori e caratteri sono quelli della guida Nuovo Mondo. */
+:root {
+  --bg: #E6EBE2;
+  --surface: #F5F7F1;
+  --surface-2: #EDF1E8;
+  --ink: #1D2821;
+  --muted: #56655B;
+  --line: #C6D0C1;
+  --common: #3C7C4C;
+  --bradium: #6A4C9C;
+  --verify: #9A5C00;
+  --warn: #A3402C;
+  --tip: #4E6B3A;
+  --focus: #6A4C9C;
+  --serif: "Alegreya", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: "Atkinson Hyperlegible", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131A16; --surface: #1B2420; --surface-2: #212C27; --ink: #E3EAE2; --muted: #9DAA9F; --line: #33413A;
+    --common: #63A471; --bradium: #B79CEB; --verify: #E8A93C; --warn: #F08A72; --tip: #8DB36F; --focus: #B79CEB;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131A16; --surface: #1B2420; --surface-2: #212C27; --ink: #E3EAE2; --muted: #9DAA9F; --line: #33413A;
+  --common: #63A471; --bradium: #B79CEB; --verify: #E8A93C; --warn: #F08A72; --tip: #8DB36F; --focus: #B79CEB;
+  color-scheme: dark;
+}
+:root { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--sans); font-size: 16px; line-height: 1.5;
+}
+a { color: inherit; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+
+/* Intestazione, come nella guida */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  padding-top: env(safe-area-inset-top, 0px);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-inner {
+  max-width: 960px; margin: 0 auto; min-height: 64px;
+  display: flex; align-items: center; gap: 16px; padding: 8px 20px; flex-wrap: wrap;
+}
+.brand { font-family: var(--serif); font-weight: 700; font-size: 1.15rem; white-space: nowrap; flex: 1; }
+.btn {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 8px;
+  padding: 7px 12px; cursor: pointer; font-size: .92rem; line-height: 1.2;
+}
+.btn:hover { border-color: var(--muted); }
+a.btn { text-decoration: none; }
+
+main { max-width: 960px; margin: 0 auto; padding: 28px 20px 80px; }
+.hero { padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.hero h1 { font-family: var(--serif); font-size: clamp(2.1rem, 4.5vw, 3.2rem); line-height: 1.05; margin: 0 0 12px; font-weight: 700; letter-spacing: -.01em; }
+.lead { font-size: 1.12rem; max-width: 62ch; margin: 0 0 16px; color: var(--muted); }
+.hero ul { margin: 0; padding-left: 1.1em; max-width: 70ch; }
+.hero li { margin-bottom: 6px; }
+
+h2 { font-family: var(--serif); font-size: 1.55rem; line-height: 1.15; margin: 36px 0 12px; font-weight: 700; }
+
+/* Modulo */
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+fieldset {
+  margin: 0; padding: 12px 16px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface);
+  display: grid; gap: 10px; align-content: start; min-width: 0;
+}
+legend { padding: 0 6px; font-family: var(--serif); font-weight: 700; font-size: 1.1rem; }
+.field { display: grid; gap: 4px; }
+.field > span, .hint { font-size: .88rem; color: var(--muted); }
+.row { display: flex; gap: 12px; flex-wrap: wrap; }
+.row > .field { flex: 1 1 100px; }
+.row > .field.wide { flex: 2 1 140px; }
+input[type="number"], select {
+  width: 100%; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg);
+}
+input[type="number"].inline { width: 5.5em; display: inline-block; padding: 3px 6px; }
+.check { display: flex; gap: 8px; align-items: flex-start; cursor: pointer; }
+.check input { width: 18px; height: 18px; margin: 3px 0 0; flex: none; accent-color: var(--bradium); cursor: pointer; }
+.radios { display: flex; gap: 16px; flex-wrap: wrap; }
+
+/* Oggetti: una riga per quest, che sul telefono va a capo */
+.items { display: grid; gap: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; }
+.item {
+  display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr) 6.5em 7.5em; gap: 4px 14px; align-items: center;
+  padding: 8px 14px; border-top: 1px solid var(--line);
+}
+.item:first-child { border-top: none; }
+.item.head { font-size: .82rem; color: var(--muted); padding-top: 10px; padding-bottom: 6px; }
+.item .name { font-weight: 700; }
+.item .sub { font-size: .85rem; color: var(--muted); }
+.item input { padding: 5px 8px; }
+.item .npc-price { font-size: .78rem; color: var(--muted); }
+
+/* Piano */
+.summary { margin: 0 0 8px; padding: 12px 16px; border-left: 4px solid var(--common); background: var(--surface); border-radius: 0 8px 8px 0; }
+.summary strong { font-variant-numeric: tabular-nums; }
+.empty { margin: 0; padding: 12px 16px; border-left: 4px solid var(--warn); background: var(--surface); border-radius: 0 8px 8px 0; }
+.stage { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 16px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.stage-num { font-family: var(--serif); font-size: 2.2rem; line-height: .9; font-weight: 700; color: var(--common); min-width: 1.4ch; }
+.stage-title { font-weight: 700; font-size: 1.08rem; margin: 0; }
+.stage-range { font-size: .9rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.stage p { margin: 6px 0 0; max-width: 72ch; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.chip {
+  font-family: var(--mono); font-size: .86rem; cursor: pointer; line-height: 1.3;
+  border: 1px solid color-mix(in srgb, var(--bradium) 45%, transparent);
+  background: color-mix(in srgb, var(--bradium) 10%, var(--surface));
+  color: var(--ink); border-radius: 6px; padding: 5px 9px;
+}
+.chip:hover { background: color-mix(in srgb, var(--bradium) 20%, var(--surface)); border-color: var(--bradium); }
+.chip-label { font-size: .82rem; color: var(--muted); margin-right: 2px; align-self: center; }
+.note-line { margin: 8px 0 0; padding: 7px 12px; border-left: 3px solid; border-radius: 0 6px 6px 0; max-width: 72ch; font-size: .95rem; background: var(--surface); }
+.note-line.tip { border-color: var(--tip); }
+.note-line.warn { border-color: var(--warn); }
+.note-line.warn strong { color: var(--warn); }
+.note-line.verify { border-color: var(--verify); }
+.note-line.verify strong { color: var(--verify); }
+details.steps { margin-top: 8px; font-size: .92rem; }
+details.steps summary { cursor: pointer; color: var(--muted); }
+details.steps ol { margin: 6px 0 0; padding-left: 2.2em; font-variant-numeric: tabular-nums; }
+details.steps li.kill { color: var(--muted); font-style: italic; }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px);
+  background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; font-size: .92rem;
+  opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; z-index: 50; max-width: calc(100vw - 32px);
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.footer { margin-top: 48px; color: var(--muted); font-size: .88rem; max-width: 72ch; }
+
+@media (max-width: 640px) {
+  .topbar-inner { gap: 10px; padding: 8px 16px; }
+  main { padding-left: 16px; padding-right: 16px; }
+  .btn { padding: 6px 10px; font-size: .86rem; }
+  .brand { font-size: 1rem; }
+  .item { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+  .item.head { display: none; }
+  .item > :first-child, .item .sub-npc { grid-column: 1 / -1; }
+  .item label.mobile::before { content: attr(data-label); display: block; font-size: .78rem; color: var(--muted); }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="btn" href="../index.html" title="Torna alla scelta dei servizi">Home</a>
+    <span class="brand">Livelli</span>
+    <button class="btn" type="button" onclick="toggleTheme()">Cambia tema chiaro/scuro</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Livelli fino all'84</h1>
+    <p class="lead">Il piano più economico per salire di livello con le quest ripetibili di uaRO, da non rinato o da rinato. Inserisci il personaggio, gli oggetti che hai e i prezzi del mercato: il piano si aggiorna da solo.</p>
+    <ul>
+      <li>Ogni consegna fa salire al massimo un livello: l'EXP in più si ferma poco prima del livello successivo e il resto va perso. Il piano ne tiene conto.</li>
+      <li>Il bonus del weekend (+50%) si somma a quello del manuale; di due manuali conta il più forte.</li>
+      <li>Il job non cambia il piano: si segue accanto, con il momento del cambio di classe e gli avvisi sulla job EXP sprecata.</li>
+      <li>Un oggetto senza prezzo non si compra: il piano usa solo quelli che hai.</li>
+      <li>Clicca un /navi o un @ws: viene copiato, e lo incolli nella chat del gioco.</li>
+    </ul>
+  </section>
+
+  <h2>Personaggio</h2>
+  <form id="form" autocomplete="off">
+    <div class="form-grid">
+      <fieldset>
+        <legend>Livello</legend>
+        <div class="radios" role="radiogroup" aria-label="Classe">
+          <label class="check"><input type="radio" name="rinato" value="no" checked> Non rinato</label>
+          <label class="check"><input type="radio" name="rinato" value="si"> Rinato</label>
+        </div>
+        <div class="row">
+          <label class="field"><span>Livello attuale</span><input type="number" name="livello" min="1" max="98" value="1"></label>
+          <label class="field"><span>Percentuale</span><input type="number" name="percentuale" min="0" max="99.9" step="0.1" value="0"></label>
+          <label class="field"><span>Obiettivo</span><input type="number" name="obiettivo" min="2" max="99" value="84"></label>
+        </div>
+        <div class="row">
+          <label class="field wide"><span>Classe</span>
+            <select name="classe">
+              <option value="1">Prima classe</option>
+              <option value="2">Seconda classe</option>
+            </select>
+          </label>
+          <label class="field"><span>Livello job</span><input type="number" name="job" min="1" max="70" value="1"></label>
+          <label class="field"><span>Cambio classe al job</span><input type="number" name="cambioJob" min="40" max="50" value="50"></label>
+        </div>
+        <label class="field"><span>Prima caccio fino al livello (vuoto: niente caccia)</span><input type="number" name="caccia" min="2" max="98"></label>
+        <label class="check"><input type="checkbox" name="mercenario"> <span>Ho un mercenario arco e l'accesso al Moscovia Dungeon</span></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Bonus EXP</legend>
+        <label class="check"><input type="checkbox" name="weekend"> <span>Weekend (+50%)</span></label>
+        <label class="field"><span>Manuale</span>
+          <select name="manuale">
+            <option value="0">Nessuno</option>
+            <option value="50">Manuale 50%</option>
+            <option value="100">Manuale 100%</option>
+          </select>
+        </label>
+        <p class="hint" id="moltiplicatore"></p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Opzioni</legend>
+        <label class="check"><input type="checkbox" name="medusa"> <span>Medusa x150: tre consegne da 50 al Miner, dal livello 75 al 97</span></label>
+        <label class="check"><input type="checkbox" name="rabbocchi">
+          <span>Completo il livello uccidendo mostri quando manca meno del <input class="inline" type="number" name="soglia" min="1" max="50" value="10">%</span>
+        </label>
+        <label class="field"><span>Un cambio di NPC vale (zeny)</span><input type="number" name="cambio" min="0" step="1000" value="30000"></label>
+        <p class="hint">Conta il viaggio da un NPC all'altro: più è alto, meno tappe ha il piano.</p>
+      </fieldset>
+    </div>
+
+    <h2>Oggetti</h2>
+    <p class="hint">Quanti ne hai e quanto costa uno al mercato. I prezzi già scritti sono quelli degli NPC.</p>
+    <div class="items" id="items"></div>
+  </form>
+
+  <h2>Piano</h2>
+  <div id="piano"></div>
+
+  <p class="footer">Fonti: tabelle dell'EXP e regola del livello a consegna dagli script di rAthena (pre-renewal), il software su cui gira uaRO; quest, NPC e premi dal wiki di uaRO; prezzi degli NPC dagli script di rAthena, confermati in gioco per le Antelope Horn. I negozi e le città con l'etichetta da verificare non sono ancora stati provati in gioco.</p>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

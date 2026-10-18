@@ -9,6 +9,7 @@ La home chiede un codice di accesso e poi fa scegliere il servizio.
 |---|---|---|
 | Timer di respawn per MvP e quest, web e desktop | `/ro/timers/`; l'eseguibile per Windows e' nelle [release](https://github.com/AlbGri/ro/releases) | [`timers/`](timers/README.md) |
 | Guida uaRO "Nuovo Mondo", passo per passo | `/ro/guide/nuovo-mondo.html` | `guide/`, con il suo [changelog](guide/CHANGELOG.md) |
+| Livelli fino all'84: il piano piu' economico con le quest ripetibili di uaRO | `/ro/livelli/` | `livelli/`, con il suo [changelog](livelli/CHANGELOG.md) |
 
 Tutto e' HTML, CSS e JavaScript senza framework ne' passaggi di build: le
 pagine vengono servite cosi' come sono nel repository.
@@ -41,6 +42,7 @@ restano nel suo browser: non c'e' nulla di condiviso da proteggere.
 | `tools/make-icons.mjs` | rigenera da `icon.svg` i PNG che servono ai timer installati come applicazione |
 | `timers/` | applicazione web dei timer; in `timers/desktop/` la versione desktop in Python |
 | `guide/` | guide in un solo file HTML ciascuna; in `guide/strumenti/` gli script Node che le validano |
+| `livelli/` | calcolatore dei livelli: dati, calcolo del piano e pagina; test con `node --test tests/*.mjs` |
 
 Gli strumenti della guida leggono la cartella `guide/fonti` (copie di script e
 database di rAthena e cache delle mappe), che non fa parte del repository. La
@@ -65,7 +67,8 @@ pagina con l'attributo `data-theme`; senza una scelta decide il sistema.
 
 Il sito e' in italiano; home, schermata del codice e timer hanno anche
 l'inglese, che si sceglie con il pulsante `English` e vale per tutto il sito.
-La lingua del browser non conta. La guida Nuovo Mondo e' solo in italiano.
+La lingua del browser non conta. La guida Nuovo Mondo e i livelli sono solo in
+italiano.
 
 Le due lingue stanno una accanto all'altra, senza un file di traduzioni:
 
