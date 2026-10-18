@@ -33,7 +33,7 @@ document.getElementById("items").innerHTML =
       <label class="mobile" data-label="Prezzo (zeny)">
         <input type="number" name="prezzo-${q.id}" min="0" step="1" placeholder="${q.prezzo}"
           aria-label="Prezzo di una ${escape(q.oggetto)}">
-        <span class="npc-price">${q.negozio ? "prezzo NPC" : "stima, metti quello del mercato"}</span>
+        <span class="npc-price">${q.negozio ? `prezzo NPC${q.discount ? `, ${q.discount} con Discount` : ""}` : "stima, metti quello del mercato"}</span>
       </label>
     </div>`,
   ).join("");
@@ -163,7 +163,7 @@ function disegnaTappa(numeroTappa, tappa, scelte, tabella) {
     if (tappa.comprati > 0) {
       chips.push(
         q.negozio
-          ? `<span class="chip-label">${escape(q.negozio.nome)}${q.negozio.verificare ? " (da verificare)" : ""}</span>${chip(`/navi ${q.negozio.navi}`)}`
+          ? `<span class="chip-label">${escape(q.negozio.nome)}</span>${chip(`/navi ${q.negozio.navi}`)}`
           : `<span class="chip-label">Mercato</span>${chip(`@ws ${q.idOggetto}`)}`,
       );
     }
@@ -250,7 +250,7 @@ function disegnaSpesa(spesa) {
   if (spesa.length === 0) return "";
   const righe = spesa.map(({ quest: q, servono, dallInventario, comprati, zeny }) => {
     const dove = q.negozio
-      ? `<span class="chip-label">${escape(q.negozio.nome)}${q.negozio.verificare ? " (da verificare)" : ""}</span>${chip(`/navi ${q.negozio.navi}`)}`
+      ? `<span class="chip-label">${escape(q.negozio.nome)}</span>${chip(`/navi ${q.negozio.navi}`)}`
       : `<span class="chip-label">Mercato</span>${chip(`@ws ${q.idOggetto}`)}`;
     const cosa =
       comprati > 0

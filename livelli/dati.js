@@ -83,9 +83,9 @@ export const JOB_SECONDA_RINATO = [
  * `max`. Le altre quest del wiki si aggiungono qui con lo stesso schema.
  *
  * `prezzo` e' quello usato se non se ne scrive un altro: per gli oggetti
- * venduti da un NPC (quelli con `negozio`) e' il prezzo dell'NPC, cioe' il
- * `Buy` di rAthena, che su uaRO e' tornato per le Antelope Horn; per gli altri
- * e' lo stesso `Buy`, una stima e non il prezzo del mercato. `mostro` e' quello
+ * venduti da un NPC (quelli con `negozio`) e' il prezzo dell'NPC visto in
+ * gioco, `discount` quello con la skill Discount se la riduce; per gli altri e'
+ * una stima del mercato di uaRO (ottobre 2026). `mostro` e' quello
  * della quest di caccia dello stesso NPC: sta sulla mappa e serve per
  * completare un livello con poche uccisioni. `citta` e' la citta' da cui partire.
  */
@@ -94,28 +94,28 @@ export const QUEST = [
     id: "bill", npc: "Gregor", navi: "moc_fild02 74/329", min: 10, max: 30,
     oggetto: "Bill of Birds", idOggetto: 925, quantita: 25, base: 8000, job: 4000,
     mostro: "Peco Peco", citta: "Morroc",
-    prezzo: 64, negozio: { nome: "Item Collector", navi: "moc_ruins 93/53", verificare: true },
+    prezzo: 64, discount: 48, negozio: { nome: "Item Collector", navi: "moc_ruins 93/53" },
   },
   {
     id: "acorn", npc: "Nutters", navi: "mjolnir_01 293/20", min: 18, max: 60,
     oggetto: "Acorn", idOggetto: 1026, quantita: 25, base: 7200, job: 7810,
     mostro: "Coco",
-    prezzo: 100, negozio: { nome: "Acorn Dealer", navi: "moscovia 208/182", verificare: true },
+    prezzo: 100, negozio: { nome: "Acorn Dealer", navi: "moscovia 208/182" },
   },
   {
     id: "hugeleaf", npc: "Lella", navi: "ayo_fild01 44/241", min: 36, max: 65,
     oggetto: "Huge Leaf", idOggetto: 7198, quantita: 50, base: 51480, job: 63024,
-    mostro: "Leaf Cat", citta: "Ayothaya", prezzo: 610,
+    mostro: "Leaf Cat", citta: "Ayothaya", prezzo: 700,
   },
   {
     id: "anolian", npc: "Cuir", navi: "cmd_fild01 362/256", min: 45, max: 80,
     oggetto: "Anolian Skin", idOggetto: 7003, quantita: 20, base: 137900, job: 86600,
-    mostro: "Alligator", citta: "Comodo", prezzo: 968,
+    mostro: "Alligator", citta: "Comodo", prezzo: 1800,
   },
   {
     id: "sharpleaf", npc: "Lilla", navi: "um_fild01 35/281", min: 60, max: 85,
     oggetto: "Sharp Leaf", idOggetto: 7100, quantita: 50, base: 524970, job: 283670,
-    mostro: "Dryad", citta: "Umbala", prezzo: 806,
+    mostro: "Dryad", citta: "Umbala", prezzo: 1700,
   },
   {
     id: "antelope", npc: "Vegetable Farmer", navi: "ein_fild06 82/171", min: 70, max: 85,

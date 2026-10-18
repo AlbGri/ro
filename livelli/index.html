@@ -239,8 +239,8 @@ details.steps li.kill { color: var(--muted); font-style: italic; }
         <label class="check"><input type="checkbox" name="rabbocchi">
           <span>Completo il livello uccidendo mostri quando manca meno del <input class="inline" type="number" name="soglia" min="1" max="50" value="10">%</span>
         </label>
-        <label class="field"><span>Peso di un cambio di quest (zeny)</span><input type="number" name="cambio" min="0" step="1000" value="30000"></label>
-        <p class="hint">Non si paga: rappresenta il viaggio verso un altro NPC. Il piano passa a un'altra quest solo se fa risparmiare almeno questi zeny. A 0 cambia quest anche per pochi zeny.</p>
+        <label class="field"><span>Risparmio minimo per cambiare quest (zeny)</span><input type="number" name="cambio" min="0" step="1000" value="30000"></label>
+        <p class="hint">Ogni cambio di quest è un viaggio verso un altro NPC. Il piano cambia quest solo se così risparmi almeno questa cifra, per non farti girare fra NPC diversi per pochi zeny. È solo un criterio di scelta: non è una spesa e non entra nel totale. Con 0 il piano spende il meno possibile, anche con molti cambi.</p>
       </fieldset>
 
       <fieldset>

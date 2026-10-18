@@ -2,6 +2,12 @@
 
 Le versioni della pagina `livelli/`.
 
+## [1.6] - 2026-10-18
+
+- Stime di mercato aggiornate: Huge Leaf 700, Anolian Skin 1.800, Sharp Leaf 1.700
+- Negozi di Acorn e Bill of Birds confermati; accanto al prezzo delle Bill of Birds c'e' quello con Discount (48)
+- Il campo del cambio di quest si chiama «Risparmio minimo per cambiare quest», con una spiegazione più chiara
+
 ## [1.5] - 2026-10-18
 
 - I campi sulla stessa riga restano alti uguali anche quando un'etichetta va su due righe
