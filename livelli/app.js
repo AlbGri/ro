@@ -34,7 +34,7 @@ document.getElementById("items").innerHTML =
         <input type="number" name="prezzo-${q.id}" min="0" step="1" placeholder="${q.prezzo}"
           aria-label="Prezzo di una ${escape(q.oggetto)}">
       </label>
-      <span class="npc-price">${q.negozio ? `prezzo NPC${q.discount ? `, ${q.discount} con Discount` : ""}` : "stima, metti quello del mercato"}</span>
+      <span class="npc-price">${q.negozio ? `prezzo NPC${q.senzaDiscount ? ` con Discount, ${q.senzaDiscount} senza` : ""}` : "stima, metti quello del mercato"}</span>
     </div>`,
   ).join("");
 

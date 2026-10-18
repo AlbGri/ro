@@ -84,7 +84,8 @@ export const JOB_SECONDA_RINATO = [
  *
  * `prezzo` e' quello usato se non se ne scrive un altro: per gli oggetti
  * venduti da un NPC (quelli con `negozio`) e' il prezzo dell'NPC visto in
- * gioco, `discount` quello con la skill Discount se la riduce; per gli altri e'
+ * gioco, con la skill Discount se la riduce (si suppone che si compri sempre con
+ * Discount, Alberto 18/10/2026), e `senzaDiscount` quello pieno; per gli altri e'
  * una stima del mercato di uaRO (ottobre 2026). `mostro` e' quello
  * della quest di caccia dello stesso NPC: sta sulla mappa e serve per
  * completare un livello con poche uccisioni. `citta` e' la citta' da cui partire.
@@ -94,7 +95,7 @@ export const QUEST = [
     id: "bill", npc: "Gregor", navi: "moc_fild02 74/329", min: 10, max: 30,
     oggetto: "Bill of Birds", idOggetto: 925, quantita: 25, base: 8000, job: 4000,
     mostro: "Peco Peco", citta: "Morroc",
-    prezzo: 64, discount: 48, negozio: { nome: "Item Collector", navi: "moc_ruins 93/53" },
+    prezzo: 48, senzaDiscount: 64, negozio: { nome: "Item Collector", navi: "moc_ruins 93/53" },
   },
   {
     id: "acorn", npc: "Nutters", navi: "mjolnir_01 293/20", min: 18, max: 60,
