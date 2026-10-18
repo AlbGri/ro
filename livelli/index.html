@@ -92,7 +92,8 @@ fieldset {
 legend { padding: 0 6px; font-family: var(--serif); font-weight: 700; font-size: 1.1rem; }
 .field { display: grid; gap: 4px; }
 .field > span, .hint { font-size: .88rem; color: var(--muted); }
-.row { display: flex; gap: 12px; flex-wrap: wrap; }
+/* In basso: se un'etichetta va su due righe i campi restano allineati e alti uguali. */
+.row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
 .row > .field { flex: 1 1 100px; }
 .row > .field.wide { flex: 2 1 160px; }
 .field[hidden] { display: none; }

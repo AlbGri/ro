@@ -2,6 +2,10 @@
 
 Le versioni della pagina `livelli/`.
 
+## [1.5] - 2026-10-18
+
+- I campi sulla stessa riga restano alti uguali anche quando un'etichetta va su due righe
+
 ## [1.4] - 2026-10-18
 
 - In seconda classe il campo «Cambio classe al job» non compare, e il livello job arriva al massimo della classe
