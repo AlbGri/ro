@@ -13,11 +13,26 @@ const quest = (id) => QUEST.find((q) => q.id === id);
 const caccia = (id) => CACCE.find((c) => c.id === id);
 
 describe("moltiplicatore", () => {
-  it("somma weekend e manuale", () => {
+  it("il weekend moltiplica il manuale", () => {
     assert.equal(moltiplicatore(false, 0), 1);
     assert.equal(moltiplicatore(true, 0), 1.5);
     assert.equal(moltiplicatore(false, 50), 1.5);
-    assert.equal(moltiplicatore(true, 100), 2.5);
+    assert.equal(moltiplicatore(true, 50), 2.25);
+    assert.equal(moltiplicatore(true, 100), 3);
+  });
+
+  it("weekend e manuale 50%, dal 53 al 36%: 380 Anolian, 150 Sharp Leaf e 1.650 Antelope fino all'84, come in gioco", () => {
+    const molt = moltiplicatore(true, 50);
+    let stato = { livello: 53, exp: Math.floor(EXP_NORMALE[52] * 0.36) };
+    const consegna = (id) => (stato = aggiungiExp(EXP_NORMALE, stato.livello, stato.exp, Math.floor(quest(id).base * molt)));
+    for (let i = 0; i < 19; i++) consegna("anolian");
+    for (let i = 0; i < 3; i++) consegna("sharpleaf");
+    let antelope = 0;
+    while (stato.livello < 84) {
+      consegna("antelope");
+      antelope += quest("antelope").quantita;
+    }
+    assert.equal(antelope, 1650);
   });
 
   it("50 Huge Leaf nel weekend danno 77220 EXP, come visto in gioco", () => {

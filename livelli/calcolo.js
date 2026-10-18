@@ -27,15 +27,17 @@ import {
 /**
  * Moltiplicatore dell'EXP delle quest su uaRO.
  *
- * Il bonus del weekend si somma a quello del manuale; di due manuali conta
- * solo il piu' forte, quindi si passa una percentuale sola.
+ * Il bonus del weekend moltiplica quello del manuale: weekend e manuale al 50%
+ * fanno 1,5 x 1,5 = 2,25 (visto in gioco: con 2 le Antelope Horn previste erano
+ * 200 di troppo). Di due manuali conta solo il piu' forte, quindi si passa una
+ * percentuale sola.
  *
  * @param {boolean} weekend True nel weekend (+50%).
  * @param {number} manuale Percentuale del manuale attivo: 0, 50 o 100.
- * @returns {number} Il moltiplicatore, da 1 a 2,5.
+ * @returns {number} Il moltiplicatore, da 1 a 3.
  */
 export function moltiplicatore(weekend, manuale) {
-  return 1 + (weekend ? 0.5 : 0) + manuale / 100;
+  return (weekend ? 1.5 : 1) * (1 + manuale / 100);
 }
 
 /**

@@ -2,6 +2,10 @@
 
 Le versioni della pagina `livelli/`.
 
+## [1.8] - 2026-10-18
+
+- Il bonus del weekend moltiplica quello del manuale invece di sommarsi: weekend e manuale al 50% fanno ×2,25, weekend e manuale al 100% ×3. Nel weekend il piano chiede meno oggetti, come in gioco
+
 ## [1.7] - 2026-10-18
 
 - Nuova sezione «Manuale: 50% o 100%?»: con il prezzo del Poring Coin, i manuali al 50% che hai e le mezz'ore di consegne, confronta il piano senza manuale, con il 50% e con il 100%, oggetti e manuali compresi, e dice quale conviene
