@@ -61,14 +61,21 @@
             <span class="short" data-en="Install">Installa</span
             ><span class="long" data-en="Install app">Installa app</span>
           </button>
-          <button
-            id="btn-settings"
-            class="icon"
-            aria-label="Impostazioni"
-            title="Impostazioni"
-            data-en-aria-label="Settings"
-            data-en-title="Settings"
-          >&#9881;</button>
+          <!-- Menu Altro, uguale in ogni pagina: voci della pagina, backup, lingua, tema. Lo chiude gate.js. -->
+          <details class="more">
+            <summary class="ghost compact" data-en="More">Altro</summary>
+            <div class="more-menu">
+              <button type="button" class="ghost" id="btn-settings" data-en="Settings">Impostazioni</button>
+              <button type="button" class="ghost" id="btn-clear" data-en="Clear expired">Togli gli scaduti</button>
+              <button type="button" class="ghost" id="btn-export" data-en="Data backup">Backup dei dati</button>
+              <button type="button" class="ghost" id="btn-import" data-en="Restore from backup">Ripristina da backup</button>
+              <button type="button" class="ghost" id="btn-lang" data-en="Italiano">English</button>
+              <button type="button" class="ghost" id="btn-theme" data-en="Switch light/dark theme">
+                Cambia tema chiaro/scuro
+              </button>
+            </div>
+          </details>
+          <input id="file-import" type="file" accept="application/json,.json" hidden />
         </div>
       </div>
     </header>
@@ -240,23 +247,15 @@
 
       <div class="stack">
         <button type="button" class="ghost" id="btn-notifications"></button>
-        <button type="button" class="ghost" id="btn-clear" data-en="Clear expired">Togli gli scaduti</button>
-        <button type="button" class="ghost" id="btn-export" data-en="Export data">Esporta i dati</button>
-        <button type="button" class="ghost" id="btn-import" data-en="Import data">Importa i dati</button>
-        <button type="button" class="ghost" id="btn-lang" data-en="Italiano">English</button>
-        <button type="button" class="ghost" id="btn-theme" data-en="Switch light/dark theme">
-          Cambia tema chiaro/scuro
-        </button>
-        <input id="file-import" type="file" accept="application/json,.json" hidden />
       </div>
 
       <p
         class="hint"
-        data-en="Timers stay in this browser only. Nothing is uploaded, and clearing the site data deletes them: export a file to move them to another device or to the desktop app."
+        data-en="Timers stay in this browser only. Nothing is uploaded, and clearing the site data deletes them: with More, Data backup you save a file to move them to another device or to the desktop app."
       >
         I timer restano solo in questo browser. Niente viene inviato, e
-        cancellando i dati del sito si perdono: esporta un file per portarli su un
-        altro dispositivo o nell'applicazione desktop.
+        cancellando i dati del sito si perdono: con Altro, Backup dei dati salvi un
+        file per portarli su un altro dispositivo o nell'applicazione desktop.
       </p>
       <p
         class="hint"

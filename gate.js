@@ -1,5 +1,5 @@
 /**
- * Codice di accesso, tema e lingua, comuni a tutto il sito.
+ * Codice di accesso, tema, lingua e menu Altro, comuni a tutto il sito.
  *
  * Ogni pagina lo include nell'<head> con `<script src="../gate.js"></script>`:
  * finche' il codice non viene inserito il contenuto resta coperto dalla
@@ -125,6 +125,37 @@
       { once: true },
     );
   }
+
+  // Il pulsante della lingua c'e' in ogni pagina, anche in quelle solo in
+  // italiano: cosi' sta sempre nello stesso posto, e in inglese la pagina dice
+  // in cima che non e' tradotta (Alberto, 18/10/2026). Porta il nome
+  // dell'altra lingua; lo cerca come `[data-lang]`.
+  if (english && !root.hasAttribute("data-bilingual")) {
+    document.addEventListener("DOMContentLoaded", () => {
+      for (const el of document.querySelectorAll("[data-lang]")) el.textContent = "Italiano";
+      const notice = document.createElement("p");
+      notice.className = "solo-italiano";
+      notice.textContent = "This page is available in Italian only for now.";
+      const style = document.createElement("style");
+      style.textContent = `
+        .solo-italiano {
+          margin: 0; padding: 8px 16px; text-align: center; font: 0.9rem/1.4 "Atkinson Hyperlegible", "Segoe UI", sans-serif;
+          background: #6a4c9c; color: #fff;
+        }`;
+      document.head.append(style);
+      document.body.prepend(notice);
+    });
+  }
+
+  // ------------------------------------------------------------ menu Altro ---
+
+  // Ogni pagina ha in alto a destra lo stesso menu, un `<details class="more">`:
+  // si chiude cliccando fuori o su una delle sue voci.
+  document.addEventListener("click", (event) => {
+    for (const menu of document.querySelectorAll("details.more[open]")) {
+      if (!menu.contains(event.target) || event.target.closest(".more-menu button")) menu.open = false;
+    }
+  });
 
   // -------------------------------------------------------------- accesso ---
 

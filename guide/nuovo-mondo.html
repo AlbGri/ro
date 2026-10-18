@@ -340,12 +340,14 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
       <button class="btn" id="btnView" type="button" title="Passa dal percorso alle quest che non servono, e ritorno">Altre quest</button>
       <details class="more">
         <summary class="btn">Altro</summary>
+        <!-- Menu Altro, uguale in ogni pagina: voci della pagina, backup, lingua, tema. -->
         <div class="more-menu">
-          <button class="btn" id="btnBackup" type="button">Backup dei progressi</button>
-          <button class="btn" id="btnRestore" type="button">Ripristina da backup</button>
           <button class="btn" id="btnClearNotes" type="button">Cancella tutte le note</button>
-          <button class="btn" id="btnTheme" type="button">Cambia tema chiaro/scuro</button>
           <button class="btn" id="btnReset" type="button">Azzera tutto</button>
+          <button class="btn" id="btnBackup" type="button">Backup dei dati</button>
+          <button class="btn" id="btnRestore" type="button">Ripristina da backup</button>
+          <button class="btn" type="button" onclick="window.toggleLang && toggleLang()" data-lang>English</button>
+          <button class="btn" id="btnTheme" type="button">Cambia tema chiaro/scuro</button>
         </div>
       </details>
     </div>
@@ -433,7 +435,7 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
 </dialog>
 
 <script>
-const GUIDE_VERSION = "9.1";
+const GUIDE_VERSION = "9.2";
 const STORAGE_KEY = "uaro-nw-guide";
 
 const QUESTS = {
@@ -1960,7 +1962,7 @@ const PHASES = [
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ guide: "uaro-nw", v: GUIDE_VERSION, ids: IDS_VERSION, done: state.done, notes: state.notes, hide: state.hide, open: state.open }));
     } catch (e) {
-      if (storageOk) { storageOk = false; toast("Questo browser non salva i progressi: usa Altro, Backup dei progressi"); }
+      if (storageOk) { storageOk = false; toast("Questo browser non salva i progressi: usa Altro, Backup dei dati"); }
     }
   }
 
@@ -2565,7 +2567,7 @@ const PHASES = [
       const saved = downloadText(name, text);
       copyText(text).then(function (ok) {
         openDialog({
-          title: "Backup dei progressi",
+          title: "Backup dei dati",
           text: (saved ? "Il browser scarica il file " + name + ": conservalo. " : "Salva questo testo in un file. ") + (ok ? "Il testo è anche copiato negli appunti. " : "") + "Con Ripristina da backup recuperi spunte e note, anche su un altro browser o dopo aver cancellato i dati del browser.",
           value: text, action: function () { copyText(text).then(function (k) { toast(k ? "Copiato" : "Copia non riuscita: seleziona il testo"); }); }, actionLabel: "Copia di nuovo"
         });

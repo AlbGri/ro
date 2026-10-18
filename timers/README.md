@@ -35,12 +35,12 @@ sulla schermata iniziale e utilizzabile offline.
 I dati stanno in `localStorage`, quindi restano nel browser che li ha scritti:
 non c'e' sincronizzazione fra dispositivi e cancellare i dati del sito cancella
 i timer. Il formato e' pero' identico a quello dell'applicazione desktop, e i
-comandi `Esporta i dati` e `Importa i dati` spostano i timer da una all'altra.
+comandi `Backup dei dati` e `Ripristina da backup` del menu `Altro` spostano i timer da una all'altra.
 
 Il layout e' unico: su telefono ogni timer e' una scheda, da 880px in su le
 stesse celle diventano le colonne della tabella.
 
-Le scritte sono in italiano; il pulsante `English` nelle impostazioni le porta
+Le scritte sono in italiano; il pulsante `English` nel menu `Altro` le porta
 in inglese, e la scelta vale per tutto il sito. In italiano le colonne si
 chiamano `Suono`, `Bip`, `Nome`, `Mappa`, `Categoria`, `Ora`, `Spawn`,
 `Spawn max` e `Manca`; in inglese `Sound`, `Beeps`, `Name`, `Map`, `Category`,

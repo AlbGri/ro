@@ -3,6 +3,12 @@
 Le versioni della guida `nuovo-mondo.html`. Il numero e' quello scritto in
 testa a ogni export delle note.
 
+## [9.2] - 2026-10-18
+
+- Il menu Altro ha lo stesso ordine in tutte le pagine del sito: Cancella tutte le note, Azzera tutto, Backup dei dati, Ripristina da backup, English, Cambia tema chiaro/scuro
+- "Backup dei progressi" si chiama "Backup dei dati", come nelle altre pagine; il backup e' lo stesso
+- Nuovo pulsante English: la guida resta in italiano, e in inglese lo dice in cima alla pagina
+
 ## [9.1] - 2026-10-11
 
 - Step 3.03, 4.03 e 8.11: ai Cat Hand Agent di Splendide, Manuk ed El Dicastes basta parlare, senza salvare li'

@@ -77,10 +77,41 @@
         margin-bottom: 28px;
       }
 
-      .actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
+      /* Menu Altro, come nella guida e in ogni pagina del sito. */
+      .more {
+        position: relative;
+      }
+
+      .more > summary {
+        list-style: none;
+      }
+
+      .more > summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .more-menu {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 6px);
+        z-index: 1;
+        display: grid;
+        gap: 4px;
+        min-width: 220px;
+        padding: 6px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        box-shadow: 0 10px 30px color-mix(in srgb, var(--ink) 18%, transparent);
+      }
+
+      .more-menu button {
+        text-align: left;
+        border-color: transparent;
+      }
+
+      .more-menu button:hover {
+        background: var(--bg);
       }
 
       h1 {
@@ -92,7 +123,8 @@
         letter-spacing: -0.01em;
       }
 
-      button {
+      button,
+      .more > summary {
         padding: 7px 12px;
         background: var(--surface);
         border: 1px solid var(--line);
@@ -104,11 +136,13 @@
         cursor: pointer;
       }
 
-      button:hover {
+      button:hover,
+      .more > summary:hover {
         border-color: var(--muted);
       }
 
-      button:focus-visible {
+      button:focus-visible,
+      .more > summary:focus-visible {
         outline: 3px solid var(--focus);
         outline-offset: 2px;
       }
@@ -164,12 +198,16 @@
     <main>
       <header>
         <h1>ro-tools</h1>
-        <div class="actions">
-          <button type="button" onclick="toggleLang()" data-en="Italiano">English</button>
-          <button type="button" onclick="toggleTheme()" data-en="Switch light/dark theme">
-            Cambia tema chiaro/scuro
-          </button>
-        </div>
+        <!-- Menu Altro, uguale in ogni pagina: voci della pagina, backup, lingua, tema. Lo chiude gate.js. -->
+        <details class="more">
+          <summary data-en="More">Altro</summary>
+          <div class="more-menu">
+            <button type="button" onclick="toggleLang()" data-en="Italiano">English</button>
+            <button type="button" onclick="toggleTheme()" data-en="Switch light/dark theme">
+              Cambia tema chiaro/scuro
+            </button>
+          </div>
+        </details>
       </header>
 
       <!-- Un servizio nuovo: una cartella sua, gate.js nel suo <head>, una scheda qui.
@@ -209,6 +247,10 @@
             uaRO, passo per passo: da Onward to the New World a El Dicastes e all'accesso al Nidhoggur's Nest.
           </span>
         </a>
+      </section>
+
+      <section>
+        <h2 data-en="Tools">Strumenti</h2>
         <!-- Anche i livelli sono solo in italiano. -->
         <a class="card" href="livelli/">
           <strong data-en="Levels up to 84">Livelli fino all'84</strong>
@@ -216,6 +258,15 @@
             data-en="uaRO, in Italian: the cheapest route to level 84 with repeatable quests, transcendent or not."
           >
             uaRO: il piano più economico fino al livello 84 con le quest ripetibili, da non rinato o da rinato.
+          </span>
+        </a>
+        <!-- Anche il party e' solo in italiano. -->
+        <a class="card" href="party/">
+          <strong data-en="Party">Party</strong>
+          <span
+            data-en="uaRO, in Italian: the best instance runs from players, accounts and guild spare characters, such as the Horror Toy Factory."
+          >
+            uaRO: le run migliori di un'istanza, come la Horror Toy Factory, da giocatori, account e jolly della gilda.
           </span>
         </a>
       </section>

@@ -229,7 +229,7 @@ body {
   }
 
   /* Home, orologio e tre pulsanti devono stare in 360px. Il selettore con
-     `.topbar` serve a vincere su `.icon` e `.ghost`, dichiarati piu' sotto. */
+     `.topbar` serve a vincere su `.ghost`, dichiarato piu' sotto. */
   .clock {
     padding: 2px 4px;
   }
@@ -240,10 +240,6 @@ body {
 
   .topbar .compact {
     padding: 8px;
-  }
-
-  .topbar .icon {
-    width: 36px;
   }
 }
 
@@ -263,6 +259,45 @@ body {
     grid-row: 2;
     justify-self: center;
   }
+}
+
+/* Menu Altro, come nella guida e in ogni pagina del sito: lo chiude gate.js. */
+.more {
+  position: relative;
+}
+
+.more > summary {
+  display: block;
+  list-style: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.more > summary::-webkit-details-marker {
+  display: none;
+}
+
+.more-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  display: grid;
+  gap: 4px;
+  min-width: 220px;
+  padding: 6px;
+  background: var(--bg-alt);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--fg) 18%, transparent);
+}
+
+.more-menu .ghost {
+  text-align: left;
+  border-color: transparent;
+}
+
+.more-menu .ghost:hover {
+  background: var(--bg-head);
 }
 
 /* ------------------------------------------------------------- pulsanti -- */
@@ -306,14 +341,6 @@ button {
   color: var(--open);
 }
 
-.icon {
-  width: 40px;
-  height: 40px;
-  background: transparent;
-  border: 1px solid var(--line);
-  font-size: 17px;
-}
-
 /* Con il mouse i pulsanti hanno la misura di quelli della guida. Le misure
    qui sopra, piu' alte, restano dove si usa il dito. */
 @media (pointer: fine) {
@@ -322,11 +349,6 @@ button {
     padding: 7px 12px;
     font-size: 0.92rem;
     line-height: 1.2;
-  }
-
-  .icon {
-    width: 34px;
-    height: 34px;
   }
 }
 

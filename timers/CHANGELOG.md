@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.5.0] - 2026-10-18
+
+In alto a destra l'ingranaggio diventa il menu `Altro`, uguale in tutte le pagine del sito.
+L'applicazione desktop pubblicata non cambia.
+
+- Nel menu `Altro`: `Impostazioni`, `Togli gli scaduti`, `Backup dei dati`, `Ripristina da backup`, `English` e `Cambia tema chiaro/scuro`
+- `Esporta i dati` e `Importa i dati` si chiamano `Backup dei dati` e `Ripristina da backup`, come nelle altre pagine; il file e' lo stesso di prima
+- Nelle impostazioni restano volume, schermo acceso e notifiche
+
 ## [1.4.0] - 2026-10-04
 
 Nella versione web l'ora di un timer si puo' scrivere con i secondi.

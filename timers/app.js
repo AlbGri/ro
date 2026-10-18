@@ -733,18 +733,12 @@ function bindEvents() {
     }
   });
 
-  $("btn-clear").addEventListener("click", () => {
-    settingsDialog.close();
-    clearExpired();
-  });
+  $("btn-clear").addEventListener("click", () => clearExpired());
   $("btn-export").addEventListener("click", () => exportFile(store));
   $("btn-import").addEventListener("click", () => $("file-import").click());
   $("file-import").addEventListener("change", (event) => {
     const file = event.target.files?.[0];
-    if (file !== undefined) {
-      settingsDialog.close();
-      chooseImport(file);
-    }
+    if (file !== undefined) chooseImport(file);
     event.target.value = "";
   });
   // Tema e lingua sono del sito, non dei timer: li cambia e li ricorda gate.js.
