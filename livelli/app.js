@@ -33,8 +33,8 @@ document.getElementById("items").innerHTML =
       <label class="mobile" data-label="Prezzo (zeny)">
         <input type="number" name="prezzo-${q.id}" min="0" step="1" placeholder="${q.prezzo}"
           aria-label="Prezzo di una ${escape(q.oggetto)}">
-        <span class="npc-price">${q.negozio ? `prezzo NPC${q.discount ? `, ${q.discount} con Discount` : ""}` : "stima, metti quello del mercato"}</span>
       </label>
+      <span class="npc-price">${q.negozio ? `prezzo NPC${q.discount ? `, ${q.discount} con Discount` : ""}` : "stima, metti quello del mercato"}</span>
     </div>`,
   ).join("");
 

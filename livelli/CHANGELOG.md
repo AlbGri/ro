@@ -2,6 +2,10 @@
 
 Le versioni della pagina `livelli/`.
 
+## [1.9] - 2026-10-18
+
+- I campi «Ne ho» e «Prezzo» degli oggetti sono alla stessa altezza; sul telefono il menu della classe è alto come i campi accanto
+
 ## [1.8] - 2026-10-18
 
 - Il bonus del weekend moltiplica quello del manuale invece di sommarsi: weekend e manuale al 50% fanno ×2,25, weekend e manuale al 100% ×3. Nel weekend il piano chiede meno oggetti, come in gioco
