@@ -2,6 +2,11 @@
 
 Le versioni della pagina `party/`.
 
+## [1.3] - 2026-10-19
+
+- Il party minimo è fisso, di 5: 2 High Priest, 1 Sniper, 1 Clown/Bard, 1 Professor. Tolti i campi per cambiarlo
+- La Gypsy/Dancer non è più obbligatoria: se c'è, una per run entra per prima fra i posti liberi, prima degli Sniper
+
 ## [1.2] - 2026-10-18
 
 - Sotto l'istanza, un campo per ogni posto obbligatorio: per esempio 0 Gypsy/Dancer se il Professor passa gli SP, o 3 High Priest. Composizione standard la rimette com'era

@@ -1,7 +1,7 @@
 /**
  * Le istanze che la pagina sa comporre.
  *
- * Ogni istanza ha i suoi posti obbligatori e le classi che contano, ognuna con
+ * Ogni istanza ha i suoi posti e le classi che contano, ognuna con
  * il ruolo che copre; tutto il resto e' "Altro" e va solo nei posti liberi.
  * Nell'elenco delle classi di un personaggio ci sono solo queste piu' "Altro"
  * (Alberto, 18/10/2026: l'elenco completo era "inutilmente lungo").
@@ -16,12 +16,15 @@ export const ISTANZE = [
     maxParty: 12,
     // Un id macchina entra al massimo 3 volte, un account alla volta.
     maxRun: 3,
+    // `quanti`: posti obbligatori per run. `desiderati`: posti non obbligatori ma i primi fra i
+    // liberi, fino a tanti per run. Il party minimo e' fisso, di 5 (Alberto, 19/10/2026): la
+    // Gypsy/Dancer non serve, ma se c'e' e' "la prima nella lista delle priorita'".
     posti: [
       { ruolo: "hp", nome: "High Priest", quanti: 2 },
       { ruolo: "sniper", nome: "Sniper", quanti: 1 },
       { ruolo: "bard", nome: "Clown/Bard", quanti: 1 },
-      { ruolo: "dancer", nome: "Gypsy/Dancer", quanti: 1 },
       { ruolo: "prof", nome: "Professor", quanti: 1 },
+      { ruolo: "dancer", nome: "Gypsy/Dancer", quanti: 0, desiderati: 1 },
     ],
     // Bard e Dancer valgono anche non rinati, quindi una voce sola con Clown e Gypsy (Alberto,
     // 18/10/2026); Priest, Hunter e Sage no, servono le skill da rinati.

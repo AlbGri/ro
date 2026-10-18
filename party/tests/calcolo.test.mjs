@@ -190,6 +190,20 @@ describe("casi di Alberto", () => {
     assert.ok(esito.fuori.every((f) => f.motivo === "piena"));
   });
 
+  it("la Gypsy/Dancer non e' obbligatoria ma entra per prima fra i liberi, prima di uno Sniper", () => {
+    const minimo = ["High Priest", "High Priest", "Sniper", "Clown/Bard", "Professor"].map((c, i) =>
+      giocatore(`M${i}`, account(c)),
+    );
+    assert.equal(calcolaRun(minimo, []).run.length, 1);
+    const sniper = [...Array(7)].map((_, i) => giocatore(`S${i}`, account("Sniper")));
+    const giocatori = [...minimo, ...sniper, giocatore("Gypsy", account("Gypsy/Dancer"))];
+    const esito = calcolaRun(giocatori, []);
+    verifica(giocatori, [], ISTANZA, esito);
+    assert.equal(esito.run[0].membri.length, 12);
+    assert.ok(esito.run[0].membri.some((m) => m.ruolo === "dancer"));
+    assert.deepEqual(esito.fuori.map((f) => giocatori[f.giocatore].account[0].personaggi[0].classe), ["Sniper"]);
+  });
+
   it("senza Professor nessuna run, e lo dice", () => {
     const giocatori = ["High Priest", "High Priest", "Sniper", "Clown/Bard", "Gypsy/Dancer", "Knight"].map((c, i) =>
       giocatore(`G${i}`, account(c)),

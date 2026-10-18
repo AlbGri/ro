@@ -6,8 +6,8 @@
  * una run ha al massimo `maxParty` persone e copre i posti obbligatori.
  *
  * Ordine di preferenza: piu' run complete, piu' entrate, piu' posti desiderati
- * coperti (quelli tolti dalla composizione standard, `desiderati` di un posto:
- * restano i primi fra i liberi, fino a quanti ne mancano per run), piu'
+ * coperti (`desiderati` di un posto: non obbligatori, ma i primi fra i liberi,
+ * fino a tanti per run; la Gypsy/Dancer), piu'
  * personaggi dei ruoli preferiti nell'ordine dell'istanza (Sniper, poi High Priest, poi
  * Priest), entrate divise fra i giocatori, meno jolly; poi run di grandezza
  * simile e Sniper divisi fra le run.
