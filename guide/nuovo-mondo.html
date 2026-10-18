@@ -92,6 +92,7 @@ a.btn { text-decoration: none; }
 .more { position: relative; }
 .more > summary { list-style: none; }
 .more > summary::-webkit-details-marker { display: none; }
+.more > summary.gear { padding-left: 9px; padding-right: 9px; font-size: 1.05rem; }
 .more-menu {
   position: absolute; right: 0; top: calc(100% + 6px); background: var(--surface);
   border: 1px solid var(--line); border-radius: 10px; padding: 6px; display: grid; gap: 4px; min-width: 220px;
@@ -339,8 +340,8 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
       <button class="btn" id="btnExport" type="button">Esporta note per l'admin</button>
       <button class="btn" id="btnView" type="button" title="Passa dal percorso alle quest che non servono, e ritorno">Altre quest</button>
       <details class="more">
-        <summary class="btn">Altro</summary>
-        <!-- Menu Altro, uguale in ogni pagina: voci della pagina, backup, lingua, tema. -->
+        <summary class="btn gear" title="Menu" aria-label="Menu">&#9881;</summary>
+        <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, lingua, tema. -->
         <div class="more-menu">
           <button class="btn" id="btnClearNotes" type="button">Cancella tutte le note</button>
           <button class="btn" id="btnReset" type="button">Azzera tutto</button>
@@ -398,7 +399,7 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
             <li>Spunta gli step fatti. Vai al prossimo passo ti porta al primo non fatto; cliccalo di nuovo per saltare quelli lasciati indietro.</li>
             <li>Nei dialoghi scegli l'opzione sottolineata, come «Yes.»; quelle tra virgolette alte, come “No.”, sono da evitare.</li>
             <li>Uno step con l'etichetta facoltativo non conta nel progresso. Se qualcosa non torna, scrivilo nella nota dello step e usa Esporta note per l'admin.</li>
-            <li>Spunte e note restano in questo browser. Se cancelli i dati del browser si perdono: prima fai un backup dal menu Altro.</li>
+            <li>Spunte e note restano in questo browser. Se cancelli i dati del browser si perdono: prima fai un backup dal menu ⚙ in alto a destra.</li>
           </ul>
         </div>
         <div>
@@ -435,7 +436,7 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
 </dialog>
 
 <script>
-const GUIDE_VERSION = "9.2";
+const GUIDE_VERSION = "9.3";
 const STORAGE_KEY = "uaro-nw-guide";
 
 const QUESTS = {
@@ -1962,7 +1963,7 @@ const PHASES = [
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ guide: "uaro-nw", v: GUIDE_VERSION, ids: IDS_VERSION, done: state.done, notes: state.notes, hide: state.hide, open: state.open }));
     } catch (e) {
-      if (storageOk) { storageOk = false; toast("Questo browser non salva i progressi: usa Altro, Backup dei dati"); }
+      if (storageOk) { storageOk = false; toast("Questo browser non salva i progressi: usa ⚙, Backup dei dati"); }
     }
   }
 
@@ -2457,7 +2458,7 @@ const PHASES = [
     lines.push(okVer.length ? okVer.join(", ") : "(nessuno)");
     if (withBackup) {
       lines.push("");
-      lines.push("BACKUP DEI PROGRESSI (per recuperare spunte e note: Altro, Ripristina da backup, e incolla questo export)");
+      lines.push("BACKUP DEI PROGRESSI (per recuperare spunte e note: ⚙, Ripristina da backup, e incolla questo export)");
       lines.push(backupText());
     }
     return lines.join("\n");

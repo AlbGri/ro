@@ -3,6 +3,10 @@
 Le versioni della guida `nuovo-mondo.html`. Il numero e' quello scritto in
 testa a ogni export delle note.
 
+## [9.3] - 2026-10-18
+
+- Il menu in alto a destra si apre con l'ingranaggio, come in tutte le pagine del sito, invece che con "Altro"
+
 ## [9.2] - 2026-10-18
 
 - Il menu Altro ha lo stesso ordine in tutte le pagine del sito: Cancella tutte le note, Azzera tutto, Backup dei dati, Ripristina da backup, English, Cambia tema chiaro/scuro

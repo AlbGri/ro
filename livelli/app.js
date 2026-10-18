@@ -395,7 +395,7 @@ pianoEl.addEventListener("click", async (event) => {
   }
 });
 
-// Backup e ripristino in un file, dal menu Altro come nelle altre pagine.
+// Backup e ripristino in un file, dal menu ⚙ come nelle altre pagine.
 document.getElementById("btnBackup").addEventListener("click", () => {
   salva();
   let testo;

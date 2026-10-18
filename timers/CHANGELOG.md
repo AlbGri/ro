@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1] - 2026-10-18
+
+Torna l'ingranaggio, che ora apre il menu uguale in tutte le pagine del sito.
+L'applicazione desktop pubblicata non cambia.
+
+- In alto a destra l'ingranaggio al posto della scritta `Altro`: il menu e le sue voci sono quelli della 1.5.0
+
 ## [1.5.0] - 2026-10-18
 
 In alto a destra l'ingranaggio diventa il menu `Altro`, uguale in tutte le pagine del sito.

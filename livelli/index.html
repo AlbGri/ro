@@ -73,10 +73,11 @@ button, input, select { font: inherit; color: inherit; }
 }
 .btn:hover { border-color: var(--muted); }
 a.btn { text-decoration: none; }
-/* Menu Altro, copiato dalla guida */
+/* Menu ⚙, copiato dalla guida */
 .more { position: relative; }
 .more > summary { list-style: none; }
 .more > summary::-webkit-details-marker { display: none; }
+.more > summary.gear { padding-left: 9px; padding-right: 9px; font-size: 1.05rem; }
 .more-menu {
   position: absolute; right: 0; top: calc(100% + 6px); background: var(--surface);
   border: 1px solid var(--line); border-radius: 10px; padding: 6px; display: grid; gap: 4px; min-width: 220px;
@@ -206,9 +207,9 @@ details.steps li.kill { color: var(--muted); font-style: italic; }
   <div class="topbar-inner">
     <a class="btn" href="../index.html" title="Torna alla scelta dei servizi">Home</a>
     <span class="brand">Livelli</span>
-    <!-- Menu Altro, uguale in ogni pagina: voci della pagina, backup, lingua, tema. Lo chiude gate.js. -->
+    <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, lingua, tema. Lo chiude gate.js. -->
     <details class="more">
-      <summary class="btn">Altro</summary>
+      <summary class="btn gear" title="Menu" aria-label="Menu">&#9881;</summary>
       <div class="more-menu">
         <button class="btn" type="button" id="btnBackup">Backup dei dati</button>
         <button class="btn" type="button" id="btnRipristina">Ripristina da backup</button>

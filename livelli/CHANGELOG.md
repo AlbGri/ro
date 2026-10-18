@@ -2,6 +2,10 @@
 
 Le versioni della pagina `livelli/`.
 
+## [1.12] - 2026-10-18
+
+- Il menu in alto a destra si apre con l'ingranaggio, come in tutte le pagine del sito
+
 ## [1.11] - 2026-10-18
 
 - Bill of Birds: il prezzo predefinito è quello con Discount, 48 zeny; accanto c'è quello senza, 64

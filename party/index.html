@@ -75,10 +75,11 @@ button, input, select { font: inherit; color: inherit; }
 a.btn { text-decoration: none; }
 .btn.small { padding: 4px 9px; font-size: .85rem; }
 .btn.danger:hover { border-color: var(--warn); color: var(--warn); }
-/* Menu Altro, copiato dalla guida */
+/* Menu ⚙, copiato dalla guida */
 .more { position: relative; }
 .more > summary { list-style: none; }
 .more > summary::-webkit-details-marker { display: none; }
+.more > summary.gear { padding-left: 9px; padding-right: 9px; font-size: 1.05rem; }
 .more-menu {
   position: absolute; right: 0; top: calc(100% + 6px); background: var(--surface);
   border: 1px solid var(--line); border-radius: 10px; padding: 6px; display: grid; gap: 4px; min-width: 220px;
@@ -166,9 +167,9 @@ input[type="text"], select {
   <div class="topbar-inner">
     <a class="btn" href="../index.html" title="Torna alla scelta dei servizi">Home</a>
     <span class="brand">Party</span>
-    <!-- Menu Altro, uguale in ogni pagina: voci della pagina, backup, lingua, tema. Lo chiude gate.js. -->
+    <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, lingua, tema. Lo chiude gate.js. -->
     <details class="more">
-      <summary class="btn">Altro</summary>
+      <summary class="btn gear" title="Menu" aria-label="Menu">&#9881;</summary>
       <div class="more-menu">
         <button class="btn" type="button" data-azione="esporta">Backup dei dati</button>
         <button class="btn" type="button" data-azione="importa">Ripristina da backup</button>
@@ -191,7 +192,7 @@ input[type="text"], select {
       <li>Un jolly è un account della gilda: lo gioca chi ne ha bisogno, al posto di un suo account.</li>
       <li>Nella classe di un personaggio ci sono solo quelle che contano per l'istanza: per tutte le altre scegli Altro, e il personaggio entra solo nei posti liberi.</li>
       <li id="ordine"></li>
-      <li>I dati restano in questo browser: per conservarli o passarli a un altro usa Altro, Backup dei dati.</li>
+      <li>I dati restano in questo browser: per conservarli o passarli a un altro usa il menu ⚙ in alto a destra, Backup dei dati.</li>
     </ul>
   </section>
 

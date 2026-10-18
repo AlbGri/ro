@@ -229,7 +229,7 @@ body {
   }
 
   /* Home, orologio e tre pulsanti devono stare in 360px. Il selettore con
-     `.topbar` serve a vincere su `.ghost`, dichiarato piu' sotto. */
+     `.topbar` serve a vincere su `.ghost` e `.more > .gear`, dichiarati piu' sotto. */
   .clock {
     padding: 2px 4px;
   }
@@ -240,6 +240,10 @@ body {
 
   .topbar .compact {
     padding: 8px;
+  }
+
+  .topbar .more > .gear {
+    width: 36px;
   }
 }
 
@@ -261,7 +265,7 @@ body {
   }
 }
 
-/* Menu Altro, come nella guida e in ogni pagina del sito: lo chiude gate.js. */
+/* Menu ⚙, come nella guida e in ogni pagina del sito: lo chiude gate.js. */
 .more {
   position: relative;
 }
@@ -275,6 +279,16 @@ body {
 
 .more > summary::-webkit-details-marker {
   display: none;
+}
+
+/* L'ingranaggio: Alberto lo preferisce a una scritta perche' "e' piu' piccolo". */
+.more > .gear {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  font-size: 17px;
 }
 
 .more-menu {
@@ -349,6 +363,11 @@ button {
     padding: 7px 12px;
     font-size: 0.92rem;
     line-height: 1.2;
+  }
+
+  .more > .gear {
+    width: 34px;
+    height: 34px;
   }
 }
 

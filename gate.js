@@ -1,5 +1,5 @@
 /**
- * Codice di accesso, tema, lingua e menu Altro, comuni a tutto il sito.
+ * Codice di accesso, tema, lingua e menu ⚙, comuni a tutto il sito.
  *
  * Ogni pagina lo include nell'<head> con `<script src="../gate.js"></script>`:
  * finche' il codice non viene inserito il contenuto resta coperto dalla
@@ -147,9 +147,10 @@
     });
   }
 
-  // ------------------------------------------------------------ menu Altro ---
+  // ---------------------------------------------------------------- menu ⚙ ---
 
-  // Ogni pagina ha in alto a destra lo stesso menu, un `<details class="more">`:
+  // Ogni pagina ha in alto a destra lo stesso menu, un `<details class="more">` aperto
+  // dall'ingranaggio:
   // si chiude cliccando fuori o su una delle sue voci.
   document.addEventListener("click", (event) => {
     for (const menu of document.querySelectorAll("details.more[open]")) {
