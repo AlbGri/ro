@@ -2,6 +2,11 @@
 
 Le versioni della pagina `livelli/`.
 
+## [1.4] - 2026-10-18
+
+- In seconda classe il campo «Cambio classe al job» non compare, e il livello job arriva al massimo della classe
+- Una riga spiega a cosa servono classe e livello job
+
 ## [1.3] - 2026-10-18
 
 - Nella tabella degli oggetti compaiono solo quelli delle quest che servono fra il livello attuale e l'obiettivo

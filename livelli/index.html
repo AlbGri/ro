@@ -95,6 +95,7 @@ legend { padding: 0 6px; font-family: var(--serif); font-weight: 700; font-size:
 .row { display: flex; gap: 12px; flex-wrap: wrap; }
 .row > .field { flex: 1 1 100px; }
 .row > .field.wide { flex: 2 1 160px; }
+.field[hidden] { display: none; }
 input[type="number"], select {
   width: 100%; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg);
 }
@@ -218,8 +219,9 @@ details.steps li.kill { color: var(--muted); font-style: italic; }
             </select>
           </label>
           <label class="field"><span>Livello job</span><input type="number" name="job" min="1" max="70" value="1"></label>
-          <label class="field"><span>Cambio classe al job</span><input type="number" name="cambioJob" min="40" max="50" value="50"></label>
+          <label class="field" id="campoCambio"><span>Cambio classe al job</span><input type="number" name="cambioJob" min="40" max="50" value="50"></label>
         </div>
+        <p class="hint">Classe e livello job di adesso: servono a dirti quando cambiare classe e dove si spreca job EXP, non cambiano il piano. In prima classe, «Cambio classe al job» è il job a cui farai il cambio, di solito 50.</p>
       </fieldset>
 
       <fieldset>

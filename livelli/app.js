@@ -270,6 +270,10 @@ function spiegaVuoto(partenza) {
 
 function aggiorna() {
   const scelte = leggi();
+  // In seconda classe non c'e' un altro cambio, e il job massimo dipende dalla classe.
+  document.getElementById("campoCambio").hidden = scelte.seconda;
+  form.elements.job.max = jobMassimo(scelte.rinato, scelte.seconda ? 2 : 1);
+
   // Nella tabella solo gli oggetti delle quest che servono fra il livello e l'obiettivo.
   for (const q of QUEST) {
     const riga = form.querySelector(`[data-quest="${q.id}"]`);
