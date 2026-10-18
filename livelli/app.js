@@ -32,9 +32,9 @@ document.getElementById("items").innerHTML =
         <input type="number" name="posseduti-${q.id}" min="0" step="1" placeholder="0" aria-label="${escape(q.oggetto)} che hai">
       </label>
       <label class="mobile" data-label="Prezzo (zeny)">
-        <input type="number" name="prezzo-${q.id}" min="0" step="1" placeholder="non compro"
-          ${q.prezzoNpc ? `value="${q.prezzoNpc}"` : ""} aria-label="Prezzo di una ${escape(q.oggetto)}">
-        ${q.prezzoNpc ? `<span class="npc-price">NPC: ${numero(q.prezzoNpc)}</span>` : ""}
+        <input type="number" name="prezzo-${q.id}" min="0" step="1" placeholder="${q.prezzo}"
+          aria-label="Prezzo di una ${escape(q.oggetto)}">
+        <span class="npc-price">${q.negozio ? "prezzo NPC" : "stima, metti quello del mercato"}</span>
       </label>
     </div>`,
   ).join("");
@@ -238,9 +238,26 @@ function disegnaClasse(numeroTappa, tappa, tabella) {
     </article>`;
 }
 
+/** La lista della spesa di tutto il piano, oggetto per oggetto. */
+function disegnaSpesa(spesa) {
+  if (spesa.length === 0) return "";
+  const righe = spesa.map(({ quest: q, servono, dallInventario, comprati, zeny }) => {
+    const dove = q.negozio
+      ? `<span class="chip-label">${escape(q.negozio.nome)}${q.negozio.verificare ? " (da verificare)" : ""}</span>${chip(`/navi ${q.negozio.navi}`)}`
+      : `<span class="chip-label">Mercato</span>${chip(`@ws ${q.idOggetto}`)}`;
+    const cosa =
+      comprati > 0
+        ? `<strong>${numero(comprati)} ${escape(q.oggetto)}</strong> da comprare, ${numero(zeny)} zeny`
+        : `<strong>${escape(q.oggetto)}</strong>: niente da comprare`;
+    const dettaglio = dallInventario > 0 ? ` (ne servono ${numero(servono)}, ${numero(dallInventario)} li hai)` : "";
+    return `<li>${cosa}<span class="stage-range">${dettaglio}</span>${comprati > 0 ? `<div class="chips">${dove}</div>` : ""}</li>`;
+  });
+  return `<div class="spesa"><h3>Da comprare</h3><ul>${righe.join("")}</ul></div>`;
+}
+
 function disegnaCaccia(scelte) {
   const testo = scelte.mercenario
-    ? `<p>Les al Moscovia Dungeon, con il Double Strafe del mercenario arco. Il Warpra delle città porta al Moscovia Dungeon per 5.000 zeny, dopo che hai parlato una volta con il Warpra Helper del posto.</p>`
+    ? `<p>Les al Moscovia Dungeon, con il Double Strafe del mercenario arciere. Il Warpra delle città porta al Moscovia Dungeon per 5.000 zeny, dopo che hai parlato una volta con il Warpra Helper del posto.</p>`
     : `<p>Caccia dove preferisci fino al livello ${scelte.caccia}.</p>`;
   return `
     <article class="stage">
@@ -253,19 +270,10 @@ function disegnaCaccia(scelte) {
     </article>`;
 }
 
-/** Perche' non c'e' un piano: il primo livello in cui nessuna quest e' utilizzabile. */
-function spiegaVuoto(scelte, partenza) {
-  const utilizzabili = QUEST.filter((q) => {
-    const o = scelte.oggetti[q.id];
-    return o.prezzo !== null || o.posseduti >= q.quantita;
-  });
-  for (let l = partenza; l < scelte.obiettivo; l++) {
-    if (utilizzabili.some((q) => l >= q.min && l <= q.max)) continue;
-    const dopo = utilizzabili.filter((q) => q.min > l).map((q) => q.min);
-    const caccia = dopo.length > 0 ? ` oppure caccia fino al livello ${Math.min(...dopo)}` : "";
-    return `Al livello ${l} non c'è una quest con un prezzo o con abbastanza oggetti tuoi. Metti il prezzo di un oggetto di una quest per quel livello${caccia}.`;
-  }
-  return "Con gli oggetti che hai e i prezzi inseriti non si arriva all'obiettivo: metti il prezzo di qualche altro oggetto.";
+/** Perche' non c'e' un piano: si parte sotto il livello minimo delle quest. */
+function spiegaVuoto(partenza) {
+  const minimo = Math.min(...QUEST.map((q) => q.min));
+  return `Sotto il livello ${minimo} non ci sono quest: sali uccidendo mostri fino al ${minimo} e scrivilo nel campo «Salgo uccidendo mostri fino al livello». Ora parti dal ${partenza}.`;
 }
 
 function aggiorna() {
@@ -287,13 +295,14 @@ function aggiorna() {
     percentuale: scelte.caccia ? 0 : scelte.percentuale,
   });
   if (!piano) {
-    pianoEl.innerHTML = `<p class="empty">${escape(spiegaVuoto(scelte, partenza))}</p>`;
+    pianoEl.innerHTML = `<p class="empty">${escape(spiegaVuoto(partenza))}</p>`;
     return;
   }
 
   const stato = (s) => `${s.livello} (${percento(percentualeDi(tabella, s))}%)`;
   const job = seguiJob(piano, { ...scelte, cambio: scelte.cambioJob });
-  const tappe = job.tappe.filter((t) => t.tipo !== "classe").length;
+  // Le tappe del piano, prima che il cambio di classe ne spezzi una.
+  const tappe = piano.tappe.length;
   const html = [
     `<p class="summary">Dal ${stato(piano.partenza)} al ${stato(piano.arrivo)}: <strong>${numero(piano.consegne)}</strong> consegne in ${tappe} tapp${tappe === 1 ? "a" : "e"}, <strong>${numero(piano.zeny)}</strong> zeny di oggetti. Alla fine: job ${statoJob(scelte.rinato, job.finale)} della ${nomeClasse(job.finale.classe)}.</p>`,
   ];
@@ -302,6 +311,7 @@ function aggiorna() {
       `<p class="note-line verify"><strong>Job:</strong> il calcolo non conta la job EXP della caccia iniziale. Quando arrivi al livello ${scelte.caccia}, aggiorna nel modulo livello, classe e job.</p>`,
     );
   }
+  html.push(disegnaSpesa(piano.spesa));
   if (scelte.caccia) html.push(disegnaCaccia(scelte));
   job.tappe.forEach((t, i) =>
     html.push(t.tipo === "classe" ? disegnaClasse(i + 1, t, tabella) : disegnaTappa(i + 1, t, scelte, tabella)),

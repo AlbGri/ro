@@ -140,6 +140,10 @@ input[type="number"].inline { width: 5.5em; display: inline-block; padding: 3px 
 .note-line.warn strong { color: var(--warn); }
 .note-line.verify { border-color: var(--verify); }
 .note-line.verify strong { color: var(--verify); }
+.spesa { margin: 12px 0 8px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.spesa h3 { margin: 0 0 6px; font-family: var(--serif); font-size: 1.2rem; }
+.spesa ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.spesa li .chips { margin-top: 4px; }
 details.steps { margin-top: 8px; font-size: .92rem; }
 details.steps summary { cursor: pointer; color: var(--muted); }
 details.steps ol { margin: 6px 0 0; padding-left: 2.2em; font-variant-numeric: tabular-nums; }
@@ -185,7 +189,7 @@ details.steps li.kill { color: var(--muted); font-style: italic; }
       <li>Ogni consegna fa salire al massimo un livello: l'EXP in più si ferma poco prima del livello successivo e il resto va perso. Il piano ne tiene conto.</li>
       <li>Il bonus del weekend (+50%) si somma a quello del manuale; di due manuali conta il più forte.</li>
       <li>Il job non cambia il piano: si segue accanto, con il momento del cambio di classe e gli avvisi sulla job EXP sprecata.</li>
-      <li>Un oggetto senza prezzo non si compra: il piano usa solo quelli che hai.</li>
+      <li>Senza scrivere niente il piano ti dice quanti oggetti comprare. Se ne hai già, scrivili in «Ne ho» e li compri in meno; se conosci il prezzo del mercato, scrivilo e il piano lo usa.</li>
       <li>Clicca un /navi o un @ws: viene copiato, e lo incolli nella chat del gioco.</li>
     </ul>
   </section>
@@ -214,8 +218,9 @@ details.steps li.kill { color: var(--muted); font-style: italic; }
           <label class="field"><span>Livello job</span><input type="number" name="job" min="1" max="70" value="1"></label>
           <label class="field"><span>Cambio classe al job</span><input type="number" name="cambioJob" min="40" max="50" value="50"></label>
         </div>
-        <label class="field"><span>Prima caccio fino al livello (vuoto: niente caccia)</span><input type="number" name="caccia" min="2" max="98"></label>
-        <label class="check"><input type="checkbox" name="mercenario"> <span>Ho un mercenario arco e l'accesso al Moscovia Dungeon</span></label>
+        <label class="field"><span>Salgo uccidendo mostri fino al livello</span><input type="number" name="caccia" min="2" max="98"></label>
+        <p class="hint">Facoltativo: se prima delle quest sali di livello cacciando, scrivi fino a quale. Il piano parte da lì.</p>
+        <label class="check"><input type="checkbox" name="mercenario"> <span>Ho un mercenario arciere (Bow Mercenary) e l'accesso al Moscovia Dungeon: caccio i Les fino al 40</span></label>
       </fieldset>
 
       <fieldset>
@@ -237,13 +242,13 @@ details.steps li.kill { color: var(--muted); font-style: italic; }
         <label class="check"><input type="checkbox" name="rabbocchi">
           <span>Completo il livello uccidendo mostri quando manca meno del <input class="inline" type="number" name="soglia" min="1" max="50" value="10">%</span>
         </label>
-        <label class="field"><span>Un cambio di NPC vale (zeny)</span><input type="number" name="cambio" min="0" step="1000" value="30000"></label>
-        <p class="hint">Conta il viaggio da un NPC all'altro: più è alto, meno tappe ha il piano.</p>
+        <label class="field"><span>Peso di un cambio di quest (zeny)</span><input type="number" name="cambio" min="0" step="1000" value="30000"></label>
+        <p class="hint">Non si paga: rappresenta il viaggio verso un altro NPC. Il piano passa a un'altra quest solo se fa risparmiare almeno questi zeny. A 0 cambia quest anche per pochi zeny.</p>
       </fieldset>
     </div>
 
     <h2>Oggetti</h2>
-    <p class="hint">Quanti ne hai e quanto costa uno al mercato. I prezzi già scritti sono quelli degli NPC.</p>
+    <p class="hint">Quanti ne hai e quanto costa uno. Se lasci vuoto il prezzo vale quello in grigio: per gli oggetti degli NPC è il loro prezzo, per gli altri una stima.</p>
     <div class="items" id="items"></div>
   </form>
 

@@ -78,93 +78,50 @@ export const JOB_SECONDA_RINATO = [
 ];
 
 /**
- * Quest ripetibili a consegna di oggetti. Ogni consegna da' `base` EXP per
- * `quantita` oggetti, se il livello e' fra `min` e `max`.
+ * Quest ripetibili a consegna di oggetti, solo quelle scelte per il sito. Ogni
+ * consegna da' `base` EXP per `quantita` oggetti, se il livello e' fra `min` e
+ * `max`. Le altre quest del wiki si aggiungono qui con lo stesso schema.
  *
- * `prezzoNpc` e `negozio` ci sono solo per gli oggetti venduti da un NPC; il
- * prezzo e' il `Buy` di rAthena, che su uaRO e' tornato per le Antelope Horn.
- * `mostro` e' quello della quest di caccia dello stesso NPC: sta sulla mappa e
- * serve per completare un livello con poche uccisioni. `citta` e' la citta' da
- * cui partire, dove la conosciamo.
+ * `prezzo` e' quello usato se non se ne scrive un altro: per gli oggetti
+ * venduti da un NPC (quelli con `negozio`) e' il prezzo dell'NPC, cioe' il
+ * `Buy` di rAthena, che su uaRO e' tornato per le Antelope Horn; per gli altri
+ * e' lo stesso `Buy`, una stima e non il prezzo del mercato. `mostro` e' quello
+ * della quest di caccia dello stesso NPC: sta sulla mappa e serve per
+ * completare un livello con poche uccisioni. `citta` e' la citta' da cui partire.
  */
 export const QUEST = [
-  {
-    id: "fluff", npc: "Langry", navi: "gef_fild07 321/193", min: 2, max: 20,
-    oggetto: "Fluff", idOggetto: 914, quantita: 25, base: 770, job: 60,
-    mostro: "Fabre", citta: "Geffen",
-  },
-  {
-    id: "chrysalis", npc: "Halgus", navi: "gef_fild04 191/54", min: 2, max: 20,
-    oggetto: "Chrysalis", idOggetto: 915, quantita: 25, base: 770, job: 60,
-    mostro: "Pupa", citta: "Geffen",
-  },
   {
     id: "bill", npc: "Gregor", navi: "moc_fild02 74/329", min: 10, max: 30,
     oggetto: "Bill of Birds", idOggetto: 925, quantita: 25, base: 8000, job: 4000,
     mostro: "Peco Peco", citta: "Morroc",
-    prezzoNpc: 64, negozio: { nome: "Item Collector", navi: "moc_ruins 93/53", verificare: true },
-  },
-  {
-    id: "powder", npc: "Laertes", navi: "prt_fild04 356/148", min: 15, max: 45,
-    oggetto: "Powder of Butterfly", idOggetto: 924, quantita: 25, base: 5900, job: 2250,
-    mostro: "Creamy", citta: "Prontera",
+    prezzo: 64, negozio: { nome: "Item Collector", navi: "moc_ruins 93/53", verificare: true },
   },
   {
     id: "acorn", npc: "Nutters", navi: "mjolnir_01 293/20", min: 18, max: 60,
     oggetto: "Acorn", idOggetto: 1026, quantita: 25, base: 7200, job: 7810,
     mostro: "Coco",
-    prezzoNpc: 100, negozio: { nome: "Acorn Dealer", navi: "moscovia 208/182", verificare: true },
-  },
-  {
-    id: "quill", npc: "Yullo", navi: "mjolnir_01 296/29", min: 24, max: 60,
-    oggetto: "Porcupine Quill", idOggetto: 1027, quantita: 25, base: 20850, job: 12544,
-    mostro: "Caramel",
-  },
-  {
-    id: "stoneheart", npc: "Private Jeremy", navi: "moc_fild11 57/138", min: 25, max: 60,
-    oggetto: "Stone Heart", idOggetto: 953, quantita: 25, base: 28000, job: 18000,
-    mostro: "Golem", citta: "Morroc",
-  },
-  {
-    id: "earthworm", npc: "Shone", navi: "moc_fild17 208/346", min: 25, max: 60,
-    oggetto: "Earthworm Peeling", idOggetto: 1055, quantita: 25, base: 39438, job: 28120,
-    mostro: "Hode", citta: "Morroc",
-  },
-  {
-    id: "frill", npc: "Lemly", navi: "moc_fild17 66/273", min: 30, max: 65,
-    oggetto: "Frill", idOggetto: 1012, quantita: 25, base: 60000, job: 46000,
-    mostro: "Frilldora", citta: "Morroc",
-  },
-  {
-    id: "dokebi", npc: "Li", navi: "pay_fild10 108/357", min: 35, max: 70,
-    oggetto: "Dokebi Horn", idOggetto: 1021, quantita: 50, base: 84000, job: 72000,
-    mostro: "Dokebi", citta: "Payon",
+    prezzo: 100, negozio: { nome: "Acorn Dealer", navi: "moscovia 208/182", verificare: true },
   },
   {
     id: "hugeleaf", npc: "Lella", navi: "ayo_fild01 44/241", min: 36, max: 65,
     oggetto: "Huge Leaf", idOggetto: 7198, quantita: 50, base: 51480, job: 63024,
-    mostro: "Leaf Cat", citta: "Ayothaya",
+    mostro: "Leaf Cat", citta: "Ayothaya", prezzo: 610,
   },
   {
     id: "anolian", npc: "Cuir", navi: "cmd_fild01 362/256", min: 45, max: 80,
     oggetto: "Anolian Skin", idOggetto: 7003, quantita: 20, base: 137900, job: 86600,
-    mostro: "Alligator", citta: "Comodo",
-  },
-  {
-    id: "bacillus", npc: "Local Villager", navi: "ein_fild01 43/249", min: 60, max: 74,
-    oggetto: "Bacillus", idOggetto: 7119, quantita: 50, base: 500532, job: 288904,
-    mostro: "Demon Pungus", citta: "Einbroch",
+    mostro: "Alligator", citta: "Comodo", prezzo: 968,
   },
   {
     id: "sharpleaf", npc: "Lilla", navi: "um_fild01 35/281", min: 60, max: 85,
     oggetto: "Sharp Leaf", idOggetto: 7100, quantita: 50, base: 524970, job: 283670,
-    mostro: "Dryad", citta: "Umbala",
+    mostro: "Dryad", citta: "Umbala", prezzo: 806,
   },
   {
     id: "antelope", npc: "Vegetable Farmer", navi: "ein_fild06 82/171", min: 70, max: 85,
     oggetto: "Antelope Horn", idOggetto: 7106, quantita: 50, base: 516978, job: 310310,
     mostro: "Goat", citta: "Einbroch",
-    prezzoNpc: 672, negozio: { nome: "Tool Dealer", navi: "nif_in 145/23" },
+    prezzo: 672, negozio: { nome: "Tool Dealer", navi: "nif_in 145/23" },
   },
 ];
 

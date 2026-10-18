@@ -69,14 +69,13 @@ function esaustiva({ rinato, livello, obiettivo, manuale = 0, rabbocco = null, c
       migliore = costo;
       return;
     }
-    for (const q of QUEST) {
-      const scelta = oggetti[q.id];
-      if (!scelta || l < q.min || l > q.max) continue;
+    // Prima le quest che danno piu' EXP: un buon piano trovato presto taglia il resto.
+    for (const q of [...QUEST].reverse()) {
+      if (l < q.min || l > q.max) continue;
       const inInventario = rimasti[q.id] ?? 0;
       const daComprare = Math.max(0, q.quantita - inInventario);
-      if (daComprare > 0 && scelta.prezzo == null) continue;
       const dopo = aggiungiExp(tabella, l, exp, Math.floor(q.base * molt));
-      const extra = daComprare * (scelta.prezzo ?? 0) + (ultima === q.id ? 0 : cambio);
+      const extra = daComprare * (oggetti[q.id]?.prezzo ?? q.prezzo) + (ultima === q.id ? 0 : cambio);
       visita(dopo.livello, dopo.exp, costo + extra, q.id, {
         ...rimasti,
         [q.id]: Math.max(0, inInventario - q.quantita),
@@ -96,24 +95,24 @@ const costoDi = (piano, cambio) => piano.zeny + cambio * piano.tappe.filter((t) 
 describe("calcolaPiano", () => {
   const casi = [
     {
-      nome: "non rinato dal 60 al 64, tre quest",
-      rinato: false, livello: 60, obiettivo: 64,
-      oggetti: { sharpleaf: { prezzo: 800 }, bacillus: { prezzo: 700 }, anolian: { prezzo: 1500 } },
+      nome: "non rinato dal 70 al 73, tre quest",
+      rinato: false, livello: 70, obiettivo: 73, manuale: 100,
+      oggetti: { sharpleaf: { prezzo: 800 }, anolian: { prezzo: 300 } },
     },
     {
-      nome: "con il cambio di NPC che costa",
-      rinato: false, livello: 60, obiettivo: 64, cambio: 30000,
-      oggetti: { sharpleaf: { prezzo: 800 }, bacillus: { prezzo: 700 }, anolian: { prezzo: 1500 } },
+      nome: "con il cambio di quest che costa",
+      rinato: false, livello: 70, obiettivo: 73, manuale: 100, cambio: 30000,
+      oggetti: { sharpleaf: { prezzo: 800 }, anolian: { prezzo: 300 } },
     },
     {
       nome: "con oggetti in inventario",
-      rinato: false, livello: 60, obiettivo: 63, manuale: 50,
-      oggetti: { sharpleaf: { prezzo: 900 }, bacillus: { prezzo: 700, posseduti: 70 }, anolian: { posseduti: 45 } },
+      rinato: false, livello: 70, obiettivo: 72, manuale: 50,
+      oggetti: { sharpleaf: { posseduti: 70 }, anolian: { posseduti: 45 } },
     },
     {
       nome: "rinato con il trucco dei mostri",
-      rinato: true, livello: 45, obiettivo: 48, manuale: 100, rabbocco: 10,
-      oggetti: { anolian: { prezzo: 1000 }, hugeleaf: { prezzo: 500 }, frill: { prezzo: 300 } },
+      rinato: true, livello: 62, obiettivo: 64, manuale: 100, rabbocco: 10,
+      oggetti: { hugeleaf: { prezzo: 100 }, anolian: { prezzo: 500 } },
     },
   ];
 
@@ -168,8 +167,24 @@ describe("calcolaPiano", () => {
     for (const t of medusa) assert.ok(t.da.livello >= 75 && t.a.livello <= 97);
   });
 
-  it("senza quest utilizzabili non c'e' piano", () => {
+  it("sotto il livello minimo delle quest non c'e' piano", () => {
     assert.equal(calcolaPiano({ rinato: true, livello: 2, obiettivo: 84, oggetti: {} }), null);
+  });
+
+  it("senza niente nel modulo dice quanti oggetti comprare, e quelli posseduti li risparmia", () => {
+    const senza = calcolaPiano({ rinato: false, livello: 40, obiettivo: 84, manuale: 100, cambio: 30000 });
+    assert.ok(senza.spesa.length > 0);
+    assert.equal(senza.spesa.reduce((n, v) => n + v.zeny, 0), senza.zeny);
+    for (const voce of senza.spesa) assert.equal(voce.comprati, voce.servono);
+
+    const conAntelope = calcolaPiano({
+      rinato: false, livello: 40, obiettivo: 84, manuale: 100, cambio: 30000,
+      oggetti: { antelope: { posseduti: 500 } },
+    });
+    const antelope = conAntelope.spesa.find((v) => v.quest.id === "antelope");
+    assert.equal(antelope.dallInventario, 500);
+    assert.equal(antelope.comprati, antelope.servono - 500);
+    assert.ok(conAntelope.zeny < senza.zeny);
   });
 
   it("gia' all'obiettivo il piano e' vuoto", () => {

@@ -2,6 +2,13 @@
 
 Le versioni della pagina `livelli/`.
 
+## [1.1] - 2026-10-18
+
+- Senza scrivere niente il piano dice quanti oggetti comprare: un prezzo lasciato vuoto vale quello dell'NPC o una stima
+- Lista della spesa in cima al piano, con quanti oggetti comprare in tutto e dove
+- Restano solo le quest di Bill of Birds, Acorn, Huge Leaf, Anolian Skin, Sharp Leaf e Antelope Horn
+- Scritte più chiare per la caccia iniziale, il mercenario arciere e il peso di un cambio di quest
+
 ## [1.0] - 2026-10-18
 
 Prima versione.
@@ -9,6 +16,6 @@ Prima versione.
 - Piano più economico fino al livello obiettivo (84 se non lo cambi) con le quest ripetibili di uaRO, da non rinato o da rinato
 - Bonus del weekend e del manuale, oggetti che hai già e prezzi del mercato; i prezzi degli NPC sono già scritti
 - Ogni consegna fa salire al massimo un livello, come nel gioco: il piano lo calcola e mostra l'EXP persa
-- Opzioni: caccia iniziale (con il mercenario arco ai Les del Moscovia Dungeon), tre consegne della Medusa, livello completato uccidendo i mostri della mappa, prezzo di un cambio di NPC
+- Opzioni: caccia iniziale (con il mercenario arciere ai Les del Moscovia Dungeon), tre consegne della Medusa, livello completato uccidendo i mostri della mappa, prezzo di un cambio di NPC
 - Piano a tappe con i /navi dell'NPC e del negozio, o il @ws per il mercato, e il dettaglio consegna per consegna
 - Job seguito accanto al piano: il momento del cambio di classe e l'avviso sulle consegne che sprecano job EXP

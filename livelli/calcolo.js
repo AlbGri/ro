@@ -130,9 +130,9 @@ class Coda {
  *   nel costo da minimizzare, non negli zeny spesi.
  * @param {Object<string, {posseduti?: number, prezzo?: ?number}>} [opzioni.oggetti={}]
  *   Per id di quest: oggetti gia' in inventario e prezzo di uno; senza prezzo
- *   si usano solo quelli posseduti.
- * @returns {?object} Il piano, o null se l'obiettivo non si raggiunge con le
- *   quest disponibili.
+ *   vale quello di `dati.js`.
+ * @returns {?object} Il piano, o null se l'obiettivo non si raggiunge: sotto il
+ *   livello minimo delle quest.
  */
 export function calcolaPiano(opzioni) {
   const {
@@ -151,14 +151,12 @@ export function calcolaPiano(opzioni) {
   const molt = moltiplicatore(weekend, manuale);
   const expIniziale = Math.floor((tabella[livello - 1] * percentuale) / 100);
 
-  // Quest utilizzabili: con un prezzo o con oggetti in inventario. Solo quelle
-  // con oggetti posseduti hanno bisogno di un contatore nello stato.
+  // Solo le quest con oggetti posseduti hanno bisogno di un contatore nello stato.
   const quest = [];
   for (const q of QUEST) {
     const scelta = oggetti[q.id] ?? {};
     const posseduti = Math.max(0, Math.floor(scelta.posseduti ?? 0));
-    const prezzo = scelta.prezzo ?? null;
-    if (posseduti < q.quantita && prezzo === null) continue;
+    const prezzo = scelta.prezzo ?? q.prezzo;
     if (q.min >= obiettivo) continue;
     quest.push({ ...q, posseduti, prezzo, guadagno: Math.floor(q.base * molt), resto: -1 });
   }
@@ -166,12 +164,8 @@ export function calcolaPiano(opzioni) {
   for (const q of quest) if (q.posseduti > 0) q.resto = contatori++;
   const guadagnoMedusa = Math.floor(MEDUSA.base * molt);
 
-  /** Zeny di una consegna con `rimasti` oggetti ancora in inventario, o null. */
-  const prezzoConsegna = (q, rimasti) => {
-    const daComprare = Math.max(0, q.quantita - rimasti);
-    if (daComprare === 0) return 0;
-    return q.prezzo === null ? null : daComprare * q.prezzo;
-  };
+  /** Zeny di una consegna con `rimasti` oggetti ancora in inventario. */
+  const prezzoConsegna = (q, rimasti) => Math.max(0, q.quantita - rimasti) * q.prezzo;
 
   // Per il limite inferiore: EXP che manca dal livello l all'obiettivo, e il
   // minimo di zeny per punto di EXP fra le quest ancora utilizzabili da l in poi.
@@ -180,7 +174,7 @@ export function calcolaPiano(opzioni) {
   const zenyPerExp = new Array(obiettivo + 1).fill(Infinity);
   for (let l = 1; l <= obiettivo; l++) {
     for (const q of quest) {
-      if (q.prezzo !== null && q.max >= l) {
+      if (q.max >= l) {
         zenyPerExp[l] = Math.min(zenyPerExp[l], (q.prezzo * q.quantita) / q.guadagno);
       }
     }
@@ -208,7 +202,6 @@ export function calcolaPiano(opzioni) {
       if (l < q.min || l > q.max) continue;
       const rimasti = q.resto >= 0 ? stato.rimasti[q.resto] : 0;
       const zeny = prezzoConsegna(q, rimasti);
-      if (zeny === null) continue;
       const dopo = aggiungiExp(tabella, l, exp, q.guadagno);
       let nuoviRimasti = stato.rimasti;
       if (q.resto >= 0) {
@@ -393,12 +386,27 @@ function componiPiano(finale, tabella, quest) {
   // Un piano fatto solo di uccisioni, senza consegne.
   if (inSospeso.length > 0) tappe.push({ chiave: "rabbocco", tipo: "rabbocco", quest: null, passi: inSospeso });
 
+  const riassunte = tappe.map(riassumi);
+
+  // La lista della spesa: per oggetto, quanti ne servono in tutto il piano.
+  const spesa = new Map();
+  for (const t of riassunte) {
+    if (t.tipo !== "quest") continue;
+    const voce = spesa.get(t.quest.id) ?? { quest: t.quest, servono: 0, dallInventario: 0, comprati: 0, zeny: 0 };
+    voce.servono += t.consegne * t.quest.quantita;
+    voce.dallInventario += t.dallInventario;
+    voce.comprati += t.comprati;
+    voce.zeny += t.zeny;
+    spesa.set(t.quest.id, voce);
+  }
+
   return {
     partenza: { livello: stati[0].livello, exp: stati[0].exp },
     arrivo: { livello: finale.livello, exp: finale.exp },
     zeny: finale.zeny,
     consegne: finale.consegne,
-    tappe: tappe.map(riassumi),
+    tappe: riassunte,
+    spesa: [...spesa.values()],
     percentuale: (stato) => percentualeDi(tabella, stato),
   };
 }
