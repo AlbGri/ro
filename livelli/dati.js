@@ -149,3 +149,9 @@ export const CACCE = [
     mostro: "Medusa", base: 2062800, job: 1409100, citta: "Comodo",
   },
 ];
+
+/**
+ * Manuali di EXP su uaRO (detto da Alberto): durano 30 minuti; quello al 50% si
+ * riceve gratis, 3 all'inizio; quello al 100% costa 40 Poring Coin.
+ */
+export const MANUALE = { minuti: 30, gratis50: 3, coin100: 40 };

@@ -105,6 +105,15 @@ input[type="number"].inline { width: 5.5em; display: inline-block; padding: 3px 
 .check input { width: 18px; height: 18px; margin: 3px 0 0; flex: none; accent-color: var(--bradium); cursor: pointer; }
 .radios { display: flex; gap: 16px; flex-wrap: wrap; }
 
+/* Confronto dei manuali */
+.manuali { margin-top: 16px; }
+.manuali table { width: 100%; border-collapse: collapse; font-size: .92rem; font-variant-numeric: tabular-nums; }
+.manuali th, .manuali td { padding: 6px 8px; border-top: 1px solid var(--line); text-align: right; }
+.manuali th:first-child, .manuali td:first-child { text-align: left; }
+.manuali th { font-weight: 400; color: var(--muted); font-size: .82rem; border-top: none; }
+.manuali tr.best td { font-weight: 700; }
+.manuali .verdetto { margin: 8px 0 0; }
+
 /* Oggetti: una riga per quest, che sul telefono va a capo */
 .items { display: grid; gap: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; }
 .item {
@@ -168,6 +177,9 @@ details.steps li.kill { color: var(--muted); font-style: italic; }
   .item { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
   .item.head { display: none; }
   .item > :first-child, .item .sub-npc { grid-column: 1 / -1; }
+  fieldset { padding-left: 12px; padding-right: 12px; }
+  .manuali table { font-size: .82rem; }
+  .manuali th, .manuali td { padding: 6px 3px; }
   .item label.mobile::before { content: attr(data-label); display: block; font-size: .78rem; color: var(--muted); }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -249,6 +261,17 @@ details.steps li.kill { color: var(--muted); font-style: italic; }
         <div id="cacce"></div>
       </fieldset>
     </div>
+
+    <fieldset class="manuali">
+      <legend>Manuale: 50% o 100%?</legend>
+      <div class="row">
+        <label class="field"><span>Prezzo di un Poring Coin (zeny)</span><input type="number" name="poringCoin" min="0" step="500" value="13000"></label>
+        <label class="field"><span>Manuali al 50% che hai</span><input type="number" name="manuali50" min="0" value="3"></label>
+        <label class="field"><span>Mezz'ore di consegne</span><input type="number" name="mezzore" min="1" value="1"></label>
+      </div>
+      <p class="hint">Un manuale dura 30 minuti: quello al 50% si riceve gratis (3 all'inizio), quello al 100% costa 40 Poring Coin. Conta quante mezz'ore ti servono per tutte le consegne, viaggi compresi: tanti manuali ti servono. Il piano qui sotto usa il manuale scelto nelle Opzioni.</p>
+      <div id="confrontoManuali"></div>
+    </fieldset>
 
     <h2>Oggetti</h2>
     <p class="hint">Quanti ne hai e quanto costa uno. Se lasci vuoto il prezzo vale quello in grigio: per gli oggetti degli NPC è il loro prezzo, per gli altri una stima.</p>

@@ -2,6 +2,10 @@
 
 Le versioni della pagina `livelli/`.
 
+## [1.7] - 2026-10-18
+
+- Nuova sezione «Manuale: 50% o 100%?»: con il prezzo del Poring Coin, i manuali al 50% che hai e le mezz'ore di consegne, confronta il piano senza manuale, con il 50% e con il 100%, oggetti e manuali compresi, e dice quale conviene
+
 ## [1.6] - 2026-10-18
 
 - Stime di mercato aggiornate: Huge Leaf 700, Anolian Skin 1.800, Sharp Leaf 1.700

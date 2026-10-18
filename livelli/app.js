@@ -6,7 +6,7 @@
  */
 
 import { calcolaPiano, jobMassimo, moltiplicatore, percentualeDi, percentualeJob, seguiJob } from "./calcolo.js";
-import { CACCE, EXP_NORMALE, EXP_RINATO, QUEST, UCCISIONI_PER_CONSEGNA } from "./dati.js";
+import { CACCE, EXP_NORMALE, EXP_RINATO, MANUALE, QUEST, UCCISIONI_PER_CONSEGNA } from "./dati.js";
 
 const STORAGE_KEY = "ragnarok-livelli/stato";
 
@@ -119,6 +119,9 @@ function leggi() {
     cacce: Object.fromEntries(CACCE.map((c) => [c.id, Number(f[`caccia-${c.id}`].value)])),
     rabbocco: f.rabbocchi.checked ? intero(f.soglia.value, 1, 50, 10) : null,
     cambio: intero(f.cambio.value, 0, 1e9, 0),
+    poringCoin: intero(f.poringCoin.value, 0, 1e9, 13000),
+    manuali50: intero(f.manuali50.value, 0, 1000, MANUALE.gratis50),
+    mezzore: intero(f.mezzore.value, 1, 1000, 1),
     oggetti,
   };
 }
@@ -262,6 +265,41 @@ function disegnaSpesa(spesa) {
   return `<div class="spesa"><h3>Da comprare</h3><ul>${righe.join("")}</ul></div>`;
 }
 
+/**
+ * Lo stesso piano senza manuale, con il 50% e con il 100%: zeny degli oggetti
+ * piu' il costo dei manuali, uno per ogni mezz'ora di consegne.
+ */
+function disegnaManuali(scelte) {
+  const righe = [0, 50, 100].map((manuale) => {
+    const piano = calcolaPiano({ ...scelte, manuale });
+    let costo = 0;
+    let nota = "";
+    if (manuale === 50 && scelte.mezzore > scelte.manuali50) {
+      nota = `ne servono ${scelte.mezzore}, ne hai ${scelte.manuali50}`;
+    }
+    if (manuale === 100) costo = scelte.mezzore * MANUALE.coin100 * scelte.poringCoin;
+    return { manuale, oggetti: piano.zeny, costo, totale: piano.zeny + costo, nota };
+  });
+  const possibili = righe.filter((r) => !r.nota).sort((a, b) => a.totale - b.totale);
+  const conviene = (m) => (m === 0 ? "non usare manuali" : `il manuale al ${m}%`);
+  const rispetto = (m) => (m === 0 ? "a nessun manuale" : `al manuale al ${m}%`);
+  const migliore = possibili[0];
+  const tabella = righe.map(
+    (r) => `<tr class="${r === migliore ? "best" : ""}">
+      <td>${r.manuale === 0 ? "Nessuno" : r.manuale + "%"}</td>
+      <td>${numero(r.oggetti)}</td>
+      <td>${r.nota ? escape(r.nota) : numero(r.costo)}</td>
+      <td>${r.nota ? "–" : numero(r.totale)}</td>
+    </tr>`,
+  );
+  const secondo = possibili[1];
+  const verdetto = secondo
+    ? `Conviene ${conviene(migliore.manuale)}: rispetto ${rispetto(secondo.manuale)} risparmi ${numero(secondo.totale - migliore.totale)} zeny.`
+    : `Conviene ${conviene(migliore.manuale)}.`;
+  return `<table><thead><tr><th>Manuale</th><th>Oggetti</th><th>Manuali</th><th>Totale</th></tr></thead><tbody>${tabella.join("")}</tbody></table>
+    <p class="verdetto">${verdetto}</p>`;
+}
+
 /** Perche' non c'e' un piano: si parte sotto il livello minimo delle quest. */
 function spiegaVuoto(partenza) {
   const minimo = Math.min(...QUEST.map((q) => q.min));
@@ -284,16 +322,20 @@ function aggiorna() {
     `EXP delle quest: ×${molt.toLocaleString("it-IT")}`;
 
   const tabella = scelte.rinato ? EXP_RINATO : EXP_NORMALE;
+  const confronto = document.getElementById("confrontoManuali");
   if (scelte.livello >= scelte.obiettivo) {
     pianoEl.innerHTML = `<p class="summary">Sei già all'obiettivo.</p>`;
+    confronto.innerHTML = "";
     return;
   }
 
   const piano = calcolaPiano(scelte);
   if (!piano) {
     pianoEl.innerHTML = `<p class="empty">${escape(spiegaVuoto(scelte.livello))}</p>`;
+    confronto.innerHTML = "";
     return;
   }
+  confronto.innerHTML = disegnaManuali(scelte);
 
   const stato = (s) => `${s.livello} (${percento(percentualeDi(tabella, s))}%)`;
   const job = seguiJob(piano, { ...scelte, cambio: scelte.cambioJob });
