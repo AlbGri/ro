@@ -96,7 +96,7 @@ function disegnaIstanza() {
     `. Gli altri posti sono liberi, per qualsiasi classe. Un id macchina entra al massimo ${i.maxRun} volte, ogni volta con un account diverso.`;
   document.getElementById("ordine").textContent =
     "Le run migliori: prima il numero di run, poi far entrare tutti il più possibile, " +
-    (i.preferito ? `poi più ${i.nomePreferito} (${i.perchePreferito}), ` : "") +
+    i.preferiti.map((p) => `poi più ${p.nome}${p.perche ? ` (${p.perche})` : ""}, `).join("") +
     "poi run equilibrate.";
 }
 
@@ -193,7 +193,8 @@ function aggiorna() {
   }
   const i = istanza();
   const esito = calcolaRun(presenti, jolly, i);
-  const preferiti = (n) => (i.preferito ? `, ${plurale(n, i.nomePreferito, i.nomePreferito)}` : "");
+  // Nel riepilogo solo il primo preferito: degli altri il conto comprenderebbe i posti obbligatori.
+  const preferiti = (conti) => (i.preferiti.length ? `, ${conti[0]} ${i.preferiti[0].nome}` : "");
   const html = [];
 
   if (esito.run.length === 0) {

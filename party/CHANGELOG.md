@@ -2,6 +2,11 @@
 
 Le versioni della pagina `party/`.
 
+## [1.1] - 2026-10-18
+
+- Nei posti liberi, a parità di entrate, prima gli Sniper, poi gli High Priest, poi i Priest, poi tutti gli altri. Priest è una classe nuova nell'elenco
+- Il menu in alto a destra si apre con l'ingranaggio, come in tutte le pagine del sito
+
 ## [1.0] - 2026-10-18
 
 Prima versione.

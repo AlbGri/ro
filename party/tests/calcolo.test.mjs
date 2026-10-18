@@ -44,13 +44,13 @@ function verifica(giocatori, jolly, istanza, esito) {
 /** Il punteggio di una ripartizione, nell'ordine di preferenza del calcolo. */
 function punteggio(run, istanza) {
   const entrate = new Map();
-  let preferiti = 0;
+  const preferiti = istanza.preferiti.map(() => 0);
   let jolly = 0;
   let persone2 = 0;
   let preferiti2 = 0;
   for (const membri of run) {
-    const pref = membri.filter((m) => m.ruolo === istanza.preferito).length;
-    preferiti += pref;
+    istanza.preferiti.forEach((p, k) => (preferiti[k] += membri.filter((m) => m.ruolo === p.ruolo).length));
+    const pref = membri.filter((m) => m.ruolo === istanza.preferiti[0].ruolo).length;
     jolly += membri.filter((m) => m.jolly !== null).length;
     persone2 += membri.length ** 2;
     preferiti2 += pref ** 2;
@@ -59,13 +59,13 @@ function punteggio(run, istanza) {
   const totale = [...entrate.values()].reduce((a, b) => a + b, 0);
   const quadrati = [...entrate.values()].reduce((a, b) => a + b * b, 0);
   // + 0 trasforma -0 in 0, che deepEqual distingue.
-  return [run.length, totale, preferiti, -quadrati, -jolly, -persone2, -preferiti2].map((x) => x + 0);
+  return [run.length, totale, ...preferiti, -quadrati, -jolly, -persone2, -preferiti2].map((x) => x + 0);
 }
 
 /** Il punteggio migliore provando tutte le ripartizioni. */
 function forzaBruta(giocatori, jolly, istanza) {
   const ruolo = (p) => ruoloDi(istanza, p.classe);
-  let migliore = [0, 0, 0, 0, 0, 0, 0];
+  let migliore = null;
   const run = [...Array(istanza.maxRun)].map(() => []);
   const jollyUsati = new Set();
 
@@ -80,7 +80,7 @@ function forzaBruta(giocatori, jolly, istanza) {
       if (!istanza.posti.every((p) => m.filter((x) => x.ruolo === p.ruolo).length >= p.quanti)) return;
     }
     const p = punteggio(piene, istanza);
-    if (meglio(p, migliore)) migliore = p;
+    if (!migliore || meglio(p, migliore)) migliore = p;
   };
 
   (function perGiocatore(g) {
@@ -127,7 +127,7 @@ describe("casi di Alberto", () => {
     assert.equal(esito.run.length, 3);
     assert.equal(esito.entrate, 20);
     assert.deepEqual(esito.run.map((r) => r.membri.length).sort(), [6, 7, 7]);
-    const priest = esito.run.flatMap((r) => r.membri).filter((m) => m.giocatore === 0 && m.ruolo === "altro");
+    const priest = esito.run.flatMap((r) => r.membri).filter((m) => m.giocatore === 0 && m.ruolo === "priest");
     assert.equal(priest.length, 2);
   });
 
@@ -164,7 +164,7 @@ describe("casi di Alberto", () => {
     assert.equal(alberto.ruolo, "prof");
   });
 
-  it("con la run piena entra lo Sniper invece del terzo High Priest", () => {
+  it("con la run piena entrano Sniper e terzo High Priest, restano fuori i Knight", () => {
     const base = [
       giocatore("A", account("High Priest")),
       giocatore("B", account("High Priest")),
@@ -178,10 +178,10 @@ describe("casi di Alberto", () => {
     const esito = calcolaRun(giocatori, []);
     verifica(giocatori, [], ISTANZA, esito);
     assert.equal(esito.run[0].membri.length, 12);
-    assert.equal(esito.preferiti, 2);
-    // Fuori, per la run piena: uno dei tre High Priest e uno dei Knight.
+    assert.equal(esito.preferiti[0], 2);
+    // Fuori, per la run piena: due dei Knight: prima gli Sniper, poi gli High Priest.
     const fuori = esito.fuori.map((f) => giocatori[f.giocatore].account[0].personaggi[0].classe).sort();
-    assert.deepEqual(fuori, ["High Priest", "Knight"]);
+    assert.deepEqual(fuori, ["Knight", "Knight"]);
     assert.ok(esito.fuori.every((f) => f.motivo === "piena"));
   });
 
@@ -212,8 +212,9 @@ describe("confronto con la ricerca esaustiva", () => {
     classi: [
       { nome: "High Priest", ruolo: "hp" },
       { nome: "Sniper", ruolo: "sniper" },
+      { nome: "Priest", ruolo: "priest" },
     ],
-    preferito: "sniper",
+    preferiti: [{ ruolo: "sniper" }, { ruolo: "hp" }, { ruolo: "priest" }],
   };
   const classi = ["High Priest", "Sniper", "Priest", "Knight"];
 

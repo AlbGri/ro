@@ -5,9 +5,10 @@
  * (un client alla volta); ogni account, jolly compresi, entra una volta sola;
  * una run ha al massimo `maxParty` persone e copre i posti obbligatori.
  *
- * Ordine di preferenza: piu' run complete, piu' entrate, piu' personaggi del
- * ruolo preferito (Sniper), entrate divise fra i giocatori, meno jolly; poi run
- * di grandezza simile e preferiti divisi fra le run.
+ * Ordine di preferenza: piu' run complete, piu' entrate, piu' personaggi dei
+ * ruoli preferiti nell'ordine dell'istanza (Sniper, poi High Priest, poi
+ * Priest), entrate divise fra i giocatori, meno jolly; poi run di grandezza
+ * simile e Sniper divisi fra le run.
  *
  * Come calcola, in due passi, tutti e due esatti:
  * 1. quali personaggi entrano. Basta contare: K run complete esistono se e solo
@@ -18,8 +19,9 @@
  *    stato i posti coperti in tutto (piu' i jolly usati, e le entrate se i
  *    presenti sono piu' di `maxParty`);
  * 2. in quale run va ognuno: colorazione degli archi del grafo. I posti liberi
- *    sono nodi da K archi riempiti prima con i preferiti, cosi' persone e
- *    preferiti vengono divisi fra le run al meglio (al piu' uno di differenza).
+ *    sono nodi da K archi riempiti prima con i preferiti, nel loro ordine, cosi'
+ *    persone e Sniper vengono divisi fra le run al meglio (al piu' uno di
+ *    differenza).
  *
  * Una prima versione teneva nello stato ogni run separata: con 18 giocatori
  * serviva oltre un secondo, e gli account con piu' personaggi l'avrebbero
@@ -30,11 +32,11 @@ import { ISTANZE, ruoloDi } from "./dati.js";
 
 /**
  * I modi di usare un account: uno per ruolo che conta (posti obbligatori e
- * preferito) fra i suoi personaggi, oppure uno solo se non ne ha. Un ruolo che
+ * preferiti) fra i suoi personaggi, oppure uno solo se non ne ha. Un ruolo che
  * conta non e' mai peggio di "altro": oltre i posti vale come un posto libero.
  */
 function usiAccount(account, istanza) {
-  const contano = new Set([...istanza.posti.map((p) => p.ruolo), istanza.preferito]);
+  const contano = new Set([...istanza.posti.map((p) => p.ruolo), ...istanza.preferiti.map((p) => p.ruolo)]);
   const usi = [];
   account.personaggi.forEach((p, indice) => {
     const ruolo = ruoloDi(istanza, p.classe);
@@ -87,7 +89,7 @@ function scelteGiocatore(giocatore, jolly, istanza, nRun, tutti) {
  *   solo i presenti
  * @param {Array<{personaggi: Array<{nome: string, classe: string}>}>} jolly solo i disponibili
  * @param {object} [istanza] una di `ISTANZE`, la prima se non si indica
- * @returns {{run: Array<{membri: Array<object>, preferiti: number}>, entrate: number, preferiti: number,
+ * @returns {{run: Array<{membri: Array<object>, preferiti: number[]}>, entrate: number, preferiti: number[],
  *   jolly: number, fuori: Array<{giocatore: number, entrate: number, motivo: string}>, mancano: string[]}}
  *   Ogni membro: `giocatore`, `account` o `jolly` (indici), `personaggio`, `ruolo`, `posto` (null se libero)
  */
@@ -157,14 +159,15 @@ function cerca(giocatori, jolly, istanza, nRun, minEntrate) {
     const scelte = scelteGiocatore(giocatore, jolly, istanza, nRun, !conLimite).map((presi) => {
       const entrate = presi.length;
       const nJolly = presi.filter((o) => o.jolly !== null).length;
-      const preferiti = presi.filter((o) => o.ruolo === istanza.preferito).length;
+      const preferiti = istanza.preferiti.map((p) => presi.filter((o) => o.ruolo === p.ruolo).length);
       return {
         presi,
         entrate,
         aggiunti: posti.map((p) => presi.filter((o) => o.ruolo === p.ruolo).length),
         maschera: presi.reduce((m, o) => (o.jolly === null ? m : m | (1 << o.jolly)), 0),
-        // Il punteggio in un numero solo, in ordine di importanza; quadrati e jolly restano sotto 1000.
-        punti: entrate * 1e9 + preferiti * 1e6 - entrate ** 2 * 1e3 - nJolly,
+        // Il punteggio in un numero solo, una cifra in base 1000 per criterio, in ordine di
+        // importanza: ogni criterio ha sempre lo stesso segno e resta sotto 1000.
+        punti: [entrate, ...preferiti, -(entrate ** 2), -nJolly].reduce((p, c) => p * 1000 + c, 0),
       };
     });
     const prossimo = new Map();
@@ -218,7 +221,7 @@ function cerca(giocatori, jolly, istanza, nRun, minEntrate) {
 /**
  * Passo 2: divide i contributi in `nRun` run. Ogni posto obbligatorio e' un
  * nodo con esattamente `nRun` archi, uno per run; i liberi sono nodi da `nRun`
- * archi riempiti prima con i preferiti. Gli archi si colorano con l'algoritmo
+ * archi riempiti prima con i preferiti, nel loro ordine. Gli archi si colorano con l'algoritmo
  * dei cammini alternati (Konig): ogni colore, cioe' run, ha un arco per nodo.
  */
 function dividi(scelti, istanza, nRun) {
@@ -237,7 +240,11 @@ function dividi(scelti, istanza, nRun) {
       }
     }
   }
-  restanti.sort((a, b) => (b.ruolo === istanza.preferito) - (a.ruolo === istanza.preferito));
+  const rango = (c) => {
+    const i = istanza.preferiti.findIndex((p) => p.ruolo === c.ruolo);
+    return i < 0 ? istanza.preferiti.length : i;
+  };
+  restanti.sort((a, b) => rango(a) - rango(b));
   restanti.forEach((c, i) => {
     if (i % nRun === 0) nuovoDestro();
     archi.push({ contributo: c, destro: destri.length - 1 });
@@ -289,7 +296,7 @@ function dividi(scelti, istanza, nRun) {
 function componi(giocatori, jolly, istanza, membri) {
   const run = membri.map((m) => ({
     membri: assegnaPosti(m, istanza),
-    preferiti: m.filter((x) => x.ruolo === istanza.preferito).length,
+    preferiti: istanza.preferiti.map((p) => m.filter((x) => x.ruolo === p.ruolo).length),
   }));
   const tutti = run.flatMap((r) => r.membri);
 
@@ -305,7 +312,7 @@ function componi(giocatori, jolly, istanza, membri) {
   return {
     run,
     entrate: tutti.length,
-    preferiti: tutti.filter((m) => m.ruolo === istanza.preferito).length,
+    preferiti: istanza.preferiti.map((p) => tutti.filter((m) => m.ruolo === p.ruolo).length),
     jolly: tutti.filter((m) => m.jolly !== null).length,
     fuori,
     mancano: run.length < istanza.maxRun ? cosaManca(giocatori, jolly, istanza, run.length + 1) : [],

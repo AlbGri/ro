@@ -31,11 +31,17 @@ export const ISTANZE = [
       { nome: "Clown/Bard", ruolo: "bard" },
       { nome: "Gypsy/Dancer", ruolo: "dancer" },
       { nome: "Professor", ruolo: "prof" },
+      { nome: "Priest", ruolo: "priest" },
     ],
-    // A parita' di entrate si preferisce questo ruolo anche nei posti liberi: gli Sniper scalano meglio.
-    preferito: "sniper",
-    nomePreferito: "Sniper",
-    perchePreferito: "scalano meglio",
+    // A parita' di entrate, nei posti liberi, prima gli Sniper, poi gli High Priest, poi i Priest
+    // (Alberto, 18/10/2026): lo Sniper "e' quello che scala meglio", e un Priest e' meglio di un
+    // personaggio "totalmente inutile". Contare tutti gli High Priest, obbligatori compresi,
+    // ordina come contare i soli liberi: gli obbligatori sono sempre due per run.
+    preferiti: [
+      { ruolo: "sniper", nome: "Sniper", perche: "scalano meglio" },
+      { ruolo: "hp", nome: "High Priest" },
+      { ruolo: "priest", nome: "Priest", perche: "meglio di un personaggio inutile" },
+    ],
   },
 ];
 
