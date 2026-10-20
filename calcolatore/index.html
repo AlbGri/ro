@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>uaRO – Calcolatore</title>
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#F5F7F1">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1B2420">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<script src="../gate.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Colori e caratteri sono quelli della guida Nuovo Mondo. */
+:root {
+  --bg: #E6EBE2;
+  --surface: #F5F7F1;
+  --surface-2: #EDF1E8;
+  --ink: #1D2821;
+  --muted: #56655B;
+  --line: #C6D0C1;
+  --common: #3C7C4C;
+  --bradium: #6A4C9C;
+  --verify: #9A5C00;
+  --warn: #A3402C;
+  --tip: #4E6B3A;
+  --focus: #6A4C9C;
+  --serif: "Alegreya", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: "Atkinson Hyperlegible", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+  /* colori di elementi e razze negli HTML che scrive il motore (dal calcolatore di Thrice) */
+  --text: var(--ink);
+  --color-formless: #7d7c79; --color-undead: #800080; --color-earth: #8b4513; --color-plant: #1f8f1f;
+  --color-positive: #1b7a1b; --color-water: #1f4fd1; --color-human: #b86a00; --color-angel: #8d8d10;
+  --color-negative: #c62020; --color-neutral: #8a7660; --color-wind: #2f8f2f; --color-poison: #a020a0;
+  --color-holy: #8f8f00; --color-ghost: #77757a;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131A16; --surface: #1B2420; --surface-2: #212C27; --ink: #E3EAE2; --muted: #9DAA9F; --line: #33413A;
+    --common: #63A471; --bradium: #B79CEB; --verify: #E8A93C; --warn: #F08A72; --tip: #8DB36F; --focus: #B79CEB;
+    --color-formless: #c9c9c6; --color-undead: #d8a0f0; --color-earth: #e8ad91; --color-plant: #94e89f;
+    --color-positive: #86dfaa; --color-water: #91baff; --color-human: #ffc17b; --color-angel: #e6db8a;
+    --color-negative: #ff9f9f; --color-neutral: #cbbdad; --color-wind: #a5df9a; --color-poison: #ed9ee1;
+    --color-holy: #eee091; --color-ghost: #d1cfdf;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131A16; --surface: #1B2420; --surface-2: #212C27; --ink: #E3EAE2; --muted: #9DAA9F; --line: #33413A;
+  --common: #63A471; --bradium: #B79CEB; --verify: #E8A93C; --warn: #F08A72; --tip: #8DB36F; --focus: #B79CEB;
+  --color-formless: #c9c9c6; --color-undead: #d8a0f0; --color-earth: #e8ad91; --color-plant: #94e89f;
+  --color-positive: #86dfaa; --color-water: #91baff; --color-human: #ffc17b; --color-angel: #e6db8a;
+  --color-negative: #ff9f9f; --color-neutral: #cbbdad; --color-wind: #a5df9a; --color-poison: #ed9ee1;
+  --color-holy: #eee091; --color-ghost: #d1cfdf;
+  color-scheme: dark;
+}
+:root { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--sans); font-size: 16px; line-height: 1.5;
+}
+a { color: inherit; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+[hidden] { display: none !important; }
+
+/* Intestazione, come nella guida */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  padding-top: env(safe-area-inset-top, 0px);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-inner {
+  max-width: 1100px; margin: 0 auto; min-height: 64px;
+  display: flex; align-items: center; gap: 16px; padding: 8px 20px; flex-wrap: wrap;
+}
+.brand { font-family: var(--serif); font-weight: 700; font-size: 1.15rem; white-space: nowrap; flex: 1; }
+.btn {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 8px;
+  padding: 7px 12px; cursor: pointer; font-size: .92rem; line-height: 1.2;
+}
+.btn:hover { border-color: var(--muted); }
+a.btn { text-decoration: none; }
+.btn.small { padding: 4px 9px; font-size: .85rem; }
+.btn.danger:hover { border-color: var(--warn); color: var(--warn); }
+/* Menu ⚙, copiato dalla guida */
+.more { position: relative; }
+.more > summary { list-style: none; }
+.more > summary::-webkit-details-marker { display: none; }
+.more > summary.gear { padding-left: 9px; padding-right: 9px; font-size: 1.05rem; }
+.more-menu {
+  position: absolute; right: 0; top: calc(100% + 6px); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 10px; padding: 6px; display: grid; gap: 4px; min-width: 220px;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--ink) 18%, transparent);
+}
+.more-menu .btn { text-align: left; border-color: transparent; }
+.more-menu .btn:hover { background: var(--surface-2); }
+
+main { max-width: 1100px; margin: 0 auto; padding: 28px 20px 80px; }
+.hero { padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.hero h1 { font-family: var(--serif); font-size: clamp(2.1rem, 4.5vw, 3.2rem); line-height: 1.05; margin: 0 0 12px; font-weight: 700; letter-spacing: -.01em; }
+.lead { font-size: 1.12rem; max-width: 70ch; margin: 0 0 12px; color: var(--muted); }
+h2 { font-family: var(--serif); font-size: 1.55rem; line-height: 1.15; margin: 36px 0 12px; font-weight: 700; }
+h3 { font-family: var(--serif); font-size: 1.2rem; margin: 0 0 10px; font-weight: 700; }
+.hint { font-size: .88rem; color: var(--muted); margin: 0 0 12px; max-width: 72ch; }
+#caricamento { padding: 18px 0; color: var(--muted); }
+
+.card {
+  border: 1px solid var(--line); border-radius: 12px; background: var(--surface);
+  padding: 14px 16px 16px; margin-bottom: 14px;
+}
+.colonne { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; align-items: start; }
+.colonne > .card { margin-bottom: 0; }
+
+input[type="text"], input[type="number"], input[type="search"], select {
+  height: 2.3em; padding: 4px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg);
+  min-width: 0; max-width: 100%;
+}
+select:disabled, input:disabled { opacity: .55; }
+input[type="checkbox"] { width: 18px; height: 18px; margin: 0; flex: none; accent-color: var(--bradium); cursor: pointer; vertical-align: middle; }
+
+/* coppie etichetta e controllo */
+.voci { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px 14px; }
+.voce { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.voce > .etichetta { flex: 1 1 auto; min-width: 0; font-size: .92rem; }
+.voce > select, .voce > input[type="text"], .voce > .scelta { flex: 0 1 auto; }
+.voce.lunga { grid-column: 1 / -1; }
+.voce.lunga > select, .voce.lunga > .scelta { flex: 1 1 auto; }
+
+/* statistiche */
+.stat { display: grid; grid-template-columns: auto auto 1fr; gap: 6px 10px; align-items: center; }
+.stat .nome { font-weight: 700; }
+.stat .bonus { color: var(--muted); font-variant-numeric: tabular-nums; }
+.punti { margin: 10px 0 0; font-size: .92rem; }
+
+/* risultati: righe nome e valore */
+.risultati { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0 18px; margin: 0; }
+.risultati > div { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-bottom: 1px solid var(--line); min-width: 0; }
+.risultati dt { color: var(--muted); font-size: .9rem; }
+.risultati dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; min-width: 0; overflow-wrap: anywhere; }
+.risultati.uno { grid-template-columns: minmax(0, 1fr); }
+
+/* equipaggiamento */
+.slot { display: grid; grid-template-columns: 110px 64px minmax(0, 1fr); gap: 6px 8px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--line); }
+.slot:last-child { border-bottom: none; }
+.slot > .slot-nome { font-weight: 700; font-size: .92rem; }
+.slot > .extra { grid-column: 3; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; }
+.slot > .extra:empty { display: none; }
+.slot .raff:empty { visibility: hidden; }
+.slot select, .slot .scelta { width: 100%; }
+.arma { display: grid; gap: 8px; }
+.arma .riga { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px 10px; }
+.contenitore { display: contents; }
+
+/* scelta con ricerca, per gli elenchi lunghi */
+.scelta {
+  display: flex; align-items: center; justify-content: space-between; gap: 6px; height: 2.3em; padding: 4px 8px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--bg); cursor: pointer; text-align: left;
+  min-width: 0; overflow: hidden;
+}
+.scelta > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.scelta::after { content: "\25BE"; color: var(--muted); flex: none; }
+.scelta:disabled { opacity: .55; cursor: default; }
+dialog.ricerca {
+  border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink);
+  padding: 12px; width: min(560px, calc(100vw - 24px)); max-height: min(640px, calc(100vh - 40px));
+  display: none; flex-direction: column; gap: 8px;
+}
+dialog.ricerca[open] { display: flex; }
+dialog.ricerca::backdrop { background: color-mix(in srgb, var(--ink) 35%, transparent); }
+dialog.ricerca .testa { display: flex; gap: 8px; }
+dialog.ricerca input { flex: 1; }
+dialog.ricerca ul { list-style: none; margin: 0; padding: 0; overflow: auto; flex: 1; border-top: 1px solid var(--line); }
+dialog.ricerca li.gruppo { font-weight: 700; color: var(--muted); font-size: .82rem; padding: 8px 6px 2px; }
+dialog.ricerca button.opz { display: block; width: 100%; text-align: left; background: none; border: 0; padding: 6px 8px; border-radius: 6px; cursor: pointer; }
+dialog.ricerca button.opz:hover, dialog.ricerca button.opz:focus-visible { background: var(--surface-2); }
+dialog.ricerca button.opz[aria-current="true"] { font-weight: 700; color: var(--bradium); }
+
+/* pannelli dei buff */
+details.pannello { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); margin-bottom: 10px; }
+details.pannello > summary { cursor: pointer; padding: 10px 16px; font-weight: 700; list-style: none; display: flex; gap: 8px; align-items: center; }
+details.pannello > summary::-webkit-details-marker { display: none; }
+details.pannello > summary::before { content: "\25B8"; color: var(--muted); transition: transform .15s; }
+details.pannello[open] > summary::before { transform: rotate(90deg); }
+details.pannello > summary .attivo { font-size: .78rem; color: var(--bradium); border: 1px solid color-mix(in srgb, var(--bradium) 45%, transparent); border-radius: 5px; padding: 0 5px; font-weight: 400; }
+details.pannello > .corpo { padding: 2px 16px 14px; }
+.corpo h4 { margin: 12px 0 6px; font-size: .95rem; color: var(--muted); }
+.corpo h4:first-child { margin-top: 4px; }
+
+/* oggetto scelto */
+.scheda-oggetto .titolo { font-family: var(--serif); font-weight: 700; font-size: 1.1rem; }
+.scheda-oggetto .dati { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: .9rem; color: var(--muted); margin: 4px 0 8px; }
+.scheda-oggetto .descrizione { font-size: .92rem; overflow-wrap: anywhere; }
+
+/* suggerimenti del motore: nome con spiegazione al passaggio o al tocco */
+.name { position: relative; border-bottom: 1px dotted var(--muted); cursor: help; }
+.name .nametext {
+  display: none; position: absolute; left: 0; top: calc(100% + 4px); z-index: 30; min-width: 180px; max-width: min(340px, 80vw);
+  background: var(--ink); color: var(--bg); padding: 6px 9px; border-radius: 6px; font-size: .82rem; font-weight: 400; text-align: left;
+  white-space: normal; line-height: 1.35;
+}
+.name:hover > .nametext, .name:focus > .nametext, .name:focus-within > .nametext { display: block; }
+.risultati dd .name .nametext { left: auto; right: 0; }
+
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.toolbar input[type="text"] { flex: 1 1 220px; }
+.crediti { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); font-size: .88rem; color: var(--muted); }
+.crediti p { margin: 0 0 6px; max-width: 80ch; }
+.errore { margin: 0 0 12px; padding: 10px 14px; border-left: 4px solid var(--warn); background: var(--surface); border-radius: 0 8px 8px 0; }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px);
+  background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; font-size: .92rem;
+  opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; z-index: 50; max-width: calc(100vw - 32px);
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+@media (max-width: 640px) {
+  .topbar-inner { gap: 10px; padding: 8px 16px; }
+  main { padding-left: 16px; padding-right: 16px; }
+  .btn { padding: 6px 10px; font-size: .86rem; }
+  .brand { font-size: 1rem; }
+  .card { padding-left: 12px; padding-right: 12px; }
+  details.pannello > .corpo { padding-left: 12px; padding-right: 12px; }
+  .slot { grid-template-columns: 1fr 64px; }
+  .slot > .slot-nome { grid-column: 1; }
+  .slot > .raff { grid-column: 2; }
+  .slot > .principale, .slot > .extra { grid-column: 1 / -1; }
+  .voci, .risultati { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+<!-- Il motore: codice del calcolatore di Thrice su un documento finto (motore/forma.js) -->
+<script defer src="motore/forma.js"></script>
+<script defer src="motore/pagina.js"></script>
+<script defer src="motore/avvio.js"></script>
+<script defer src="motore/constants.js"></script>
+<script defer src="motore/skill.js"></script>
+<script defer src="motore/head.js"></script>
+<script defer src="motore/item.js"></script>
+<script defer src="motore/etc.js"></script>
+<script defer src="motore/monster.js"></script>
+<script defer src="motore/card.js"></script>
+<script defer src="motore/uaro.js"></script>
+<script defer src="motore/foot.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="btn" href="../index.html" title="Torna alla scelta dei servizi">Home</a>
+    <span class="brand">Calcolatore</span>
+    <button class="btn" type="button" data-azione="copia-link" title="Copia un indirizzo che apre questa build">Copia link</button>
+    <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, lingua, tema. Lo chiude gate.js. -->
+    <details class="more">
+      <summary class="btn gear" title="Menu" aria-label="Menu">&#9881;</summary>
+      <div class="more-menu">
+        <button class="btn" type="button" data-azione="nuova">Ricomincia da zero</button>
+        <button class="btn" type="button" data-azione="esporta">Backup dei dati</button>
+        <button class="btn" type="button" data-azione="importa">Ripristina da backup</button>
+        <button class="btn" type="button" onclick="toggleLang()" data-lang>English</button>
+        <button class="btn" type="button" onclick="toggleTheme()">Cambia tema chiaro/scuro</button>
+      </div>
+    </details>
+    <input type="file" id="file" accept=".json,application/json" hidden>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Calcolatore</h1>
+    <p class="lead">Statistiche, danni fatti e subiti di un personaggio di uaRO (pre-renewal). Scegli classe, livelli, statistiche ed equipaggiamento, poi il mostro e la skill: i risultati si aggiornano da soli.</p>
+    <p class="hint">Nomi di classi, skill, oggetti, carte e mostri sono quelli del gioco, in inglese. Se un nome ha la sottolineatura a puntini, passaci sopra (o toccalo) per la spiegazione.</p>
+  </section>
+
+  <div id="caricamento">Caricamento del calcolatore…</div>
+  <div id="app" hidden>
+
+  <h2>Build salvate</h2>
+  <div class="card">
+    <div class="toolbar">
+      <select id="salvate" aria-label="Build salvate"></select>
+      <button class="btn" type="button" data-azione="carica">Carica</button>
+      <button class="btn danger" type="button" data-azione="elimina">Elimina</button>
+    </div>
+    <div class="toolbar" style="margin-top:8px">
+      <input type="text" id="nome-build" placeholder="Nome della build" aria-label="Nome della build">
+      <button class="btn" type="button" data-azione="salva">Salva</button>
+    </div>
+    <p class="hint" style="margin:10px 0 6px">La build che stai modificando resta in questo browser anche senza salvarla. Da un altro calcolatore (per esempio quello di Thrice) puoi incollare qui il suo indirizzo con la build.</p>
+    <div class="toolbar">
+      <input type="text" id="indirizzo-esterno" placeholder="Indirizzo con la build (…#…)" aria-label="Indirizzo con la build">
+      <button class="btn" type="button" data-azione="importa-indirizzo">Apri</button>
+    </div>
+  </div>
+
+  <h2>Personaggio</h2>
+  <div class="colonne">
+    <div class="card">
+      <div class="voci" style="grid-template-columns: minmax(0,1fr)">
+        <label class="voce"><span class="etichetta">Classe</span><select data-campo="A_JOB"></select></label>
+        <label class="voce"><span class="etichetta">Livello base</span><select data-campo="A_BaseLV"></select></label>
+        <label class="voce"><span class="etichetta">Livello base automatico <span class="name" tabindex="0">?<span class="nametext">Con la spunta, cambiando le statistiche il livello base sale da solo quanto serve per i punti spesi.</span></span></span><input type="checkbox" data-campo="BLVauto"></label>
+        <label class="voce"><span class="etichetta">Livello job</span><select data-campo="A_JobLV"></select></label>
+        <label class="voce"><span class="etichetta">Adottato (Baby)</span><input type="checkbox" data-campo="A_adopted"></label>
+      </div>
+      <dl class="risultati uno" style="margin-top:10px">
+        <div><dt>Razza e taglia</dt><dd data-uscita="A_BodySIZE"></dd></div>
+        <div><dt>Elemento del corpo</dt><dd data-uscita="A_BodyELEMENT"></dd></div>
+      </dl>
+    </div>
+    <div class="card">
+      <h3>Statistiche</h3>
+      <div class="stat">
+        <span class="nome">STR</span><select data-campo="A_STR"></select><span class="bonus" data-uscita="A_STRp"></span>
+        <span class="nome">AGI</span><select data-campo="A_AGI"></select><span class="bonus" data-uscita="A_AGIp"></span>
+        <span class="nome">VIT</span><select data-campo="A_VIT"></select><span class="bonus" data-uscita="A_VITp"></span>
+        <span class="nome">INT</span><select data-campo="A_INT"></select><span class="bonus" data-uscita="A_INTp"></span>
+        <span class="nome">DEX</span><select data-campo="A_DEX"></select><span class="bonus" data-uscita="A_DEXp"></span>
+        <span class="nome">LUK</span><select data-campo="A_LUK"></select><span class="bonus" data-uscita="A_LUKp"></span>
+      </div>
+      <p class="punti">Punti statistica rimasti: <strong data-uscita="A_STPOINT"></strong></p>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <dl class="risultati">
+      <div><dt>Max HP</dt><dd data-uscita="A_MaxHP"></dd></div>
+      <div><dt>Max SP</dt><dd data-uscita="A_MaxSP"></dd></div>
+      <div><dt>Rigenerazione HP</dt><dd data-uscita="A_HPR"></dd></div>
+      <div><dt>Rigenerazione SP</dt><dd data-uscita="A_SPR"></dd></div>
+      <div><dt>ASPD</dt><dd data-uscita="A_ASPD"></dd></div>
+      <div><dt>Velocità di movimento</dt><dd data-uscita="A_MovSPEED"></dd></div>
+      <div><dt>Peso</dt><dd data-uscita="A_Weight"></dd></div>
+      <div><dt>ATK</dt><dd data-uscita="A_ATK2"></dd></div>
+      <div><dt>ATK reale</dt><dd data-uscita="A_RealATK"></dd></div>
+      <div><dt>MATK</dt><dd data-uscita="A_MATK"></dd></div>
+      <div><dt>DEF</dt><dd data-uscita="A_totalDEF"></dd></div>
+      <div><dt>MDEF</dt><dd data-uscita="A_MDEF"></dd></div>
+      <div><dt>MDEF reale</dt><dd data-uscita="A_RealMDEF"></dd></div>
+      <div><dt>HIT</dt><dd data-uscita="A_HIT"></dd></div>
+      <div><dt>Perfect Hit</dt><dd data-uscita="A_PefHIT"></dd></div>
+      <div><dt>Critical</dt><dd data-uscita="A_CRI"></dd></div>
+      <div><dt>Critical Shield</dt><dd data-uscita="A_CRITSHIELD"></dd></div>
+      <div><dt>Flee</dt><dd data-uscita="A_FLEE"></dd></div>
+      <div><dt>Flee in WoE</dt><dd data-uscita="A_WoeFLEE"></dd></div>
+      <div><dt>Perfect Dodge</dt><dd data-uscita="A_LUCKY"></dd></div>
+      <div><dt>Tempo di lancio</dt><dd data-uscita="A_cTime"></dd></div>
+      <div><dt>Ritardo dopo il lancio</dt><dd data-uscita="A_cDelay"></dd></div>
+    </dl>
+  </div>
+
+  <h2>Equipaggiamento</h2>
+  <div class="card">
+    <div class="voci">
+      <label class="voce"><span class="etichetta">Oggetti fino all'episodio</span><select data-campo="episode"></select></label>
+      <label class="voce"><span class="etichetta">Frecce, proiettili</span><select data-campo="A_Arrow"></select></label>
+    </div>
+  </div>
+  <div class="colonne">
+    <div class="card arma">
+      <h3>Arma</h3>
+      <div class="riga">
+        <span data-campo="A_weapon1" data-cerca></span>
+      </div>
+      <div class="riga">
+        <label class="voce"><span class="etichetta">Raffinamento</span><select data-campo="A_Weapon_refine"></select></label>
+        <label class="voce"><span class="etichetta">Elemento</span><select data-campo="A_Weapon_element"></select></label>
+      </div>
+      <div class="riga">
+        <label class="voce lunga"><span class="etichetta">Combinazione di carte</span><select data-campo="A_cardshort"></select></label>
+        <span data-campo="A_weapon1_card1" data-cerca></span>
+        <span data-campo="A_weapon1_card2" data-cerca></span>
+        <span data-campo="A_weapon1_card3" data-cerca></span>
+        <span data-campo="A_weapon1_card4" data-cerca></span>
+      </div>
+      <div id="mano-sinistra" class="arma" hidden>
+        <h3 data-uscita="A_SobWeaponName"></h3>
+        <div class="riga">
+          <span class="contenitore" data-contenitore="A_w2"></span>
+          <span class="contenitore" data-contenitore="A_weapon2refine"></span>
+        </div>
+        <div class="riga">
+          <span class="contenitore" data-contenitore="A_weapon2_cardshort"></span>
+          <span class="contenitore" data-contenitore="nA_weapon2_c1"></span>
+          <span class="contenitore" data-contenitore="nA_weapon2_c2"></span>
+          <span class="contenitore" data-contenitore="nA_weapon2_c3"></span>
+          <span class="contenitore" data-contenitore="nA_weapon2_c4"></span>
+        </div>
+      </div>
+    </div>
+    <div class="card scheda-oggetto">
+      <h3>Ultimo oggetto o carta scelto</h3>
+      <div class="titolo" data-uscita="ITEM_TITLE"></div>
+      <div class="dati">
+        <span><span data-uscita="ITEM1"></span> <strong data-uscita="ITEM_DATA"></strong></span>
+        <span><span data-uscita="ITEM2"></span> <strong data-uscita="ITEM_W_LV"></strong></span>
+        <span><span data-uscita="ITEM3"></span> <strong data-uscita="ITEM_LV"></strong></span>
+        <span><span data-uscita="ITEM4"></span> <strong data-uscita="ITEM_WAIT"></strong></span>
+      </div>
+      <div class="descrizione" data-uscita="B_SETUMEI"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="slot">
+      <span class="slot-nome">Testa, alto</span><select class="raff" data-campo="A_HEAD_REFINE" aria-label="Raffinamento"></select>
+      <span class="principale" data-campo="A_head1" data-cerca></span>
+      <div class="extra"><span data-campo="A_head1_card" data-cerca></span></div>
+    </div>
+    <div class="slot">
+      <span class="slot-nome">Testa, centro</span><span class="raff"></span>
+      <span class="principale" data-campo="A_head2" data-cerca></span>
+      <div class="extra"><span data-campo="A_head2_card" data-cerca></span><select data-campo="A_BASTION_HEAD" aria-label="Incantamento Bastion"></select></div>
+    </div>
+    <div class="slot">
+      <span class="slot-nome">Testa, basso</span><span class="raff"></span>
+      <span class="principale" data-campo="A_head3" data-cerca></span>
+      <div class="extra"><select data-campo="A_HSE_HEAD1" aria-label="Incantamento"></select></div>
+    </div>
+    <div class="slot">
+      <span class="slot-nome">Scudo</span><select class="raff" data-campo="A_LEFT_REFINE" aria-label="Raffinamento"></select>
+      <span class="principale" data-campo="A_left" data-cerca></span>
+      <div class="extra"><span data-campo="A_left_card" data-cerca></span></div>
+    </div>
+    <div class="slot">
+      <span class="slot-nome">Armatura</span><select class="raff" data-campo="A_BODY_REFINE" aria-label="Raffinamento"></select>
+      <span class="principale" data-campo="A_body" data-cerca></span>
+      <div class="extra"><span data-campo="A_body_card" data-cerca></span><select data-campo="A_HSE" aria-label="Incantamento"></select></div>
+    </div>
+    <div class="slot">
+      <span class="slot-nome">Mantello</span><select class="raff" data-campo="A_SHOULDER_REFINE" aria-label="Raffinamento"></select>
+      <span class="principale" data-campo="A_shoulder" data-cerca></span>
+      <div class="extra"><span data-campo="A_shoulder_card" data-cerca></span><select data-campo="A_DICASTES_SHOULDER_PRIMARY" aria-label="Incantamento Dicastes"></select><select data-campo="A_DICASTES_SHOULDER_STATS" aria-label="Statistiche Dicastes"></select><select data-campo="A_DICASTES_SHOULDER_STATS2" aria-label="Seconde statistiche Dicastes"></select></div>
+    </div>
+    <div class="slot">
+      <span class="slot-nome">Calzature</span><select class="raff" data-campo="A_SHOES_REFINE" aria-label="Raffinamento"></select>
+      <span class="principale" data-campo="A_shoes" data-cerca></span>
+      <div class="extra"><span data-campo="A_shoes_card" data-cerca></span><select data-campo="A_BASTION_SHOES" aria-label="Incantamento Bastion"></select><select data-campo="A_DICASTES_SHOES_PRIMARY" aria-label="Incantamento Dicastes"></select><select data-campo="A_DICASTES_SHOES_STATS" aria-label="Statistiche Dicastes"></select><select data-campo="A_DICASTES_SHOES_STATS2" aria-label="Seconde statistiche Dicastes"></select></div>
+    </div>
+    <div class="slot">
+      <span class="slot-nome">Accessorio 1</span><span class="raff"></span>
+      <span class="principale" data-campo="A_acces1" data-cerca></span>
+      <div class="extra"><span data-campo="A_acces1_card" data-cerca></span><select data-campo="A_DICASTES_ACCESSORY1_PRIMARY" aria-label="Incantamento Dicastes"></select><select data-campo="A_DICASTES_ACCESSORY1_STATS" aria-label="Statistiche Dicastes"></select><select data-campo="A_DICASTES_ACCESSORY1_STATS2" aria-label="Seconde statistiche Dicastes"></select></div>
+    </div>
+    <div class="slot">
+      <span class="slot-nome">Accessorio 2</span><span class="raff"></span>
+      <span class="principale" data-campo="A_acces2" data-cerca></span>
+      <div class="extra"><span data-campo="A_acces2_card" data-cerca></span><select data-campo="A_DICASTES_ACCESSORY2_PRIMARY" aria-label="Incantamento Dicastes"></select><select data-campo="A_DICASTES_ACCESSORY2_STATS" aria-label="Statistiche Dicastes"></select><select data-campo="A_DICASTES_ACCESSORY2_STATS2" aria-label="Seconde statistiche Dicastes"></select></div>
+    </div>
+  </div>
+  <details class="pannello" data-pannello="ID_ARG" data-apri="Buf9SW" data-attivo="A9used"><summary>Incantamenti aggiuntivi e modifiche manuali al personaggio</summary><div class="corpo"></div></details>
+
+  <h2>Skill e buff</h2>
+  <div class="card">
+    <h3>Skill passive e su di sé</h3>
+    <div class="voci" id="passive"></div>
+  </div>
+  <details class="pannello" data-pannello="SIENSKILL" data-apri="BufSW" data-attivo="A2used"><summary>Skill di supporto e del party</summary><div class="corpo"></div></details>
+  <details class="pannello" data-pannello="SP_SIEN01" data-apri="Buf3SW" data-attivo="A3used"><summary>Canti e danze</summary><div class="corpo"></div></details>
+  <details class="pannello" data-pannello="SP_SIEN02" data-apri="Buf4SW" data-attivo="A4used"><summary>Skill di gilda</summary><div class="corpo"></div></details>
+  <details class="pannello" data-pannello="SP_SIEN05" data-apri="Buf7SW" data-attivo="A7used"><summary>Cibo, pozioni di velocità e altri oggetti</summary><div class="corpo"></div></details>
+  <details class="pannello" data-pannello="SP_SIEN04" data-apri="Buf6SW" data-attivo="A6used"><summary>Altri effetti sul personaggio</summary><div class="corpo"></div></details>
+
+  <h2>Combattimento</h2>
+  <div class="card">
+    <h3>Nemico</h3>
+    <div class="voci">
+      <label class="voce"><span class="etichetta">Luogo</span><select data-campo="ENEMY_SORT2"></select></label>
+      <label class="voce"><span class="etichetta">Ordine</span><select data-campo="ENEMY_SORT"></select></label>
+      <span class="voce lunga" data-campo="B_Enemy" data-cerca data-etichetta="Mostro"></span>
+    </div>
+    <dl class="risultati" style="margin-top:10px">
+      <div><dt>Max HP</dt><dd data-uscita="B_6"></dd></div>
+      <div><dt>ATK</dt><dd><span data-uscita="B_12"></span>~<span data-uscita="B_13"></span></dd></div>
+      <div><dt>DEF</dt><dd><span data-uscita="B_14"></span> + <span data-uscita="B_23"></span></dd></div>
+      <div><dt>MDEF</dt><dd><span data-uscita="B_15"></span> + <span data-uscita="B_25"></span></dd></div>
+      <div><dt>HIT per colpire sempre</dt><dd data-uscita="B_21"></dd></div>
+      <div><dt>Flee per il 95% di schivate</dt><dd data-uscita="B_22"></dd></div>
+      <div><dt>Razza</dt><dd data-uscita="B_2"></dd></div>
+      <div><dt>Elemento</dt><dd data-uscita="B_3"></dd></div>
+      <div><dt>Taglia</dt><dd data-uscita="B_4"></dd></div>
+      <div><dt>Tipo</dt><dd data-uscita="B_type"></dd></div>
+      <div><dt>Exp base</dt><dd data-uscita="B_16"></dd></div>
+      <div><dt>Exp job</dt><dd data-uscita="B_17"></dd></div>
+      <div><dt>AGI</dt><dd data-uscita="B_agi"></dd></div>
+      <div><dt>VIT</dt><dd data-uscita="B_vit"></dd></div>
+      <div><dt>INT</dt><dd data-uscita="B_int"></dd></div>
+      <div><dt>DEX</dt><dd data-uscita="B_dex"></dd></div>
+      <div><dt>LUK</dt><dd data-uscita="B_luk"></dd></div>
+    </dl>
+  </div>
+  <details class="pannello" data-pannello="EnemyDebuf" data-apri="debufSW" data-attivo="AIused"><summary>Debuff sul nemico</summary><div class="corpo"></div></details>
+  <details class="pannello" data-pannello="EnemyBuf" data-apri="EnemyBufSW" data-attivo="AKused"><summary>Buff del nemico</summary><div class="corpo"></div></details>
+  <details class="pannello" data-pannello="B_MANUAL" data-apri="Buf10SW" data-attivo="A10used"><summary>Modifiche manuali al nemico</summary><div class="corpo"></div></details>
+
+  <div class="colonne" style="margin-top:14px">
+    <div class="card">
+      <h3>Il tuo attacco</h3>
+      <div class="voci" style="grid-template-columns: minmax(0,1fr)">
+        <span class="voce lunga" data-campo="A_ActiveSkill" data-cerca data-etichetta="Skill"></span>
+        <label class="voce"><span class="etichetta">Livello</span><select data-campo="A_ActiveSkillLV"></select></label>
+        <label class="voce"><span class="etichetta">Tutte le skill che fanno danno, di ogni classe</span><input type="checkbox" data-campo="all_dmgSkills"></label>
+        <span class="contenitore" data-contenitore="AASkill"></span>
+      </div>
+      <dl class="risultati uno" style="margin-top:10px">
+        <div data-riga="nm053"><dt>Probabilità di colpire</dt><dd><span data-uscita="BattleHIT"></span>%</dd></div>
+        <div data-riga="nm074"><dt>Elemento dell'attacco</dt><dd data-uscita="A_WeaponElement"></dd></div>
+        <div data-riga="nm076"><dt data-uscita="nm076"></dt><dd data-uscita="A_WeaponSize"></dd></div>
+        <div data-riga="CRIATKname"><dt data-uscita="CRIATKname"></dt><dd><span data-uscita="CRIATK"></span><span data-uscita="CRInum"></span></dd></div>
+        <div data-riga="bSUB3name"><dt data-uscita="bSUB3name"></dt><dd data-uscita="bSUB3"></dd></div>
+        <div data-riga="bSUBname"><dt data-uscita="bSUBname"></dt><dd data-uscita="bSUB"></dd></div>
+        <div data-riga="nm055"><dt>Danno minimo</dt><dd data-uscita="strID_0"></dd></div>
+        <div data-riga="nm056"><dt>Danno medio</dt><dd data-uscita="strID_1"></dd></div>
+        <div data-riga="nm057"><dt>Danno massimo</dt><dd data-uscita="strID_2"></dd></div>
+        <div data-riga="bREFLECT1name"><dt data-uscita="bREFLECT1name"></dt><dd data-uscita="bREFLECT1"></dd></div>
+        <div data-riga="bREFLECT2name"><dt data-uscita="bREFLECT2name"></dt><dd data-uscita="bREFLECT2"></dd></div>
+        <div data-riga="bSUB2name"><dt data-uscita="bSUB2name"></dt><dd data-uscita="bSUB2"></dd></div>
+        <div data-riga="nm058"><dt data-uscita="nm058"></dt><dd data-uscita="AveSecondATK"></dd></div>
+        <div data-riga="nm059"><dt>Colpi per ucciderlo, minimo</dt><dd data-uscita="MinATKnum"></dd></div>
+        <div data-riga="nm060"><dt>Colpi per ucciderlo, in media</dt><dd data-uscita="AveATKnum"></dd></div>
+        <div data-riga="nm061"><dt>Colpi per ucciderlo, massimo</dt><dd data-uscita="MaxATKnum"></dd></div>
+        <div data-riga="nm062"><dt>Durata media del combattimento</dt><dd data-uscita="BattleTime"></dd></div>
+        <div data-riga="nm063"><dt data-uscita="nm063"></dt><dd data-uscita="AtkBaseExp"></dd></div>
+        <div data-riga="nm064"><dt data-uscita="nm064"></dt><dd data-uscita="AtkJobExp"></dd></div>
+      </dl>
+    </div>
+    <div class="card">
+      <h3>L'attacco del nemico</h3>
+      <div class="voci" style="grid-template-columns: minmax(0,1fr)">
+        <label class="voce"><span class="etichetta">Skill del nemico</span><select data-campo="B_AtkSkill"></select></label>
+        <label class="voce"><span class="etichetta">Distanza</span><select data-campo="B_AtkRange"></select></label>
+        <label class="voce"><span class="etichetta">Elemento</span><select data-campo="B_AtkElem"></select></label>
+        <label class="voce"><span class="etichetta">Nemici che ti attaccano</span><select data-campo="B_num"></select></label>
+        <span class="contenitore" data-contenitore="BBSkill"></span>
+      </div>
+      <dl class="risultati uno" style="margin-top:10px">
+        <div data-riga="nm054"><dt>Probabilità di schivare</dt><dd><span data-uscita="BattleFLEE"></span>%</dd></div>
+        <div data-riga="nm075"><dt>Elemento dell'attacco</dt><dd data-uscita="B_WeaponElement"></dd></div>
+        <div data-riga="nm067"><dt>Danno subito, minimo</dt><dd data-uscita="B_MinAtk"></dd></div>
+        <div data-riga="nm065"><dt>Danno subito, in media</dt><dd data-uscita="B_AveAtk"></dd></div>
+        <div data-riga="nm068"><dt>Danno subito, massimo</dt><dd data-uscita="B_MaxAtk"></dd></div>
+        <div data-riga="aREFLECT1name"><dt data-uscita="aREFLECT1name"></dt><dd data-uscita="aREFLECT1"></dd></div>
+        <div data-riga="aREFLECT2name"><dt data-uscita="aREFLECT2name"></dt><dd data-uscita="aREFLECT2"></dd></div>
+        <div data-riga="nm066"><dt>Danno subito in media, con le schivate</dt><dd data-uscita="B_Ave2Atk"></dd></div>
+        <div><dt>HP effettivi contro questo attacco</dt><dd data-uscita="B_EffectiveHP"></dd></div>
+        <div><dt>HP effettivi, con le schivate</dt><dd data-uscita="B_ExpectedEffectiveHP"></dd></div>
+        <div><dt>Resisti circa</dt><dd data-uscita="B_SurvivalHits"></dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>Condizioni</h3>
+    <div class="voci">
+      <label class="voce"><span class="etichetta">Ambiente</span><select data-campo="A8_Skill14"></select></label>
+      <label class="voce"><span class="etichetta">Investimento in difesa (solo WoE)</span><select data-campo="A8_Skill15"></select></label>
+      <label class="voce"><span class="etichetta">Ritardo minimo fra due skill <span class="name" tabindex="0">?<span class="nametext">Il client non manda più skill di così al secondo, anche con ASPD e ritardi più bassi.</span></span></span><select data-campo="Conf01"></select></label>
+      <label class="voce"><span class="etichetta">ASPD massima del server</span><select data-campo="maxASPD"></select></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Altre informazioni</h3>
+    <div class="voci" style="grid-template-columns: minmax(0,1fr)">
+      <label class="voce"><span class="etichetta">Mostra</span><select data-campo="A_Kakutyou"></select></label>
+      <span class="contenitore" data-contenitore="A_KakutyouSel"></span>
+    </div>
+    <div class="descrizione" data-contenitore="A_KakutyouData" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <h3>Opzioni</h3>
+    <div class="voci" style="grid-template-columns: minmax(0,1fr)">
+      <label class="voce"><span class="etichetta">Limitare gli slot dell'equipaggiamento <span class="name" tabindex="0">?<span class="nametext">Con un'arma a due mani niente scudo, e con un copricapo che occupa più posti niente copricapo negli altri.</span></span></span><input type="checkbox" data-campo="restrict_equipslot"></label>
+      <label class="voce"><span class="etichetta">Limitare le carte agli slot dell'oggetto</span><input type="checkbox" data-campo="restrict_cardslot"></label>
+      <label class="voce"><span class="etichetta">Tutte le carte in ogni posto (può dare risultati sbagliati)</span><input type="checkbox" data-campo="all_card"></label>
+    </div>
+  </div>
+
+  <footer class="crediti">
+    <p>I calcoli sono quelli del calcolatore di uaRO di Thrice e Arlix (<a href="https://uaro-calc.xdthrice.workers.dev/" rel="noopener">uaro-calc.xdthrice.workers.dev</a>), che discende dal simulatore originale di ROratorio, tradotto e adattato da Doddler e aggiornato da Gandi, Triper e kurimet; altri aggiornamenti per uaRO vengono dalle versioni di Arlix e di Bish. Il merito dei calcoli e dei dati è loro.</p>
+    <p>Questa pagina li riprende con un'interfaccia in italiano. Per errori, dati mancanti o richieste degli autori, scrivi all'admin del sito.</p>
+  </footer>
+  </div>
+</main>
+
+<dialog class="ricerca" id="ricerca">
+  <div class="testa">
+    <input type="search" id="ricerca-testo" placeholder="Cerca" aria-label="Cerca">
+    <button class="btn" type="button" data-azione="chiudi-ricerca">Chiudi</button>
+  </div>
+  <ul id="ricerca-lista"></ul>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
