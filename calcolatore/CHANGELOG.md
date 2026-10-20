@@ -2,7 +2,7 @@
 
 Le versioni della pagina `calcolatore/`.
 
-## [1.0] - 2026-10-20
+## [1.0] - 2026-10-21
 
 - Prima versione: statistiche, danni fatti e subiti di un personaggio di uaRO, con
   equipaggiamento, carte, incantamenti, skill passive, buff, cibo, mostri e debuff
@@ -10,9 +10,13 @@ Le versioni della pagina `calcolatore/`.
   build di prova la pagina da' gli stessi risultati, salvo le correzioni qui sotto
 - Interfaccia in italiano, nello stile del sito, anche sul telefono; gli elenchi lunghi
   (oggetti, carte, mostri, skill) si scelgono con una ricerca
-- La build resta nel browser; si possono salvare build con un nome, copiare un link che apre la
-  build e aprire l'indirizzo di una build del calcolatore di Thrice
+- La build resta nel browser; si possono salvare build con un nome e copiare un link che apre la
+  build. Le build hanno un formato di questo calcolatore: i link del calcolatore di Thrice non si
+  aprono, e i nostri non si aprono nel suo
 - Correzioni per uaRO dalla wiki del server:
+  - incantamenti Bastion: tutti e sette, con Movement Speed (+20% alla velocita' di movimento) e
+    SP Consumption (si sceglie, ma non cambia i risultati: il costo in SP delle skill non e'
+    calcolato); lo stesso incantamento su copricapo e calzature conta una volta sola
   - tirapugni: penalita' di taglia 100/100/75%
   - Soul Strike: +7% di danno per livello contro i non morti
   - Arrow Vulcan: ritardo di 2 secondi

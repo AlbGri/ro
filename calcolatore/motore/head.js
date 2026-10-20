@@ -779,6 +779,8 @@ function BattleCalc999() {
         ((n_Delay[0] = 1), (not_use_card = 1), (n_A_Weapon_element = 1));
       else if (SKILLID.BACK_STAB == n_A_ActiveSkill)
         ((wMod += 0.4 * n_A_ActiveSkillLV + 2),
+          // uaRO: Back Stab: ricarica fissa di 0,333 secondi al posto del ritardo dopo il lancio
+          // (Class Changes, Rogue; patch del 01/04/2026)
           SRV == SERVERID.UARO ? (n_Delay[3] = 0.333) : (n_Delay[2] = 0.5),
           (w_HIT = 100),
           (w_HIT_HYOUJI = 100));
@@ -844,6 +846,8 @@ function BattleCalc999() {
           (n_A_Equip[0] == EQUIPID.GREEN_WHISTLE || n_A_Equip[0] == EQUIPID.STEM_WHIP) &&
             (wCast = Math.max(0, wCast - 2)),
           n_A_ActiveSkillLV >= 6 ? (n_Delay[2] = 1) : (n_Delay[2] = 0.8),
+          // uaRO: Arrow Vulcan: ritardo di 2 secondi, non 3 (Class Changes, Bard/Dancer; patch del
+          // 24/11/2025)
           (n_Delay[3] = SRV == SERVERID.UARO ? 2 : 3));
       else if (SKILLID.TOMAHAWK_THROWING == n_A_ActiveSkill)
         ((n_rangedAtk = 1), (not_use_card = 1), (n_A_Weapon_element = 4));
@@ -3077,6 +3081,8 @@ function BattleMagicCalc(e) {
       ? targetData[3] > 89 &&
         targetData[3] < 95 &&
         SKILLID.SOUL_STRIKE == n_A_ActiveSkill &&
+        // uaRO: Soul Strike: +7% di danno per livello contro i non morti, non +5% (Class Changes,
+        // Mage; patch del 24/11/2025)
         (wBMC2 = Math.floor(wBMC2 * (1 + (SRV == SERVERID.UARO ? 0.07 : 0.05) * n_A_ActiveSkillLV)))
       : 90 <= targetData[3] &&
         SKILLID.SOUL_STRIKE == n_A_ActiveSkill &&
@@ -3095,6 +3101,7 @@ function BattleMagicCalc(e) {
     (n = StPlusCalc2(5e3 + a) + StPlusCard(5e3 + a)),
     a == SKILLID.MAGNUS_EXORCISMUS &&
       (n += 4 * SkillSearch(SKILLID.IMPOSITIO_MANUS) * EquipNumSearch(EQUIPID.VALKYRIE_DROP)),
+    // uaRO: Old Mitra: Magnus Exorcismus +4% ogni 2 raffinamenti (Item Changes)
     a == SKILLID.MAGNUS_EXORCISMUS &&
       n_A_Equip[2] == OLD_MITRA_UARO &&
       (n += 4 * Math.floor(n_A_HEAD_REFINE / 2)),

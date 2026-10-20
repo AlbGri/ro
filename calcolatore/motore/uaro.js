@@ -1,12 +1,12 @@
-// Correzioni per uaRO ai dati del calcolatore di Thrice, prese dalla wiki del server
+// Correzioni per uaRO ai dati del motore, prese dalla wiki del server
 // (wiki.uaro.net: Item Changes, Dimonka Headgear Quests, Scaraba Hole, patch note).
 // Si caricano dopo i file dei dati e prima di foot.js, che costruisce gli elenchi.
-// Le correzioni al codice sono in strumenti/modifiche.mjs.
+// Le correzioni al codice sono nei file del motore, con un commento "uaRO:" e la fonte.
 
-// id dell'oggetto aggiunto qui che il codice modificato deve riconoscere
+// id dell'oggetto aggiunto qui che il resto del motore deve riconoscere
 var OLD_MITRA_UARO = 0;
 
-// Chiamata da StAllCalc dopo la somma dei bonus dell'equipaggiamento (strumenti/modifiche.mjs)
+// Chiamata da StAllCalc (foot.js) dopo la somma dei bonus dell'equipaggiamento
 function applyUaroHeadgearBonuses() {
   // Mitra: MATK +10 con INT base almeno 90 (Item Changes, Dimonka)
   if (n_A_Equip[2] == 1876 && SU_INT >= 90) bonusValues[BONUSID.MATK] += 10;
@@ -25,10 +25,10 @@ function applyUaroHeadgearBonuses() {
     Object.assign(itemData[id], campi);
     m_Item[id] = itemDataToLegacyRow(itemData[id]);
   }
-  // Gli oggetti aggiunti qui hanno id fissi da 3000: quelli di Thrice possono crescere senza
-  // cambiarli, e le build salvate restano valide (l'indirizzo arriva fino a 3843)
+  // Gli oggetti aggiunti qui hanno id fissi da 3000: gli elenchi dei dati possono crescere
+  // senza cambiarli, e le build salvate restano valide (l'indirizzo arriva fino a 3843)
   var PRIMO_ID = 3000;
-  if (itemData.length > PRIMO_ID) throw new Error("uaro.js: gli oggetti di Thrice superano l'id " + PRIMO_ID);
+  if (itemData.length > PRIMO_ID) throw new Error("uaro.js: gli oggetti di item.js superano l'id " + PRIMO_ID);
   function nuovo(campi) {
     while (itemData.length < PRIMO_ID) {
       var vuoto = { id: itemData.length, equipType: -1, jobMask: 0, attackOrDefense: 0, weaponLevel: 0, slots: 0, weight: 0, requiredLevel: 0, name: "", extraInfo: 0, description: "", bonuses: [] };

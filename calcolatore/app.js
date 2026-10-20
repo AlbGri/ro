@@ -33,9 +33,13 @@ function ripristina() {
     stato = normalizza({});
   }
 }
-// la build nel formato dell'indirizzo dell'originale: la capiscono anche gli altri calcolatori
+// la build nel formato dell'indirizzo (il testo dopo #), con la versione nel primo carattere
 function buildCorrente() {
   return String(window.URLOUT(1)).split("#")[1] || "";
+}
+const LINK_ESTRANEO = "Il link non contiene una build di questo calcolatore.";
+function buildValida(build) {
+  return window.StoN3(build.charAt(0)) === window.FORMATO_BUILD;
 }
 let timerSalva;
 function salvaPresto() {
@@ -661,7 +665,11 @@ document.addEventListener("click", async (e) => {
     const testo = document.getElementById("indirizzo-esterno").value.trim();
     const build = testo.includes("#") ? testo.split("#")[1] : testo.includes("?") ? testo.split("?")[1] : "";
     if (!build) {
-      avvisa("Nell'indirizzo non c'è una build: deve contenere # seguito dalla build.");
+      avvisa("Nel link non c'è una build: deve contenere # seguito dalla build.");
+      return;
+    }
+    if (!buildValida(build)) {
+      avvisa(LINK_ESTRANEO);
       return;
     }
     stato.corrente = build;
@@ -721,10 +729,12 @@ function avvisa(testo) {
 function avvia() {
   ripristina();
   // una build nell'indirizzo l'ha gia' caricata il motore all'avvio (come l'originale);
-  // altrimenti si riprende quella lasciata l'ultima volta
-  if (location.hash.length > 1) {
-    history.replaceState(null, "", location.pathname);
-  } else if (stato.corrente) {
+  // altrimenti, o se non e' del formato di questo calcolatore, si riprende quella lasciata
+  // l'ultima volta
+  const daLink = location.hash.length > 1;
+  const estranea = daLink && !buildValida(location.hash.slice(1));
+  if (daLink) history.replaceState(null, "", location.pathname);
+  if ((!daLink || estranea) && stato.corrente) {
     doc.getElementById("otherURL_TEXT").value = "x#" + stato.corrente;
     try {
       window.URLIN(1);
@@ -744,6 +754,7 @@ function avvia() {
   salvaPresto();
   document.getElementById("caricamento").remove();
   document.getElementById("app").hidden = false;
+  if (estranea) avvisa(LINK_ESTRANEO);
 }
 
 try {

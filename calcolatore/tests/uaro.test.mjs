@@ -1,5 +1,5 @@
-// Le correzioni per uaRO (motore/uaro.js, strumenti/modifiche.mjs) che le build registrate non
-// coprono: ogni prova parte da un motore nuovo e sceglie i campi come una persona.
+// Le correzioni per uaRO e le parti nostre del motore che le build registrate non coprono:
+// ogni prova parte da un motore nuovo e sceglie i campi come una persona.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import vm from "node:vm";
@@ -19,6 +19,8 @@ function scegli(m, nome, valore) {
 }
 const testo = (m, id) => m.documento.testo(id);
 const numero = (m, id) => Number(testo(m, id).match(/-?\d+(\.\d+)?/)[0]);
+// le costanti del motore sono const: non sono proprieta' del contesto
+const costante = (m, nome) => vm.runInContext(nome, m);
 const id = (m, nome) => m.m_Item.findIndex((r) => r[8] === nome);
 
 test("tirapugni: penalita' di taglia 100/100/75%", () => {
@@ -84,6 +86,54 @@ test("oggetti aggiunti per uaRO negli elenchi", () => {
   assert.ok(elenco("A_head2").some((t) => t.startsWith("Pecopeco Wing Ears")));
   assert.ok(elenco("A_head3").some((t) => t.startsWith("Umbala Spirit")));
   assert.ok(elenco("A_head3").some((t) => t.startsWith("Antique Smoking Pipe")));
+});
+
+test("Bastion: sette incantamenti, uno uguale su copricapo e calzature conta una volta", () => {
+  const m = creaMotore();
+  const B = costante(m, "BASTIONENCHANTID");
+  const testi = [...m.documento.calcForm.A_BASTION_HEAD.options].map((o) => o.text);
+  for (const n of ["All Stats", "Movement Speed", "Race Resist", "MATK", "ATK", "SP Consumption", "Healing"]) {
+    assert.ok(testi.some((t) => t.startsWith(n)), n);
+  }
+  const atk = () => m.bonusValues[costante(m, "BONUSID").ATK_PERCENT];
+  const senza = atk();
+  scegli(m, "A_BASTION_HEAD", B.PHYSICAL_ATTACK);
+  assert.equal(atk() - senza, 5);
+  scegli(m, "A_BASTION_SHOES", B.PHYSICAL_ATTACK);
+  assert.equal(atk() - senza, 5);
+  scegli(m, "A_BASTION_SHOES", B.MAGICAL_ATTACK);
+  assert.equal(atk() - senza, 5);
+});
+
+test("Bastion Movement Speed: +20% che si somma, non si moltiplica", () => {
+  const m = creaMotore();
+  assert.equal(numero(m, "A_MovSPEED"), 100);
+  scegli(m, "A_BASTION_SHOES", costante(m, "BASTIONENCHANTID").MOVEMENT_SPEED);
+  assert.equal(numero(m, "A_MovSPEED"), 120);
+  scegli(m, "A_BASTION_HEAD", costante(m, "BASTIONENCHANTID").MOVEMENT_SPEED);
+  assert.equal(numero(m, "A_MovSPEED"), 120);
+});
+
+test("formato della build: i Bastion nuovi tornano uguali, le build di Thrice no", () => {
+  const m = creaMotore();
+  scegli(m, "A_JOB", 23);
+  scegli(m, "A_BASTION_HEAD", costante(m, "BASTIONENCHANTID").SP_CONSUMPTION);
+  scegli(m, "A_BASTION_SHOES", costante(m, "BASTIONENCHANTID").MOVEMENT_SPEED);
+  const build = String(m.URLOUT(1)).split("#")[1];
+  const carica = (b) => {
+    const n = creaMotore();
+    n.documento.getElementById("otherURL_TEXT").value = "x#" + b;
+    return [n.URLIN(1), n];
+  };
+  const [ok, n] = carica(build);
+  assert.equal(ok, true);
+  const c = n.documento.calcForm;
+  assert.deepEqual([c.A_JOB.value, c.A_BASTION_HEAD.value, c.A_BASTION_SHOES.value].map(Number),
+    [23, costante(m, "BASTIONENCHANTID").SP_CONSUMPTION, costante(m, "BASTIONENCHANTID").MOVEMENT_SPEED]);
+  // la stessa build con la versione 18 del calcolatore di Thrice nel primo carattere
+  const [okThrice, t] = carica("q" + build.slice(1));
+  assert.equal(okThrice, false);
+  assert.equal(Number(t.documento.calcForm.A_JOB.value), 0);
 });
 
 test("Back Stab: ricarica fissa di 0,333 secondi", () => {

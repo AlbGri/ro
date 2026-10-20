@@ -510,6 +510,7 @@ function StAllCalc() {
     ((bonusValues[l] = 0), (bonusValues[l] += StPlusCalc2(l)), (bonusValues[l] += StPlusCard(l)));
   for (l = 290; l <= 339; l++)
     ((bonusValues[l] = 0), (bonusValues[l] += StPlusCalc2(l)), (bonusValues[l] += StPlusCard(l)));
+  // uaRO: Mitra e Old Mitra: bonus che dipendono da INT base e raffinamento (in motore/uaro.js)
   (applyForbiddenGrimoireComboBonuses(), applyUaroHeadgearBonuses());
   var n = Math.floor(n_A_SHOES_REFINE / 3);
   switch (n_A_Equip[8]) {
@@ -614,8 +615,7 @@ function StAllCalc() {
   }
   for (
     StPlusCalc(),
-      ApplyBastionEnchant(1 * c.A_BASTION_HEAD.value),
-      ApplyBastionEnchant(1 * c.A_BASTION_SHOES.value),
+      ApplyBastionEnchants(),
       ApplyDicastesPrimaryEnchants(),
       restrictEquipslot(),
       equip_restrict
@@ -1367,6 +1367,8 @@ function StAllCalc() {
   )
     n_A_DEF += m_Item[n_A_Equip[l]][3];
   if (
+    // uaRO: Luna Bow: DEF +2, +3 da +6, +5 da +9 (Item Changes; patch del 04/08/2026). Nel
+    // codice c'erano i valori ufficiali
     (n_A_Equip[0] == 521 &&
       (n_A_Weapon_refine <= 5
         ? (n_A_DEF += 2)
@@ -1930,6 +1932,8 @@ function StAllCalc() {
           : CardNumSearch(451) && (t *= 1.05),
     n_A_Equip[2] != 1324 && v && (t *= 1.4),
     n_A_Equip[2] != 1324 || v || (t *= 1.4),
+    // uaRO: Bastion Movement Speed, +20% che si somma agli altri bonus (patch del 03/06/2026)
+    HasBastionEnchant(BASTIONENCHANTID.MOVEMENT_SPEED) && (t += 20),
     (t -= 10 * n_A_Buf6[19]),
     n_A_Buf3[37] &&
       (t -= 2 * n_A_Buf3[37] + Math.floor(n_A_Buf3[39] / 10) + Math.round(n_A_Buf3[27] / 2)),
@@ -1980,6 +1984,7 @@ function StAllCalc() {
         SkillSearch(SKILLID.ONE_HAND_QUICKEN_SOUL_LINKED) &&
         ((t += 30), (V = 1)),
       ((6 <= n_A_WeaponType && n_A_WeaponType <= 8) ||
+        // uaRO: Adrenaline Rush: vale anche con le spade a una mano (Class Changes, Blacksmith)
         (SRV == SERVERID.UARO && n_A_WeaponType == 2)) &&
         SkillSearch(SKILLID.ADRENALINE_RUSH) &&
         ((t += 30), (V = 1)),
@@ -2011,6 +2016,8 @@ function StAllCalc() {
     V == 0 &&
     (n_A_Buf2[6] != 2 || n_A_WeaponType == 10 || (17 <= n_A_WeaponType && n_A_WeaponType <= 21)
       ? ((6 <= n_A_WeaponType && n_A_WeaponType <= 8) ||
+          // uaRO: Adrenaline Rush ricevuto dal party: vale anche con le spade a una mano (Class
+          // Changes, Blacksmith)
           (SRV == SERVERID.UARO && n_A_WeaponType == 2)) &&
         (n_A_Buf2[6] == 1 ? ((h = 25), (V = 1)) : n_A_Buf2[6] == 3 && ((h = 30), (V = 1)))
       : ((h = 25), (V = 1)));
@@ -2253,6 +2260,7 @@ function StAllCalc() {
       800, 800, 400, 600, 800,
     ][n_A_JOB];
   (1 * c.A_adopted.checked && (O = 2e3),
+    // uaRO: Super Novice: +2000 di peso trasportabile (Class Changes, Super Novice)
     SRV == SERVERID.UARO && n_A_JOB == 20 && (O += 2e3),
     (O += 1 * c.A_STR.value * 30),
     (O += 1e3 * SkillSearch(SKILLID.CAVALIER_MASTERY)),
@@ -2646,17 +2654,20 @@ function StAllCalc() {
     ClickB_Enemy(),
     KakutyouKansuu());
 }
-function ApplyBastionEnchant(l) {
-  if (l == BASTIONENCHANTID.RACE_RESISTANCE)
+// uaRO: lo stesso incantamento su copricapo e calzature conta una volta sola (patch del
+// 26/05/2026). Movement Speed e' calcolato con la velocita' di movimento, SP Consumption non
+// cambia nessun risultato: il calcolatore non mostra il costo in SP delle skill
+function HasBastionEnchant(l) {
+  return 1 * c.A_BASTION_HEAD.value == l || 1 * c.A_BASTION_SHOES.value == l;
+}
+function ApplyBastionEnchants() {
+  if (HasBastionEnchant(BASTIONENCHANTID.RACE_RESISTANCE))
     for (var A = BONUSID.RESIST_FORMLESS_PERCENT; A <= BONUSID.RESIST_DRAGON_PERCENT; A++)
       bonusValues[A] += 5;
-  else
-    l == BASTIONENCHANTID.MAGICAL_ATTACK
-      ? (bonusValues[BONUSID.MATK_PERCENT] += 5)
-      : l == BASTIONENCHANTID.PHYSICAL_ATTACK
-        ? (bonusValues[BONUSID.ATK_PERCENT] += 5)
-        : l == BASTIONENCHANTID.HEALING_EFFECTIVENESS &&
-          (bonusValues[BONUSID.ALL_HEAL_PERCENT] += 10);
+  HasBastionEnchant(BASTIONENCHANTID.MAGICAL_ATTACK) && (bonusValues[BONUSID.MATK_PERCENT] += 5);
+  HasBastionEnchant(BASTIONENCHANTID.PHYSICAL_ATTACK) && (bonusValues[BONUSID.ATK_PERCENT] += 5);
+  HasBastionEnchant(BASTIONENCHANTID.HEALING_EFFECTIVENESS) &&
+    (bonusValues[BONUSID.ALL_HEAL_PERCENT] += 10);
 }
 function NormalizeLegacyBastionEnchant(l) {
   return l == 2 ? BASTIONENCHANTID.NONE : l >= 3 ? l - 1 : l;
@@ -2830,9 +2841,7 @@ function StPlusCalc() {
       (n_A_Weapon_refine >= 7 && ((a += 5), (E += 5)),
       n_A_Weapon_refine >= 9 && ((a += 2), (E += 2))),
     EQUIPID.GHOST_WHISPER == n_A_Equip[2] && n_A_HEAD_REFINE >= 9 && (n += 2));
-  var m =
-    (1 * c.A_BASTION_HEAD.value == BASTIONENCHANTID.ALL_STATS ? 1 : 0) +
-    (1 * c.A_BASTION_SHOES.value == BASTIONENCHANTID.ALL_STATS ? 1 : 0);
+  var m = HasBastionEnchant(BASTIONENCHANTID.ALL_STATS) ? 1 : 0;
   ((wSPCall = StPlusCalc2(7)),
     (n += StPlusCalc2(1) + wSPCall + m),
     (s += StPlusCalc2(2) + wSPCall),
@@ -4007,6 +4016,7 @@ function KakutyouKansuu() {
             wLimit = 2e3 + wLimitJob[n_A_JOB],
             wLimitR = 1 * c.A_KakutyouSelNum2.value * 200,
             1 * c.A_adopted.checked && (wLimit = 2e3),
+            // uaRO: Super Novice: +2000 di peso anche in Other Info (Class Changes, Super Novice)
             SRV == SERVERID.UARO && n_A_JOB == 20 && (wLimit += 2e3),
             wLimit += 1 * c.A_STR.value * 30,
             SkillSearch(SKILLID.CAVALIER_MASTERY) && (wLimit += 1e3),
@@ -6680,10 +6690,14 @@ function delLocal() {
     LoadLocal3(),
     (documento.calcForm.A_SaveSlotLocal.value = bkcN));
 }
+// Versione del formato della build, nel primo carattere. Il formato discende da quello del
+// calcolatore di Thrice (versioni 10-18), ma e' di questo calcolatore: si parte da 40 perche'
+// i due non si confondano, e URLIN carica solo le build di questa versione
+var FORMATO_BUILD = 40;
 function URLOUT(l) {
   (calc(), (SaveData = new Array()));
   for (var A = 0; A <= 88; A++) SaveData[A] = "i";
-  ((SaveData[0] = NtoS2(18, 1)),
+  ((SaveData[0] = NtoS2(FORMATO_BUILD, 1)),
     (SaveData[1] = NtoS2(1 * c.A_JOB.value, 2)),
     (SaveData[2] = NtoS2(1 * c.A_BaseLV.value, 2)),
     (SaveData[3] = NtoS2(1 * c.A_JobLV.value, 2)),
@@ -6737,7 +6751,7 @@ function URLOUT(l) {
     (SaveData[45] = NtoS01(c.A_adopted.checked, 0, 0, 0, 0)),
     (SaveData[46] = NtoS2(1 * c.A_HSE.value, 2)),
     (SaveData[47] = NtoS2(1 * c.A_HSE_HEAD1.value, 2)),
-    (SaveData[48] = NtoS2(6 * c.A_BASTION_HEAD.value + 1 * c.A_BASTION_SHOES.value, 2)),
+    (SaveData[48] = NtoS2(8 * c.A_BASTION_HEAD.value + 1 * c.A_BASTION_SHOES.value, 2)),
     (SaveData[49] = NtoS01(
       0,
       c.all_dmgSkills.checked,
@@ -7166,22 +7180,9 @@ function NtoS05(l, A) {
   var n;
   return ((n = 6 * l), NtoS2((n += A), 1));
 }
-function StoNx(l) {
-  l += "";
-  for (var A = 0; A <= 61; A++) if (l == n_NtoS2[A]) return A;
-}
 function new_StoNx(l) {
   l += "";
   for (var A = 0; A <= 61; A++) if (l == n_NtoS3[A]) return A;
-}
-function StoN2(l) {
-  var A = (l += "").length;
-  if (A == 3) {
-    var n = 62 * StoNx(l.charAt(0)) * 62;
-    ((n += 62 * StoNx(l.charAt(1))), (n += StoNx(l.charAt(2))));
-  } else
-    A == 2 ? ((n = 62 * StoNx(l.charAt(0))), (n += StoNx(l.charAt(1)))) : (n = StoNx(l.charAt(0)));
-  return n;
 }
 function StoN3(l) {
   var A = (l += "").length;
@@ -7194,1709 +7195,576 @@ function StoN3(l) {
       : (n = new_StoNx(l.charAt(0)));
   return n;
 }
+// Carica una build del formato FORMATO_BUILD, dall'indirizzo (l = 0) o da otherURL_TEXT (l = 1);
+// una build di un altro formato non si carica e la funzione restituisce false
 function URLIN(l) {
-  if (l)
-    var A = documento.getElementById("otherURL_TEXT").value.match(/#/),
-      n = documento.getElementById("otherURL_TEXT").value.match(/\?/);
-  else
-    var s = posizioneMotore.href.match(/#/),
-      _ = posizioneMotore.href.match(/\?/);
-  if (_ || n || s || A) {
-    for (var a = 0; a <= 21; a++) n_A_Buf2[a] = 0;
-    for (a = 0; a <= 45; a++) n_A_Buf3[a] = 0;
-    for (a = 0; a <= 23; a++) n_A_Buf6[a] = 0;
-    for (a = 0; a <= 60; a++) n_A_Buf7[a] = 0;
-    for (a = 0; a <= 15; a++) n_A_Buf8[a] = 0;
-    for (a = 0; a <= 57; a++) n_A_Buf9[a] = 0;
-    for (a = 0; a <= 55; a++) n_B_manual[a] = 0;
-    for (a = 0; a <= 3; a++) n_A_debuf[a] = 0;
-    for (a = 0; a <= 24; a++) n_B_debuf[a] = 0;
-    for (a = 0; a <= 14; a++) n_B_buf[a] = 0;
-    ((n_A_Buf9[2] = 10),
-      (n_A_Buf9[4] = 20),
-      (n_A_Buf9[6] = 23),
-      (n_A_Buf9[10] = 10),
-      (n_A_Buf9[12] = 20),
-      (n_A_Buf9[14] = 23),
-      (c.A_BASTION_HEAD.value = BASTIONENCHANTID.NONE),
-      (c.A_BASTION_SHOES.value = BASTIONENCHANTID.NONE),
-      ResetDicastesEnchantControls(),
-      refreshFields());
-    var E = new Array();
-    (n && (E = documento.getElementById("otherURL_TEXT").value.split("?")),
-      A && (E = documento.getElementById("otherURL_TEXT").value.split("#")),
-      _ && (E = posizioneMotore.href.split("?")),
-      s && (E = posizioneMotore.href.split("#")));
-    var S = StoN3(
-      (_ = (_ = (_ = (_ = (_ = (_ = (_ = (_ = (_ = E[1].replace(/undefined/g, "i")).replace(
-        /%24/g,
-        "$",
-      )).replace(/%26/g, "&")).replace(/%27/g, "'")).replace(/%2B/g, "+")).replace(
-        /%2C/g,
-        ",",
-      )).replace(/%3A/g, ":")).replace(/%3B/g, ";")).replace(/%3D/g, "=")).substr(0, 1),
-    );
-    if (
-      (S == 0 && (S = 10),
-      S == 11 &&
-        (_ = (_ = (_ = (_ = (_ = (_ = (_ = (_ = (_ = (_ = (_ = (_ = (_ = (_ = _.replace(
-          /i/g,
-          "_",
-        )).replace(/_/g, ".")).replace(/!/g, "_")).replace(/_/g, "i")).replace(/\*/g, "_")).replace(
-          /_/g,
-          "-",
-        )).replace(/\(/g, "_")).replace(/_/g, ",")).replace(/\)/g, "_")).replace(
-          /_/g,
-          "=",
-        )).replace(/\[/g, "_")).replace(/_/g, "$")).replace(/\]/g, "_")).replace(/_/g, "&")),
-      S >= 11)
-    ) {
-      var b = 98;
-      (StoN3(
-        (_ = (_ = (_ = (_ = (_ = (_ = (_ = (_ = (_ = (_ = _.replace(/3/g, "iiiiiiiiiiiii")).replace(
-          /2/g,
-          "iiiiiiiiiiii",
-        )).replace(/1/g, "iiiiiiiiiii")).replace(/0/g, "iiiiiiiiii")).replace(
-          /9/g,
-          "iiiiiiiii",
-        )).replace(/8/g, "iiiiiiii")).replace(/7/g, "iiiiiii")).replace(/6/g, "iiiiii")).replace(
-          /5/g,
-          "iiiii",
-        )).replace(/4/g, "iiii")).substr(1, 2),
-      ) == 20 && StoN3(_.substr(b, 1))
-        ? (SuperNoviceFullWeaponCHECK = 1)
-        : (SuperNoviceFullWeaponCHECK = 0),
-        (u = StoN3(_.substr(86, 1))),
-        (c.all_dmgSkills.checked = Math.floor((u % 16) / 8)),
-        (c.restrict_jobequip.checked = Math.floor((u % 8) / 4)),
-        (c.restrict_lvlequip.checked = Math.floor((u % 4) / 2)),
-        (c.restrict_equipslot.checked = Math.floor((u % 2) / 1)),
-        (u = StoN3(_.substr(87, 1))),
-        (c.restrict_cardslot.checked = Math.floor(u / 16)),
-        (c.all_card.checked = Math.floor((u % 16) / 8)),
-        c.all_card.checked && allCard(),
-        restrictCardslot(0),
-        (c.maxASPD.value = 0),
-        (c.A_JOB.value = StoN3(_.substr(1, 2))),
-        ClickJob(StoN3(_.substr(1, 2)), 2),
-        (c.A_BaseLV.value = StoN3(_.substr(3, 2))),
-        (c.A_JobLV.value = StoN3(_.substr(5, 2))),
-        (c.A_STR.value = StoN3(_.substr(7, 2))),
-        (c.A_AGI.value = StoN3(_.substr(9, 2))),
-        (c.A_VIT.value = StoN3(_.substr(11, 2))),
-        (c.A_DEX.value = StoN3(_.substr(13, 2))),
-        (c.A_INT.value = StoN3(_.substr(15, 2))),
-        (c.A_LUK.value = StoN3(_.substr(17, 2))),
-        (n_A_Buf7[35] = Math.floor(StoN3(_.substr(19, 1)) / 10)),
-        (c.A_Weapon_element.value = StoN3(_.substr(19, 1)) % 10));
-      var m = normalizeEquipmentId(StoN3(_.substr(23, 2)));
-      ((c.A_weapon1.value = m),
-        (n_A_WeaponType = StoN3(_.substr(20, 1))),
-        ClickWeaponType(n_A_WeaponType),
-        (c.A_JOB.value != 8 && c.A_JOB.value != 22) ||
-          n_A_WeaponType == 11 ||
-          ((n_A_Weapon2Type = StoN3(_.substr(21, 1))), ClickWeaponType2(n_A_Weapon2Type)),
-        n_A_JobSet(),
-        (n_A_JobClass() == 2 || n_A_JobClass() == 4 || (n_A_JOB == 45 && n_A_WeaponType != 0)) &&
-          (c.A_Arrow.value = StoN3(_.substr(22, 1))),
-        ClickB_Item(m),
-        (c.A_Weapon_refine.value = StoN3(_.substr(25, 1))),
-        (c.A_weapon1_card1.value = StoN3(_.substr(26, 2))),
-        (c.A_weapon1_card2.value = StoN3(_.substr(28, 2))),
-        (c.A_weapon1_card3.value = StoN3(_.substr(30, 2))),
-        (c.A_weapon1_card4.value = StoN3(_.substr(32, 2))),
-        n_Nitou
-          ? ((c.A_weapon2.value = StoN3(_.substr(34, 2))),
-            (c.A_Weapon2_refine.value = StoN3(_.substr(36, 1))),
-            (c.A_weapon2_card1.value = StoN3(_.substr(37, 2))),
-            (c.A_weapon2_card2.value = StoN3(_.substr(39, 2))),
-            (c.A_weapon2_card3.value = StoN3(_.substr(41, 2))),
-            (c.A_weapon2_card4.value = StoN3(_.substr(43, 2))),
-            (c.A_left.value = 305),
-            (c.A_LEFT_REFINE.value = 0),
-            (c.A_left_card.value = 0))
-          : ((c.A_left.value = StoN3(_.substr(34, 2))),
-            (c.A_LEFT_REFINE.value = StoN3(_.substr(36, 1))),
-            (c.A_left_card.value = StoN3(_.substr(37, 2)))),
-        (c.A_head1.value = StoN3(_.substr(45, 2))),
-        (c.A_head1_card.value = StoN3(_.substr(47, 2))),
-        (c.A_head2.value = StoN3(_.substr(49, 2))),
-        (c.A_head2_card.value = StoN3(_.substr(51, 2))),
-        (c.A_head3.value = StoN3(_.substr(53, 2))),
-        (c.A_body.value = StoN3(_.substr(55, 2))),
-        (c.A_body_card.value = StoN3(_.substr(57, 2))),
-        (c.A_shoulder.value = StoN3(_.substr(59, 2))),
-        (c.A_shoulder_card.value = StoN3(_.substr(61, 2))),
-        (c.A_shoes.value = StoN3(_.substr(63, 2))),
-        (c.A_shoes_card.value = StoN3(_.substr(65, 2))),
-        (c.A_acces1.value = StoN3(_.substr(67, 2))),
-        (c.A_acces1_card.value = StoN3(_.substr(69, 2))),
-        (c.A_acces2.value = StoN3(_.substr(71, 2))),
-        (c.A_acces2_card.value = StoN3(_.substr(73, 2))),
-        (c.A_HEAD_REFINE.value = StoN3(_.substr(75, 1))),
-        (c.A_BODY_REFINE.value = StoN3(_.substr(76, 1))),
-        (c.A_SHOULDER_REFINE.value = StoN3(_.substr(77, 1))),
-        (c.A_SHOES_REFINE.value = StoN3(_.substr(78, 1))));
-      var u = StoN3(_.substr(79, 1));
-      if (
-        ((c.A_adopted.checked = Math.floor(u / 16)),
-        (c.A_HSE.value = StoN3(_.substr(80, 2))),
-        (c.A_HSE_HEAD1.value = StoN3(_.substr(82, 2))),
-        S >= 15)
-      ) {
-        u = StoN3(_.substr(84, 2));
-        var I = S == 16 ? 7 : 6,
-          D = Math.floor(u / I),
-          T = u % I;
-        ((c.A_BASTION_HEAD.value = S >= 17 ? D : NormalizeLegacyBastionEnchant(D)),
-          (c.A_BASTION_SHOES.value = S >= 17 ? T : NormalizeLegacyBastionEnchant(T)));
-      }
-      var d = StoN3(_.substr(88, 1));
-      for (a = 0; a < d; a++)
-        if (S >= 13) documento.getElementById("A_skill" + a).value = StoN3(_.substr(89 + a, 1));
-        else {
-          for (var B = 0; B < m_JobBuffAddings[c.A_JOB.value]; B++)
-            documento.getElementById("A_skill" + B).value = 0;
-          var p = a + m_JobBuffAddings[c.A_JOB.value];
-          documento.getElementById("A_skill" + p).value = StoN3(_.substr(89 + a, 1));
-        }
-      BufSW(0);
-      var e = 110;
-      (StoN3(_.substr(e, 1)) == 1 &&
-        ((n_A_Buf2[0] = StoN3(_.substr(e + 1, 1))),
-        (n_A_Buf2[1] = StoN3(_.substr(e + 2, 1))),
-        (n_A_Buf2[4] = StoN3(_.substr(e + 3, 1))),
-        (n_A_Buf2[9] = StoN3(_.substr(e + 4, 1))),
-        (n_A_Buf2[13] = StoN3(_.substr(e + 5, 1))),
-        (n_A_Buf2[14] = StoN3(_.substr(e + 6, 1))),
-        (n_A_Buf2[2] = Math.floor(StoN3(_.substr(e + 7, 1)) / 6)),
-        (n_A_Buf2[6] = StoN3(_.substr(e + 7, 1)) % 6),
-        (n_A_Buf2[10] = Math.floor(StoN3(_.substr(e + 8, 1)) / 6)),
-        (n_A_Buf2[11] = StoN3(_.substr(e + 8, 1)) % 6),
-        (n_A_Buf2[12] = Math.floor(StoN3(_.substr(e + 9, 1)) / 6)),
-        (n_A_Buf2[15] = StoN3(_.substr(e + 9, 1)) % 6),
-        (u = StoN3(_.substr(e + 10, 1))),
-        (n_A_Buf2[3] = Math.floor(u / 16)),
-        (n_A_Buf2[5] = Math.floor((u % 16) / 8)),
-        (n_A_Buf2[7] = Math.floor((u % 8) / 4)),
-        (n_A_Buf2[8] = Math.floor((u % 4) / 2)),
-        (n_A_Buf2[16] = Math.floor((u % 2) / 1)),
-        (u = StoN3(_.substr(e + 11, 1))),
-        (n_A_Buf2[17] = Math.floor(u / 16)),
-        (n_A_Buf2[18] = Math.floor((u % 16) / 8)),
-        (n_A_Buf2[19] = Math.floor((u % 8) / 4)),
-        (n_A_Buf2[20] = Math.floor((u % 4) / 2)),
-        (n_A_Buf2[21] = Math.floor((u % 2) / 1)),
-        (e += 11)),
-        debufSW(0),
-        (e += 1),
-        StoN3(_.substr(e, 1)) == 1 &&
-          ((n_B_debuf[0] = StoN3(_.substr(e + 1, 1))),
-          (n_B_debuf[1] = Math.floor(StoN3(_.substr(e + 2, 1)) / 6)),
-          (n_B_debuf[18] = StoN3(_.substr(e + 2, 1)) % 6),
-          (u = StoN3(_.substr(e + 3, 1))),
-          (n_B_debuf[2] = Math.floor(u / 16)),
-          (n_B_debuf[3] = Math.floor((u % 16) / 8)),
-          (n_B_debuf[4] = Math.floor((u % 8) / 4)),
-          (n_B_debuf[5] = Math.floor((u % 4) / 2)),
-          (n_B_debuf[6] = Math.floor((u % 2) / 1)),
-          (u = StoN3(_.substr(e + 4, 1))),
-          (n_B_debuf[7] = Math.floor(u / 16)),
-          (n_B_debuf[8] = Math.floor((u % 16) / 8)),
-          (n_B_debuf[9] = Math.floor((u % 8) / 4)),
-          (n_B_debuf[10] = Math.floor((u % 4) / 2)),
-          (n_B_debuf[19] = Math.floor((u % 2) / 1)),
-          (n_B_debuf[11] = StoN3(_.substr(e + 5, 1))),
-          (n_B_debuf[12] = StoN3(_.substr(e + 6, 1))),
-          (u = StoN3(_.substr(e + 7, 1))),
-          (n_B_debuf[13] = Math.floor(u / 16)),
-          (n_B_debuf[14] = Math.floor((u % 16) / 8)),
-          (n_B_debuf[15] = Math.floor((u % 8) / 4)),
-          (n_B_debuf[16] = Math.floor((u % 4) / 2)),
-          (n_B_debuf[17] = Math.floor((u % 2) / 1)),
-          (u = StoN3(_.substr(e + 8, 1))),
-          (n_B_debuf[20] = Math.floor(u / 16)),
-          (n_B_debuf[21] = Math.floor((u % 16) / 8)),
-          (n_B_debuf[22] = Math.floor((u % 8) / 4)),
-          (n_B_debuf[23] = Math.floor(StoN3(_.substr(e + 9, 1)) / 6)),
-          (n_B_debuf[24] = StoN3(_.substr(e + 9, 1)) % 6),
-          (e += 9)),
-        EnemyBufSW(0),
-        (e += 1),
-        StoN3(_.substr(e, 1)) == 1 &&
-          ((n_B_buf[0] = StoN3(_.substr(e + 1, 1))),
-          (u = StoN3(_.substr(e + 2, 1))),
-          (n_B_buf[1] = Math.floor(u / 16)),
-          (n_B_buf[2] = Math.floor((u % 16) / 8)),
-          (n_B_buf[3] = Math.floor((u % 8) / 4)),
-          (n_B_buf[4] = Math.floor((u % 4) / 2)),
-          (n_B_buf[9] = Math.floor((u % 2) / 1)),
-          (n_B_buf[6] = StoN3(_.substr(e + 3, 2))),
-          (n_B_buf[7] = Math.floor(StoN3(_.substr(e + 5, 1)) / 6)),
-          (n_B_buf[8] = StoN3(_.substr(e + 5, 1)) % 6),
-          (n_B_buf[5] = StoN3(_.substr(e + 6, 1))),
-          (n_B_buf[10] = StoN3(_.substr(e + 7, 1))),
-          (n_B_buf[11] = StoN3(_.substr(e + 8, 1))),
-          (n_B_buf[12] = StoN3(_.substr(e + 9, 1))),
-          (n_B_buf[13] = StoN3(_.substr(e + 10, 1))),
-          (n_B_buf[14] = StoN3(_.substr(e + 11, 1))),
-          (e += 5),
-          (e += 6)));
-      var v = [0, 0, 0, 0, 0];
-      if (
-        ((u = StoN3(_.substr(e + 1, 1))),
-        (v[0] = Math.floor(u / 16)),
-        (v[1] = Math.floor((u % 16) / 8)),
-        (v[2] = Math.floor((u % 8) / 4)),
-        (v[3] = Math.floor((u % 4) / 2)),
-        (v[4] = Math.floor((u % 2) / 1)),
-        (e += 1),
-        Buf3SW(0),
-        v[0] &&
-          ((n_A_Buf3[0] = StoN3(_.substr(e + 1, 1))),
-          (n_A_Buf3[1] = StoN3(_.substr(e + 2, 1))),
-          (n_A_Buf3[2] = StoN3(_.substr(e + 3, 1))),
-          (n_A_Buf3[3] = StoN3(_.substr(e + 4, 1))),
-          (n_A_Buf3[4] = StoN3(_.substr(e + 5, 1))),
-          (n_A_Buf3[5] = StoN3(_.substr(e + 6, 1))),
-          (n_A_Buf3[6] = StoN3(_.substr(e + 7, 1))),
-          (n_A_Buf3[7] = Math.floor(StoN3(_.substr(e + 8, 1)) / 6)),
-          (n_A_Buf3[8] = StoN3(_.substr(e + 8, 1)) % 6),
-          (n_A_Buf3[9] = Math.floor(StoN3(_.substr(e + 9, 1)) / 6)),
-          (n_A_Buf3[10] = StoN3(_.substr(e + 9, 1)) % 6),
-          (n_A_Buf3[11] = Math.floor(StoN3(_.substr(e + 10, 1)) / 16)),
-          (n_A_Buf3[18] = Math.floor((StoN3(_.substr(e + 10, 1)) % 16) / 8)),
-          (n_A_Buf3[12] = StoN3(_.substr(e + 11, 2))),
-          (n_A_Buf3[13] = StoN3(_.substr(e + 13, 2))),
-          (n_A_Buf3[14] = StoN3(_.substr(e + 15, 2))),
-          (n_A_Buf3[15] = StoN3(_.substr(e + 17, 2))),
-          (n_A_Buf3[16] = StoN3(_.substr(e + 19, 2))),
-          (n_A_Buf3[17] = StoN3(_.substr(e + 21, 2))),
-          (n_A_Buf3[20] = StoN3(_.substr(e + 23, 2))),
-          (n_A_Buf3[30] = StoN3(_.substr(e + 25, 1))),
-          (n_A_Buf3[21] = StoN3(_.substr(e + 26, 2))),
-          (n_A_Buf3[31] = StoN3(_.substr(e + 28, 1))),
-          (n_A_Buf3[22] = StoN3(_.substr(e + 29, 2))),
-          (n_A_Buf3[29] = StoN3(_.substr(e + 31, 2))),
-          (n_A_Buf3[32] = StoN3(_.substr(e + 33, 1))),
-          (n_A_Buf3[23] = StoN3(_.substr(e + 34, 2))),
-          (n_A_Buf3[33] = StoN3(_.substr(e + 36, 1))),
-          (n_A_Buf3[24] = StoN3(_.substr(e + 37, 2))),
-          (n_A_Buf3[34] = StoN3(_.substr(e + 39, 1))),
-          (n_A_Buf3[25] = StoN3(_.substr(e + 40, 2))),
-          (n_A_Buf3[35] = StoN3(_.substr(e + 42, 1))),
-          (n_A_Buf3[26] = StoN3(_.substr(e + 43, 2))),
-          (n_A_Buf3[36] = StoN3(_.substr(e + 45, 1))),
-          (n_A_Buf3[19] = StoN3(_.substr(e + 46, 2))),
-          (n_A_Buf3[37] = StoN3(_.substr(e + 48, 1))),
-          (n_A_Buf3[38] = StoN3(_.substr(e + 49, 2))),
-          (n_A_Buf3[39] = StoN3(_.substr(e + 51, 2))),
-          (n_A_Buf3[27] = StoN3(_.substr(e + 53, 1))),
-          (e += 8),
-          (e += 45)),
-        Buf4SW(0),
-        v[1] &&
-          ((u = StoN3(_.substr(e + 1, 1))),
-          (n_A_Buf3[40] = Math.floor(u / 16)),
-          (n_A_Buf3[41] = Math.floor(StoN3(_.substr(e + 2, 1)) / 6)),
-          (n_A_Buf3[42] = StoN3(_.substr(e + 2, 1)) % 6),
-          (n_A_Buf3[43] = Math.floor(StoN3(_.substr(e + 3, 1)) / 6)),
-          (n_A_Buf3[44] = StoN3(_.substr(e + 3, 1)) % 6),
-          (e += 3)),
-        Buf6SW(0),
-        v[3] &&
-          ((n_A_Buf6[5] = StoN3(_.substr(e + 1, 1))),
-          (n_A_Buf6[20] = StoN3(_.substr(e + 2, 1))),
-          (n_A_Buf6[0] = Math.floor(StoN3(_.substr(e + 3, 1)) / 6)),
-          (n_A_Buf6[1] = StoN3(_.substr(e + 3, 1)) % 6),
-          (n_A_Buf6[2] = Math.floor(StoN3(_.substr(e + 4, 1)) / 6)),
-          (n_A_Buf6[4] = StoN3(_.substr(e + 4, 1)) % 6),
-          (n_A_Buf6[18] = Math.floor(StoN3(_.substr(e + 5, 1)) / 6)),
-          (n_A_Buf6[19] = StoN3(_.substr(e + 5, 1)) % 6),
-          (u = StoN3(_.substr(e + 6, 1))),
-          (n_A_Buf6[3] = Math.floor(u / 16)),
-          (n_A_Buf6[6] = Math.floor((u % 16) / 8)),
-          (n_A_Buf6[7] = Math.floor((u % 8) / 4)),
-          (n_A_Buf6[8] = Math.floor((u % 4) / 2)),
-          (n_A_Buf6[9] = Math.floor((u % 2) / 1)),
-          (u = StoN3(_.substr(e + 7, 1))),
-          (n_A_Buf6[10] = Math.floor(u / 16)),
-          (n_A_Buf6[11] = Math.floor((u % 16) / 8)),
-          (n_A_Buf6[12] = Math.floor((u % 8) / 4)),
-          (n_A_Buf6[13] = Math.floor((u % 4) / 2)),
-          (n_A_Buf6[14] = Math.floor((u % 2) / 1)),
-          (u = StoN3(_.substr(e + 8, 1))),
-          (n_A_Buf6[15] = Math.floor(u / 16)),
-          (n_A_Buf6[16] = Math.floor((u % 16) / 8)),
-          (n_A_Buf6[17] = Math.floor((u % 8) / 4)),
-          (n_A_Buf6[21] = Math.floor((u % 4) / 2)),
-          (n_A_Buf6[22] = Math.floor((u % 2) / 1)),
-          (e += 8)),
-        Buf7SW(0),
-        v[4] &&
-          ((n_A_Buf7[3] = StoN3(_.substr(e + 1, 1))),
-          (n_A_Buf7[4] = StoN3(_.substr(e + 2, 1))),
-          (n_A_Buf7[5] = StoN3(_.substr(e + 3, 1))),
-          (n_A_Buf7[6] = StoN3(_.substr(e + 4, 1))),
-          (n_A_Buf7[7] = StoN3(_.substr(e + 5, 1))),
-          (n_A_Buf7[8] = StoN3(_.substr(e + 6, 1))),
-          (n_A_Buf7[35] = Math.floor(StoN3(_.substr(e + 7, 1)) / 6)),
-          (n_A_Buf7[42] = StoN3(_.substr(e + 7, 1)) % 6),
-          (n_A_Buf7[39] = Math.floor(StoN3(_.substr(e + 8, 1)) / 6)),
-          (n_A_Buf7[40] = StoN3(_.substr(e + 8, 1)) % 6),
-          (u = StoN3(_.substr(e + 9, 1))),
-          (n_A_Buf7[0] = Math.floor(u / 16)),
-          (n_A_Buf7[1] = Math.floor((u % 16) / 8)),
-          (n_A_Buf7[2] = Math.floor((u % 8) / 4)),
-          (n_A_Buf7[9] = Math.floor((u % 4) / 2)),
-          (n_A_Buf7[10] = Math.floor((u % 2) / 1)),
-          (u = StoN3(_.substr(e + 10, 1))),
-          (n_A_Buf7[11] = Math.floor(u / 16)),
-          (n_A_Buf7[12] = Math.floor((u % 16) / 8)),
-          (n_A_Buf7[13] = Math.floor((u % 8) / 4)),
-          (n_A_Buf7[14] = Math.floor((u % 4) / 2)),
-          (u = StoN3(_.substr(e + 11, 1))),
-          (n_A_Buf7[16] = Math.floor(u / 16)),
-          (n_A_Buf7[17] = Math.floor((u % 16) / 8)),
-          (n_A_Buf7[18] = Math.floor((u % 8) / 4)),
-          (n_A_Buf7[19] = Math.floor((u % 4) / 2)),
-          (n_A_Buf7[20] = Math.floor((u % 2) / 1)),
-          (u = StoN3(_.substr(e + 12, 1))),
-          (n_A_Buf7[21] = Math.floor(u / 16)),
-          (n_A_Buf7[22] = Math.floor((u % 16) / 8)),
-          (n_A_Buf7[23] = Math.floor((u % 8) / 4)),
-          (n_A_Buf7[24] = Math.floor((u % 4) / 2)),
-          (n_A_Buf7[25] = Math.floor((u % 2) / 1)),
-          (u = StoN3(_.substr(e + 13, 1))),
-          (n_A_Buf7[26] = Math.floor(u / 16)),
-          (n_A_Buf7[27] = Math.floor((u % 16) / 8)),
-          (n_A_Buf7[28] = Math.floor((u % 8) / 4)),
-          (n_A_Buf7[29] = Math.floor((u % 4) / 2)),
-          (n_A_Buf7[30] = Math.floor((u % 2) / 1)),
-          (u = StoN3(_.substr(e + 14, 1))),
-          (n_A_Buf7[31] = Math.floor(u / 16)),
-          (n_A_Buf7[32] = Math.floor((u % 16) / 8)),
-          (n_A_Buf7[33] = Math.floor((u % 8) / 4)),
-          (n_A_Buf7[34] = Math.floor((u % 4) / 2)),
-          (n_A_Buf7[36] = Math.floor((u % 2) / 1)),
-          (u = StoN3(_.substr(e + 15, 1))),
-          (n_A_Buf7[37] = Math.floor(u / 16)),
-          (n_A_Buf7[38] = Math.floor((u % 16) / 8)),
-          (n_A_Buf7[41] = Math.floor((u % 8) / 4)),
-          (n_A_Buf7[43] = Math.floor((u % 4) / 2)),
-          n_A_Buf7[43] && (n_A_Buf7[36] = 1),
-          (n_A_Buf7[44] = Math.floor((u % 2) / 1)),
-          (u = StoN3(_.substr(e + 16, 1))),
-          (n_A_Buf7[45] = Math.floor(u / 16)),
-          (n_A_Buf7[46] = Math.floor((u % 16) / 8)),
-          (n_A_Buf7[47] = Math.floor((u % 8) / 4)),
-          (n_A_Buf7[48] = Math.floor((u % 4) / 2)),
-          (n_A_Buf7[49] = Math.floor((u % 2) / 1)),
-          (u = StoN3(_.substr(e + 17, 1))),
-          (n_A_Buf7[50] = Math.floor(u / 16)),
-          (n_A_Buf7[51] = Math.floor((u % 16) / 8)),
-          (n_A_Buf7[52] = Math.floor((u % 8) / 4)),
-          (n_A_Buf7[53] = Math.floor((u % 4) / 2)),
-          (n_A_Buf7[54] = Math.floor((u % 2) / 1)),
-          (n_A_Buf7[55] = StoN3(_.substr(e + 18, 1))),
-          (u = StoN3(_.substr(e + 19, 1))),
-          (n_A_Buf7[56] = Math.floor(u / 16)),
-          (n_A_Buf7[57] = Math.floor((u % 16) / 8)),
-          (n_A_Buf7[58] = Math.floor((u % 8) / 4)),
-          (n_A_Buf7[59] = Math.floor((u % 4) / 2)),
-          (n_A_Buf7[60] = Math.floor((u % 2) / 1)),
-          (e += 3),
-          (e += 16)),
-        Buf6SW(0),
-        (e += 1),
-        StoN3(_.substr(e, 1)) == 1 &&
-          ((n_A_Buf8[0] = StoN3(_.substr(e + 1, 2))),
-          (n_A_Buf8[3] = StoN3(_.substr(e + 3, 2))),
-          (n_A_Buf8[7] = StoN3(_.substr(e + 5, 2))),
-          (n_A_Buf8[8] = StoN3(_.substr(e + 7, 2))),
-          (n_A_Buf8[9] = StoN3(_.substr(e + 9, 2))),
-          (n_A_Buf8[10] = StoN3(_.substr(e + 11, 2))),
-          (n_A_Buf8[11] = StoN3(_.substr(e + 13, 2))),
-          (n_A_Buf8[5] = StoN3(_.substr(e + 15, 1))),
-          (n_A_Buf8[6] = StoN3(_.substr(e + 16, 1))),
-          (n_A_Buf8[1] = Math.floor(StoN3(_.substr(e + 17, 1)) / 6)),
-          (u = StoN3(_.substr(e + 18, 1))),
-          (n_A_Buf8[2] = Math.floor(u / 16)),
-          (e += 18)),
-        Buf9SW(0),
-        (e += 1),
-        StoN3(_.substr(e, 1)) == 1)
-      ) {
-        for (
-          n_A_Buf9[0] = StoN3(_.substr(e + 1, 1)),
-            n_A_Buf9[1] = StoN3(_.substr(e + 2, 2)),
-            n_A_Buf9[2] = StoN3(_.substr(e + 4, 1)),
-            n_A_Buf9[3] = StoN3(_.substr(e + 5, 2)),
-            n_A_Buf9[4] = StoN3(_.substr(e + 7, 1)),
-            n_A_Buf9[5] = StoN3(_.substr(e + 8, 2)),
-            n_A_Buf9[6] = StoN3(_.substr(e + 10, 1)),
-            n_A_Buf9[7] = StoN3(_.substr(e + 11, 2)),
-            n_A_Buf9[8] = StoN3(_.substr(e + 13, 1)),
-            n_A_Buf9[9] = StoN3(_.substr(e + 14, 2)),
-            n_A_Buf9[10] = StoN3(_.substr(e + 16, 1)),
-            n_A_Buf9[11] = StoN3(_.substr(e + 17, 2)),
-            n_A_Buf9[12] = StoN3(_.substr(e + 19, 1)),
-            n_A_Buf9[13] = StoN3(_.substr(e + 20, 2)),
-            n_A_Buf9[14] = StoN3(_.substr(e + 22, 1)),
-            n_A_Buf9[15] = StoN3(_.substr(e + 23, 2)),
-            n_A_Buf9[16] = StoN3(_.substr(e + 25, 1)),
-            n_A_Buf9[17] = StoN3(_.substr(e + 26, 2)),
-            n_A_Buf9[18] = StoN3(_.substr(e + 28, 1)),
-            n_A_Buf9[19] = StoN3(_.substr(e + 29, 2)),
-            n_A_Buf9[20] = StoN3(_.substr(e + 31, 2)),
-            n_A_Buf9[21] = StoN3(_.substr(e + 33, 2)),
-            n_A_Buf9[22] = StoN3(_.substr(e + 35, 2)),
-            n_A_Buf9[23] = StoN3(_.substr(e + 37, 2)),
-            n_A_Buf9[24] = StoN3(_.substr(e + 39, 1)),
-            n_A_Buf9[25] = StoN3(_.substr(e + 40, 2)),
-            n_A_Buf9[26] = StoN3(_.substr(e + 42, 2)),
-            n_A_Buf9[27] = StoN3(_.substr(e + 44, 2)),
-            n_A_Buf9[28] = StoN3(_.substr(e + 46, 2)),
-            n_A_Buf9[29] = 0,
-            n_A_Buf9[30] = StoN3(_.substr(e + 48, 3)),
-            a = 31;
-          a <= 59;
-          a++
-        )
-          n_A_Buf9[a] = StoN3(_.substr(e - 11 + 2 * a, 2));
-        e += 108;
-      } else {
-        for (
-          n_A_Buf9[20] = StoN3(_.substr(e + 31, 1)),
-            n_A_Buf9[21] = StoN3(_.substr(e + 32, 2)),
-            n_A_Buf9[22] = StoN3(_.substr(e + 34, 1)),
-            n_A_Buf9[23] = StoN3(_.substr(e + 35, 2)),
-            n_A_Buf9[24] = StoN3(_.substr(e + 37, 1)),
-            n_A_Buf9[25] = StoN3(_.substr(e + 38, 2)),
-            n_A_Buf9[26] = StoN3(_.substr(e + 40, 1)),
-            n_A_Buf9[27] = StoN3(_.substr(e + 41, 2)),
-            n_A_Buf9[28] = StoN3(_.substr(e + 43, 1)),
-            n_A_Buf9[29] = StoN3(_.substr(e + 44, 2)),
-            n_A_Buf9[30] = StoN3(_.substr(e + 46, 3)),
-            a = 31;
-          a <= 55;
-          a++
-        )
-          n_A_Buf9[a] = StoN3(_.substr(e - 13 + 2 * a, 2));
-        e += 98;
-      }
-      (Buf10SW(0),
-        (e += 1),
-        StoN3(_.substr(e, 1)) == 1 &&
-          ((n_B_manual[1] = StoN3(_.substr(e + 1, 2))),
-          (n_B_manual[2] = StoN3(_.substr(e + 3, 1))),
-          (n_B_manual[3] = StoN3(_.substr(e + 4, 2))),
-          (n_B_manual[4] = StoN3(_.substr(e + 6, 1))),
-          (n_B_manual[5] = StoN3(_.substr(e + 7, 2))),
-          (n_B_manual[7] = StoN3(_.substr(e + 9, 2))),
-          (n_B_manual[9] = StoN3(_.substr(e + 11, 2))),
-          (n_B_manual[21] = StoN3(_.substr(e + 13, 2))),
-          (n_B_manual[30] = StoN3(_.substr(e + 15, 3))),
-          (n_B_manual[31] = StoN3(_.substr(e + 18, 2))),
-          (n_B_manual[34] = StoN3(_.substr(e + 20, 2))),
-          (n_B_manual[35] = StoN3(_.substr(e + 22, 2))),
-          (n_B_manual[36] = StoN3(_.substr(e + 24, 2))),
-          (n_B_manual[37] = StoN3(_.substr(e + 26, 2))),
-          (n_B_manual[38] = StoN3(_.substr(e + 28, 2))),
-          (n_B_manual[39] = StoN3(_.substr(e + 30, 2))),
-          (n_B_manual[40] = StoN3(_.substr(e + 32, 3))),
-          (n_B_manual[41] = StoN3(_.substr(e + 35, 2))),
-          (n_B_manual[42] = StoN3(_.substr(e + 37, 3))),
-          (n_B_manual[43] = StoN3(_.substr(e + 40, 3))),
-          (n_B_manual[44] = StoN3(_.substr(e + 43, 2))),
-          (n_B_manual[48] = StoN3(_.substr(e + 45, 2))),
-          (n_B_manual[49] = StoN3(_.substr(e + 47, 2))),
-          (n_B_manual[50] = StoN3(_.substr(e + 49, 2))),
-          (n_B_manual[51] = StoN3(_.substr(e + 51, 2))),
-          (n_B_manual[52] = StoN3(_.substr(e + 53, 2))),
-          (n_B_manual[53] = StoN3(_.substr(e + 55, 3))),
-          (n_B_manual[54] = StoN3(_.substr(e + 58, 2))),
-          (n_B_manual[55] = StoN3(_.substr(e + 60, 2))),
-          (e += 61)),
-        (c.Conf01.value = StoN3(_.substr(e + 1, 2))),
-        (c.B_num.value = StoN3(_.substr(e + 3, 1))),
-        (c.A8_Skill14.value = StoN3(_.substr(e + 4, 1))),
-        (c.A8_Skill15.value = StoN3(_.substr(e + 5, 2))),
-        (u = StoN3(_.substr(e + 7, 1))),
-        StCalc(1),
-        ActiveSkillSetPlus(),
-        (c.A_ActiveSkill.value = baseSkillId(StoN3(_.substr(e + 8, 2)))),
-        ClickActiveSkill(),
-        (c.A_ActiveSkillLV.value = StoN3(_.substr(e + 10, 1))),
-        c.contains(c.SkillSubNum) && (c.SkillSubNum.value = StoN3(_.substr(e + 11, 3))));
-      for (var U = 0, C = 0; C <= 20; C++)
-        if (m_JobBuff[n_A_JOB][C] == 441) {
-          if (
-            (U = c.A_skill6.value) &&
-            (SKILLID.FIRE_BOLT == n_A_ActiveSkill ||
-              SKILLID.COLD_BOLT == n_A_ActiveSkill ||
-              SKILLID.LIGHTNING_BOLT == n_A_ActiveSkill ||
-              SKILLID.FIRE_BOLT_HINDSIGHT == n_A_ActiveSkill ||
-              SKILLID.COLD_BOLT_HINDSIGHT == n_A_ActiveSkill ||
-              SKILLID.LIGHTNING_BOLT_HINDSIGHT == n_A_ActiveSkill)
-          ) {
-            var r = 1 * U + 3;
-            (myInnerHtml(
-              "AASkill",
-              'Double Bolt chance: <select name="SkillSubNum" onChange="calc()"></select>',
-              0,
-            ),
-              (c.SkillSubNum.options[0] = new documento.Opzione("No chance (0%)", 0)),
-              (c.SkillSubNum.options[1] = new documento.Opzione(
-                "Average chance (" + 10 * r + "%)",
-                r,
-              )),
-              (c.SkillSubNum.options[2] = new documento.Opzione("Max chance (100%)", 10)),
-              (c.SkillSubNum.value = StoN3(_.substr(e + 11, 3))));
-          }
-          break;
-        }
-      var h = normalizeSavedMonsterId(StoN3(_.substr(e + 14, 2)), S <= 13);
-      ((targetData[0] = h),
-        (c.B_Enemy.value = h),
-        calc(),
-        Bskill(),
-        (c.B_AtkSkill.value = StoN3(_.substr(e + 16, 2))),
-        BClickAtkSkill(),
-        (n_B_AtkSkill = 1 * c.B_AtkSkill.value),
-        (n_B_AtkSkill != 444 &&
-          n_B_AtkSkill != 445 &&
-          n_B_AtkSkill != 125 &&
-          n_B_AtkSkill != 131) ||
-          (c.BSkillSubNum.value = StoN3(_.substr(e + 18, 3))),
-        (c.B_AtkRange.value = StoN3(_.substr(e + 21, 1))),
-        (c.B_AtkElem.value = StoN3(_.substr(e + 22, 1))),
-        (c.server.value = StoN3(_.substr(e + 24, 1))),
-        (c.maxASPD.value = StoN3(_.substr(e + 25, 1))),
-        S >= 18 &&
-          ((c.A_DICASTES_SHOULDER_PRIMARY.value = StoN3(_.substr(e + 26, 1))),
-          (c.A_DICASTES_SHOULDER_STATS.value = StoN3(_.substr(e + 27, 1))),
-          (c.A_DICASTES_SHOES_PRIMARY.value = StoN3(_.substr(e + 28, 1))),
-          (c.A_DICASTES_SHOES_STATS.value = StoN3(_.substr(e + 29, 1))),
-          (c.A_DICASTES_ACCESSORY1_PRIMARY.value = StoN3(_.substr(e + 30, 1))),
-          (c.A_DICASTES_ACCESSORY1_STATS.value = StoN3(_.substr(e + 31, 1))),
-          (c.A_DICASTES_ACCESSORY2_PRIMARY.value = StoN3(_.substr(e + 32, 1))),
-          (c.A_DICASTES_ACCESSORY2_STATS.value = StoN3(_.substr(e + 33, 1))),
-          (c.A_DICASTES_SHOULDER_STATS2.value = StoN3(_.substr(e + 34, 1))),
-          (c.A_DICASTES_SHOES_STATS2.value = StoN3(_.substr(e + 35, 1))),
-          (c.A_DICASTES_ACCESSORY1_STATS2.value = StoN3(_.substr(e + 36, 1))),
-          (c.A_DICASTES_ACCESSORY2_STATS2.value = StoN3(_.substr(e + 37, 1)))),
-        refreshFields(),
-        (SRV = 1 * c.server.value),
-        calc());
-    } else {
-      ((b = 90),
-        (S -= 2) >= 4 && (b = 98),
-        StoN2(_.substr(1, 2)) == 20 && StoN2(_.substr(b, 1))
-          ? (SuperNoviceFullWeaponCHECK = 1)
-          : (SuperNoviceFullWeaponCHECK = 0),
-        S >= 6
-          ? ((c.all_dmgSkills.checked = !0), (c.all_card.checked = !0))
-          : (c.restrict_jobequip.checked = !0),
-        (c.restrict_lvlequip.checked = !1),
-        (c.restrict_equipslot.checked = !1),
-        (c.restrict_cardslot.checked = !1),
-        restrictCardslot(0),
-        (c.maxASPD.value = 0),
-        (c.A_JOB.value = StoN2(_.substr(1, 2))),
-        ClickJob(StoN2(_.substr(1, 2)), 2),
-        (c.A_BaseLV.value = StoN2(_.substr(3, 2))),
-        (c.A_JobLV.value = StoN2(_.substr(5, 2))),
-        (c.A_STR.value = StoN2(_.substr(7, 2))),
-        (c.A_AGI.value = StoN2(_.substr(9, 2))),
-        (c.A_VIT.value = StoN2(_.substr(11, 2))),
-        (c.A_DEX.value = StoN2(_.substr(13, 2))),
-        (c.A_INT.value = StoN2(_.substr(15, 2))),
-        (c.A_LUK.value = StoN2(_.substr(17, 2))),
-        (n_A_Buf7[35] = Math.floor(StoN2(_.substr(19, 1)) / 10)),
-        (c.A_Weapon_element.value = StoN2(_.substr(19, 1)) % 10));
-      var f = normalizeEquipmentId(StoN2(_.substr(23, 2)));
-      if (
-        ((c.A_weapon1.value = f),
-        (n_A_WeaponType = StoN2(_.substr(20, 1))),
-        ClickWeaponType(n_A_WeaponType),
-        (c.A_JOB.value != 8 && c.A_JOB.value != 22) ||
-          n_A_WeaponType == 11 ||
-          ((n_A_Weapon2Type = StoN2(_.substr(21, 1))), ClickWeaponType2(n_A_Weapon2Type)),
-        n_A_JobSet(),
-        (n_A_JobClass() == 2 || n_A_JobClass() == 4 || (n_A_JOB == 45 && n_A_WeaponType != 0)) &&
-          (c.A_Arrow.value = StoN2(_.substr(22, 1))),
-        ClickB_Item(f),
-        (c.A_Weapon_refine.value = StoN2(_.substr(25, 1))),
-        (c.A_weapon1_card1.value = StoN2(_.substr(26, 2))),
-        (c.A_weapon1_card2.value = StoN2(_.substr(28, 2))),
-        (c.A_weapon1_card3.value = StoN2(_.substr(30, 2))),
-        (c.A_weapon1_card4.value = StoN2(_.substr(32, 2))),
-        n_Nitou
-          ? ((c.A_weapon2.value = StoN2(_.substr(34, 2))),
-            (c.A_Weapon2_refine.value = StoN2(_.substr(36, 1))),
-            (c.A_weapon2_card1.value = StoN2(_.substr(37, 2))),
-            (c.A_weapon2_card2.value = StoN2(_.substr(39, 2))),
-            (c.A_weapon2_card3.value = StoN2(_.substr(41, 2))),
-            (c.A_weapon2_card4.value = StoN2(_.substr(43, 2))),
-            (c.A_left.value = 305),
-            (c.A_LEFT_REFINE.value = 0),
-            (c.A_left_card.value = 0))
-          : ((c.A_left.value = StoN2(_.substr(34, 2))),
-            (c.A_LEFT_REFINE.value = StoN2(_.substr(36, 1))),
-            (c.A_left_card.value = StoN2(_.substr(37, 2)))),
-        (c.A_head1.value = StoN2(_.substr(45, 2))),
-        (c.A_head1_card.value = StoN2(_.substr(47, 2))),
-        (c.A_head2.value = StoN2(_.substr(49, 2))),
-        (c.A_head2_card.value = StoN2(_.substr(51, 2))),
-        (c.A_head3.value = StoN2(_.substr(53, 2))),
-        (c.A_body.value = StoN2(_.substr(55, 2))),
-        (c.A_body_card.value = StoN2(_.substr(57, 2))),
-        (c.A_shoulder.value = StoN2(_.substr(59, 2))),
-        (c.A_shoulder_card.value = StoN2(_.substr(61, 2))),
-        (c.A_shoes.value = StoN2(_.substr(63, 2))),
-        (c.A_shoes_card.value = StoN2(_.substr(65, 2))),
-        (c.A_acces1.value = StoN2(_.substr(67, 2))),
-        (c.A_acces1_card.value = StoN2(_.substr(69, 2))),
-        (c.A_acces2.value = StoN2(_.substr(71, 2))),
-        (c.A_acces2_card.value = StoN2(_.substr(73, 2))),
-        (c.A_HEAD_REFINE.value = StoN2(_.substr(75, 1))),
-        (c.A_BODY_REFINE.value = StoN2(_.substr(76, 1))),
-        (c.A_SHOULDER_REFINE.value = StoN2(_.substr(77, 1))),
-        (c.A_SHOES_REFINE.value = StoN2(_.substr(78, 1))),
-        (u = StoN2(_.substr(79, 1))),
-        (c.A_adopted.checked = Math.floor(u / 16)),
-        S < 4)
-      ) {
-        ((c.server.value = SERVERID.IRO_CLASSIC),
-          (c.B_num.value = 0),
-          (c.A8_Skill14.value = 0),
-          (c.A8_Skill15.value = 0),
-          (c.restrict_jobequip.checked = !0),
-          (c.restrict_lvlequip.checked = !1),
-          (c.restrict_equipslot.checked = !1),
-          (c.restrict_cardslot.checked = !1),
-          (c.all_card.checked = !1),
-          (o = StoN2(_.substr(34, 2))) == 1251
-            ? (c.A_left.value = 1827)
-            : n_Nitou
-              ? (c.A_left.value = 305)
-              : (c.A_left.value = o),
-          (o = StoN2(_.substr(45, 2))),
-          (c.A_head1.value =
-            o == 804
-              ? 1849
-              : o == 1246
-                ? 509
-                : o == 1254
-                  ? 1448
-                  : o == 1255
-                    ? 1853
-                    : o == 1256
-                      ? 1854
-                      : o == 1261
-                        ? 1859
-                        : o == 1262
-                          ? 1860
-                          : o == 1268
-                            ? 1830
-                            : o == 1269
-                              ? 1831
-                              : o == 1270
-                                ? 1832
-                                : o == 1272
-                                  ? 1833
-                                  : o == 1273
-                                    ? 1834
-                                    : o == 1274
-                                      ? 1532
-                                      : o == 1275
-                                        ? 1835
-                                        : o == 1276
-                                          ? 1836
-                                          : o == 1277
-                                            ? 1837
-                                            : o == 1281
-                                              ? 1838
-                                              : o == 1284
-                                                ? 1251
-                                                : o == 1287
-                                                  ? 1254
-                                                  : o == 1288
-                                                    ? 1495
-                                                    : o == 1290
-                                                      ? 1403
-                                                      : o == 1293
-                                                        ? 1551
-                                                        : o == 1294
-                                                          ? 1552
-                                                          : o == 1295
-                                                            ? 1274
-                                                            : o == 1296
-                                                              ? 1275
-                                                              : o == 1297
-                                                                ? 1276
-                                                                : o == 1298
-                                                                  ? 1548
-                                                                  : o == 1299
-                                                                    ? 1278
-                                                                    : o == 1300
-                                                                      ? 1279
-                                                                      : o == 1301
-                                                                        ? 1280
-                                                                        : o == 1302
-                                                                          ? 1281
-                                                                          : o == 1303
-                                                                            ? 1550
-                                                                            : o == 1304
-                                                                              ? 1283
-                                                                              : o == 1305
-                                                                                ? 1284
-                                                                                : o == 1306
-                                                                                  ? 1285
-                                                                                  : o == 1307
-                                                                                    ? 1483
-                                                                                    : o == 1308
-                                                                                      ? 1484
-                                                                                      : o == 1309
-                                                                                        ? 1553
-                                                                                        : o == 1310
-                                                                                          ? 1289
-                                                                                          : o ==
-                                                                                              1311
-                                                                                            ? 1290
-                                                                                            : o ==
-                                                                                                1312
-                                                                                              ? 1291
-                                                                                              : o ==
-                                                                                                  1313
-                                                                                                ? 1292
-                                                                                                : o ==
-                                                                                                    1314
-                                                                                                  ? 1487
-                                                                                                  : o ==
-                                                                                                      1315
-                                                                                                    ? 1294
-                                                                                                    : o ==
-                                                                                                        1316
-                                                                                                      ? 1295
-                                                                                                      : o ==
-                                                                                                          1317
-                                                                                                        ? 1405
-                                                                                                        : o ==
-                                                                                                            1318
-                                                                                                          ? 1264
-                                                                                                          : o ==
-                                                                                                              1319
-                                                                                                            ? 565
-                                                                                                            : o ==
-                                                                                                                1320
-                                                                                                              ? 1406
-                                                                                                              : o ==
-                                                                                                                  1321
-                                                                                                                ? 1407
-                                                                                                                : o ==
-                                                                                                                    1323
-                                                                                                                  ? 1839
-                                                                                                                  : o ==
-                                                                                                                      1324
-                                                                                                                    ? 1445
-                                                                                                                    : o ==
-                                                                                                                        1325
-                                                                                                                      ? 1840
-                                                                                                                      : o ==
-                                                                                                                          1326
-                                                                                                                        ? 1841
-                                                                                                                        : o ==
-                                                                                                                            1328
-                                                                                                                          ? 1842
-                                                                                                                          : o ==
-                                                                                                                              1330
-                                                                                                                            ? 1844
-                                                                                                                            : o ==
-                                                                                                                                1333
-                                                                                                                              ? 1846
-                                                                                                                              : o ==
-                                                                                                                                  1334
-                                                                                                                                ? 1847
-                                                                                                                                : o ==
-                                                                                                                                    1336
-                                                                                                                                  ? 1299
-                                                                                                                                  : o ==
-                                                                                                                                      1337
-                                                                                                                                    ? 1321
-                                                                                                                                    : o ==
-                                                                                                                                        1378
-                                                                                                                                      ? 804
-                                                                                                                                      : o ==
-                                                                                                                                          1380
-                                                                                                                                        ? 1507
-                                                                                                                                        : o ==
-                                                                                                                                            1381
-                                                                                                                                          ? 1850
-                                                                                                                                          : o ==
-                                                                                                                                              1382
-                                                                                                                                            ? 1851
-                                                                                                                                            : o),
-          (o = StoN2(_.substr(49, 2))),
-          (c.A_head2.value =
-            o == 1250
-              ? 1826
-              : o == 1285
-                ? 1252
-                : o == 1291
-                  ? 1670
-                  : o == 1292
-                    ? 1404
-                    : o == 1322
-                      ? 452
-                      : o == 1332
-                        ? 1845
-                        : o == 1379
-                          ? 1414
-                          : o),
-          (o = StoN2(_.substr(53, 2))),
-          (c.A_head3.value =
-            o == 1271 ? 1523 : o == 1283 ? 1250 : o == 1289 ? 1319 : o == 1331 ? 1262 : o),
-          (o = StoN2(_.substr(55, 2))),
-          (c.A_body.value = o == 1335 ? 1848 : o),
-          (o = StoN2(_.substr(59, 2))),
-          (c.A_shoulder.value = o == 1329 ? 1843 : o),
-          (o = StoN2(_.substr(63, 2))),
-          (c.A_shoes.value = o == 1252 ? 1828 : o),
-          (o = StoN2(_.substr(67, 2))),
-          (c.A_acces1.value = o == 1266 ? 1547 : o == 1257 ? 1855 : o == 1259 ? 1857 : o),
-          (o = StoN2(_.substr(71, 2))),
-          (c.A_acces2.value = o == 1266 ? 1547 : o == 1257 ? 1855 : o == 1259 ? 1857 : o));
-        var o = StoN2(_.substr(57, 2));
-        if (
-          ((c.A_body_card.value =
-            o == 75
-              ? 139
-              : o == 128
-                ? 131
-                : o == 129
-                  ? 132
-                  : o == 130
-                    ? 133
-                    : o == 131
-                      ? 134
-                      : o == 132
-                        ? 128
-                        : o == 133
-                          ? 135
-                          : o == 134
-                            ? 136
-                            : o == 135
-                              ? 137
-                              : o == 136
-                                ? 138
-                                : o == 137
-                                  ? 75
-                                  : o == 138
-                                    ? 140
-                                    : o),
-          (o = StoN2(_.substr(61, 2))),
-          (c.A_shoulder_card.value = o == 139 ? 141 : o),
-          (o = StoN2(_.substr(65, 2))),
-          (c.A_shoes_card.value = o == 140 ? 129 : o),
-          (o = StoN2(_.substr(69, 2))),
-          (c.A_acces1_card.value =
-            o == 75
-              ? 139
-              : o == 141
-                ? 142
-                : o == 142
-                  ? 143
-                  : o == 143
-                    ? 144
-                    : o == 144
-                      ? 145
-                      : o == 145
-                        ? 146
-                        : o == 146
-                          ? 147
-                          : o == 147
-                            ? 148
-                            : o == 148
-                              ? 149
-                              : o == 149
-                                ? 150
-                                : o == 150
-                                  ? 151
-                                  : o == 151
-                                    ? 152
-                                    : o == 152
-                                      ? 130
-                                      : o),
-          (o = StoN2(_.substr(73, 2))),
-          (c.A_acces2_card.value =
-            o == 75
-              ? 139
-              : o == 141
-                ? 142
-                : o == 142
-                  ? 143
-                  : o == 143
-                    ? 144
-                    : o == 144
-                      ? 145
-                      : o == 145
-                        ? 146
-                        : o == 146
-                          ? 147
-                          : o == 147
-                            ? 148
-                            : o == 148
-                              ? 149
-                              : o == 149
-                                ? 150
-                                : o == 150
-                                  ? 151
-                                  : o == 151
-                                    ? 152
-                                    : o == 152
-                                      ? 130
-                                      : o),
-          (d = StoN2(_.substr(80, 1))),
-          c.A_JOB.value == 12 || c.A_JOB.value == 26)
-        ) {
-          for (a = 0; a < 4; a++) {
-            for (B = 0; B < m_JobBuffAddings[c.A_JOB.value]; B++)
-              documento.getElementById("A_skill" + B).value = 0;
-            ((p = a + m_JobBuffAddings[c.A_JOB.value]),
-              (documento.getElementById("A_skill" + p).value = StoN2(_.substr(81 + a, 1))));
-          }
-          for (
-            StoN2(_.substr(85, 1)) > 0 && (documento.getElementById("A_skill6").value = 1),
-              n_A_Buf2[7] = StoN2(_.substr(86, 1)),
-              a = 5;
-            a < d - 1;
-            a++
-          )
-            ((p = a + m_JobBuffAddings[c.A_JOB.value]),
-              (documento.getElementById("A_skill" + p).value = StoN2(_.substr(82 + a, 1))));
-        } else if (c.A_JOB.value == 13 || c.A_JOB.value == 27) {
-          for (a = 0; a < 8; a++) {
-            for (B = 0; B < m_JobBuffAddings[c.A_JOB.value]; B++)
-              documento.getElementById("A_skill" + B).value = 0;
-            ((p = a + m_JobBuffAddings[c.A_JOB.value]),
-              (documento.getElementById("A_skill" + p).value = StoN2(_.substr(81 + a, 1))));
-          }
-          ((n_A_Buf2[13] = StoN2(_.substr(89, 1))),
-            (documento.getElementById("A_skill10").value = StoN2(_.substr(90, 1))),
-            (n_A_Buf2[15] = StoN2(_.substr(91, 1))),
-            (documento.getElementById("A_skill11").value = StoN2(_.substr(92, 1))),
-            (n_A_Buf2[14] = StoN2(_.substr(93, 1))),
-            (a += 12));
-        } else if (c.A_JOB.value == 15 || c.A_JOB.value == 29) {
-          for (a = 0; a < 3; a++) {
-            for (B = 0; B < m_JobBuffAddings[c.A_JOB.value]; B++)
-              documento.getElementById("A_skill" + B).value = 0;
-            ((p = a + m_JobBuffAddings[c.A_JOB.value]),
-              (documento.getElementById("A_skill" + p).value = StoN2(_.substr(81 + a, 1))));
-          }
-          for (n_A_Buf2[12] = StoN2(_.substr(84, 1)), a = 3; a < d - 1; a++)
-            ((p = a + m_JobBuffAddings[c.A_JOB.value]),
-              (documento.getElementById("A_skill" + p).value = StoN2(_.substr(82 + a, 1))));
-        } else
-          for (a = 0; a < d; a++) {
-            for (B = 0; B < m_JobBuffAddings[c.A_JOB.value]; B++)
-              documento.getElementById("A_skill" + B).value = 0;
-            ((p = a + m_JobBuffAddings[c.A_JOB.value]),
-              (documento.getElementById("A_skill" + p).value = StoN2(_.substr(81 + a, 1))));
-          }
-        (BufSW(0),
-          (e = 81 + d),
-          StoN2(_.substr(e, 1)) == 1 &&
-            ((n_A_Buf2[0] = StoN2(_.substr(e + 1, 1))),
-            (n_A_Buf2[1] = StoN2(_.substr(e + 2, 1))),
-            (n_A_Buf2[4] = StoN2(_.substr(e + 3, 1))),
-            (n_A_Buf2[9] = StoN2(_.substr(e + 4, 1))),
-            (n_A_Buf2[2] = Math.floor(StoN2(_.substr(e + 5, 1)) / 6)),
-            (n_A_Buf2[6] = StoN2(_.substr(e + 5, 1)) % 6),
-            (n_A_Buf2[8] = Math.floor(StoN2(_.substr(e + 6, 1)) / 6)),
-            (n_A_Buf2[12] = StoN2(_.substr(e + 6, 1)) % 6),
-            (n_A_Buf2[10] = Math.floor(StoN2(_.substr(e + 7, 1)) / 6)),
-            (n_A_Buf2[11] = StoN2(_.substr(e + 7, 1)) % 6),
-            (u = StoN2(_.substr(e + 8, 1))),
-            (n_A_Buf2[3] = Math.floor(u / 16)),
-            (n_A_Buf2[5] = Math.floor((u % 16) / 8)),
-            (n_A_Buf2[7] = Math.floor((u % 8) / 4)),
-            (n_A_Buf6[7] = Math.floor((u % 4) / 2)),
-            (n_A_Buf7[31] = Math.floor((u % 2) / 1)),
-            (e += 8),
-            (c.A_JOB.value != 12 && c.A_JOB.value != 26) ||
-              (StoN2(_.substr(86, 1)) > 0 && (n_A_Buf2[7] = 1)),
-            (c.A_JOB.value != 15 && c.A_JOB.value != 29) ||
-              (StoN2(_.substr(84, 1)) > n_A_Buf2[12] && (n_A_Buf2[12] = StoN2(_.substr(84, 1))))));
-        var g = e;
-        for (
-          e += 8,
-            debufSW(0),
-            e += 1,
-            StoN2(_.substr(e, 1)) == 1 &&
-              ((n_B_debuf[0] = StoN2(_.substr(e + 1, 1))),
-              (n_B_debuf[1] = Math.floor(StoN2(_.substr(e + 2, 1)) / 6)),
-              (n_B_debuf[18] = StoN2(_.substr(e + 2, 1)) % 6),
-              (u = StoN2(_.substr(e + 3, 1))),
-              (n_B_debuf[2] = Math.floor(u / 16)),
-              (n_B_debuf[3] = Math.floor((u % 16) / 8)),
-              (n_B_debuf[4] = Math.floor((u % 8) / 4)),
-              (n_B_debuf[5] = Math.floor((u % 4) / 2)),
-              (n_B_debuf[6] = Math.floor((u % 2) / 1)),
-              (u = StoN2(_.substr(e + 4, 1))),
-              (n_B_debuf[7] = Math.floor(u / 16)),
-              (n_B_debuf[8] = Math.floor((u % 16) / 8)),
-              (n_B_debuf[9] = Math.floor((u % 8) / 4)),
-              (n_B_debuf[10] = Math.floor((u % 4) / 2)),
-              (n_B_debuf[19] = Math.floor((u % 2) / 1)),
-              (n_B_debuf[11] = StoN2(_.substr(e + 5, 1))),
-              (n_B_debuf[12] = StoN2(_.substr(e + 6, 1))),
-              (u = StoN2(_.substr(e + 7, 1))),
-              (n_B_debuf[13] = Math.floor(u / 16)),
-              (n_B_debuf[14] = Math.floor((u % 16) / 8)),
-              (n_B_debuf[15] = Math.floor((u % 8) / 4)),
-              (n_B_debuf[16] = Math.floor((u % 4) / 2)),
-              (n_B_debuf[17] = Math.floor((u % 2) / 1)),
-              (u = StoN2(_.substr(e + 8, 1))),
-              (n_B_debuf[20] = Math.floor(u / 16)),
-              (n_B_debuf[21] = Math.floor((u % 16) / 8)),
-              (n_B_debuf[22] = Math.floor((u % 8) / 4)),
-              (n_B_debuf[23] = Math.floor(StoN2(_.substr(e + 9, 1)) / 6)),
-              (n_B_debuf[24] = StoN2(_.substr(e + 9, 1)) % 6),
-              (e += 9)),
-            EnemyBufSW(0),
-            e += 1,
-            StoN2(_.substr(e, 1)) == 1 &&
-              ((n_B_buf[0] = StoN2(_.substr(e + 1, 1))),
-              (u = StoN2(_.substr(e + 2, 1))),
-              (n_B_buf[1] = Math.floor(u / 16)),
-              (n_B_buf[2] = Math.floor((u % 16) / 8)),
-              (n_B_buf[3] = Math.floor((u % 8) / 4)),
-              (n_B_buf[4] = Math.floor((u % 4) / 2)),
-              (n_B_buf[6] = StoN2(_.substr(e + 3, 2))),
-              (n_B_buf[7] = Math.floor(StoN2(_.substr(e + 5, 1)) / 6)),
-              (n_B_buf[8] = StoN2(_.substr(e + 5, 1)) % 6),
-              (u = StoN2(_.substr(e + 6, 1))),
-              (n_B_buf[9] = Math.floor(u / 16)),
-              (e += 6)),
-            v = [0, 0, 0, 0, 0],
-            u = StoN2(_.substr(e + 1, 1)),
-            v[0] = Math.floor(u / 16),
-            v[1] = Math.floor((u % 16) / 8),
-            v[2] = Math.floor((u % 8) / 4),
-            v[3] = Math.floor((u % 4) / 2),
-            v[4] = Math.floor((u % 2) / 1),
-            e += 1,
-            Buf3SW(0),
-            v[0] &&
-              ((n_A_Buf3[0] = StoN2(_.substr(e + 1, 1))),
-              (n_A_Buf3[1] = StoN2(_.substr(e + 2, 1))),
-              (n_A_Buf3[2] = StoN2(_.substr(e + 3, 1))),
-              (n_A_Buf3[3] = StoN2(_.substr(e + 4, 1))),
-              (n_A_Buf3[4] = StoN2(_.substr(e + 5, 1))),
-              (n_A_Buf3[5] = StoN2(_.substr(e + 6, 1))),
-              (n_A_Buf3[6] = StoN2(_.substr(e + 7, 1))),
-              (n_A_Buf3[7] = Math.floor(StoN2(_.substr(e + 8, 1)) / 6)),
-              (n_A_Buf3[8] = StoN2(_.substr(e + 8, 1)) % 6),
-              (n_A_Buf3[9] = Math.floor(StoN2(_.substr(e + 9, 1)) / 6)),
-              (n_A_Buf3[10] = StoN2(_.substr(e + 9, 1)) % 6),
-              (n_A_Buf3[11] = Math.floor(StoN2(_.substr(e + 10, 1)) / 16)),
-              (n_A_Buf3[18] = Math.floor((StoN2(_.substr(e + 10, 1)) % 16) / 8)),
-              (n_A_Buf3[12] = StoN2(_.substr(e + 11, 2))),
-              (n_A_Buf3[13] = StoN2(_.substr(e + 13, 2))),
-              (n_A_Buf3[14] = StoN2(_.substr(e + 15, 2))),
-              (n_A_Buf3[15] = StoN2(_.substr(e + 17, 2))),
-              (n_A_Buf3[16] = StoN2(_.substr(e + 19, 2))),
-              (n_A_Buf3[17] = StoN2(_.substr(e + 21, 2))),
-              (n_A_Buf3[20] = StoN2(_.substr(e + 23, 2))),
-              (n_A_Buf3[30] = StoN2(_.substr(e + 25, 1))),
-              (n_A_Buf3[21] = StoN2(_.substr(e + 26, 2))),
-              (n_A_Buf3[31] = StoN2(_.substr(e + 28, 1))),
-              (n_A_Buf3[22] = StoN2(_.substr(e + 29, 2))),
-              (n_A_Buf3[29] = StoN2(_.substr(e + 31, 2))),
-              (n_A_Buf3[32] = StoN2(_.substr(e + 33, 1))),
-              (n_A_Buf3[23] = StoN2(_.substr(e + 34, 2))),
-              (n_A_Buf3[33] = StoN2(_.substr(e + 36, 1))),
-              (n_A_Buf3[24] = StoN2(_.substr(e + 37, 2))),
-              (n_A_Buf3[34] = StoN2(_.substr(e + 39, 1))),
-              (n_A_Buf3[25] = StoN2(_.substr(e + 40, 2))),
-              (n_A_Buf3[35] = StoN2(_.substr(e + 42, 1))),
-              (n_A_Buf3[26] = StoN2(_.substr(e + 43, 2))),
-              (n_A_Buf3[36] = StoN2(_.substr(e + 45, 1))),
-              (n_A_Buf3[19] = 1),
-              (e += 45)),
-            Buf4SW(0),
-            v[1] &&
-              ((u = StoN2(_.substr(e + 1, 1))),
-              (n_A_Buf3[40] = Math.floor(u / 16)),
-              (n_A_Buf3[41] = Math.floor(StoN2(_.substr(e + 2, 1)) / 6)),
-              (n_A_Buf3[42] = StoN2(_.substr(e + 2, 1)) % 6),
-              (n_A_Buf3[43] = Math.floor(StoN2(_.substr(e + 3, 1)) / 6)),
-              (n_A_Buf3[44] = StoN2(_.substr(e + 3, 1)) % 6),
-              (e += 3)),
-            v[2] &&
-              ((u = StoN2(_.substr(e + 1, 1))),
-              (n_A_Buf2[16] = Math.floor(u / 16)),
-              (n_A_Buf2[17] = Math.floor((u % 16) / 8)),
-              (n_A_Buf2[18] = Math.floor((u % 8) / 4)),
-              (n_A_Buf2[19] = Math.floor((u % 4) / 2)),
-              (n_A_Buf2[20] = Math.floor((u % 2) / 1)),
-              (u = StoN2(_.substr(e + 2, 1))),
-              (n_A_Buf2[21] = Math.floor(u / 16)),
-              (e += 2)),
-            Buf6SW(0),
-            v[3] &&
-              ((n_A_Buf6[0] = Math.floor(StoN2(_.substr(e + 1, 1)) / 6)),
-              (n_A_Buf6[1] = StoN2(_.substr(e + 1, 1)) % 6),
-              (n_A_Buf6[2] = Math.floor(StoN2(_.substr(e + 2, 1)) / 6)),
-              (n_A_Buf6[4] = StoN2(_.substr(e + 2, 1)) % 6),
-              (n_A_Buf6[5] = Math.floor(StoN2(_.substr(e + 3, 1)) / 6)),
-              (n_A_Buf7[34] = StoN2(_.substr(e + 4, 1))),
-              (u = StoN2(_.substr(e + 5, 1))),
-              (n_A_Buf6[6] = Math.floor(u / 16)),
-              (e += 5)),
-            Buf7SW(0),
-            v[4] &&
-              ((n_A_Buf7[3] = StoN2(_.substr(e + 1, 2))),
-              (n_A_Buf7[4] = StoN2(_.substr(e + 3, 2))),
-              (n_A_Buf7[5] = StoN2(_.substr(e + 5, 2))),
-              (n_A_Buf7[6] = StoN2(_.substr(e + 7, 2))),
-              (n_A_Buf7[7] = StoN2(_.substr(e + 9, 2))),
-              (n_A_Buf7[8] = StoN2(_.substr(e + 11, 2))),
-              (u = StoN2(_.substr(e + 13, 1))),
-              (n_A_Buf7[0] = Math.floor(u / 16)),
-              (n_A_Buf7[1] = Math.floor((u % 16) / 8)),
-              (n_A_Buf7[2] = Math.floor((u % 8) / 4)),
-              (n_A_Buf7[9] = Math.floor((u % 4) / 2)),
-              (n_A_Buf7[10] = Math.floor((u % 2) / 1)),
-              (u = StoN2(_.substr(e + 14, 1))),
-              (n_A_Buf7[11] = Math.floor(u / 16)),
-              (n_A_Buf7[12] = Math.floor((u % 16) / 8)),
-              (n_A_Buf7[13] = Math.floor((u % 8) / 4)),
-              (n_A_Buf7[14] = Math.floor((u % 4) / 2)),
-              (e += 14)),
-            a = 0;
-          a <= 55;
-          a++
-        )
-          n_A_Buf9[a] = 0;
-        for (
-          n_A_Buf9[2] = 10,
-            n_A_Buf9[4] = 20,
-            n_A_Buf9[6] = 23,
-            n_A_Buf9[10] = 10,
-            n_A_Buf9[12] = 20,
-            n_A_Buf9[14] = 23,
-            n_Skill9SW = 0,
-            a = 0;
-          a <= 55;
-          a++
-        )
-          n_B_manual[a] = 0;
-        ((n_Skill10SW = 0),
-          (c.Conf01.value = StoN2(_.substr(e + 1, 2))),
-          (e += 2),
-          S >= 1 && ((c.A_HSE.value = StoN2(_.substr(e + 1, 2))), (e += 2)),
-          S >= 2 && ((c.A_HSE_HEAD1.value = StoN2(_.substr(e + 1, 2))), (e += 2)),
-          StCalc(1),
-          ActiveSkillSetPlus(),
-          (e = g),
-          (c.A_ActiveSkill.value = baseSkillId(StoN2(_.substr(e + 1, 2)))),
-          ClickActiveSkill(),
-          (c.A_ActiveSkillLV.value = StoN2(_.substr(e + 3, 1))),
-          c.contains(c.SkillSubNum) && (c.SkillSubNum.value = StoN2(_.substr(e + 4, 3))),
-          (1 * c.A_ActiveSkill.value != 159 &&
-            1 * c.A_ActiveSkill.value != 384 &&
-            1 * c.A_ActiveSkill.value != 324) ||
-            (c.SkillSubNum.value = m_Item[c.A_left.value][6]),
-          (c.B_Enemy.value = normalizeSavedMonsterId(StoN2(_.substr(e + 7, 2)), !0)));
-      } else if (S >= 4) {
-        for (
-          c.A_HSE.value = StoN2(_.substr(80, 2)),
-            c.A_HSE_HEAD1.value = StoN2(_.substr(82, 2)),
-            d = StoN2(_.substr(88, 1)),
-            a = 0;
-          a < d;
-          a++
-        ) {
-          for (B = 0; B < m_JobBuffAddings[c.A_JOB.value]; B++)
-            documento.getElementById("A_skill" + B).value = 0;
-          ((p = a + m_JobBuffAddings[c.A_JOB.value]),
-            (documento.getElementById("A_skill" + p).value = StoN2(_.substr(89 + a, 1))));
-        }
-        if (
-          (BufSW(0),
-          (e = 89 + a),
-          StoN2(_.substr(e, 1)) == 1 &&
-            ((n_A_Buf2[0] = StoN2(_.substr(e + 1, 1))),
-            (n_A_Buf2[1] = StoN2(_.substr(e + 2, 1))),
-            (n_A_Buf2[4] = StoN2(_.substr(e + 3, 1))),
-            (n_A_Buf2[9] = StoN2(_.substr(e + 4, 1))),
-            (n_A_Buf2[13] = StoN2(_.substr(e + 5, 1))),
-            (n_A_Buf2[14] = StoN2(_.substr(e + 6, 1))),
-            (n_A_Buf2[2] = Math.floor(StoN2(_.substr(e + 7, 1)) / 6)),
-            (n_A_Buf2[6] = StoN2(_.substr(e + 7, 1)) % 6),
-            (n_A_Buf2[10] = Math.floor(StoN2(_.substr(e + 8, 1)) / 6)),
-            (n_A_Buf2[11] = StoN2(_.substr(e + 8, 1)) % 6),
-            (n_A_Buf2[12] = Math.floor(StoN2(_.substr(e + 9, 1)) / 6)),
-            (n_A_Buf2[15] = StoN2(_.substr(e + 9, 1)) % 6),
-            (u = StoN2(_.substr(e + 10, 1))),
-            (n_A_Buf2[3] = Math.floor(u / 16)),
-            (n_A_Buf2[5] = Math.floor((u % 16) / 8)),
-            (n_A_Buf2[7] = Math.floor((u % 8) / 4)),
-            (n_A_Buf2[8] = Math.floor((u % 4) / 2)),
-            (n_A_Buf2[16] = Math.floor((u % 2) / 1)),
-            (u = StoN2(_.substr(e + 11, 1))),
-            (n_A_Buf2[17] = Math.floor(u / 16)),
-            (n_A_Buf2[18] = Math.floor((u % 16) / 8)),
-            (n_A_Buf2[19] = Math.floor((u % 8) / 4)),
-            (n_A_Buf2[20] = Math.floor((u % 4) / 2)),
-            (n_A_Buf2[21] = Math.floor((u % 2) / 1)),
-            (e += 11)),
-          debufSW(0),
-          (e += 1),
-          StoN2(_.substr(e, 1)) == 1 &&
-            ((n_B_debuf[0] = StoN2(_.substr(e + 1, 1))),
-            (n_B_debuf[1] = Math.floor(StoN2(_.substr(e + 2, 1)) / 6)),
-            (n_B_debuf[18] = StoN2(_.substr(e + 2, 1)) % 6),
-            (u = StoN2(_.substr(e + 3, 1))),
-            (n_B_debuf[2] = Math.floor(u / 16)),
-            (n_B_debuf[3] = Math.floor((u % 16) / 8)),
-            (n_B_debuf[4] = Math.floor((u % 8) / 4)),
-            (n_B_debuf[5] = Math.floor((u % 4) / 2)),
-            (n_B_debuf[6] = Math.floor((u % 2) / 1)),
-            (u = StoN2(_.substr(e + 4, 1))),
-            (n_B_debuf[7] = Math.floor(u / 16)),
-            (n_B_debuf[8] = Math.floor((u % 16) / 8)),
-            (n_B_debuf[9] = Math.floor((u % 8) / 4)),
-            (n_B_debuf[10] = Math.floor((u % 4) / 2)),
-            (n_B_debuf[19] = Math.floor((u % 2) / 1)),
-            (n_B_debuf[11] = StoN2(_.substr(e + 5, 1))),
-            (n_B_debuf[12] = StoN2(_.substr(e + 6, 1))),
-            (u = StoN2(_.substr(e + 7, 1))),
-            (n_B_debuf[13] = Math.floor(u / 16)),
-            (n_B_debuf[14] = Math.floor((u % 16) / 8)),
-            (n_B_debuf[15] = Math.floor((u % 8) / 4)),
-            (n_B_debuf[16] = Math.floor((u % 4) / 2)),
-            (n_B_debuf[17] = Math.floor((u % 2) / 1)),
-            (u = StoN2(_.substr(e + 8, 1))),
-            (n_B_debuf[20] = Math.floor(u / 16)),
-            (n_B_debuf[21] = Math.floor((u % 16) / 8)),
-            (n_B_debuf[22] = Math.floor((u % 8) / 4)),
-            (n_B_debuf[23] = Math.floor(StoN2(_.substr(e + 9, 1)) / 6)),
-            (n_B_debuf[24] = StoN2(_.substr(e + 9, 1)) % 6),
-            (e += 9)),
-          EnemyBufSW(0),
-          (e += 1),
-          StoN2(_.substr(e, 1)) == 1 &&
-            ((n_B_buf[0] = StoN2(_.substr(e + 1, 1))),
-            (u = StoN2(_.substr(e + 2, 1))),
-            (n_B_buf[1] = Math.floor(u / 16)),
-            (n_B_buf[2] = Math.floor((u % 16) / 8)),
-            (n_B_buf[3] = Math.floor((u % 8) / 4)),
-            (n_B_buf[4] = Math.floor((u % 4) / 2)),
-            (n_B_buf[9] = Math.floor((u % 2) / 1)),
-            (n_B_buf[6] = StoN2(_.substr(e + 3, 2))),
-            (n_B_buf[7] = Math.floor(StoN2(_.substr(e + 5, 1)) / 6)),
-            (n_B_buf[8] = StoN2(_.substr(e + 5, 1)) % 6),
-            (n_B_buf[5] = StoN2(_.substr(e + 6, 1))),
-            S >= 5 &&
-              ((n_B_buf[10] = StoN2(_.substr(e + 7, 1))),
-              (n_B_buf[11] = StoN2(_.substr(e + 8, 1))),
-              (n_B_buf[12] = StoN2(_.substr(e + 9, 1))),
-              (n_B_buf[13] = StoN2(_.substr(e + 10, 1))),
-              (n_B_buf[14] = StoN2(_.substr(e + 11, 1))),
-              (e += 5)),
-            (e += 6)),
-          (v = [0, 0, 0, 0, 0]),
-          (u = StoN2(_.substr(e + 1, 1))),
-          (v[0] = Math.floor(u / 16)),
-          (v[1] = Math.floor((u % 16) / 8)),
-          (v[2] = Math.floor((u % 8) / 4)),
-          (v[3] = Math.floor((u % 4) / 2)),
-          (v[4] = Math.floor((u % 2) / 1)),
-          (e += 1),
-          Buf3SW(0),
-          v[0] &&
-            ((n_A_Buf3[0] = StoN2(_.substr(e + 1, 1))),
-            (n_A_Buf3[1] = StoN2(_.substr(e + 2, 1))),
-            (n_A_Buf3[2] = StoN2(_.substr(e + 3, 1))),
-            (n_A_Buf3[3] = StoN2(_.substr(e + 4, 1))),
-            (n_A_Buf3[4] = StoN2(_.substr(e + 5, 1))),
-            (n_A_Buf3[5] = StoN2(_.substr(e + 6, 1))),
-            (n_A_Buf3[6] = StoN2(_.substr(e + 7, 1))),
-            (n_A_Buf3[7] = Math.floor(StoN2(_.substr(e + 8, 1)) / 6)),
-            (n_A_Buf3[8] = StoN2(_.substr(e + 8, 1)) % 6),
-            (n_A_Buf3[9] = Math.floor(StoN2(_.substr(e + 9, 1)) / 6)),
-            (n_A_Buf3[10] = StoN2(_.substr(e + 9, 1)) % 6),
-            (n_A_Buf3[11] = Math.floor(StoN2(_.substr(e + 10, 1)) / 16)),
-            (n_A_Buf3[18] = Math.floor((StoN2(_.substr(e + 10, 1)) % 16) / 8)),
-            (n_A_Buf3[12] = StoN2(_.substr(e + 11, 2))),
-            (n_A_Buf3[13] = StoN2(_.substr(e + 13, 2))),
-            (n_A_Buf3[14] = StoN2(_.substr(e + 15, 2))),
-            (n_A_Buf3[15] = StoN2(_.substr(e + 17, 2))),
-            (n_A_Buf3[16] = StoN2(_.substr(e + 19, 2))),
-            (n_A_Buf3[17] = StoN2(_.substr(e + 21, 2))),
-            (n_A_Buf3[20] = StoN2(_.substr(e + 23, 2))),
-            (n_A_Buf3[30] = StoN2(_.substr(e + 25, 1))),
-            (n_A_Buf3[21] = StoN2(_.substr(e + 26, 2))),
-            (n_A_Buf3[31] = StoN2(_.substr(e + 28, 1))),
-            (n_A_Buf3[22] = StoN2(_.substr(e + 29, 2))),
-            (n_A_Buf3[29] = StoN2(_.substr(e + 31, 2))),
-            (n_A_Buf3[32] = StoN2(_.substr(e + 33, 1))),
-            (n_A_Buf3[23] = StoN2(_.substr(e + 34, 2))),
-            (n_A_Buf3[33] = StoN2(_.substr(e + 36, 1))),
-            (n_A_Buf3[24] = StoN2(_.substr(e + 37, 2))),
-            (n_A_Buf3[34] = StoN2(_.substr(e + 39, 1))),
-            (n_A_Buf3[25] = StoN2(_.substr(e + 40, 2))),
-            (n_A_Buf3[35] = StoN2(_.substr(e + 42, 1))),
-            (n_A_Buf3[26] = StoN2(_.substr(e + 43, 2))),
-            (n_A_Buf3[36] = StoN2(_.substr(e + 45, 1))),
-            (n_A_Buf3[19] = 1),
-            S >= 8 &&
-              ((n_A_Buf3[19] = StoN2(_.substr(e + 46, 2))),
-              (n_A_Buf3[37] = StoN2(_.substr(e + 48, 1))),
-              (n_A_Buf3[38] = StoN2(_.substr(e + 49, 2))),
-              (n_A_Buf3[39] = StoN2(_.substr(e + 51, 2))),
-              (n_A_Buf3[27] = StoN2(_.substr(e + 53, 1))),
-              (e += 8)),
-            (e += 45)),
-          Buf4SW(0),
-          v[1] &&
-            ((u = StoN2(_.substr(e + 1, 1))),
-            (n_A_Buf3[40] = Math.floor(u / 16)),
-            (n_A_Buf3[41] = Math.floor(StoN2(_.substr(e + 2, 1)) / 6)),
-            (n_A_Buf3[42] = StoN2(_.substr(e + 2, 1)) % 6),
-            (n_A_Buf3[43] = Math.floor(StoN2(_.substr(e + 3, 1)) / 6)),
-            (n_A_Buf3[44] = StoN2(_.substr(e + 3, 1)) % 6),
-            (e += 3)),
-          Buf6SW(0),
-          v[3] &&
-            ((n_A_Buf6[5] = StoN2(_.substr(e + 1, 1))),
-            (n_A_Buf6[20] = StoN2(_.substr(e + 2, 1))),
-            (n_A_Buf6[0] = Math.floor(StoN2(_.substr(e + 3, 1)) / 6)),
-            (n_A_Buf6[1] = StoN2(_.substr(e + 3, 1)) % 6),
-            (n_A_Buf6[2] = Math.floor(StoN2(_.substr(e + 4, 1)) / 6)),
-            (n_A_Buf6[4] = StoN2(_.substr(e + 4, 1)) % 6),
-            (n_A_Buf6[18] = Math.floor(StoN2(_.substr(e + 5, 1)) / 6)),
-            (n_A_Buf6[19] = StoN2(_.substr(e + 5, 1)) % 6),
-            (u = StoN2(_.substr(e + 6, 1))),
-            (n_A_Buf6[3] = Math.floor(u / 16)),
-            (n_A_Buf6[6] = Math.floor((u % 16) / 8)),
-            (n_A_Buf6[7] = Math.floor((u % 8) / 4)),
-            (n_A_Buf6[8] = Math.floor((u % 4) / 2)),
-            (n_A_Buf6[9] = Math.floor((u % 2) / 1)),
-            (u = StoN2(_.substr(e + 7, 1))),
-            (n_A_Buf6[10] = Math.floor(u / 16)),
-            (n_A_Buf6[11] = Math.floor((u % 16) / 8)),
-            (n_A_Buf6[12] = Math.floor((u % 8) / 4)),
-            (n_A_Buf6[13] = Math.floor((u % 4) / 2)),
-            (n_A_Buf6[14] = Math.floor((u % 2) / 1)),
-            (u = StoN2(_.substr(e + 8, 1))),
-            (n_A_Buf6[15] = Math.floor(u / 16)),
-            (n_A_Buf6[16] = Math.floor((u % 16) / 8)),
-            (n_A_Buf6[17] = Math.floor((u % 8) / 4)),
-            (n_A_Buf6[21] = Math.floor((u % 4) / 2)),
-            (n_A_Buf6[22] = Math.floor((u % 2) / 1)),
-            (e += 8)),
-          Buf7SW(0),
-          v[4] &&
-            ((n_A_Buf7[3] = StoN2(_.substr(e + 1, 1))),
-            (n_A_Buf7[4] = StoN2(_.substr(e + 2, 1))),
-            (n_A_Buf7[5] = StoN2(_.substr(e + 3, 1))),
-            (n_A_Buf7[6] = StoN2(_.substr(e + 4, 1))),
-            (n_A_Buf7[7] = StoN2(_.substr(e + 5, 1))),
-            (n_A_Buf7[8] = StoN2(_.substr(e + 6, 1))),
-            (n_A_Buf7[35] = Math.floor(StoN2(_.substr(e + 7, 1)) / 6)),
-            (n_A_Buf7[42] = StoN2(_.substr(e + 7, 1)) % 6),
-            (n_A_Buf7[39] = Math.floor(StoN2(_.substr(e + 8, 1)) / 6)),
-            (n_A_Buf7[40] = StoN2(_.substr(e + 8, 1)) % 6),
-            (u = StoN2(_.substr(e + 9, 1))),
-            (n_A_Buf7[0] = Math.floor(u / 16)),
-            (n_A_Buf7[1] = Math.floor((u % 16) / 8)),
-            (n_A_Buf7[2] = Math.floor((u % 8) / 4)),
-            (n_A_Buf7[9] = Math.floor((u % 4) / 2)),
-            (n_A_Buf7[10] = Math.floor((u % 2) / 1)),
-            (u = StoN2(_.substr(e + 10, 1))),
-            (n_A_Buf7[11] = Math.floor(u / 16)),
-            (n_A_Buf7[12] = Math.floor((u % 16) / 8)),
-            (n_A_Buf7[13] = Math.floor((u % 8) / 4)),
-            (n_A_Buf7[14] = Math.floor((u % 4) / 2)),
-            (u = StoN2(_.substr(e + 11, 1))),
-            (n_A_Buf7[16] = Math.floor(u / 16)),
-            (n_A_Buf7[17] = Math.floor((u % 16) / 8)),
-            (n_A_Buf7[18] = Math.floor((u % 8) / 4)),
-            (n_A_Buf7[19] = Math.floor((u % 4) / 2)),
-            (n_A_Buf7[20] = Math.floor((u % 2) / 1)),
-            (u = StoN2(_.substr(e + 12, 1))),
-            (n_A_Buf7[21] = Math.floor(u / 16)),
-            (n_A_Buf7[22] = Math.floor((u % 16) / 8)),
-            (n_A_Buf7[23] = Math.floor((u % 8) / 4)),
-            (n_A_Buf7[24] = Math.floor((u % 4) / 2)),
-            (n_A_Buf7[25] = Math.floor((u % 2) / 1)),
-            (u = StoN2(_.substr(e + 13, 1))),
-            (n_A_Buf7[26] = Math.floor(u / 16)),
-            (n_A_Buf7[27] = Math.floor((u % 16) / 8)),
-            (n_A_Buf7[28] = Math.floor((u % 8) / 4)),
-            (n_A_Buf7[29] = Math.floor((u % 4) / 2)),
-            (n_A_Buf7[30] = Math.floor((u % 2) / 1)),
-            (u = StoN2(_.substr(e + 14, 1))),
-            (n_A_Buf7[31] = Math.floor(u / 16)),
-            (n_A_Buf7[32] = Math.floor((u % 16) / 8)),
-            (n_A_Buf7[33] = Math.floor((u % 8) / 4)),
-            (n_A_Buf7[34] = Math.floor((u % 4) / 2)),
-            (n_A_Buf7[36] = Math.floor((u % 2) / 1)),
-            (u = StoN2(_.substr(e + 15, 1))),
-            (n_A_Buf7[37] = Math.floor(u / 16)),
-            (n_A_Buf7[38] = Math.floor((u % 16) / 8)),
-            (n_A_Buf7[41] = Math.floor((u % 8) / 4)),
-            (n_A_Buf7[43] = Math.floor((u % 4) / 2)),
-            n_A_Buf7[43] && (n_A_Buf7[36] = 1),
-            (n_A_Buf7[44] = Math.floor((u % 2) / 1)),
-            (u = StoN2(_.substr(e + 16, 1))),
-            (n_A_Buf7[45] = Math.floor(u / 16)),
-            (n_A_Buf7[46] = Math.floor((u % 16) / 8)),
-            (n_A_Buf7[47] = Math.floor((u % 8) / 4)),
-            (n_A_Buf7[48] = Math.floor((u % 4) / 2)),
-            (n_A_Buf7[49] = Math.floor((u % 2) / 1)),
-            S >= 6 &&
-              ((u = StoN2(_.substr(e + 17, 1))),
-              (n_A_Buf7[50] = Math.floor(u / 16)),
-              (n_A_Buf7[51] = Math.floor((u % 16) / 8)),
-              (n_A_Buf7[52] = Math.floor((u % 8) / 4)),
-              (n_A_Buf7[53] = Math.floor((u % 4) / 2)),
-              (n_A_Buf7[54] = Math.floor((u % 2) / 1)),
-              (n_A_Buf7[55] = StoN2(_.substr(e + 18, 1))),
-              (u = StoN2(_.substr(e + 19, 1))),
-              (n_A_Buf7[56] = Math.floor(u / 16)),
-              (n_A_Buf7[57] = Math.floor((u % 16) / 8)),
-              (n_A_Buf7[58] = Math.floor((u % 8) / 4)),
-              (n_A_Buf7[59] = Math.floor((u % 4) / 2)),
-              (n_A_Buf7[60] = Math.floor((u % 2) / 1)),
-              (e += 3)),
-            (e += 16)),
-          Buf6SW(0),
-          (e += 1),
-          StoN2(_.substr(e, 1)) == 1 &&
-            ((n_A_Buf8[0] = StoN2(_.substr(e + 1, 2))),
-            (n_A_Buf8[3] = StoN2(_.substr(e + 3, 2))),
-            (n_A_Buf8[7] = StoN2(_.substr(e + 5, 2))),
-            (n_A_Buf8[8] = StoN2(_.substr(e + 7, 2))),
-            (n_A_Buf8[9] = StoN2(_.substr(e + 9, 2))),
-            (n_A_Buf8[10] = StoN2(_.substr(e + 11, 2))),
-            (n_A_Buf8[11] = StoN2(_.substr(e + 13, 2))),
-            (n_A_Buf8[5] = StoN2(_.substr(e + 15, 1))),
-            (n_A_Buf8[6] = StoN2(_.substr(e + 16, 1))),
-            (n_A_Buf8[1] = Math.floor(StoN2(_.substr(e + 17, 1)) / 6)),
-            (u = StoN2(_.substr(e + 18, 1))),
-            (n_A_Buf8[2] = Math.floor(u / 16)),
-            (e += 18)),
-          S >= 6)
-        ) {
-          if ((Buf9SW(0), (e += 1), StoN2(_.substr(e, 1)) == 1))
-            if (
-              ((n_A_Buf9[0] = StoN2(_.substr(e + 1, 1))),
-              (n_A_Buf9[1] = StoN2(_.substr(e + 2, 2))),
-              (n_A_Buf9[2] = StoN2(_.substr(e + 4, 1))),
-              (n_A_Buf9[3] = StoN2(_.substr(e + 5, 2))),
-              (n_A_Buf9[4] = StoN2(_.substr(e + 7, 1))),
-              (n_A_Buf9[5] = StoN2(_.substr(e + 8, 2))),
-              (n_A_Buf9[6] = StoN2(_.substr(e + 10, 1))),
-              (n_A_Buf9[7] = StoN2(_.substr(e + 11, 2))),
-              (n_A_Buf9[8] = StoN2(_.substr(e + 13, 1))),
-              (n_A_Buf9[9] = StoN2(_.substr(e + 14, 2))),
-              (n_A_Buf9[10] = StoN2(_.substr(e + 16, 1))),
-              (n_A_Buf9[11] = StoN2(_.substr(e + 17, 2))),
-              (n_A_Buf9[12] = StoN2(_.substr(e + 19, 1))),
-              (n_A_Buf9[13] = StoN2(_.substr(e + 20, 2))),
-              (n_A_Buf9[14] = StoN2(_.substr(e + 22, 1))),
-              (n_A_Buf9[15] = StoN2(_.substr(e + 23, 2))),
-              (n_A_Buf9[16] = StoN2(_.substr(e + 25, 1))),
-              (n_A_Buf9[17] = StoN2(_.substr(e + 26, 2))),
-              (n_A_Buf9[18] = StoN2(_.substr(e + 28, 1))),
-              (n_A_Buf9[19] = StoN2(_.substr(e + 29, 2))),
-              S >= 8)
-            ) {
-              for (
-                n_A_Buf9[20] = StoN2(_.substr(e + 31, 2)),
-                  n_A_Buf9[21] = StoN2(_.substr(e + 33, 2)),
-                  n_A_Buf9[22] = StoN2(_.substr(e + 35, 2)),
-                  n_A_Buf9[23] = StoN2(_.substr(e + 37, 2)),
-                  n_A_Buf9[24] = StoN2(_.substr(e + 39, 1)),
-                  n_A_Buf9[25] = StoN2(_.substr(e + 40, 2)),
-                  n_A_Buf9[26] = StoN2(_.substr(e + 42, 2)),
-                  n_A_Buf9[27] = StoN2(_.substr(e + 44, 2)),
-                  n_A_Buf9[28] = StoN2(_.substr(e + 46, 2)),
-                  n_A_Buf9[29] = 0,
-                  n_A_Buf9[30] = StoN2(_.substr(e + 48, 3)),
-                  a = 31;
-                a <= 59;
-                a++
-              )
-                n_A_Buf9[a] = StoN2(_.substr(e - 11 + 2 * a, 2));
-              e += 108;
-            } else if (
-              ((n_A_Buf9[20] = StoN2(_.substr(e + 31, 1))),
-              (n_A_Buf9[21] = StoN2(_.substr(e + 32, 2))),
-              (n_A_Buf9[22] = StoN2(_.substr(e + 34, 1))),
-              (n_A_Buf9[23] = StoN2(_.substr(e + 35, 2))),
-              (n_A_Buf9[24] = StoN2(_.substr(e + 37, 1))),
-              (n_A_Buf9[25] = StoN2(_.substr(e + 38, 2))),
-              (n_A_Buf9[26] = StoN2(_.substr(e + 40, 1))),
-              (n_A_Buf9[27] = StoN2(_.substr(e + 41, 2))),
-              (n_A_Buf9[28] = StoN2(_.substr(e + 43, 1))),
-              (n_A_Buf9[29] = StoN2(_.substr(e + 44, 2))),
-              (n_A_Buf9[30] = StoN2(_.substr(e + 46, 3))),
-              S == 7)
-            ) {
-              for (a = 31; a <= 59; a++) n_A_Buf9[a] = StoN2(_.substr(e - 13 + 2 * a, 2));
-              e += 106;
-            } else {
-              for (a = 31; a <= 55; a++) n_A_Buf9[a] = StoN2(_.substr(e - 13 + 2 * a, 2));
-              e += 98;
-            }
-          (Buf10SW(0),
-            (e += 1),
-            StoN2(_.substr(e, 1)) == 1 &&
-              ((n_B_manual[1] = StoN2(_.substr(e + 1, 2))),
-              (n_B_manual[2] = StoN2(_.substr(e + 3, 1))),
-              (n_B_manual[3] = StoN2(_.substr(e + 4, 2))),
-              (n_B_manual[4] = StoN2(_.substr(e + 6, 1))),
-              (n_B_manual[5] = StoN2(_.substr(e + 7, 2))),
-              (n_B_manual[7] = StoN2(_.substr(e + 9, 2))),
-              (n_B_manual[9] = StoN2(_.substr(e + 11, 2))),
-              (n_B_manual[21] = StoN2(_.substr(e + 13, 2))),
-              (n_B_manual[30] = StoN2(_.substr(e + 15, 3))),
-              (n_B_manual[31] = StoN2(_.substr(e + 18, 2))),
-              (n_B_manual[34] = StoN2(_.substr(e + 20, 2))),
-              (n_B_manual[35] = StoN2(_.substr(e + 22, 2))),
-              (n_B_manual[36] = StoN2(_.substr(e + 24, 2))),
-              (n_B_manual[37] = StoN2(_.substr(e + 26, 2))),
-              (n_B_manual[38] = StoN2(_.substr(e + 28, 2))),
-              (n_B_manual[39] = StoN2(_.substr(e + 30, 2))),
-              (n_B_manual[40] = StoN2(_.substr(e + 32, 3))),
-              (n_B_manual[41] = StoN2(_.substr(e + 35, 2))),
-              (n_B_manual[42] = StoN2(_.substr(e + 37, 3))),
-              (n_B_manual[43] = StoN2(_.substr(e + 40, 3))),
-              (n_B_manual[44] = StoN2(_.substr(e + 43, 2))),
-              (n_B_manual[48] = StoN2(_.substr(e + 45, 2))),
-              (n_B_manual[49] = StoN2(_.substr(e + 47, 2))),
-              (n_B_manual[50] = StoN2(_.substr(e + 49, 2))),
-              (n_B_manual[51] = StoN2(_.substr(e + 51, 2))),
-              (n_B_manual[52] = StoN2(_.substr(e + 53, 2))),
-              (n_B_manual[53] = StoN2(_.substr(e + 55, 3))),
-              (n_B_manual[54] = StoN2(_.substr(e + 58, 2))),
-              (n_B_manual[55] = StoN2(_.substr(e + 60, 2))),
-              (e += 61)));
-        }
-        for (
-          c.Conf01.value = StoN2(_.substr(e + 1, 2)),
-            c.B_num.value = StoN2(_.substr(e + 3, 1)),
-            c.A8_Skill14.value = StoN2(_.substr(e + 4, 1)),
-            c.A8_Skill15.value = StoN2(_.substr(e + 5, 2)),
-            u = StoN2(_.substr(e + 7, 1)),
-            S >= 6 &&
-              ((u = StoN2(_.substr(e + 25, 1))),
-              (c.all_dmgSkills.checked = Math.floor((u % 16) / 8)),
-              Askill(),
-              (c.restrict_jobequip.checked = Math.floor((u % 8) / 4)),
-              (c.restrict_lvlequip.checked = Math.floor((u % 4) / 2)),
-              (c.restrict_equipslot.checked = Math.floor((u % 2) / 1)),
-              (u = StoN2(_.substr(e + 26, 1))),
-              (c.all_card.checked = Math.floor((u % 16) / 8)),
-              c.all_card.checked &&
-                (allCard(),
-                (c.A_weapon1_card1.value = StoN2(_.substr(26, 2))),
-                (c.A_weapon1_card2.value = StoN2(_.substr(28, 2))),
-                (c.A_weapon1_card3.value = StoN2(_.substr(30, 2))),
-                (c.A_weapon1_card4.value = StoN2(_.substr(32, 2))),
-                n_Nitou
-                  ? ((c.A_weapon2_card1.value = StoN2(_.substr(37, 2))),
-                    (c.A_weapon2_card2.value = StoN2(_.substr(39, 2))),
-                    (c.A_weapon2_card3.value = StoN2(_.substr(41, 2))),
-                    (c.A_weapon2_card4.value = StoN2(_.substr(43, 2))),
-                    (c.A_left_card.value = 0))
-                  : (c.A_left_card.value = StoN2(_.substr(37, 2))),
-                (c.A_head1_card.value = StoN2(_.substr(47, 2))),
-                (c.A_head2_card.value = StoN2(_.substr(51, 2))),
-                (c.A_body_card.value = StoN2(_.substr(57, 2))),
-                (c.A_shoulder_card.value = StoN2(_.substr(61, 2))),
-                (c.A_shoes_card.value = StoN2(_.substr(65, 2))),
-                (c.A_acces1_card.value = StoN2(_.substr(69, 2))),
-                (c.A_acces2_card.value = StoN2(_.substr(73, 2)))),
-              (c.restrict_cardslot.checked = Math.floor(u / 16)),
-              c.restrict_cardslot.checked && restrictCardslot(0)),
-            StCalc(1),
-            ActiveSkillSetPlus(),
-            c.A_ActiveSkill.value = baseSkillId(StoN2(_.substr(e + 8, 2))),
-            ClickActiveSkill(),
-            c.A_ActiveSkillLV.value = StoN2(_.substr(e + 10, 1)),
-            c.contains(c.SkillSubNum) && (c.SkillSubNum.value = StoN2(_.substr(e + 11, 3))),
-            U = 0,
-            C = 0;
-          C <= 20;
-          C++
-        )
-          if (m_JobBuff[n_A_JOB][C] == 441) {
-            (U = c.A_skill6.value) &&
-              (SKILLID.FIRE_BOLT == n_A_ActiveSkill ||
-                SKILLID.COLD_BOLT == n_A_ActiveSkill ||
-                SKILLID.LIGHTNING_BOLT == n_A_ActiveSkill ||
-                SKILLID.FIRE_BOLT_HINDSIGHT == n_A_ActiveSkill ||
-                SKILLID.COLD_BOLT_HINDSIGHT == n_A_ActiveSkill ||
-                SKILLID.LIGHTNING_BOLT_HINDSIGHT == n_A_ActiveSkill) &&
-              ((r = 1 * U + 3),
-              myInnerHtml(
-                "AASkill",
-                'Double Bolt chance: <select name="SkillSubNum" onChange="calc()"></select>',
-                0,
-              ),
-              (c.SkillSubNum.options[0] = new documento.Opzione("No chance (0%)", 0)),
-              (c.SkillSubNum.options[1] = new documento.Opzione(
-                "Average chance (" + 10 * r + "%)",
-                r,
-              )),
-              (c.SkillSubNum.options[2] = new documento.Opzione("Max chance (100%)", 10)),
-              (c.SkillSubNum.value = StoN2(_.substr(e + 11, 3))));
-            break;
-          }
-        ((h = normalizeSavedMonsterId(StoN2(_.substr(e + 14, 2)), !0)),
-          (targetData[0] = h),
-          (c.B_Enemy.value = h),
-          calc(),
-          Bskill(),
-          (c.B_AtkSkill.value = StoN2(_.substr(e + 16, 2))),
-          BClickAtkSkill(),
-          (n_B_AtkSkill = 1 * c.B_AtkSkill.value),
-          (n_B_AtkSkill != 444 &&
-            n_B_AtkSkill != 445 &&
-            n_B_AtkSkill != 125 &&
-            n_B_AtkSkill != 131) ||
-            (c.BSkillSubNum.value = StoN2(_.substr(e + 18, 3))),
-          S >= 6 &&
-            ((c.B_AtkRange.value = StoN2(_.substr(e + 21, 1))),
-            (c.B_AtkElem.value = StoN2(_.substr(e + 22, 1))),
-            (c.server.value = StoN2(_.substr(e + 24, 1))),
-            S >= 8 && (c.maxASPD.value = StoN2(_.substr(e + 27, 1)))));
-      }
-      (refreshFields(), (SRV = 1 * c.server.value), calc());
-    }
+  var _ = (l ? documento.getElementById("otherURL_TEXT").value : posizioneMotore.href).split(
+    "#",
+  )[1];
+  if (!_) return !1;
+  _ = _.replace(/undefined/g, "i").replace(/%(24|26|27|2B|2C|3A|3B|3D)/g, decodeURIComponent);
+  if (StoN3(_.substr(0, 1)) != FORMATO_BUILD) return !1;
+  for (var cifra = 0; cifra <= 9; cifra++)
+    _ = _.split(String(cifra)).join("i".repeat(cifra <= 3 ? cifra + 10 : cifra));
+  for (var a = 0; a <= 21; a++) n_A_Buf2[a] = 0;
+  for (a = 0; a <= 45; a++) n_A_Buf3[a] = 0;
+  for (a = 0; a <= 23; a++) n_A_Buf6[a] = 0;
+  for (a = 0; a <= 60; a++) n_A_Buf7[a] = 0;
+  for (a = 0; a <= 15; a++) n_A_Buf8[a] = 0;
+  for (a = 0; a <= 57; a++) n_A_Buf9[a] = 0;
+  for (a = 0; a <= 55; a++) n_B_manual[a] = 0;
+  for (a = 0; a <= 3; a++) n_A_debuf[a] = 0;
+  for (a = 0; a <= 24; a++) n_B_debuf[a] = 0;
+  for (a = 0; a <= 14; a++) n_B_buf[a] = 0;
+  ((n_A_Buf9[2] = 10),
+    (n_A_Buf9[4] = 20),
+    (n_A_Buf9[6] = 23),
+    (n_A_Buf9[10] = 10),
+    (n_A_Buf9[12] = 20),
+    (n_A_Buf9[14] = 23),
+    (c.A_BASTION_HEAD.value = BASTIONENCHANTID.NONE),
+    (c.A_BASTION_SHOES.value = BASTIONENCHANTID.NONE),
+    ResetDicastesEnchantControls(),
+    refreshFields());
+  var b = 98;
+  (StoN3(_.substr(1, 2)) == 20 && StoN3(_.substr(b, 1))
+    ? (SuperNoviceFullWeaponCHECK = 1)
+    : (SuperNoviceFullWeaponCHECK = 0),
+    (u = StoN3(_.substr(86, 1))),
+    (c.all_dmgSkills.checked = Math.floor((u % 16) / 8)),
+    (c.restrict_jobequip.checked = Math.floor((u % 8) / 4)),
+    (c.restrict_lvlequip.checked = Math.floor((u % 4) / 2)),
+    (c.restrict_equipslot.checked = Math.floor((u % 2) / 1)),
+    (u = StoN3(_.substr(87, 1))),
+    (c.restrict_cardslot.checked = Math.floor(u / 16)),
+    (c.all_card.checked = Math.floor((u % 16) / 8)),
+    c.all_card.checked && allCard(),
+    restrictCardslot(0),
+    (c.maxASPD.value = 0),
+    (c.A_JOB.value = StoN3(_.substr(1, 2))),
+    ClickJob(StoN3(_.substr(1, 2)), 2),
+    (c.A_BaseLV.value = StoN3(_.substr(3, 2))),
+    (c.A_JobLV.value = StoN3(_.substr(5, 2))),
+    (c.A_STR.value = StoN3(_.substr(7, 2))),
+    (c.A_AGI.value = StoN3(_.substr(9, 2))),
+    (c.A_VIT.value = StoN3(_.substr(11, 2))),
+    (c.A_DEX.value = StoN3(_.substr(13, 2))),
+    (c.A_INT.value = StoN3(_.substr(15, 2))),
+    (c.A_LUK.value = StoN3(_.substr(17, 2))),
+    (n_A_Buf7[35] = Math.floor(StoN3(_.substr(19, 1)) / 10)),
+    (c.A_Weapon_element.value = StoN3(_.substr(19, 1)) % 10));
+  var m = normalizeEquipmentId(StoN3(_.substr(23, 2)));
+  ((c.A_weapon1.value = m),
+    (n_A_WeaponType = StoN3(_.substr(20, 1))),
+    ClickWeaponType(n_A_WeaponType),
+    (c.A_JOB.value != 8 && c.A_JOB.value != 22) ||
+      n_A_WeaponType == 11 ||
+      ((n_A_Weapon2Type = StoN3(_.substr(21, 1))), ClickWeaponType2(n_A_Weapon2Type)),
+    n_A_JobSet(),
+    (n_A_JobClass() == 2 || n_A_JobClass() == 4 || (n_A_JOB == 45 && n_A_WeaponType != 0)) &&
+      (c.A_Arrow.value = StoN3(_.substr(22, 1))),
+    ClickB_Item(m),
+    (c.A_Weapon_refine.value = StoN3(_.substr(25, 1))),
+    (c.A_weapon1_card1.value = StoN3(_.substr(26, 2))),
+    (c.A_weapon1_card2.value = StoN3(_.substr(28, 2))),
+    (c.A_weapon1_card3.value = StoN3(_.substr(30, 2))),
+    (c.A_weapon1_card4.value = StoN3(_.substr(32, 2))),
+    n_Nitou
+      ? ((c.A_weapon2.value = StoN3(_.substr(34, 2))),
+        (c.A_Weapon2_refine.value = StoN3(_.substr(36, 1))),
+        (c.A_weapon2_card1.value = StoN3(_.substr(37, 2))),
+        (c.A_weapon2_card2.value = StoN3(_.substr(39, 2))),
+        (c.A_weapon2_card3.value = StoN3(_.substr(41, 2))),
+        (c.A_weapon2_card4.value = StoN3(_.substr(43, 2))),
+        (c.A_left.value = 305),
+        (c.A_LEFT_REFINE.value = 0),
+        (c.A_left_card.value = 0))
+      : ((c.A_left.value = StoN3(_.substr(34, 2))),
+        (c.A_LEFT_REFINE.value = StoN3(_.substr(36, 1))),
+        (c.A_left_card.value = StoN3(_.substr(37, 2)))),
+    (c.A_head1.value = StoN3(_.substr(45, 2))),
+    (c.A_head1_card.value = StoN3(_.substr(47, 2))),
+    (c.A_head2.value = StoN3(_.substr(49, 2))),
+    (c.A_head2_card.value = StoN3(_.substr(51, 2))),
+    (c.A_head3.value = StoN3(_.substr(53, 2))),
+    (c.A_body.value = StoN3(_.substr(55, 2))),
+    (c.A_body_card.value = StoN3(_.substr(57, 2))),
+    (c.A_shoulder.value = StoN3(_.substr(59, 2))),
+    (c.A_shoulder_card.value = StoN3(_.substr(61, 2))),
+    (c.A_shoes.value = StoN3(_.substr(63, 2))),
+    (c.A_shoes_card.value = StoN3(_.substr(65, 2))),
+    (c.A_acces1.value = StoN3(_.substr(67, 2))),
+    (c.A_acces1_card.value = StoN3(_.substr(69, 2))),
+    (c.A_acces2.value = StoN3(_.substr(71, 2))),
+    (c.A_acces2_card.value = StoN3(_.substr(73, 2))),
+    (c.A_HEAD_REFINE.value = StoN3(_.substr(75, 1))),
+    (c.A_BODY_REFINE.value = StoN3(_.substr(76, 1))),
+    (c.A_SHOULDER_REFINE.value = StoN3(_.substr(77, 1))),
+    (c.A_SHOES_REFINE.value = StoN3(_.substr(78, 1))));
+  var u = StoN3(_.substr(79, 1));
+  ((c.A_adopted.checked = Math.floor(u / 16)),
+    (c.A_HSE.value = StoN3(_.substr(80, 2))),
+    (c.A_HSE_HEAD1.value = StoN3(_.substr(82, 2))),
+    (u = StoN3(_.substr(84, 2))),
+    (c.A_BASTION_HEAD.value = Math.floor(u / 8)),
+    (c.A_BASTION_SHOES.value = u % 8));
+  var d = StoN3(_.substr(88, 1));
+  for (a = 0; a < d; a++)
+    documento.getElementById("A_skill" + a).value = StoN3(_.substr(89 + a, 1));
+  BufSW(0);
+  var e = 110;
+  (StoN3(_.substr(e, 1)) == 1 &&
+    ((n_A_Buf2[0] = StoN3(_.substr(e + 1, 1))),
+    (n_A_Buf2[1] = StoN3(_.substr(e + 2, 1))),
+    (n_A_Buf2[4] = StoN3(_.substr(e + 3, 1))),
+    (n_A_Buf2[9] = StoN3(_.substr(e + 4, 1))),
+    (n_A_Buf2[13] = StoN3(_.substr(e + 5, 1))),
+    (n_A_Buf2[14] = StoN3(_.substr(e + 6, 1))),
+    (n_A_Buf2[2] = Math.floor(StoN3(_.substr(e + 7, 1)) / 6)),
+    (n_A_Buf2[6] = StoN3(_.substr(e + 7, 1)) % 6),
+    (n_A_Buf2[10] = Math.floor(StoN3(_.substr(e + 8, 1)) / 6)),
+    (n_A_Buf2[11] = StoN3(_.substr(e + 8, 1)) % 6),
+    (n_A_Buf2[12] = Math.floor(StoN3(_.substr(e + 9, 1)) / 6)),
+    (n_A_Buf2[15] = StoN3(_.substr(e + 9, 1)) % 6),
+    (u = StoN3(_.substr(e + 10, 1))),
+    (n_A_Buf2[3] = Math.floor(u / 16)),
+    (n_A_Buf2[5] = Math.floor((u % 16) / 8)),
+    (n_A_Buf2[7] = Math.floor((u % 8) / 4)),
+    (n_A_Buf2[8] = Math.floor((u % 4) / 2)),
+    (n_A_Buf2[16] = Math.floor((u % 2) / 1)),
+    (u = StoN3(_.substr(e + 11, 1))),
+    (n_A_Buf2[17] = Math.floor(u / 16)),
+    (n_A_Buf2[18] = Math.floor((u % 16) / 8)),
+    (n_A_Buf2[19] = Math.floor((u % 8) / 4)),
+    (n_A_Buf2[20] = Math.floor((u % 4) / 2)),
+    (n_A_Buf2[21] = Math.floor((u % 2) / 1)),
+    (e += 11)),
+    debufSW(0),
+    (e += 1),
+    StoN3(_.substr(e, 1)) == 1 &&
+      ((n_B_debuf[0] = StoN3(_.substr(e + 1, 1))),
+      (n_B_debuf[1] = Math.floor(StoN3(_.substr(e + 2, 1)) / 6)),
+      (n_B_debuf[18] = StoN3(_.substr(e + 2, 1)) % 6),
+      (u = StoN3(_.substr(e + 3, 1))),
+      (n_B_debuf[2] = Math.floor(u / 16)),
+      (n_B_debuf[3] = Math.floor((u % 16) / 8)),
+      (n_B_debuf[4] = Math.floor((u % 8) / 4)),
+      (n_B_debuf[5] = Math.floor((u % 4) / 2)),
+      (n_B_debuf[6] = Math.floor((u % 2) / 1)),
+      (u = StoN3(_.substr(e + 4, 1))),
+      (n_B_debuf[7] = Math.floor(u / 16)),
+      (n_B_debuf[8] = Math.floor((u % 16) / 8)),
+      (n_B_debuf[9] = Math.floor((u % 8) / 4)),
+      (n_B_debuf[10] = Math.floor((u % 4) / 2)),
+      (n_B_debuf[19] = Math.floor((u % 2) / 1)),
+      (n_B_debuf[11] = StoN3(_.substr(e + 5, 1))),
+      (n_B_debuf[12] = StoN3(_.substr(e + 6, 1))),
+      (u = StoN3(_.substr(e + 7, 1))),
+      (n_B_debuf[13] = Math.floor(u / 16)),
+      (n_B_debuf[14] = Math.floor((u % 16) / 8)),
+      (n_B_debuf[15] = Math.floor((u % 8) / 4)),
+      (n_B_debuf[16] = Math.floor((u % 4) / 2)),
+      (n_B_debuf[17] = Math.floor((u % 2) / 1)),
+      (u = StoN3(_.substr(e + 8, 1))),
+      (n_B_debuf[20] = Math.floor(u / 16)),
+      (n_B_debuf[21] = Math.floor((u % 16) / 8)),
+      (n_B_debuf[22] = Math.floor((u % 8) / 4)),
+      (n_B_debuf[23] = Math.floor(StoN3(_.substr(e + 9, 1)) / 6)),
+      (n_B_debuf[24] = StoN3(_.substr(e + 9, 1)) % 6),
+      (e += 9)),
+    EnemyBufSW(0),
+    (e += 1),
+    StoN3(_.substr(e, 1)) == 1 &&
+      ((n_B_buf[0] = StoN3(_.substr(e + 1, 1))),
+      (u = StoN3(_.substr(e + 2, 1))),
+      (n_B_buf[1] = Math.floor(u / 16)),
+      (n_B_buf[2] = Math.floor((u % 16) / 8)),
+      (n_B_buf[3] = Math.floor((u % 8) / 4)),
+      (n_B_buf[4] = Math.floor((u % 4) / 2)),
+      (n_B_buf[9] = Math.floor((u % 2) / 1)),
+      (n_B_buf[6] = StoN3(_.substr(e + 3, 2))),
+      (n_B_buf[7] = Math.floor(StoN3(_.substr(e + 5, 1)) / 6)),
+      (n_B_buf[8] = StoN3(_.substr(e + 5, 1)) % 6),
+      (n_B_buf[5] = StoN3(_.substr(e + 6, 1))),
+      (n_B_buf[10] = StoN3(_.substr(e + 7, 1))),
+      (n_B_buf[11] = StoN3(_.substr(e + 8, 1))),
+      (n_B_buf[12] = StoN3(_.substr(e + 9, 1))),
+      (n_B_buf[13] = StoN3(_.substr(e + 10, 1))),
+      (n_B_buf[14] = StoN3(_.substr(e + 11, 1))),
+      (e += 5),
+      (e += 6)));
+  var v = [0, 0, 0, 0, 0];
+  if (
+    ((u = StoN3(_.substr(e + 1, 1))),
+    (v[0] = Math.floor(u / 16)),
+    (v[1] = Math.floor((u % 16) / 8)),
+    (v[2] = Math.floor((u % 8) / 4)),
+    (v[3] = Math.floor((u % 4) / 2)),
+    (v[4] = Math.floor((u % 2) / 1)),
+    (e += 1),
+    Buf3SW(0),
+    v[0] &&
+      ((n_A_Buf3[0] = StoN3(_.substr(e + 1, 1))),
+      (n_A_Buf3[1] = StoN3(_.substr(e + 2, 1))),
+      (n_A_Buf3[2] = StoN3(_.substr(e + 3, 1))),
+      (n_A_Buf3[3] = StoN3(_.substr(e + 4, 1))),
+      (n_A_Buf3[4] = StoN3(_.substr(e + 5, 1))),
+      (n_A_Buf3[5] = StoN3(_.substr(e + 6, 1))),
+      (n_A_Buf3[6] = StoN3(_.substr(e + 7, 1))),
+      (n_A_Buf3[7] = Math.floor(StoN3(_.substr(e + 8, 1)) / 6)),
+      (n_A_Buf3[8] = StoN3(_.substr(e + 8, 1)) % 6),
+      (n_A_Buf3[9] = Math.floor(StoN3(_.substr(e + 9, 1)) / 6)),
+      (n_A_Buf3[10] = StoN3(_.substr(e + 9, 1)) % 6),
+      (n_A_Buf3[11] = Math.floor(StoN3(_.substr(e + 10, 1)) / 16)),
+      (n_A_Buf3[18] = Math.floor((StoN3(_.substr(e + 10, 1)) % 16) / 8)),
+      (n_A_Buf3[12] = StoN3(_.substr(e + 11, 2))),
+      (n_A_Buf3[13] = StoN3(_.substr(e + 13, 2))),
+      (n_A_Buf3[14] = StoN3(_.substr(e + 15, 2))),
+      (n_A_Buf3[15] = StoN3(_.substr(e + 17, 2))),
+      (n_A_Buf3[16] = StoN3(_.substr(e + 19, 2))),
+      (n_A_Buf3[17] = StoN3(_.substr(e + 21, 2))),
+      (n_A_Buf3[20] = StoN3(_.substr(e + 23, 2))),
+      (n_A_Buf3[30] = StoN3(_.substr(e + 25, 1))),
+      (n_A_Buf3[21] = StoN3(_.substr(e + 26, 2))),
+      (n_A_Buf3[31] = StoN3(_.substr(e + 28, 1))),
+      (n_A_Buf3[22] = StoN3(_.substr(e + 29, 2))),
+      (n_A_Buf3[29] = StoN3(_.substr(e + 31, 2))),
+      (n_A_Buf3[32] = StoN3(_.substr(e + 33, 1))),
+      (n_A_Buf3[23] = StoN3(_.substr(e + 34, 2))),
+      (n_A_Buf3[33] = StoN3(_.substr(e + 36, 1))),
+      (n_A_Buf3[24] = StoN3(_.substr(e + 37, 2))),
+      (n_A_Buf3[34] = StoN3(_.substr(e + 39, 1))),
+      (n_A_Buf3[25] = StoN3(_.substr(e + 40, 2))),
+      (n_A_Buf3[35] = StoN3(_.substr(e + 42, 1))),
+      (n_A_Buf3[26] = StoN3(_.substr(e + 43, 2))),
+      (n_A_Buf3[36] = StoN3(_.substr(e + 45, 1))),
+      (n_A_Buf3[19] = StoN3(_.substr(e + 46, 2))),
+      (n_A_Buf3[37] = StoN3(_.substr(e + 48, 1))),
+      (n_A_Buf3[38] = StoN3(_.substr(e + 49, 2))),
+      (n_A_Buf3[39] = StoN3(_.substr(e + 51, 2))),
+      (n_A_Buf3[27] = StoN3(_.substr(e + 53, 1))),
+      (e += 8),
+      (e += 45)),
+    Buf4SW(0),
+    v[1] &&
+      ((u = StoN3(_.substr(e + 1, 1))),
+      (n_A_Buf3[40] = Math.floor(u / 16)),
+      (n_A_Buf3[41] = Math.floor(StoN3(_.substr(e + 2, 1)) / 6)),
+      (n_A_Buf3[42] = StoN3(_.substr(e + 2, 1)) % 6),
+      (n_A_Buf3[43] = Math.floor(StoN3(_.substr(e + 3, 1)) / 6)),
+      (n_A_Buf3[44] = StoN3(_.substr(e + 3, 1)) % 6),
+      (e += 3)),
+    Buf6SW(0),
+    v[3] &&
+      ((n_A_Buf6[5] = StoN3(_.substr(e + 1, 1))),
+      (n_A_Buf6[20] = StoN3(_.substr(e + 2, 1))),
+      (n_A_Buf6[0] = Math.floor(StoN3(_.substr(e + 3, 1)) / 6)),
+      (n_A_Buf6[1] = StoN3(_.substr(e + 3, 1)) % 6),
+      (n_A_Buf6[2] = Math.floor(StoN3(_.substr(e + 4, 1)) / 6)),
+      (n_A_Buf6[4] = StoN3(_.substr(e + 4, 1)) % 6),
+      (n_A_Buf6[18] = Math.floor(StoN3(_.substr(e + 5, 1)) / 6)),
+      (n_A_Buf6[19] = StoN3(_.substr(e + 5, 1)) % 6),
+      (u = StoN3(_.substr(e + 6, 1))),
+      (n_A_Buf6[3] = Math.floor(u / 16)),
+      (n_A_Buf6[6] = Math.floor((u % 16) / 8)),
+      (n_A_Buf6[7] = Math.floor((u % 8) / 4)),
+      (n_A_Buf6[8] = Math.floor((u % 4) / 2)),
+      (n_A_Buf6[9] = Math.floor((u % 2) / 1)),
+      (u = StoN3(_.substr(e + 7, 1))),
+      (n_A_Buf6[10] = Math.floor(u / 16)),
+      (n_A_Buf6[11] = Math.floor((u % 16) / 8)),
+      (n_A_Buf6[12] = Math.floor((u % 8) / 4)),
+      (n_A_Buf6[13] = Math.floor((u % 4) / 2)),
+      (n_A_Buf6[14] = Math.floor((u % 2) / 1)),
+      (u = StoN3(_.substr(e + 8, 1))),
+      (n_A_Buf6[15] = Math.floor(u / 16)),
+      (n_A_Buf6[16] = Math.floor((u % 16) / 8)),
+      (n_A_Buf6[17] = Math.floor((u % 8) / 4)),
+      (n_A_Buf6[21] = Math.floor((u % 4) / 2)),
+      (n_A_Buf6[22] = Math.floor((u % 2) / 1)),
+      (e += 8)),
+    Buf7SW(0),
+    v[4] &&
+      ((n_A_Buf7[3] = StoN3(_.substr(e + 1, 1))),
+      (n_A_Buf7[4] = StoN3(_.substr(e + 2, 1))),
+      (n_A_Buf7[5] = StoN3(_.substr(e + 3, 1))),
+      (n_A_Buf7[6] = StoN3(_.substr(e + 4, 1))),
+      (n_A_Buf7[7] = StoN3(_.substr(e + 5, 1))),
+      (n_A_Buf7[8] = StoN3(_.substr(e + 6, 1))),
+      (n_A_Buf7[35] = Math.floor(StoN3(_.substr(e + 7, 1)) / 6)),
+      (n_A_Buf7[42] = StoN3(_.substr(e + 7, 1)) % 6),
+      (n_A_Buf7[39] = Math.floor(StoN3(_.substr(e + 8, 1)) / 6)),
+      (n_A_Buf7[40] = StoN3(_.substr(e + 8, 1)) % 6),
+      (u = StoN3(_.substr(e + 9, 1))),
+      (n_A_Buf7[0] = Math.floor(u / 16)),
+      (n_A_Buf7[1] = Math.floor((u % 16) / 8)),
+      (n_A_Buf7[2] = Math.floor((u % 8) / 4)),
+      (n_A_Buf7[9] = Math.floor((u % 4) / 2)),
+      (n_A_Buf7[10] = Math.floor((u % 2) / 1)),
+      (u = StoN3(_.substr(e + 10, 1))),
+      (n_A_Buf7[11] = Math.floor(u / 16)),
+      (n_A_Buf7[12] = Math.floor((u % 16) / 8)),
+      (n_A_Buf7[13] = Math.floor((u % 8) / 4)),
+      (n_A_Buf7[14] = Math.floor((u % 4) / 2)),
+      (u = StoN3(_.substr(e + 11, 1))),
+      (n_A_Buf7[16] = Math.floor(u / 16)),
+      (n_A_Buf7[17] = Math.floor((u % 16) / 8)),
+      (n_A_Buf7[18] = Math.floor((u % 8) / 4)),
+      (n_A_Buf7[19] = Math.floor((u % 4) / 2)),
+      (n_A_Buf7[20] = Math.floor((u % 2) / 1)),
+      (u = StoN3(_.substr(e + 12, 1))),
+      (n_A_Buf7[21] = Math.floor(u / 16)),
+      (n_A_Buf7[22] = Math.floor((u % 16) / 8)),
+      (n_A_Buf7[23] = Math.floor((u % 8) / 4)),
+      (n_A_Buf7[24] = Math.floor((u % 4) / 2)),
+      (n_A_Buf7[25] = Math.floor((u % 2) / 1)),
+      (u = StoN3(_.substr(e + 13, 1))),
+      (n_A_Buf7[26] = Math.floor(u / 16)),
+      (n_A_Buf7[27] = Math.floor((u % 16) / 8)),
+      (n_A_Buf7[28] = Math.floor((u % 8) / 4)),
+      (n_A_Buf7[29] = Math.floor((u % 4) / 2)),
+      (n_A_Buf7[30] = Math.floor((u % 2) / 1)),
+      (u = StoN3(_.substr(e + 14, 1))),
+      (n_A_Buf7[31] = Math.floor(u / 16)),
+      (n_A_Buf7[32] = Math.floor((u % 16) / 8)),
+      (n_A_Buf7[33] = Math.floor((u % 8) / 4)),
+      (n_A_Buf7[34] = Math.floor((u % 4) / 2)),
+      (n_A_Buf7[36] = Math.floor((u % 2) / 1)),
+      (u = StoN3(_.substr(e + 15, 1))),
+      (n_A_Buf7[37] = Math.floor(u / 16)),
+      (n_A_Buf7[38] = Math.floor((u % 16) / 8)),
+      (n_A_Buf7[41] = Math.floor((u % 8) / 4)),
+      (n_A_Buf7[43] = Math.floor((u % 4) / 2)),
+      n_A_Buf7[43] && (n_A_Buf7[36] = 1),
+      (n_A_Buf7[44] = Math.floor((u % 2) / 1)),
+      (u = StoN3(_.substr(e + 16, 1))),
+      (n_A_Buf7[45] = Math.floor(u / 16)),
+      (n_A_Buf7[46] = Math.floor((u % 16) / 8)),
+      (n_A_Buf7[47] = Math.floor((u % 8) / 4)),
+      (n_A_Buf7[48] = Math.floor((u % 4) / 2)),
+      (n_A_Buf7[49] = Math.floor((u % 2) / 1)),
+      (u = StoN3(_.substr(e + 17, 1))),
+      (n_A_Buf7[50] = Math.floor(u / 16)),
+      (n_A_Buf7[51] = Math.floor((u % 16) / 8)),
+      (n_A_Buf7[52] = Math.floor((u % 8) / 4)),
+      (n_A_Buf7[53] = Math.floor((u % 4) / 2)),
+      (n_A_Buf7[54] = Math.floor((u % 2) / 1)),
+      (n_A_Buf7[55] = StoN3(_.substr(e + 18, 1))),
+      (u = StoN3(_.substr(e + 19, 1))),
+      (n_A_Buf7[56] = Math.floor(u / 16)),
+      (n_A_Buf7[57] = Math.floor((u % 16) / 8)),
+      (n_A_Buf7[58] = Math.floor((u % 8) / 4)),
+      (n_A_Buf7[59] = Math.floor((u % 4) / 2)),
+      (n_A_Buf7[60] = Math.floor((u % 2) / 1)),
+      (e += 3),
+      (e += 16)),
+    Buf6SW(0),
+    (e += 1),
+    StoN3(_.substr(e, 1)) == 1 &&
+      ((n_A_Buf8[0] = StoN3(_.substr(e + 1, 2))),
+      (n_A_Buf8[3] = StoN3(_.substr(e + 3, 2))),
+      (n_A_Buf8[7] = StoN3(_.substr(e + 5, 2))),
+      (n_A_Buf8[8] = StoN3(_.substr(e + 7, 2))),
+      (n_A_Buf8[9] = StoN3(_.substr(e + 9, 2))),
+      (n_A_Buf8[10] = StoN3(_.substr(e + 11, 2))),
+      (n_A_Buf8[11] = StoN3(_.substr(e + 13, 2))),
+      (n_A_Buf8[5] = StoN3(_.substr(e + 15, 1))),
+      (n_A_Buf8[6] = StoN3(_.substr(e + 16, 1))),
+      (n_A_Buf8[1] = Math.floor(StoN3(_.substr(e + 17, 1)) / 6)),
+      (u = StoN3(_.substr(e + 18, 1))),
+      (n_A_Buf8[2] = Math.floor(u / 16)),
+      (e += 18)),
+    Buf9SW(0),
+    (e += 1),
+    StoN3(_.substr(e, 1)) == 1)
+  ) {
+    for (
+      n_A_Buf9[0] = StoN3(_.substr(e + 1, 1)),
+        n_A_Buf9[1] = StoN3(_.substr(e + 2, 2)),
+        n_A_Buf9[2] = StoN3(_.substr(e + 4, 1)),
+        n_A_Buf9[3] = StoN3(_.substr(e + 5, 2)),
+        n_A_Buf9[4] = StoN3(_.substr(e + 7, 1)),
+        n_A_Buf9[5] = StoN3(_.substr(e + 8, 2)),
+        n_A_Buf9[6] = StoN3(_.substr(e + 10, 1)),
+        n_A_Buf9[7] = StoN3(_.substr(e + 11, 2)),
+        n_A_Buf9[8] = StoN3(_.substr(e + 13, 1)),
+        n_A_Buf9[9] = StoN3(_.substr(e + 14, 2)),
+        n_A_Buf9[10] = StoN3(_.substr(e + 16, 1)),
+        n_A_Buf9[11] = StoN3(_.substr(e + 17, 2)),
+        n_A_Buf9[12] = StoN3(_.substr(e + 19, 1)),
+        n_A_Buf9[13] = StoN3(_.substr(e + 20, 2)),
+        n_A_Buf9[14] = StoN3(_.substr(e + 22, 1)),
+        n_A_Buf9[15] = StoN3(_.substr(e + 23, 2)),
+        n_A_Buf9[16] = StoN3(_.substr(e + 25, 1)),
+        n_A_Buf9[17] = StoN3(_.substr(e + 26, 2)),
+        n_A_Buf9[18] = StoN3(_.substr(e + 28, 1)),
+        n_A_Buf9[19] = StoN3(_.substr(e + 29, 2)),
+        n_A_Buf9[20] = StoN3(_.substr(e + 31, 2)),
+        n_A_Buf9[21] = StoN3(_.substr(e + 33, 2)),
+        n_A_Buf9[22] = StoN3(_.substr(e + 35, 2)),
+        n_A_Buf9[23] = StoN3(_.substr(e + 37, 2)),
+        n_A_Buf9[24] = StoN3(_.substr(e + 39, 1)),
+        n_A_Buf9[25] = StoN3(_.substr(e + 40, 2)),
+        n_A_Buf9[26] = StoN3(_.substr(e + 42, 2)),
+        n_A_Buf9[27] = StoN3(_.substr(e + 44, 2)),
+        n_A_Buf9[28] = StoN3(_.substr(e + 46, 2)),
+        n_A_Buf9[29] = 0,
+        n_A_Buf9[30] = StoN3(_.substr(e + 48, 3)),
+        a = 31;
+      a <= 59;
+      a++
+    )
+      n_A_Buf9[a] = StoN3(_.substr(e - 11 + 2 * a, 2));
+    e += 108;
+  } else {
+    for (
+      n_A_Buf9[20] = StoN3(_.substr(e + 31, 1)),
+        n_A_Buf9[21] = StoN3(_.substr(e + 32, 2)),
+        n_A_Buf9[22] = StoN3(_.substr(e + 34, 1)),
+        n_A_Buf9[23] = StoN3(_.substr(e + 35, 2)),
+        n_A_Buf9[24] = StoN3(_.substr(e + 37, 1)),
+        n_A_Buf9[25] = StoN3(_.substr(e + 38, 2)),
+        n_A_Buf9[26] = StoN3(_.substr(e + 40, 1)),
+        n_A_Buf9[27] = StoN3(_.substr(e + 41, 2)),
+        n_A_Buf9[28] = StoN3(_.substr(e + 43, 1)),
+        n_A_Buf9[29] = StoN3(_.substr(e + 44, 2)),
+        n_A_Buf9[30] = StoN3(_.substr(e + 46, 3)),
+        a = 31;
+      a <= 55;
+      a++
+    )
+      n_A_Buf9[a] = StoN3(_.substr(e - 13 + 2 * a, 2));
+    e += 98;
   }
+  (Buf10SW(0),
+    (e += 1),
+    StoN3(_.substr(e, 1)) == 1 &&
+      ((n_B_manual[1] = StoN3(_.substr(e + 1, 2))),
+      (n_B_manual[2] = StoN3(_.substr(e + 3, 1))),
+      (n_B_manual[3] = StoN3(_.substr(e + 4, 2))),
+      (n_B_manual[4] = StoN3(_.substr(e + 6, 1))),
+      (n_B_manual[5] = StoN3(_.substr(e + 7, 2))),
+      (n_B_manual[7] = StoN3(_.substr(e + 9, 2))),
+      (n_B_manual[9] = StoN3(_.substr(e + 11, 2))),
+      (n_B_manual[21] = StoN3(_.substr(e + 13, 2))),
+      (n_B_manual[30] = StoN3(_.substr(e + 15, 3))),
+      (n_B_manual[31] = StoN3(_.substr(e + 18, 2))),
+      (n_B_manual[34] = StoN3(_.substr(e + 20, 2))),
+      (n_B_manual[35] = StoN3(_.substr(e + 22, 2))),
+      (n_B_manual[36] = StoN3(_.substr(e + 24, 2))),
+      (n_B_manual[37] = StoN3(_.substr(e + 26, 2))),
+      (n_B_manual[38] = StoN3(_.substr(e + 28, 2))),
+      (n_B_manual[39] = StoN3(_.substr(e + 30, 2))),
+      (n_B_manual[40] = StoN3(_.substr(e + 32, 3))),
+      (n_B_manual[41] = StoN3(_.substr(e + 35, 2))),
+      (n_B_manual[42] = StoN3(_.substr(e + 37, 3))),
+      (n_B_manual[43] = StoN3(_.substr(e + 40, 3))),
+      (n_B_manual[44] = StoN3(_.substr(e + 43, 2))),
+      (n_B_manual[48] = StoN3(_.substr(e + 45, 2))),
+      (n_B_manual[49] = StoN3(_.substr(e + 47, 2))),
+      (n_B_manual[50] = StoN3(_.substr(e + 49, 2))),
+      (n_B_manual[51] = StoN3(_.substr(e + 51, 2))),
+      (n_B_manual[52] = StoN3(_.substr(e + 53, 2))),
+      (n_B_manual[53] = StoN3(_.substr(e + 55, 3))),
+      (n_B_manual[54] = StoN3(_.substr(e + 58, 2))),
+      (n_B_manual[55] = StoN3(_.substr(e + 60, 2))),
+      (e += 61)),
+    (c.Conf01.value = StoN3(_.substr(e + 1, 2))),
+    (c.B_num.value = StoN3(_.substr(e + 3, 1))),
+    (c.A8_Skill14.value = StoN3(_.substr(e + 4, 1))),
+    (c.A8_Skill15.value = StoN3(_.substr(e + 5, 2))),
+    (u = StoN3(_.substr(e + 7, 1))),
+    StCalc(1),
+    ActiveSkillSetPlus(),
+    (c.A_ActiveSkill.value = baseSkillId(StoN3(_.substr(e + 8, 2)))),
+    ClickActiveSkill(),
+    (c.A_ActiveSkillLV.value = StoN3(_.substr(e + 10, 1))),
+    c.contains(c.SkillSubNum) && (c.SkillSubNum.value = StoN3(_.substr(e + 11, 3))));
+  for (var U = 0, C = 0; C <= 20; C++)
+    if (m_JobBuff[n_A_JOB][C] == 441) {
+      if (
+        (U = c.A_skill6.value) &&
+        (SKILLID.FIRE_BOLT == n_A_ActiveSkill ||
+          SKILLID.COLD_BOLT == n_A_ActiveSkill ||
+          SKILLID.LIGHTNING_BOLT == n_A_ActiveSkill ||
+          SKILLID.FIRE_BOLT_HINDSIGHT == n_A_ActiveSkill ||
+          SKILLID.COLD_BOLT_HINDSIGHT == n_A_ActiveSkill ||
+          SKILLID.LIGHTNING_BOLT_HINDSIGHT == n_A_ActiveSkill)
+      ) {
+        var r = 1 * U + 3;
+        (myInnerHtml(
+          "AASkill",
+          'Double Bolt chance: <select name="SkillSubNum" onChange="calc()"></select>',
+          0,
+        ),
+          (c.SkillSubNum.options[0] = new documento.Opzione("No chance (0%)", 0)),
+          (c.SkillSubNum.options[1] = new documento.Opzione("Average chance (" + 10 * r + "%)", r)),
+          (c.SkillSubNum.options[2] = new documento.Opzione("Max chance (100%)", 10)),
+          (c.SkillSubNum.value = StoN3(_.substr(e + 11, 3))));
+      }
+      break;
+    }
+  var h = normalizeSavedMonsterId(StoN3(_.substr(e + 14, 2)), !1);
+  ((targetData[0] = h),
+    (c.B_Enemy.value = h),
+    calc(),
+    Bskill(),
+    (c.B_AtkSkill.value = StoN3(_.substr(e + 16, 2))),
+    BClickAtkSkill(),
+    (n_B_AtkSkill = 1 * c.B_AtkSkill.value),
+    (n_B_AtkSkill != 444 && n_B_AtkSkill != 445 && n_B_AtkSkill != 125 && n_B_AtkSkill != 131) ||
+      (c.BSkillSubNum.value = StoN3(_.substr(e + 18, 3))),
+    (c.B_AtkRange.value = StoN3(_.substr(e + 21, 1))),
+    (c.B_AtkElem.value = StoN3(_.substr(e + 22, 1))),
+    (c.server.value = StoN3(_.substr(e + 24, 1))),
+    (c.maxASPD.value = StoN3(_.substr(e + 25, 1))),
+    ((c.A_DICASTES_SHOULDER_PRIMARY.value = StoN3(_.substr(e + 26, 1))),
+    (c.A_DICASTES_SHOULDER_STATS.value = StoN3(_.substr(e + 27, 1))),
+    (c.A_DICASTES_SHOES_PRIMARY.value = StoN3(_.substr(e + 28, 1))),
+    (c.A_DICASTES_SHOES_STATS.value = StoN3(_.substr(e + 29, 1))),
+    (c.A_DICASTES_ACCESSORY1_PRIMARY.value = StoN3(_.substr(e + 30, 1))),
+    (c.A_DICASTES_ACCESSORY1_STATS.value = StoN3(_.substr(e + 31, 1))),
+    (c.A_DICASTES_ACCESSORY2_PRIMARY.value = StoN3(_.substr(e + 32, 1))),
+    (c.A_DICASTES_ACCESSORY2_STATS.value = StoN3(_.substr(e + 33, 1))),
+    (c.A_DICASTES_SHOULDER_STATS2.value = StoN3(_.substr(e + 34, 1))),
+    (c.A_DICASTES_SHOES_STATS2.value = StoN3(_.substr(e + 35, 1))),
+    (c.A_DICASTES_ACCESSORY1_STATS2.value = StoN3(_.substr(e + 36, 1))),
+    (c.A_DICASTES_ACCESSORY2_STATS2.value = StoN3(_.substr(e + 37, 1)))),
+    refreshFields(),
+    (SRV = 1 * c.server.value),
+    calc());
+  return !0;
 }
 for (
-  n_NtoS = [
-    "0",
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
+  n_NtoS3 = [
+    "i",
+    "'",
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    ".",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
     "A",
     "B",
     "C",
@@ -8923,161 +7791,15 @@ for (
     "X",
     "Y",
     "Z",
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g",
-    "h",
-    "i",
-    "j",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "p",
-    "q",
-    "r",
-    "s",
-    "t",
-    "u",
-    "v",
-    "w",
-    "x",
-    "y",
-    "z",
+    "-",
+    ":",
+    ";",
+    ",",
+    "=",
+    "$",
+    "&",
+    "+",
   ],
-    n_NtoS2 = [
-      "a",
-      "b",
-      "c",
-      "d",
-      "e",
-      "f",
-      "g",
-      "h",
-      "i",
-      "j",
-      "k",
-      "l",
-      "m",
-      "n",
-      "o",
-      "p",
-      "q",
-      "r",
-      "s",
-      "t",
-      "u",
-      "v",
-      "w",
-      "x",
-      "y",
-      "z",
-      "A",
-      "B",
-      "C",
-      "D",
-      "E",
-      "F",
-      "G",
-      "H",
-      "I",
-      "J",
-      "K",
-      "L",
-      "M",
-      "N",
-      "O",
-      "P",
-      "Q",
-      "R",
-      "S",
-      "T",
-      "U",
-      "V",
-      "W",
-      "X",
-      "Y",
-      "Z",
-      "0",
-      "1",
-      "2",
-      "3",
-      "4",
-      "5",
-      "6",
-      "7",
-      "8",
-      "9",
-    ],
-    n_NtoS3 = [
-      "i",
-      "'",
-      "a",
-      "b",
-      "c",
-      "d",
-      "e",
-      "f",
-      "g",
-      "h",
-      ".",
-      "j",
-      "k",
-      "l",
-      "m",
-      "n",
-      "o",
-      "p",
-      "q",
-      "r",
-      "s",
-      "t",
-      "u",
-      "v",
-      "w",
-      "x",
-      "y",
-      "z",
-      "A",
-      "B",
-      "C",
-      "D",
-      "E",
-      "F",
-      "G",
-      "H",
-      "I",
-      "J",
-      "K",
-      "L",
-      "M",
-      "N",
-      "O",
-      "P",
-      "Q",
-      "R",
-      "S",
-      "T",
-      "U",
-      "V",
-      "W",
-      "X",
-      "Y",
-      "Z",
-      "-",
-      ":",
-      ";",
-      ",",
-      "=",
-      "$",
-      "&",
-      "+",
-    ],
     EnName = [
       "Neutral",
       "Water",
@@ -9202,9 +7924,11 @@ for (
   var BastionEnchantOptions = [
       ["(Bastion enchant)", BASTIONENCHANTID.NONE],
       ["All Stats +1", BASTIONENCHANTID.ALL_STATS],
+      ["Movement Speed +20%", BASTIONENCHANTID.MOVEMENT_SPEED],
       ["Race Resist +5%", BASTIONENCHANTID.RACE_RESISTANCE],
       ["MATK +5%", BASTIONENCHANTID.MAGICAL_ATTACK],
       ["ATK +5%", BASTIONENCHANTID.PHYSICAL_ATTACK],
+      ["SP Consumption -20%", BASTIONENCHANTID.SP_CONSUMPTION],
       ["Healing +10%", BASTIONENCHANTID.HEALING_EFFECTIVENESS],
     ],
     bastionControlIndex = 0;
