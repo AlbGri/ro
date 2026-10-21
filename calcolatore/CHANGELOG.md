@@ -13,6 +13,9 @@ Le versioni della pagina `calcolatore/`.
 - La build resta nel browser; si possono salvare build con un nome e copiare un link che apre la
   build. Le build hanno un formato di questo calcolatore: i link del calcolatore di Thrice non si
   aprono, e i nostri non si aprono nel suo
+- Confronto fra due build: si fissa la build attuale come A e la si confronta con quella che si
+  sta modificando, contro lo stesso mostro (statistiche, danni fatti e subiti, con la differenza
+  in verde se migliora e in rosso se peggiora)
 - Correzioni per uaRO dalla wiki del server:
   - incantamenti Bastion: tutti e sette, con Movement Speed (+20% alla velocita' di movimento) e
     SP Consumption (si sceglie, ma non cambia i risultati: il costo in SP delle skill non e'

@@ -11,13 +11,16 @@ const LUNGO = 40;
 
 // ---------- stato salvato: build corrente e build con nome ----------
 
-let stato = { corrente: "", salvate: [] };
+let stato = { corrente: "", salvate: [], confronto: null };
 
 function normalizza(dati) {
   const salvate = Array.isArray(dati?.salvate)
     ? dati.salvate.filter((s) => typeof s?.nome === "string" && typeof s?.build === "string")
     : [];
-  return { corrente: typeof dati?.corrente === "string" ? dati.corrente : "", salvate };
+  // confronto: la build A del confronto e quando e' stata fissata
+  const a = dati?.confronto;
+  const confronto = typeof a?.build === "string" && typeof a?.quando === "number" ? { build: a.build, quando: a.quando } : null;
+  return { corrente: typeof dati?.corrente === "string" ? dati.corrente : "", salvate, confronto };
 }
 function salva() {
   try {
@@ -35,7 +38,7 @@ function ripristina() {
 }
 // la build nel formato dell'indirizzo (il testo dopo #), con la versione nel primo carattere
 function buildCorrente() {
-  return String(window.URLOUT(1)).split("#")[1] || "";
+  return String(window.URLOUT());
 }
 const LINK_ESTRANEO = "Il link non contiene una build di questo calcolatore.";
 function buildValida(build) {
@@ -603,7 +606,219 @@ function sincronizza() {
   aggiornaPassive();
   ricollega();
   for (const el of collegati) aggiornaControllo(el);
+  aggiornaConfronto();
 }
+
+// ---------- confronto fra due build ----------
+
+// La build A gira in un secondo motore, in un iframe nascosto: caricarla nel motore della
+// pagina lascerebbe tracce della build B (vedi apriBuild). A usa il mostro scelto per B.
+// Metriche e regole vengono dal confronto A/B del calcolatore di Thrice.
+const METRICHE = [
+  { gruppo: "Statistiche" },
+  { voce: "Max HP", id: "A_MaxHP" },
+  { voce: "Max SP", id: "A_MaxSP" },
+  { voce: "ATK", id: "A_ATK2" },
+  { voce: "ATK reale", id: "A_RealATK" },
+  { voce: "MATK", id: "A_MATK" },
+  { voce: "DEF", id: "A_totalDEF" },
+  { voce: "MDEF", id: "A_MDEF" },
+  { voce: "HIT", id: "A_HIT" },
+  { voce: "Flee", id: "A_FLEE" },
+  { voce: "Perfect Dodge", id: "A_LUCKY" },
+  { voce: "Critical", id: "A_CRI" },
+  { voce: "ASPD", id: "A_ASPD" },
+  { voce: "Tempo di lancio", id: "A_cTime", meno: true, primo: true },
+  { voce: "Ritardo dopo il lancio", id: "A_cDelay", meno: true, primo: true },
+  { voce: "Velocità di movimento", id: "A_MovSPEED" },
+  { gruppo: "Il tuo attacco" },
+  { voce: "Probabilità di colpire", id: "BattleHIT", percento: true },
+  { voce: "Probabilità di critico", id: "CRInum", percento: true },
+  { voce: "Danno critico", id: "CRIATK" },
+  { voce: "Danno minimo", id: "strID_0" },
+  { voce: "Danno medio", id: "strID_1" },
+  { voce: "Danno massimo", id: "strID_2" },
+  { voce: "Danno al secondo", id: "AveSecondATK" },
+  { voce: "Colpi per ucciderlo, in media", id: "AveATKnum", meno: true },
+  { gruppo: "L'attacco del nemico" },
+  { voce: "Probabilità di schivare", id: "BattleFLEE", percento: true },
+  { voce: "Danno subito, minimo", id: "B_MinAtk", meno: true },
+  { voce: "Danno subito, in media", id: "B_AveAtk", meno: true },
+  { voce: "Danno subito, massimo", id: "B_MaxAtk", meno: true },
+  { voce: "HP effettivi", id: "B_EffectiveHP" },
+  { voce: "HP effettivi, con le schivate", id: "B_ExpectedEffectiveHP" },
+];
+// scelte che cambiano i danni senza essere la build: se A e B le hanno diverse, si avvisa
+const CONTESTO = [
+  ["A_ActiveSkill", "la tua skill"],
+  ["A_ActiveSkillLV", "il livello della tua skill"],
+  ["B_AtkSkill", "la skill del nemico"],
+  ["A8_Skill14", "l'ambiente"],
+];
+
+const confronto = document.getElementById("confronto");
+const confrontoCorpo = confronto.querySelector("tbody");
+const soloDifferenze = document.getElementById("solo-differenze");
+let motoreA = null; // { iframe, finestra, nemico }: il motore della build A, quando e' pronto
+let preparazioneA = 0;
+
+function togliMotoreA() {
+  preparazioneA++;
+  motoreA?.iframe.remove();
+  motoreA = null;
+}
+
+async function preparaA() {
+  togliMotoreA();
+  const mia = preparazioneA;
+  aggiornaConfronto();
+  const iframe = document.createElement("iframe");
+  iframe.hidden = true;
+  iframe.tabIndex = -1;
+  iframe.setAttribute("aria-hidden", "true");
+  // gli stessi file del motore della pagina, nello stesso ordine
+  iframe.srcdoc = "<!DOCTYPE html><meta charset=\"utf-8\">" + [...document.querySelectorAll('script[src^="motore/"]')]
+    .map((s) => `<script src="${s.getAttribute("src")}"></` + "script>").join("");
+  const caricato = new Promise((ok) => iframe.addEventListener("load", ok, { once: true }));
+  document.body.appendChild(iframe);
+  await caricato;
+  if (mia !== preparazioneA) return iframe.remove();
+  const w = iframe.contentWindow;
+  try {
+    w.documento.getElementById("otherURL_TEXT").value = "x#" + stato.confronto.build;
+    if (!w.URLIN(1)) throw new Error("la build A non è di questo calcolatore");
+    for (const el of pannelli) w[el.dataset.apri](1);
+    w.StAllCalc();
+    w.calc();
+  } catch (e) {
+    iframe.remove();
+    mostraErrore(e);
+    return;
+  }
+  motoreA = { iframe, finestra: w, nemico: null };
+  aggiornaConfronto();
+}
+
+// il numero di un risultato: media degli intervalli (a~b), somma delle parti (a+b),
+// altrimenti il primo numero ("1170 (234 x 5 hits)", "16.47 % ...", "(4.7%)")
+function numeroDi(testo) {
+  const t = testo.replace(/,/g, "").replace(/\s+/g, "");
+  if (/^-?[\d.]+(~-?[\d.]+)?(\+-?[\d.]+(~-?[\d.]+)?)*$/.test(t)) {
+    return t.split("+").reduce((s, p) => {
+      const [a, b = a] = p.split("~").map(Number);
+      return s + (a + b) / 2;
+    }, 0);
+  }
+  const m = t.match(/^\(?(-?\d+(?:\.\d+)?)/);
+  return m ? Number(m[1]) : null;
+}
+const arrotonda = (x) => String(Math.round(x * 100) / 100);
+
+function valoreDi(m, d) {
+  const testo = d.testo(m.id).replace(/\s+/g, " ").trim();
+  const numero = testo ? numeroDi(testo) : null;
+  let mostra = traduci(testo) || "—";
+  if (m.primo) mostra = testo.match(/^[-\d.]+\s*%?/)?.[0] ?? mostra;
+  if (m.percento && numero !== null) mostra = arrotonda(numero) + "%";
+  return { mostra, numero };
+}
+
+function differenza(m, a, b) {
+  if (a.numero === null || b.numero === null) return { testo: "—", diversa: a.mostra !== b.mostra };
+  const d = b.numero - a.numero;
+  if (Math.abs(d) < 1e-6) return { testo: "0", diversa: false };
+  let testo = (d > 0 ? "+" : "") + arrotonda(d);
+  // per le probabilita' la differenza e' gia' in punti percentuali
+  if (a.numero !== 0 && !m.percento) testo += ` (${d > 0 ? "+" : ""}${arrotonda((d / Math.abs(a.numero)) * 100)}%)`;
+  return { testo, diversa: true, classe: (m.meno ? d < 0 : d > 0) ? "meglio" : "peggio" };
+}
+
+function sceltaDi(d, nome) {
+  const v = d.calcForm[nome];
+  if (!v) return "";
+  if (v.tag !== "select") return String(v.value);
+  return v._lista()[v.selectedIndex]?.text ?? "";
+}
+
+// il mostro di A segue quello di B; restituisce false se A non lo trova nel suo elenco
+function allineaMostro() {
+  const nemico = String(virtuale("B_Enemy").value);
+  if (motoreA.nemico === nemico) return true;
+  const w = motoreA.finestra;
+  const campo = w.documento.calcForm.B_Enemy;
+  campo.value = nemico;
+  if (String(campo.value) !== nemico) {
+    w.EnemySort();
+    campo.value = nemico;
+  }
+  if (String(campo.value) !== nemico) return false;
+  w.Bskill(true);
+  w.calc();
+  motoreA.nemico = nemico;
+  return true;
+}
+
+function riga(celle, classe) {
+  const tr = document.createElement("tr");
+  if (classe) tr.className = classe;
+  for (const [testo, c] of celle) {
+    const td = document.createElement("td");
+    td.textContent = testo;
+    if (c) td.className = c;
+    if (celle.length === 1) td.colSpan = 4;
+    tr.appendChild(td);
+  }
+  return tr;
+}
+
+function aggiornaConfronto() {
+  const a = stato.confronto;
+  confronto.querySelector('[data-azione="fissa-a"]').textContent = a ? "Sostituisci A con questa build" : "Fissa questa build come A";
+  confronto.querySelector('[data-azione="scambia-ab"]').hidden = !a;
+  confronto.querySelector('[data-azione="togli-a"]').hidden = !a;
+  document.getElementById("confronto-stato").textContent = a
+    ? "A fissata il " + new Date(a.quando).toLocaleString("it-IT", { dateStyle: "short", timeStyle: "short" }) + "."
+    : "Nessuna build A.";
+  document.getElementById("confronto-risultati").hidden = !a;
+  if (!a) return;
+  const avviso = document.getElementById("confronto-avviso");
+  if (!motoreA) {
+    avviso.hidden = true;
+    confrontoCorpo.replaceChildren(riga([["Calcolo della build A…"]]));
+    return;
+  }
+  let stessoMostro;
+  try {
+    stessoMostro = allineaMostro();
+  } catch (e) {
+    mostraErrore(e);
+    return;
+  }
+  const dA = motoreA.finestra.documento;
+  const diversi = CONTESTO.filter(([nome]) => sceltaDi(dA, nome) !== sceltaDi(doc, nome)).map(([, d]) => d);
+  if (!stessoMostro) diversi.unshift("il mostro");
+  avviso.hidden = !diversi.length;
+  avviso.textContent = diversi.length
+    ? `Non sono uguali in A e B: ${diversi.join(", ")}. Le differenze nei danni non vengono solo dalla build.`
+    : "";
+  const righe = [];
+  let gruppo = null;
+  for (const m of METRICHE) {
+    if (m.gruppo) {
+      gruppo = m.gruppo;
+      continue;
+    }
+    const va = valoreDi(m, dA), vb = valoreDi(m, doc);
+    const diff = differenza(m, va, vb);
+    if (soloDifferenze.checked && !diff.diversa) continue;
+    if (gruppo) righe.push(riga([[gruppo]], "gruppo"));
+    gruppo = null;
+    righe.push(riga([[m.voce], [va.mostra], [vb.mostra], [diff.testo, diff.classe]]));
+  }
+  if (!righe.length) righe.push(riga([["Nessuna differenza."]]));
+  confrontoCorpo.replaceChildren(...righe);
+}
+soloDifferenze.addEventListener("change", aggiornaConfronto);
 
 // ---------- azioni della pagina ----------
 
@@ -681,6 +896,21 @@ document.addEventListener("click", async (e) => {
     salva();
     history.replaceState(null, "", location.pathname);
     location.reload();
+  } else if (azione === "fissa-a") {
+    stato.confronto = { build: buildCorrente(), quando: Date.now() };
+    salva();
+    preparaA();
+  } else if (azione === "togli-a") {
+    stato.confronto = null;
+    salva();
+    togliMotoreA();
+    aggiornaConfronto();
+  } else if (azione === "scambia-ab") {
+    const a = stato.confronto.build;
+    stato.confronto = { build: buildCorrente(), quando: Date.now() };
+    stato.corrente = a;
+    salva();
+    apriBuild(a);
   } else if (azione === "esporta") {
     esporta();
   } else if (azione === "importa") {
@@ -755,6 +985,7 @@ function avvia() {
   document.getElementById("caricamento").remove();
   document.getElementById("app").hidden = false;
   if (estranea) avvisa(LINK_ESTRANEO);
+  if (stato.confronto) preparaA();
 }
 
 try {

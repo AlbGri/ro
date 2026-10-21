@@ -209,6 +209,15 @@ details.pannello > .corpo { padding: 2px 16px 14px; }
 .name:hover > .nametext, .name:focus > .nametext, .name:focus-within > .nametext { display: block; }
 .risultati dd .name .nametext { left: auto; right: 0; }
 
+/* confronto fra due build */
+table.confronto { width: 100%; border-collapse: collapse; font-size: .9rem; font-variant-numeric: tabular-nums; }
+table.confronto th, table.confronto td { padding: 5px 6px; border-bottom: 1px solid var(--line); text-align: right; vertical-align: top; }
+table.confronto th:first-child, table.confronto td:first-child { text-align: left; color: var(--muted); }
+table.confronto thead th { color: var(--muted); font-weight: 700; }
+table.confronto tr.gruppo td { color: var(--ink); font-weight: 700; padding-top: 12px; }
+table.confronto td.meglio { color: var(--common); font-weight: 700; }
+table.confronto td.peggio { color: var(--warn); font-weight: 700; }
+
 .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .toolbar input[type="text"] { flex: 1 1 220px; }
 .crediti { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); font-size: .88rem; color: var(--muted); }
@@ -234,6 +243,12 @@ details.pannello > .corpo { padding: 2px 16px 14px; }
   .slot > .raff { grid-column: 2; }
   .slot > .principale, .slot > .extra { grid-column: 1 / -1; }
   .voci, .risultati { grid-template-columns: minmax(0, 1fr); }
+  /* confronto: il nome della voce su una riga, sotto A, B e la differenza */
+  table.confronto, table.confronto thead, table.confronto tbody { display: block; }
+  table.confronto tr { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid var(--line); }
+  table.confronto th, table.confronto td { border-bottom: none; }
+  table.confronto td:first-child { grid-column: 1 / -1; padding-bottom: 0; }
+  table.confronto thead th:first-child { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
@@ -553,6 +568,25 @@ details.pannello > .corpo { padding: 2px 16px 14px; }
         <div><dt>HP effettivi, con le schivate</dt><dd data-uscita="B_ExpectedEffectiveHP"></dd></div>
         <div><dt>Resisti circa</dt><dd data-uscita="B_SurvivalHits"></dd></div>
       </dl>
+    </div>
+  </div>
+
+  <h2>Confronto fra due build</h2>
+  <div class="card" id="confronto">
+    <p class="hint">B è la build che stai modificando. Fissa quella attuale come A, poi cambia equipaggiamento, statistiche o buff: la tabella mette a confronto le due build contro lo stesso mostro, quello scelto qui sopra.</p>
+    <div class="toolbar">
+      <button class="btn" type="button" data-azione="fissa-a">Fissa questa build come A</button>
+      <button class="btn" type="button" data-azione="scambia-ab" hidden>Scambia A e B</button>
+      <button class="btn danger" type="button" data-azione="togli-a" hidden>Togli A</button>
+      <span class="hint" id="confronto-stato" style="margin:0"></span>
+    </div>
+    <div id="confronto-risultati" hidden>
+      <p class="errore" id="confronto-avviso" style="margin-top:12px" hidden></p>
+      <label class="voce" style="margin:12px 0 6px"><input type="checkbox" id="solo-differenze"><span class="etichetta">Solo le differenze</span></label>
+      <table class="confronto">
+        <thead><tr><th></th><th>A</th><th>B</th><th>Differenza</th></tr></thead>
+        <tbody></tbody>
+      </table>
     </div>
   </div>
 

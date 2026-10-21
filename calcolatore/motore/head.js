@@ -3868,37 +3868,6 @@ function ClickActiveSkill2() {
       (c.SkillSubNum.value = n));
   }
 }
-function SaveTheme() {
-  if (!(typeof Storage > "u")) {
-    var e = new Array();
-    ((e[0] = 1),
-      (e[1] = 0),
-      (e[2] = 1 * c.server.value),
-      (memoriaMotore.Slot20 = JSON.stringify(e)));
-  }
-}
-function LoadTheme() {
-  if (typeof Storage < "u") {
-    var e = 20;
-    if (memoriaMotore["Slot" + e] !== void 0) {
-      var _ = JSON.parse(memoriaMotore["Slot" + e]);
-      _[2] !== void 0 && (c.server.value = _[2]);
-    }
-    if (memoriaMotore.getItem("darkMode") === "1") {
-      documento.documentElement.classList.add("dark");
-      var n = documento.getElementById("darkModeToggle");
-      n && (n.checked = !0);
-    }
-  }
-}
-function toggleDarkMode() {
-  var e = documento.documentElement.classList.toggle("dark");
-  memoriaMotore.setItem("darkMode", e ? "1" : "0");
-}
-(function () {
-  var e = documento.createElement("style");
-  return (e.appendChild(documento.createTextNode("")), documento.head.appendChild(e), e.sheet);
-})();
 function BufSW(e) {
   if (((SRV = 1 * c.server.value), (n_SkillSW = e), n_SkillSW)) {
     for (
@@ -7209,7 +7178,6 @@ function EDPplus(e) {
     w_HIT_EDP == 100 && (w_DMG[0] += EDP_DMG(0) * e),
     void 0);
 }
-function EDPhyouzi(e) {}
 function EDP_DMG(e) {
   if (SkillSearch(SKILLID.ENCHANT_DEADLY_POISON) || n_A_Buf6[7]) {
     if (

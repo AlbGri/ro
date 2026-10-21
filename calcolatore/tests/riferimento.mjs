@@ -17,14 +17,10 @@ export function caricaBuild(m, url, kakutyou) {
 
 export function istantanea(m) {
   const d = m.documento, out = {};
-  const escluso = (el) => {
-    for (let n = el; n; n = n.padre) if (n.id === "build-comparison" || n.classList.contains("save-tools")) return true;
-    return false;
-  };
   const conControlli = (el) => el.figli.some((f) => f.tag && (f.tag === "select" || f.tag === "input" || conControlli(f)));
   for (const [id, l] of d.perId) {
     const el = l[0];
-    if (/^(input|select|option|textarea|button)$/.test(el.tag) || conControlli(el) || escluso(el)) continue;
+    if (/^(input|select|option|textarea|button)$/.test(el.tag) || conControlli(el)) continue;
     const t = el.textContent.replace(/\s+/g, " ").trim();
     if (t) out[id] = t;
   }
