@@ -880,20 +880,6 @@ document.addEventListener("click", async (e) => {
     stato.salvate.splice(i, 1);
     salva();
     disegnaSalvate();
-  } else if (azione === "importa-indirizzo") {
-    const testo = document.getElementById("indirizzo-esterno").value.trim();
-    const build = testo.includes("#") ? testo.split("#")[1] : testo.includes("?") ? testo.split("?")[1] : "";
-    if (!build) {
-      avvisa("Nel link non c'è una build: deve contenere # seguito dalla build.");
-      return;
-    }
-    if (!window.buildValida(build)) {
-      avvisa(LINK_ESTRANEO);
-      return;
-    }
-    stato.corrente = build;
-    salva();
-    apriBuild(build);
   } else if (azione === "nuova") {
     if (!confirm("Ricominciare da un personaggio nuovo? Le build salvate restano.")) return;
     stato.corrente = "";
@@ -990,6 +976,21 @@ function avvia() {
   if (estranea) avvisa(LINK_ESTRANEO);
   if (stato.confronto) preparaA();
 }
+
+// un link incollato nella barra con la pagina gia' aperta cambia solo il #, senza ricaricare
+addEventListener("hashchange", () => {
+  const build = location.hash.slice(1);
+  if (!build) return;
+  if (!window.buildValida(build)) {
+    history.replaceState(null, "", location.pathname);
+    avvisa(LINK_ESTRANEO);
+    return;
+  }
+  clearTimeout(timerSalva);
+  stato.corrente = build;
+  salva();
+  apriBuild(build);
+});
 
 try {
   avvia();

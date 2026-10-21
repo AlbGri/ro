@@ -6,6 +6,8 @@ Le versioni della pagina `calcolatore/`.
 
 - Scelta della classe: l'elenco e' diviso in sezioni (Novice, prime classi, seconde, rinate, High,
   espanse) e si apre con la ricerca, come mostri e oggetti. Super Novice sta fra le espanse
+- Un link con una build incollato nella barra degli indirizzi si apre anche con il calcolatore
+  gia' aperto. Il campo "Link con la build" e il suo pulsante Apri non ci sono piu'
 
 ## [1.3] - 2026-10-21
 
