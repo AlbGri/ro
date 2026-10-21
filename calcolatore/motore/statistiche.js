@@ -2418,10 +2418,7 @@ function StPlusCalc() {
       (E += Math.floor(n_A_Buf3[16] / D)),
       (S += Math.floor(n_A_Buf3[17] / D))),
     n_A_Buf6[19] &&
-      ((s -=
-        (T = Math.floor((n_A_AGI + s) / 2)) > (l = PvP ? 5 * n_A_Buf6[19] : 10 * n_A_Buf6[19])
-          ? l
-          : T),
+      ((s -= (T = Math.floor((n_A_AGI + s) / 2)) > (l = 10 * n_A_Buf6[19]) ? l : T),
       (E -= (T = Math.floor((n_A_DEX + E) / 2)) > l ? l : T)),
     n_A_Buf6[20] && (s -= n_A_Buf6[20] + 2),
     n_A_Buf6[22] && (S = -1 * n_A_LUK),

@@ -98,8 +98,7 @@ function attaccoDueArmi() {
   minimo = Math.floor((minimo + stelle) * (0.3 + SkillSearch(SKILLID.LEFT_HAND_MASTERY) / 10));
   var medio = (massimo + minimo) / 2;
   var sinistra = [tPlusDamCut(minimo), tPlusDamCut(medio), tPlusDamCut(massimo)];
-  // calc lo mostra accanto al critico, ma prima di chiamare BattleCalc999: e' quello del calcolo
-  // precedente (come nell'originale)
+  // calc lo mostra accanto al critico
   wLeft = sinistra;
   ATKmod02(1, 0);
   n_Min_DMG += sinistra[0];
@@ -120,8 +119,7 @@ function attaccoDueArmi() {
   destra = w_DMG[2] + EDP_DMG(2);
   Last_DMG_A[2] = Last_DMG_B[2] = destra + sinistra[2];
   InnStr[2] += Last_DMG_A[2] + " (" + destra + " + " + sinistra[2] + ")";
-  // senza Double Attack il massimo si confronta con la sola destra (come nell'originale)
-  var piuAlto = destra;
+  var piuAlto = destra + sinistra[2];
   if (w998D) {
     piuAlto = 2 * destra + sinistra[2];
     str_bSUB += piuAlto + " (" + w998D + "%)<BR>";
@@ -294,11 +292,6 @@ function ritardoMonaco(base) {
 }
 function heat(s, lv) {
   n_Delay[5] = targetData[19] == 1 ? 0.1 : 0.05;
-  if (PvP == 1) {
-    n_Delay[0] = 1;
-    str_bSUBname += "SP damage<BR>";
-    str_bSUB += "15<BR>";
-  }
 }
 // prepara(s, lv) per skill: s.mod e s.colpi partono da 1
 var SKILL_FISICHE = {
@@ -371,12 +364,11 @@ var SKILL_FISICHE = {
     s.mod += 0.5 * lv + 2;
     n_Delay[3] = 2;
   },
-  // doppio danno, x 1,25 in WoE
+  // doppio danno
   [SKILLID.SONIC_BLOW_SOUL_LINKED]: function (s, lv) {
     s.colpi = 8;
     s.mod += 0.5 * lv + 2;
-    if (PvP == 0) s.mod *= 2;
-    if (PvP == 1) s.mod *= n_WoE ? 1.25 : 2;
+    s.mod *= 2;
     n_Delay[3] = 2;
   },
   [SKILLID.FREEZING_TRAP]: function (s, lv) {
@@ -892,9 +884,11 @@ function rapidSmiting() {
   var atk =
     n_A_ATK -
     CARTE_ATK.reduce((somma, [carta, valore]) => somma + valore * CardNumSearch(carta), 0);
-  // Provoke e Aloevera, che Shield Boomerang conta, nell'originale non avevano effetto: si
-  // sommavano a una variabile di Shield Boomerang
+  // Provoke e Aloevera come per Shield Boomerang (nell'originale si sommavano a una variabile di
+  // Shield Boomerang e non avevano effetto)
   if (SkillSearch(SKILLID.AUTO_BERSERK)) atk += 0.32 * atk;
+  else if (n_A_Buf6[5]) atk += Math.floor(atk * (0.02 + 0.03 * n_A_Buf6[5]));
+  else if (n_A_Buf7[31]) atk += Math.floor(0.05 * atk);
   for (var e = 0; e <= 2; e++) {
     w_DMG[e] = atk + pesoScudo;
     w_DMG[e] =
@@ -990,13 +984,13 @@ function grandCross() {
   myInnerHtml("bSUB3name", '<Font color="#FF0000">Damage backlash</Font>', 0);
   var contraccolpo = [0, 0, 0];
   var vitDEF = [n_A_VITDEF[2], n_A_VITDEF[1], n_A_VITDEF[0]];
-  // MDEF da INT senza le riduzioni di StAllCalc: come nell'originale cambia anche quella usata
-  // dopo per i danni magici subiti (BattleHiDam)
-  n_A_softMDEF = n_A_INT + Math.floor(n_A_VIT / 2);
+  // MDEF da INT senza le riduzioni di StAllCalc (l'originale la scriveva in n_A_softMDEF, e
+  // cambiava anche i danni magici subiti)
+  var mdefINT = n_A_INT + Math.floor(n_A_VIT / 2);
   for (var e = 0; e <= 2; e++) {
     var d = BK_n_A_DMG[e] * defReduction(n_A_DEF) - vitDEF[e] + n_A_WeaponLV_refineATK;
     d = Math.floor(d * (1 + 0.4 * lv));
-    var m = BK_n_A_MATK[e] * mdefReduction(n_A_MDEF) - n_A_softMDEF;
+    var m = BK_n_A_MATK[e] * mdefReduction(n_A_MDEF) - mdefINT;
     d += Math.floor(m * (0.4 * lv + 1));
     d = Math.floor((d * (100 - bonusValues[57])) / 100);
     d = Math.floor((d * (100 - bonusValues[66])) / 100);
@@ -1061,10 +1055,9 @@ function cartRevolution() {
     w_DMG[e] = BattleCalc(n_A_DMG[e], e);
     w_DMG[e] += Math.floor(BattleCalc(dannoCarro[e], e) * carro);
     w_DMG[e] = Math.floor(w_DMG[e] * element[targetData[3]][0]);
-    // Heavy Metaling Card: +50% per i Merchant. Come nell'originale, a ogni giro moltiplica
-    // tutti e tre i valori, anche quelli gia' moltiplicati
-    if (CardNumSearch(523) && [6, 12, 19, 26, 33, 40].includes(n_A_JOB))
-      for (var i = 0; i <= 2; i++) w_DMG[i] *= 1.5;
+    // Heavy Metaling Card: +50% per i Merchant (l'originale moltiplicava a ogni giro tutti e tre
+    // i valori, anche quelli gia' moltiplicati)
+    if (CardNumSearch(523) && [6, 12, 19, 26, 33, 40].includes(n_A_JOB)) w_DMG[e] *= 1.5;
     Last_DMG_A[e] = Last_DMG_B[e] = w_DMG[e] + EDP_DMG(e);
     InnStr[e] += Last_DMG_A[e];
   }
@@ -1179,8 +1172,7 @@ function throwHuumaShuriken() {
   n_PerHIT_DMG = BattleCalc2(0) * element[targetData[3]][0];
   w_DMG[1] = (w_DMG[1] * w_HIT + n_PerHIT_DMG * (100 - w_HIT)) / 100;
 }
-// Throw Coins: danno fisso per livello, dimezzato sui boss e sul mostro 586 (oggi Sropho, forse
-// un id cambiato dai dati di uaRO)
+// Throw Coins: danno fisso per livello, dimezzato sui boss
 function throwCoins() {
   var lv = n_A_ActiveSkillLV;
   n_rangedAtk = 1;
@@ -1188,7 +1180,7 @@ function throwCoins() {
   wCast = 0;
   n_Delay[2] = 2;
   w_HIT_HYOUJI = 100;
-  var base = targetData[19] == 1 || targetData[0] == 586 ? 250 : 500;
+  var base = targetData[19] == 1 ? 250 : 500;
   w_DMG = [base * lv, base * lv + (base / 2) * lv, base * lv + base * lv];
   for (var e = 0; e <= 2; e++) {
     w_DMG[e] = (w_DMG[e] * skill_dmg(n_A_ActiveSkill)) / 100;
@@ -1240,7 +1232,6 @@ function acidBomb() {
   var danno = (0.7 * n_A_INT * n_A_INT * targetData[7]) / (n_A_INT + targetData[7]);
   danno = Math.floor((danno * skill_dmg(n_A_ActiveSkill)) / 100);
   danno = tPlusDamCut(Math.floor(danno * element[targetData[3]][0]));
-  if (PvP == 1) danno = Math.floor(danno / 2);
   for (var e = 0; e <= 2; e++) {
     Last_DMG_B[e] = danno;
     Last_DMG_A[e] = danno * wHITsuu;
@@ -1440,20 +1431,18 @@ function magnusExorcismus(s, lv) {
   n_Delay[2] = 4;
   if (!canMagnusExorcismusHitTarget(n_A_ActiveSkill)) n_A_MATK[0] = n_A_MATK[1] = n_A_MATK[2] = 0;
 }
-// Estin, Estun, Esma: elemento scelto a mano, nessun danno in PvP
+// Estin, Estun, Esma: elemento scelto a mano
 function estin(s, lv) {
   n_A_Weapon_element = 1 * c.A_Weapon_element.value;
   wCast = 0.1;
   n_Delay[2] = 0.5;
   s.mod = targetData[4] == 0 ? 0.1 * lv : 0.01;
-  if (PvP == 1) s.mod = 0;
 }
 function estun(s, lv) {
   n_A_Weapon_element = 1 * c.A_Weapon_element.value;
   wCast = 0.1;
   n_Delay[2] = 0.5;
   s.mod = 0.05 * lv;
-  if (PvP == 1) s.mod = 0;
 }
 function esma(s, lv) {
   n_A_Weapon_element = 1 * c.A_Weapon_element.value;
@@ -1462,7 +1451,6 @@ function esma(s, lv) {
   wCast = 2;
   n_Delay[2] = 0.5;
   s.mod = 0.4 + n_A_BaseLV / 100;
-  if (PvP == 1) s.mod = 0;
 }
 function waterBall(s, lv) {
   n_A_Weapon_element = 1;
@@ -1825,22 +1813,14 @@ function BattleCalc998() {
   if (targetData[6] % w_DMG[1] != 0) colpi += 1;
   myInnerHtml("nm064", "", 0);
   myInnerHtml("AtkJobExp", "", 0);
-  if (PvP == 0) {
-    myInnerHtml("nm063", "Exp Per Hit", 0);
-    myInnerHtml(
-      "AtkBaseExp",
-      colpi < 10000
-        ? Math.round(targetData[16] / colpi) +
-            " base, " +
-            Math.round(targetData[17] / colpi) +
-            " job"
-        : SubName[7],
-      0,
-    );
-  } else {
-    myInnerHtml("nm063", "", 0);
-    myInnerHtml("AtkBaseExp", "", 0);
-  }
+  myInnerHtml("nm063", "Exp Per Hit", 0);
+  myInnerHtml(
+    "AtkBaseExp",
+    colpi < 10000
+      ? Math.round(targetData[16] / colpi) + " base, " + Math.round(targetData[17] / colpi) + " job"
+      : SubName[7],
+    0,
+  );
   if (colpi < 10000) {
     myInnerHtml("AveATKnum", colpi, 0);
     var tempo = Math.floor(100 * ((wCast + wDelay) * colpi)) / 100;
@@ -1929,19 +1909,8 @@ function updateAttackSurvivability(subitoMedio) {
 // punti fra il minimo e il massimo: scritti nella pagina e in n_B_*Damage; restituisce il medio.
 // SKILL_NEMICO prepara la skill, poi danni fisici o magici, riduzioni, elemento e casi speciali
 function BattleHiDam() {
-  n_B_rangedAtk = 0;
-  n_B_rangedMAtk = 0;
-  n_B_AtkSkill = c.B_AtkSkill.value;
-  var lv = m_Monster[targetData[0]][2 * c.B_AtkSkill.selectedIndex + 22];
-  BskillHitNum = 1;
-  var s = {
-    mod: 100,
-    elemento: 0,
-    ignoraDEF: false,
-    matk: matkNemico(n_B_manual[42], n_B_manual[43]),
-    grezzo: 0,
-  };
-  if (SKILL_NEMICO[n_B_AtkSkill]) SKILL_NEMICO[n_B_AtkSkill](s, lv);
+  var s = skillNemico,
+    lv = s.lv;
   var d = n_B_rangedMAtk == 0 ? danniFisiciNemico(s, lv) : danniMagiciNemico(s);
   riduzioniSubite(d);
   var senzaElemento = elementoSubito(d, s);
@@ -2001,6 +1970,26 @@ function BattleHiDam() {
   }
   return medio;
 }
+// skill del mostro scelta (B_AtkSkill), preparata da SKILL_NEMICO in skillNemico: calc la chiama
+// prima della probabilita' di schivare, che dipende da HIT e distanza della skill (l'originale la
+// preparava solo dopo, e la schivata usava la skill del calcolo precedente)
+var skillNemico;
+function preparaSkillNemico() {
+  n_B_rangedAtk = 0;
+  n_B_rangedMAtk = 0;
+  n_B_AtkSkill = c.B_AtkSkill.value;
+  BskillHitNum = 1;
+  var lv = m_Monster[targetData[0]][2 * c.B_AtkSkill.selectedIndex + 22];
+  skillNemico = {
+    lv: lv,
+    mod: 100,
+    elemento: 0,
+    ignoraDEF: false,
+    matk: matkNemico(n_B_manual[42], n_B_manual[43]),
+    grezzo: 0,
+  };
+  if (SKILL_NEMICO[n_B_AtkSkill]) SKILL_NEMICO[n_B_AtkSkill](skillNemico, lv);
+}
 // MATK minima, media e massima del mostro (da targetData[9]), con i bonus scritti a mano
 function matkNemico(piu, percento) {
   var matk = [0, 0, 0];
@@ -2031,51 +2020,16 @@ function mediaPunti(d) {
   for (var i = 0; i <= 6; i++) somma += d[i];
   return somma / 7;
 }
-// skill con lo scudo di un giocatore (solo in PvP): danno dal peso dello scudo (campo della skill)
-function colpiScudoNemico(lv) {
-  var pesoScudo = Math.floor(c.BSkillSubNum.value),
-    d = [];
-  // come nell'originale la VIT DEF e' presa a coppie di punti: l'ultimo cerca n_A_VITDEF[3]
-  for (var i = 0; i <= 6; i++)
-    d[i] =
-      Math.floor(
-        Math.floor(
-          5 * (targetData[13] * (1 + 0.3 * lv) + pesoScudo) * defReduction(n_A_totalDEF) -
-            n_A_VITDEF[Math.floor(i / 2)],
-        ) *
-          (1 + 0.3 * lv),
-      ) +
-      5 * n_A_LEFT_REFINE * 2;
-  return d;
-}
 // quale VIT DEF (minima, media, massima) riduce ciascuno dei sette punti
 var VIT_DEF_PUNTO = [2, 2, 2, 1, 0, 0, 0];
 // danni fisici: ATK del mostro (targetData[12]-[13]), poi DEF e VIT DEF se la skill non le ignora
 function danniFisiciNemico(s, lv) {
-  var id = n_B_AtkSkill,
-    d;
-  if ((id == SKILLID.SHIELD_BOOMERANG || id == SKILLID.SHIELD_BOOMERANG_SOUL_LINKED) && PvP == 1) {
-    n_B_rangedAtk = 1;
-    d = colpiScudoNemico(lv);
-  } else if (id == SKILLID.CLASHING_SPIRAL && PvP == 0) {
+  var d;
+  // Clashing Spiral: ATK senza il moltiplicatore della skill, piu' un bonus da targetData[5]
+  if (n_B_AtkSkill == SKILLID.CLASHING_SPIRAL) {
     var str = Math.floor(targetData[5]),
       bonus = str + 2 * (Math.floor(str / 10) * Math.floor(str / 10));
     d = settePunti(targetData[12], targetData[13], 100).map((x) => x + bonus);
-  } else if (id == SKILLID.CLASHING_SPIRAL && PvP == 1) {
-    BskillHitNum = 5;
-    n_B_rangedAtk = 1;
-    s.ignoraDEF = true;
-    var pesoArma = Math.floor(c.BSkillSubNum.value),
-      strGiocatore = Math.floor(c.BSkillSubNum2.value);
-    var danno =
-      Math.floor(strGiocatore / 10) * Math.floor(strGiocatore / 10) +
-      0.8 * pesoArma * (1 + 0.5 * lv);
-    d = [danno, danno, danno, danno, danno, danno, danno];
-  } else if (id == SKILLID.RAPID_SMITING && PvP == 1) {
-    n_B_HIT += 20;
-    BskillHitNum = 5;
-    n_B_rangedAtk = 1;
-    d = colpiScudoNemico(lv);
   } else d = settePunti(targetData[12], targetData[13], s.mod);
   s.grezzo = mediaPunti(d);
   if (!s.ignoraDEF)
@@ -2138,7 +2092,7 @@ function riduzioniSubite(d) {
 function elementoSubito(d, s) {
   var scelto = 1 * c.B_AtkElem.value;
   if (scelto < 10) s.elemento = scelto;
-  var senzaElemento = scelto == 10 && PvP == 0 && n_B_AtkSkill == 0;
+  var senzaElemento = scelto == 10 && n_B_AtkSkill == 0;
   var resistenza =
     n_A_Bodyelement == 8 && senzaElemento
       ? 100
@@ -2257,10 +2211,10 @@ var SKILL_NEMICO = {
   [SKILLID.PIERCING_ATTACK]: function (s, lv) {
     s.ignoraDEF = true;
   },
-  // elemento a caso, come nell'originale
+  // in gioco l'elemento e' a caso: qui Neutral, o quello scelto in B_AtkElem (l'originale ne
+  // estraeva uno a ogni calcolo)
   [SKILLID.RANDOM_ATTACK]: function (s, lv) {
     s.mod += 100 * lv - 100;
-    s.elemento = Math.floor(10 * Math.random());
   },
   [SKILLID.STAND_OFF_ATTACK]: function (s, lv) {
     n_B_rangedAtk = 1;
@@ -2379,11 +2333,10 @@ var SKILL_NEMICO = {
   [SKILLID.SONIC_BLOW]: function (s, lv) {
     s.mod += 50 * lv + 200;
   },
-  // doppio danno, x 1,25 in WoE
+  // doppio danno
   [SKILLID.SONIC_BLOW_SOUL_LINKED]: function (s, lv) {
     s.mod += 50 * lv + 200;
-    if (PvP == 0) s.mod *= 2;
-    if (PvP == 1) s.mod *= n_WoE ? 1.25 : 2;
+    s.mod *= 2;
   },
   [SKILLID.GRIMTOOTH]: function (s, lv) {
     if (lv >= 3) n_B_rangedAtk = 1;
@@ -2455,12 +2408,9 @@ var SKILL_NEMICO = {
   [SKILLID.SMITE]: function (s, lv) {
     s.mod += 20 * lv;
   },
-  // in PvP il danno viene dallo scudo (danniFisiciNemico)
   [SKILLID.SHIELD_BOOMERANG]: function (s, lv) {
-    if (PvP == 0) {
-      n_B_rangedAtk = 1;
-      s.mod += 30 * lv;
-    }
+    n_B_rangedAtk = 1;
+    s.mod += 30 * lv;
   },
   [SKILLID.HOLY_CROSS]: function (s, lv) {
     s.mod += 35 * lv;
@@ -2495,13 +2445,10 @@ var SKILL_NEMICO = {
     s.elemento = 3;
     s.mod += 0.2 * lv;
   },
-  // in PvP il danno viene da STR e peso dell'arma (danniFisiciNemico)
   [SKILLID.CLASHING_SPIRAL]: function (s, lv) {
-    if (PvP == 0) {
-      BskillHitNum = 5;
-      n_B_rangedAtk = 1;
-      s.ignoraDEF = true;
-    }
+    BskillHitNum = 5;
+    n_B_rangedAtk = 1;
+    s.ignoraDEF = true;
   },
   [SKILLID.TRAUMATIC_BLOW]: function (s, lv) {
     n_B_rangedAtk = 1;
@@ -2554,14 +2501,11 @@ var SKILL_NEMICO = {
   [SKILLID.CHARGE_ATTACK]: function (s, lv) {
     s.mod += 100 * (1 * c.SkillSubNum.value);
   },
-  // in PvP il danno viene dallo scudo (danniFisiciNemico)
   [SKILLID.RAPID_SMITING]: function (s, lv) {
-    if (PvP == 0) {
-      n_B_HIT += 20;
-      BskillHitNum = 5;
-      n_B_rangedAtk = 1;
-      s.mod += 30 * lv;
-    }
+    n_B_HIT += 20;
+    BskillHitNum = 5;
+    n_B_rangedAtk = 1;
+    s.mod += 30 * lv;
   },
   [SKILLID.HIGH_SPEED_CART_RAM]: function (s, lv) {
     not_use_card = 1;
@@ -2709,7 +2653,7 @@ function BattleMagicCalc(matk) {
   return danno;
 }
 function canApplyUaroMeltdownDebuff(mostro) {
-  return PvP == 0 && SkillSearch(SKILLID.MELTDOWN) && !isMvpMonster(mostro);
+  return SkillSearch(SKILLID.MELTDOWN) && !isMvpMonster(mostro);
 }
 // Ricalcola tutto: statistiche (StAllCalc), probabilita' di colpire e di schivare, ATK e critico
 // dell'attacco normale, l'attacco scelto (BattleCalc999) e i danni riflessi. I passi si passano i
@@ -2719,9 +2663,10 @@ function calc() {
   StAllCalc();
   penalitaTaglia();
   probabilitaColpire();
+  preparaSkillNemico();
   probabilitaSchivare();
   atkAttaccoNormale();
-  criticoAttaccoNormale();
+  var dueArmi = criticoAttaccoNormale();
   n_Max_DMG = 0;
   n_Min_DMG = 9999999;
   if (
@@ -2733,6 +2678,20 @@ function calc() {
     n_Max_DMG = n_A_CriATK[2];
   }
   BattleCalc999();
+  // con due armi il critico mostra anche la sinistra, calcolata da BattleCalc999 (wLeft); le
+  // altre skill hanno gia' riscritto o tolto il critico
+  if (
+    dueArmi &&
+    (n_A_ActiveSkill == SKILLID.BASIC_ATTACK ||
+      (n_A_ActiveSkill == SKILLID.POISON_REACT && mostroVeleno()))
+  )
+    myInnerHtml(
+      "CRIATK",
+      dueArmi.unValore
+        ? n_A_CriATK[0] + " + " + wLeft[2]
+        : n_A_CriATK[0] + "~" + n_A_CriATK[2] + " + " + wLeft[1] + "~" + wLeft[2],
+      0,
+    );
   if (n_A_ActiveSkill == SKILLID.COIN_FLING)
     myInnerHtml("A_WeaponElement", "<b style='color:#A89682'>None</b> (100% vs any element)", 0);
   else
@@ -2909,26 +2868,9 @@ function probabilitaDoppio() {
   }
   return doppio;
 }
-// probabilita' di schivare l'attacco del mostro (w_FLEE, e n_A_LUCKY per il Perfect Dodge),
-// scritta nella pagina
+// probabilita' di schivare l'attacco del mostro (w_FLEE, e n_A_LUCKY per il Perfect Dodge), con la
+// HIT e la distanza della skill del mostro (preparaSkillNemico), scritta nella pagina
 function probabilitaSchivare() {
-  var lv = m_Monster[targetData[0]][2 * c.B_AtkSkill.selectedIndex + 22];
-  // come nell'originale: n_B_AtkSkill e' il testo del campo (dal calcolo precedente) e lo switch
-  // confronta con ===, quindi non scatta mai
-  switch (n_B_AtkSkill) {
-    case SKILLID.BLEEDING:
-      n_B_HIT += 20;
-      break;
-    case SKILLID.BASH:
-      n_B_HIT *= 1 + 0.05 * lv;
-      break;
-    case SKILLID.MAGNUM_BREAK:
-      n_B_HIT *= 1 + 0.1 * lv;
-      break;
-    case SKILLID.RAPID_SMITING:
-      n_B_HIT += 20;
-      break;
-  }
   w_FLEE = n_A_FLEE + 20 - n_B_HIT;
   if (w_FLEE > 95) w_FLEE = 95;
   else if (w_FLEE < 5) w_FLEE = 5;
@@ -3058,7 +3000,7 @@ function criticoAttaccoNormale() {
       );
   } else if (n_Nitou) {
     // il critico della sinistra serve solo a decidere se mostrare un valore o un intervallo; il
-    // valore mostrato e' wLeft, del calcolo precedente (vedi attaccoDueArmi)
+    // valore lo scrive calc dopo BattleCalc999, che calcola la sinistra (wLeft)
     var sinistra = [
       n_A_ATK + n_A_Weapon2LV_Minplus + Math.floor((n_A_Weapon2_ATK + wImp) * wCSize),
       n_A_ATK +
@@ -3069,16 +3011,10 @@ function criticoAttaccoNormale() {
     sinistra[1] = BattleCalc(sinistra[1], 10);
     sinistra[0] = BattleCalc(sinistra[0], 10);
     sinistra[2] = BattleCalc(sinistra[2], 10);
-    if (n_A_CriATK[0] == n_A_CriATK[2] && sinistra[0] == sinistra[2])
-      myInnerHtml("CRIATK", n_A_CriATK[0] + " + " + wLeft[2], 0);
-    else
-      myInnerHtml(
-        "CRIATK",
-        n_A_CriATK[0] + "~" + n_A_CriATK[2] + " + " + wLeft[1] + "~" + wLeft[2],
-        0,
-      );
+    return { unValore: n_A_CriATK[0] == n_A_CriATK[2] && sinistra[0] == sinistra[2] };
   } else if (n_A_CriATK[0] == n_A_CriATK[2]) myInnerHtml("CRIATK", n_A_CriATK[1], 0);
   else myInnerHtml("CRIATK", n_A_CriATK[0] + "~" + n_A_CriATK[2], 0);
+  return null;
 }
 // danno che il mostro riflette al personaggio negli attacchi in mischia: Shield Reflect del
 // mostro (n_B_buf[12]) ed equipaggiamento (n_B_manual[21]), x 1,5 con n_B_buf[1]
@@ -3119,8 +3055,7 @@ function riflessiAttacco() {
     var riflessoEquip = [];
     for (e = 0; e <= 2; e++) {
       riflessoEquip[e] = Math.floor((Last_DMG_B[e] * molt * woe * equip) / 100);
-      // come nell'originale il minimo di 1 usa la percentuale di Shield Reflect
-      if (Math.ceil((Last_DMG_B[e] * molt * scudo) / 100) == 1) riflessoEquip[e] = 1;
+      if (Math.ceil((Last_DMG_B[e] * molt * woe * equip) / 100) == 1) riflessoEquip[e] = 1;
     }
     myInnerHtml(
       "bREFLECT2",
@@ -3218,8 +3153,6 @@ function BattleCalc2(danno) {
     danno = Math.floor((danno * (50 + 10 * SkillSearch(SKILLID.RIGHT_HAND_MASTERY))) / 100);
   if (n_A_ActiveSkill == SKILLID.MAGICAL_BULLET) danno *= Math.max(0, element[targetData[3]][8]);
   if (n_A_ActiveSkill == SKILLID.GUNSLINGER_MINE) danno *= element[targetData[3]][0];
-  if (PvP == 1 && (n_A_ActiveSkill == SKILLID.HEAT || n_A_ActiveSkill == SKILLID.HEAT_NO_PUSHBACK))
-    danno = 0;
   return danno;
 }
 // bonus percentuali al danno: contro il mostro (bonusContro), poi tPlusDamCut (riduzioni del
@@ -3285,18 +3218,14 @@ function bonusContro(danno) {
   var stellar = SkillSearch(SKILLID.STELLAR_WRATH),
     solar = SkillSearch(SKILLID.SOLAR_WRATH),
     lunar = SkillSearch(SKILLID.LUNAR_WRATH);
-  if (PvP == 0) {
-    var stellarAttiva =
-      (stellar && SkillSearch(SKILLID.SLS_MIRACLE)) ||
-      (stellar && targetData[4] == 2 && targetData[6] >= 17392);
-    if (stellarAttiva) bonus += (n_A_BaseLV + n_A_STR + n_A_LUK + n_A_DEX) / (12 - 3 * stellar);
-    else if (solar && targetData[4] == 0)
-      bonus += (n_A_BaseLV + n_A_LUK + n_A_DEX) / (12 - 3 * solar);
-    else if (lunar && targetData[4] == 1 && targetData[6] >= 5218)
-      bonus += (n_A_BaseLV + n_A_LUK + n_A_DEX) / (12 - 3 * lunar);
-  } else if (stellar) bonus += (n_A_BaseLV + n_A_STR + n_A_LUK + n_A_DEX) / (12 - 3 * stellar);
-  else if (solar) bonus += (n_A_BaseLV + n_A_LUK + n_A_DEX) / (12 - 3 * solar);
-  else if (lunar) bonus += (n_A_BaseLV + n_A_LUK + n_A_DEX) / (12 - 3 * lunar);
+  var stellarAttiva =
+    (stellar && SkillSearch(SKILLID.SLS_MIRACLE)) ||
+    (stellar && targetData[4] == 2 && targetData[6] >= 17392);
+  if (stellarAttiva) bonus += (n_A_BaseLV + n_A_STR + n_A_LUK + n_A_DEX) / (12 - 3 * stellar);
+  else if (solar && targetData[4] == 0)
+    bonus += (n_A_BaseLV + n_A_LUK + n_A_DEX) / (12 - 3 * solar);
+  else if (lunar && targetData[4] == 1 && targetData[6] >= 5218)
+    bonus += (n_A_BaseLV + n_A_LUK + n_A_DEX) / (12 - 3 * lunar);
   danno = Math.floor((danno * (100 + bonus)) / 100);
   return danno;
 }
@@ -3415,14 +3344,14 @@ function BattleCalc3(colpo) {
     critico = critChance * n_A_CriATK[1],
     normale = w998I * colpo,
     mancato = w998L * BattleCalc2(0);
-  return tPlusLucky((triplo + doppio + critico + normale + mancato) / 100);
+  return (triplo + doppio + critico + normale + mancato) / 100;
 }
 // lo stesso per la mano sinistra: colpo o, se manca, le Star Crumb dell'arma sinistra
 function BattleCalc3left(colpo) {
   var stelle = 0;
   for (i = 4; i <= 7; i++) if (m_Card[n_A_card[i]][0] == 106) stelle += 5;
   var medio = (colpo * w_HIT) / 100 + (stelle * (100 - w_HIT)) / 100;
-  return tPlusLucky(tPlusDamCut(medio));
+  return tPlusDamCut(medio);
 }
 function canApplyEnchantDeadlyPoison() {
   return !(
@@ -3443,13 +3372,10 @@ function applyPreRenewalEnchantDeadlyPoison(atk) {
 // quale), piu' l'ATK del raffinamento della destra (mano = 0) o della sinistra
 function BattleCalc4(atk, quale, mano) {
   if (SKILLID.MAGIC_CRASHER_UARO == n_A_ActiveSkill) {
-    var defDura = PvP == 0 ? Math.floor(targetData[14] * 0.25) : targetData[14],
-      defVIT = n_B_DEF2[quale];
-    if (PvP == 0) {
-      var defVITMax = Math.max(1, Math.floor(n_B_DEF2[2] * 0.25)),
-        piuVIT = Math.max(0, Math.floor(defVITMax / 20) ** 2 - 1);
-      defVIT = defVITMax + (quale == 0 ? piuVIT : quale == 1 ? Math.floor(piuVIT / 2) : 0);
-    }
+    var defDura = Math.floor(targetData[14] * 0.25);
+    var defVITMax = Math.max(1, Math.floor(n_B_DEF2[2] * 0.25)),
+      piuVIT = Math.max(0, Math.floor(defVITMax / 20) ** 2 - 1);
+    var defVIT = defVITMax + (quale == 0 ? piuVIT : quale == 1 ? Math.floor(piuVIT / 2) : 0);
     var raffinamentoMC = mano == 0 ? n_A_WeaponLV_refineATK : n_A_Weapon2LV_refineATK;
     return Math.floor(atk * defReduction(defDura)) - defVIT + raffinamentoMC;
   }
@@ -3688,8 +3614,7 @@ function tPlusDamCut(danno) {
     if (n_A_Buf6[0] == 2 && n_A_Buf6[1] >= 1 && n_A_Weapon_element == 4)
       danno = Math.floor((danno * terreno[n_A_Buf6[1] - 1]) / 100);
   }
-  if (n_B_buf[1] && PvP == 0) danno = Math.floor(danno / 2);
-  if (n_B_buf[1] && PvP == 1) danno = Math.floor((2 * danno) / 3);
+  if (n_B_buf[1]) danno = Math.floor(danno / 2);
   if (n_rangedAtk == 2) danno += Math.floor((20 * danno * (n_B_buf[7] - n_B_buf[8])) / 100);
   else danno += Math.floor((20 * danno * (n_B_buf[8] - n_B_buf[7])) / 100);
   if (targetData[19] == 5) {
@@ -3697,12 +3622,6 @@ function tPlusDamCut(danno) {
     if (SKILLID.FIRE_PILLAR == n_A_ActiveSkill) danno = 0;
   }
   return danno;
-}
-// in PvP: Perfect Dodge del bersaglio giocatore
-function tPlusLucky(danno) {
-  if (!PvP) return danno;
-  var schivata = n_B_manual[38] + targetData[11] / 10;
-  return (danno * (100 - schivata)) / 100;
 }
 // buff del mostro n_B_buf[11] (percentuali di w_AG): riduce i danni non magici
 function tPlusAG() {

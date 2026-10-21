@@ -664,89 +664,7 @@ function BClickAtkSkill() {
     )
       c.BSkillSubNum.options[i - 1] = new documento.Opzione(i, i);
     c.BSkillSubNum.value = 3;
-  } else if (PvP)
-    if (n_B_AtkSkill == 66 || n_B_AtkSkill == 326)
-      myInnerHtml(
-        "BBSkill",
-        'Cart weight: <input type="text" inputmode="numeric" maxlength="4" name="BSkillSubNum" value="8000" size=3 onkeypress="return isNumeric(event)" onkeyup="calc()">',
-        0,
-      );
-    else if (n_B_AtkSkill == 88) {
-      for (
-        myInnerHtml(
-          "BBSkill",
-          'Poison React Lvl: <select name="BSkillSubNum" onChange="calc()"></select>',
-          0,
-        ),
-          i = 0;
-        i <= 10;
-        i++
-      )
-        c.BSkillSubNum.options[i] = new documento.Opzione(i, i);
-      ((c.BSkillSubNum.value = 0), n_A_JobClass2() == 14 && (c.BSkillSubNum.value = 0));
-    } else if (n_B_AtkSkill == 197)
-      (myInnerHtml(
-        "BBSkill",
-        'Remaining SP: <input type="text" inputmode="numeric" maxlength="5" name="BSkillSubNum" value="0" size=3 onkeyup="calc()">',
-        0,
-      ),
-        (c.BSkillSubNum.value = 0));
-    else if (n_B_AtkSkill == 394) {
-      for (
-        myInnerHtml("BBSkill", '<select name="BSkillSubNum" onChange="calc()"></select>', 0), i = 0;
-        i <= 4;
-        i++
-      )
-        c.BSkillSubNum.options[i] = new documento.Opzione(m_Syuriken[i][2], i);
-      c.BSkillSubNum.value = 0;
-    } else if (n_B_AtkSkill == 395) {
-      for (
-        myInnerHtml("BBSkill", '<select name="BSkillSubNum" onChange="calc()"></select>', 0), i = 0;
-        i <= 4;
-        i++
-      )
-        c.BSkillSubNum.options[i] = new documento.Opzione(m_Kunai[i][2], i);
-      c.BSkillSubNum.value = 0;
-    } else if (n_B_AtkSkill == 405)
-      myInnerHtml(
-        "BBSkill",
-        'Remaining HP: <input type="text" inputmode="numeric" maxlength="5" name="BSkillSubNum" value="0" size=4 onkeypress="return isNumeric(event)" onkeyup="calc()">',
-        0,
-      );
-    else if (n_B_AtkSkill == 429) {
-      var n = ["1", "1.2", "1.6", "2", "2.4", "3", "3.6", "4", "5", "6", "7", "8", "9", "10"];
-      for (
-        myInnerHtml(
-          "BBSkill",
-          'Hits (considering the success chance): <select name="BSkillSubNum" onChange="calc()"></select>',
-          0,
-        ),
-          i = 0;
-        i <= 13;
-        i++
-      )
-        c.BSkillSubNum.options[i] = new documento.Opzione(n[i] + " hits", i);
-      c.BSkillSubNum.value = 6;
-    } else if (n_B_AtkSkill == 308) {
-      myInnerHtml(
-        "BBSkill",
-        'Enemy distance: <select name="BSkillSubNum" onChange="calc()"></select>',
-        0,
-      );
-      var a = ["0~3 Cells", "4~6 Cells", "7~9 Cells", "10~12 Cells", "13+ Cells"];
-      for (i = 0; i <= 4; i++) c.BSkillSubNum.options[i] = new documento.Opzione(a[i], i);
-      c.BSkillSubNum.value = 4;
-    } else
-      myInnerHtml(
-        "BBSkill",
-        n_B_AtkSkill == 159 || n_B_AtkSkill == 384 || n_B_AtkSkill == 324
-          ? 'Shield weight: <input type="text" inputmode="numeric" maxlength="5" name="BSkillSubNum" value="0" size=2 onkeypress="return isNumeric(event)" onkeyup="calc()"><BR>Enemy STR: <input type="text" inputmode="numeric" maxlength="3" name="BSkillSubNum2" value="0" size=1 onkeypress="return isNumeric(event)" onkeyup="calc()">'
-          : n_B_AtkSkill == 259
-            ? 'Weapon weight: <input type="text" inputmode="numeric" maxlength="5" name="BSkillSubNum" value="0" size=2 onkeypress="return isNumeric(event)" onkeyup="calc()"><BR>Enemy STR: <input type="text" inputmode="numeric" maxlength="3" name="BSkillSubNum2" value="0" size=1 onkeypress="return isNumeric(event)" onkeyup="calc()">'
-            : "",
-        0,
-      );
-  else myInnerHtml("BBSkill", "", 0);
+  } else myInnerHtml("BBSkill", "", 0);
   (calc(), n_A_Equip[7] == 957 && calc());
 }
 function ClickActiveSkill2() {
@@ -879,8 +797,7 @@ function ClickActiveSkill2() {
 function ClickB_Enemy() {
   for (targetData = new Array(), n_B2 = new Array(), i = 0; i <= 22; i++)
     ((targetData[i] = m_Monster[c.B_Enemy.value][i]), (n_B2[i] = targetData[i]));
-  (targetData[0] == 586 ? (PvP = 1) : (PvP = 0),
-    (targetData[6] += n_B_manual[30]),
+  ((targetData[6] += n_B_manual[30]),
     (targetData[6] += Math.floor((targetData[6] * n_B_manual[31]) / 100)),
     (targetData[7] += n_B_manual[49]),
     (targetData[8] += n_B_manual[48]),
@@ -915,15 +832,10 @@ function ClickB_Enemy() {
     myInnerHtml("B_int", targetData[9], 0),
     myInnerHtml("B_dex", targetData[10], 0),
     myInnerHtml("B_luk", targetData[11], 0),
-    PvP
-      ? ((targetData[23] = Math.floor(0.5 * targetData[7]) + Math.floor(0.3 * targetData[7])),
-        (targetData[24] =
-          Math.floor(0.5 * targetData[7]) + Math.floor((targetData[7] * targetData[7]) / 150) - 1),
-        targetData[23] > targetData[24] && (targetData[24] = targetData[23]))
-      : ((n_B2[23] = targetData[7]),
-        (n_B2[24] =
-          targetData[7] + (Math.floor(targetData[7] / 20) * Math.floor(targetData[7] / 20) - 1)),
-        n_B2[23] > n_B2[24] && (n_B2[24] = n_B2[23])),
+    (n_B2[23] = targetData[7]),
+    (n_B2[24] =
+      targetData[7] + (Math.floor(targetData[7] / 20) * Math.floor(targetData[7] / 20) - 1)),
+    n_B2[23] > n_B2[24] && (n_B2[24] = n_B2[23]),
     (n_B2[25] = Math.floor(targetData[7] / 2) + targetData[9]),
     (n_B2[26] = targetData[5] + targetData[10]),
     (n_B2[27] = targetData[5] + targetData[8]),
@@ -946,14 +858,13 @@ function ClickB_Enemy() {
       (n_B_debuf[19] = c.B_debuf19.checked),
       (n_B_debuf[20] = c.B_debuf20.checked),
       (n_B_debuf[24] = 1 * c.B_debuf24.value),
-      PvP == 0 &&
-        ((n_B_debuf[13] = c.B_debuf13.checked),
-        (n_B_debuf[14] = c.B_debuf14.checked),
-        (n_B_debuf[15] = c.B_debuf15.checked),
-        (n_B_debuf[16] = c.B_debuf16.checked),
-        (n_B_debuf[21] = c.B_debuf21.checked),
-        (n_B_debuf[22] = c.B_debuf22.checked),
-        (n_B_debuf[23] = 1 * c.B_debuf23.value)),
+      (n_B_debuf[13] = c.B_debuf13.checked),
+      (n_B_debuf[14] = c.B_debuf14.checked),
+      (n_B_debuf[15] = c.B_debuf15.checked),
+      (n_B_debuf[16] = c.B_debuf16.checked),
+      (n_B_debuf[21] = c.B_debuf21.checked),
+      (n_B_debuf[22] = c.B_debuf22.checked),
+      (n_B_debuf[23] = 1 * c.B_debuf23.value),
       debufSW(n_debufSW)),
     n_BbufSW &&
       ((n_B_buf[0] = 1 * c.B_buf0.value),
@@ -984,12 +895,11 @@ function ClickB_Enemy() {
   var _,
     n = 0;
   (targetData[19] == 0 && n_B_debuf[0] != 0 && targetData[3] < 90 && (n += 2 + 3 * n_B_debuf[0]),
-    PvP == 0 && n_B_debuf[22] && (n += 300),
+    n_B_debuf[22] && (n += 300),
     n_B_buf[4] && (n += 200),
     (targetData[12] += Math.floor((targetData[12] * n) / 100)),
     (targetData[13] += Math.floor((targetData[13] * n) / 100)),
     n_B_debuf[13] &&
-      PvP == 0 &&
       ((targetData[12] -= Math.floor((25 * targetData[12]) / 100)),
       (targetData[13] -= Math.floor((25 * targetData[13]) / 100))),
     e &&
@@ -997,34 +907,31 @@ function ClickB_Enemy() {
       (targetData[13] -= Math.floor((35 * targetData[13]) / 100))),
     n_B_buf[0] && (targetData[8] += 2 + n_B_buf[0]),
     n_B_debuf[1] &&
-      (PvP
-        ? ((_ = 5 * n_B_debuf[1]), (o = Math.floor(targetData[8] / 4)))
-        : ((_ = 10 * n_B_debuf[1]), (o = Math.floor(targetData[8] / 2))),
+      ((_ = 10 * n_B_debuf[1]),
+      (o = Math.floor(targetData[8] / 2)),
       (targetData[8] -= o > _ ? _ : o)),
     targetData[19] == 0 &&
       n_B_debuf[11] &&
       ((targetData[8] -= n_B_debuf[11] + 2), targetData[8] < 0 && (targetData[8] = 0)),
     n_B_debuf[1] &&
-      (PvP
-        ? ((_ = 5 * n_B_debuf[1]), (o = Math.floor(targetData[10] / 4)))
-        : ((_ = 10 * n_B_debuf[1]), (o = Math.floor(targetData[10] / 2))),
+      ((_ = 10 * n_B_debuf[1]),
+      (o = Math.floor(targetData[10] / 2)),
       (targetData[10] -= o > _ ? _ : o)),
     targetData[19] == 0 &&
       n_B_debuf[5] &&
       (targetData[2] == 6 || targetData[3] >= 90) &&
       (targetData[10] = targetData[10] - Math.floor(targetData[10] / 2)),
-    n_B_debuf[15] && PvP == 0 && (targetData[7] -= Math.floor((40 * targetData[7]) / 100)),
+    n_B_debuf[15] && (targetData[7] -= Math.floor((40 * targetData[7]) / 100)),
     targetData[19] == 0 &&
       n_B_debuf[5] &&
       (targetData[2] == 6 || targetData[3] >= 90) &&
       (targetData[9] = targetData[9] - Math.floor(targetData[9] / 2)),
-    n_B_debuf[16] && PvP == 0 && (targetData[9] -= Math.floor((40 * targetData[9]) / 100)),
+    n_B_debuf[16] && (targetData[9] -= Math.floor((40 * targetData[9]) / 100)),
     targetData[19] == 0 && n_B_debuf[10] && (targetData[11] = 0),
-    PvP == 0 &&
-      ((targetData[23] = targetData[7]),
-      (targetData[24] =
-        targetData[7] + (Math.floor(targetData[7] / 20) * Math.floor(targetData[7] / 20) - 1)),
-      targetData[23] > targetData[24] && (targetData[24] = targetData[23])),
+    (targetData[23] = targetData[7]),
+    (targetData[24] =
+      targetData[7] + (Math.floor(targetData[7] / 20) * Math.floor(targetData[7] / 20) - 1)),
+    targetData[23] > targetData[24] && (targetData[24] = targetData[23]),
     (o = n_B_buf[10]) &&
       ((targetData[23] = Math.floor(targetData[23] * (1 + 0.05 * o))),
       (targetData[24] = Math.floor(targetData[24] * (1 + 0.05 * o)))),
@@ -1033,16 +940,15 @@ function ClickB_Enemy() {
     (targetData[27] = targetData[5] + targetData[8]));
   var a = 0;
   (targetData[19] == 0 && n_B_debuf[0] != 0 && targetData[3] < 90 && (a += 5 + 5 * n_B_debuf[0]),
-    PvP == 0 && n_B_debuf[22] && (a += 50),
-    PvP == 0 && n_B_debuf[24] && (a += 5 * n_B_debuf[24]),
+    n_B_debuf[22] && (a += 50),
+    n_B_debuf[24] && (a += 5 * n_B_debuf[24]),
     a > 100 && (a = 100),
-    PvP == 0 && (targetData[14] -= Math.floor((targetData[14] * a) / 100)),
+    (targetData[14] -= Math.floor((targetData[14] * a) / 100)),
     targetData[19] == 0 &&
       n_B_debuf[2] &&
       (targetData[14] -= Math.floor((25 * targetData[14]) / 100)));
   var o = 0;
-  if (
-    ((o += bonusValues[290]),
+  ((o += bonusValues[290]),
     targetData[19] == 0 && (o += bonusValues[291]),
     targetData[19] == 1 && (o += bonusValues[292]),
     (o += bonusValues[300 + targetData[2]]),
@@ -1050,7 +956,7 @@ function ClickB_Enemy() {
       SKILLID.OCCULT_IMPACTION != n_A_ActiveSkill) ||
       (o = 0),
     o && (o < 0 && (o = 0), (targetData[14] -= Math.floor((targetData[14] * o) / 100))),
-    n_B_debuf[14] && PvP == 0 && (targetData[14] -= Math.floor((15 * targetData[14]) / 100)),
+    n_B_debuf[14] && (targetData[14] -= Math.floor((15 * targetData[14]) / 100)),
     targetData[19] == 0 &&
       n_B_debuf[4] &&
       targetData[3] < 90 &&
@@ -1063,7 +969,7 @@ function ClickB_Enemy() {
     n_B_debuf[12] &&
       (targetData[2] == 6 || targetData[3] >= 90) &&
       (targetData[14] -= Math.floor((targetData[14] * (10 + 4 * n_B_debuf[12])) / 100)),
-    n_B_debuf[20] && PvP == 0 && (targetData[14] = 0),
+    n_B_debuf[20] && (targetData[14] = 0),
     e && (targetData[14] -= Math.floor((35 * targetData[14]) / 100)),
     (targetData[23] -= Math.floor((targetData[23] * a) / 100)),
     (targetData[24] -= Math.floor((targetData[24] * a) / 100)),
@@ -1081,7 +987,7 @@ function ClickB_Enemy() {
       targetData[3] < 90 &&
       ((targetData[23] -= Math.floor((50 * targetData[23]) / 100)),
       (targetData[24] -= Math.floor((50 * targetData[24]) / 100))),
-    PvP == 0 && n_B_debuf[21] && (targetData[24] += 90),
+    n_B_debuf[21] && (targetData[24] += 90),
     n_B_debuf[20] && ((targetData[23] = 0), (targetData[24] = 0)),
     e &&
       ((targetData[23] -= Math.floor((35 * targetData[23]) / 100)),
@@ -1102,7 +1008,7 @@ function ClickB_Enemy() {
       n_B_debuf[18] &&
       targetData[3] < 90 &&
       (targetData[25] -= Math.floor((targetData[25] * (12 * n_B_debuf[18])) / 100)),
-    PvP == 0 && n_B_debuf[21] && (targetData[25] = 90),
+    n_B_debuf[21] && (targetData[25] = 90),
     (targetData[26] += n_B_manual[36]),
     targetData[19] == 0 &&
       n_B_debuf[3] &&
@@ -1119,47 +1025,43 @@ function ClickB_Enemy() {
     n_B_debuf[17] && ((targetData[27] -= 50), targetData[27] < 0 && (targetData[27] = 0)),
     targetData[19] == 0 && n_B_debuf[4] && targetData[3] < 90 && (targetData[27] = -19),
     targetData[19] == 0 && n_B_debuf[9] && targetData[3] < 90 && (targetData[27] = -19),
-    targetData[19] == 0 && (n_B_debuf[7] || n_B_debuf[8]) && (targetData[27] = -19),
-    PvP == 0)
-  ) {
-    var t = 100;
-    ((t += StPlusCard(120 + targetData[2])), (t += StPlusCalc2(120 + targetData[2])));
-    var A = 0;
-    ((t +=
-      5 *
-      (EquipNumSearch(EQUIPID.AUMDURAS_BENEFIT_B) + EquipNumSearch(EQUIPID.AUMDURAS_BENEFIT_C))),
-      n_A_JobClass() != 3 ||
-        !CardNumSearch(452) ||
-        (targetData[2] != 1 && targetData[2] != 6) ||
-        (t += 5),
-      targetData[2] == 2 && n_A_JobClass() == 4 && CardNumSearch(453) && (t += 5),
-      n_A_Buf8[1] && (t += 25 * n_A_Buf8[1]),
-      n_A_Buf8[2] && (A += 50),
-      n_A_Buf6[2] && (t += 100),
-      (c.A8_Skill14.value == 3 || n_A_Buf6[2]) && ((t *= 2), (A *= 2)),
-      (t == 0 && A == 0) ||
-        ((targetData[16] = Math.floor((targetData[16] * t) / 100)),
-        (targetData[17] = Math.floor((targetData[17] * (t + A)) / 100))),
-      n_A_Buf8[5] &&
-        ((targetData[16] = Math.floor(targetData[16] / (1 + n_A_Buf8[5]) + 1)),
-        (targetData[17] = Math.floor(targetData[17] / (1 + n_A_Buf8[5]) + 1))),
-      n_A_Buf8[6] &&
-        ((targetData[16] = Math.floor((targetData[16] * (100 + 25 * n_A_Buf8[6])) / 100)),
-        (targetData[17] = Math.floor((targetData[17] * (100 + 25 * n_A_Buf8[6])) / 100))),
-      SkillSearch(SKILLID.SLS_BLESSINGS) &&
-        ((targetData[16] = Math.floor(
-          (targetData[16] * (100 + 10 * SkillSearch(SKILLID.SLS_BLESSINGS))) / 100,
-        )),
-        (targetData[17] = Math.floor(
-          (targetData[17] * (100 + 10 * SkillSearch(SKILLID.SLS_BLESSINGS))) / 100,
-        ))),
-      n_A_Buf8[7] && (targetData[17] = Math.floor(targetData[17] * (1 + n_A_Buf8[7]))),
-      n_A_Buf8[3] && (targetData[16] = Math.floor(targetData[16] * (1 + n_A_Buf8[3]))),
-      targetData[19] == 0 &&
-        n_A_Buf3[8] &&
-        ((targetData[16] = Math.floor((targetData[16] * (125 + 11 * n_A_Buf3[8])) / 100)),
-        (targetData[17] = Math.floor((targetData[17] * (125 + 11 * n_A_Buf3[8])) / 100))));
-  }
+    targetData[19] == 0 && (n_B_debuf[7] || n_B_debuf[8]) && (targetData[27] = -19));
+  var t = 100;
+  ((t += StPlusCard(120 + targetData[2])), (t += StPlusCalc2(120 + targetData[2])));
+  var A = 0;
+  ((t +=
+    5 * (EquipNumSearch(EQUIPID.AUMDURAS_BENEFIT_B) + EquipNumSearch(EQUIPID.AUMDURAS_BENEFIT_C))),
+    n_A_JobClass() != 3 ||
+      !CardNumSearch(452) ||
+      (targetData[2] != 1 && targetData[2] != 6) ||
+      (t += 5),
+    targetData[2] == 2 && n_A_JobClass() == 4 && CardNumSearch(453) && (t += 5),
+    n_A_Buf8[1] && (t += 25 * n_A_Buf8[1]),
+    n_A_Buf8[2] && (A += 50),
+    n_A_Buf6[2] && (t += 100),
+    (c.A8_Skill14.value == 3 || n_A_Buf6[2]) && ((t *= 2), (A *= 2)),
+    (t == 0 && A == 0) ||
+      ((targetData[16] = Math.floor((targetData[16] * t) / 100)),
+      (targetData[17] = Math.floor((targetData[17] * (t + A)) / 100))),
+    n_A_Buf8[5] &&
+      ((targetData[16] = Math.floor(targetData[16] / (1 + n_A_Buf8[5]) + 1)),
+      (targetData[17] = Math.floor(targetData[17] / (1 + n_A_Buf8[5]) + 1))),
+    n_A_Buf8[6] &&
+      ((targetData[16] = Math.floor((targetData[16] * (100 + 25 * n_A_Buf8[6])) / 100)),
+      (targetData[17] = Math.floor((targetData[17] * (100 + 25 * n_A_Buf8[6])) / 100))),
+    SkillSearch(SKILLID.SLS_BLESSINGS) &&
+      ((targetData[16] = Math.floor(
+        (targetData[16] * (100 + 10 * SkillSearch(SKILLID.SLS_BLESSINGS))) / 100,
+      )),
+      (targetData[17] = Math.floor(
+        (targetData[17] * (100 + 10 * SkillSearch(SKILLID.SLS_BLESSINGS))) / 100,
+      ))),
+    n_A_Buf8[7] && (targetData[17] = Math.floor(targetData[17] * (1 + n_A_Buf8[7]))),
+    n_A_Buf8[3] && (targetData[16] = Math.floor(targetData[16] * (1 + n_A_Buf8[3]))),
+    targetData[19] == 0 &&
+      n_A_Buf3[8] &&
+      ((targetData[16] = Math.floor((targetData[16] * (125 + 11 * n_A_Buf3[8])) / 100)),
+      (targetData[17] = Math.floor((targetData[17] * (125 + 11 * n_A_Buf3[8])) / 100))));
   ((targetData[21] = targetData[27] + 20),
     (targetData[22] = targetData[26] + 75),
     myInnerHtml("B_AA", " + ", 0),
@@ -1175,12 +1077,11 @@ function ClickB_Enemy() {
       targetData[s[i]] > n_B2[s[i]] && (r = D + targetData[s[i]] + f),
       myInnerHtml("B_" + s[i], r, 0));
   }
-  if (PvP == 0)
-    for (i = 0; i <= 1; i++)
-      ((r = targetData[u[i]]),
-        targetData[u[i]] < n_B2[u[i]] && (r = D + targetData[u[i]] + f),
-        targetData[u[i]] > n_B2[u[i]] && (r = I + targetData[u[i]] + f),
-        myInnerHtml("B_" + u[i], r, 0));
+  for (i = 0; i <= 1; i++)
+    ((r = targetData[u[i]]),
+      targetData[u[i]] < n_B2[u[i]] && (r = D + targetData[u[i]] + f),
+      targetData[u[i]] > n_B2[u[i]] && (r = I + targetData[u[i]] + f),
+      myInnerHtml("B_" + u[i], r, 0));
   (myInnerHtml("B_2", v_Race[targetData[2]], 0),
     (o = Math.floor(targetData[3] / 10)),
     targetData[3] != n_B2[3]

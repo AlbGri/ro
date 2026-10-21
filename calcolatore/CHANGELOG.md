@@ -2,6 +2,25 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.2] - 2026-10-21
+
+Correzioni di errori ereditati dal calcolatore di Thrice:
+
+- Sropho veniva trattato come un giocatore (PvP): alcune skill davano danni sbagliati (Throw
+  Coins a meta', Estin, Estun ed Esma a zero) e mancava l'esperienza per colpo. Ora e' un mostro
+  come gli altri, e il calcolo per i giocatori, che non si poteva scegliere, non c'e' piu'
+- Cart Revolution con la Heavy Metaling Card: il +50% si applicava piu' volte al danno minimo e
+  medio
+- Rapid Smiting: Provoke e Aloevera ora aumentano il danno, come per Shield Boomerang
+- Due armi: accanto al critico la mano sinistra era quella del calcolo precedente, e il danno
+  massimo senza Double Attack non contava la sinistra
+- Grand Cross: con questa skill scelta i danni magici subiti usavano una MDEF sbagliata
+- Probabilita' di schivare: ora conta la skill del mostro scelta (per esempio la precisione in
+  piu' di Magnum Break), che prima arrivava con un calcolo di ritardo o non contava
+- Danno riflesso dall'equipaggiamento: il minimo di 1 usava la percentuale di Shield Reflect
+- Random Attack del mostro: l'elemento cambiava a caso a ogni ricalcolo; ora e' Neutral, o quello
+  scelto a mano
+
 ## [1.1] - 2026-10-21
 
 - Build salvate: "Copia link" copia l'indirizzo che apre la build scelta nell'elenco, senza

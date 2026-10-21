@@ -3,4 +3,4 @@ var documento = new Documento();
 documento.carica(PAGINA_MOTORE);
 // la build nel # dell'indirizzo si carica all'avvio, come nell'originale
 var buildIndirizzo = typeof location !== "undefined" ? location.hash.slice(1) : "";
-var Lang = 0, PvP = 0;
+var Lang = 0;

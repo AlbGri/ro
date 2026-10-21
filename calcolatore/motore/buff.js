@@ -2010,14 +2010,13 @@ function debufSW(e) {
       (c.B_debuf18.value = n_B_debuf[18]),
       (c.B_debuf19.checked = n_B_debuf[19]),
       (c.B_debuf20.checked = n_B_debuf[20]),
-      PvP == 0 &&
-        ((c.B_debuf13.checked = n_B_debuf[13]),
-        (c.B_debuf14.checked = n_B_debuf[14]),
-        (c.B_debuf15.checked = n_B_debuf[15]),
-        (c.B_debuf16.checked = n_B_debuf[16]),
-        (c.B_debuf21.checked = n_B_debuf[21]),
-        (c.B_debuf22.checked = n_B_debuf[22]),
-        (c.B_debuf23.value = n_B_debuf[23])),
+      ((c.B_debuf13.checked = n_B_debuf[13]),
+      (c.B_debuf14.checked = n_B_debuf[14]),
+      (c.B_debuf15.checked = n_B_debuf[15]),
+      (c.B_debuf16.checked = n_B_debuf[16]),
+      (c.B_debuf21.checked = n_B_debuf[21]),
+      (c.B_debuf22.checked = n_B_debuf[22]),
+      (c.B_debuf23.value = n_B_debuf[23])),
       (c.B_debuf24.value = n_B_debuf[24]));
   } else {
     var n;

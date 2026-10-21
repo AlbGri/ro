@@ -1,6 +1,5 @@
 // Variabili globali del motore e tabelle che usano piu' file
-((PvP = 0),
-  (n_A_WeaponLV = 0),
+((n_A_WeaponLV = 0),
   (n_A_Weapon2LV = 0),
   (n_Nitou = 0),
   (n_Reborn = 0),

@@ -19583,8 +19583,7 @@ var v_Place = [
   "Endless Cellar (UARO)",
   "Horror Toy Factory [HTF] (UARO)",
 ];
-if (PvP == 0)
-  for (var i = 0; i < v_Place.length; i++)
+for (var i = 0; i < v_Place.length; i++)
     documento.calcForm.ENEMY_SORT2.options[i] = new documento.Opzione(v_Place[i], String(i));
 m_MonsterMap = [
   [0],
