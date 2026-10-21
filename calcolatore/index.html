@@ -167,10 +167,27 @@ input[type="checkbox"] { width: 18px; height: 18px; margin: 0; flex: none; accen
 .slot > .extra:empty { display: none; }
 .slot .raff:empty { visibility: hidden; }
 .slot select, .slot .scelta { width: 100%; }
+/* equipaggiamento su due colonne, come la finestra del gioco; le linee restano allineate */
+@media (min-width: 900px) {
+  .equip { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 28px; }
+  .equip > .slot { align-content: start; }
+  .equip > .slot:nth-last-child(2) { border-bottom: none; }
+}
+/* arma: elemento e combinazione su una riga ciascuno, le quattro carte su due colonne */
+.extra > .voce, .extra > .carte { grid-column: 1 / -1; }
+.extra > .voce > .etichetta { flex: none; }
+.extra > .voce > select { flex: 1 1 0; }
+.extra > .carte { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+/* seconda arma (due armi): come uno slot, sotto la prima */
+.slot > #mano-sinistra { grid-column: 1 / -1; grid-template-columns: 110px 64px minmax(0, 1fr); column-gap: 8px; }
+#mano-sinistra > h3 { grid-column: 1 / 3; margin: 0; font: 700 .92rem var(--sans); }
+#mano-sinistra > .riga { grid-column: 3; }
+/* le carte della seconda arma come quelle della prima: combinazione su una riga, poi due per riga */
+#mano-sinistra > .riga:last-child { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+#mano-sinistra > .riga:last-child > .contenitore:first-child > * { grid-column: 1 / -1; }
 .arma { display: grid; gap: 8px; }
 .arma .riga { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px 10px; }
 .arma .riga .scelta, .arma .riga > select { width: 100%; }
-.arma .riga:first-of-type > span { grid-column: 1 / -1; }
 .arma .voce > .etichetta { flex: none; white-space: nowrap; }
 .arma .voce > select { flex: 1 1 0; }
 .contenitore { display: contents; }
@@ -258,6 +275,8 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
   .slot > .slot-nome { grid-column: 1; }
   .slot > .raff { grid-column: 2; }
   .slot > .principale, .slot > .extra { grid-column: 1 / -1; }
+  .slot > #mano-sinistra { grid-template-columns: minmax(0, 1fr); }
+  #mano-sinistra > h3, #mano-sinistra > .riga { grid-column: 1; }
   .voci, .risultati { grid-template-columns: minmax(0, 1fr); }
   .affiancati .voce > .etichetta, .arma .voce > .etichetta { white-space: normal; }
   /* confronto: il nome della voce su una riga, sotto A, B e la differenza */
@@ -400,51 +419,9 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
       <label class="voce"><span class="etichetta">Frecce, proiettili</span><select data-campo="A_Arrow"></select></label>
     </div>
   </div>
-  <div class="colonne">
-    <div class="card arma">
-      <h3>Arma</h3>
-      <div class="riga">
-        <span data-campo="A_weapon1" data-cerca></span>
-      </div>
-      <div class="riga">
-        <label class="voce"><span class="etichetta">Raffinamento</span><select data-campo="A_Weapon_refine"></select></label>
-        <label class="voce"><span class="etichetta">Elemento</span><select data-campo="A_Weapon_element"></select></label>
-      </div>
-      <div class="riga">
-        <label class="voce lunga"><span class="etichetta">Combinazione di carte</span><select data-campo="A_cardshort"></select></label>
-        <span data-campo="A_weapon1_card1" data-cerca></span>
-        <span data-campo="A_weapon1_card2" data-cerca></span>
-        <span data-campo="A_weapon1_card3" data-cerca></span>
-        <span data-campo="A_weapon1_card4" data-cerca></span>
-      </div>
-      <div id="mano-sinistra" class="arma" hidden>
-        <h3 data-uscita="A_SobWeaponName"></h3>
-        <div class="riga">
-          <span class="contenitore" data-contenitore="A_w2"></span>
-          <span class="contenitore" data-contenitore="A_weapon2refine"></span>
-        </div>
-        <div class="riga">
-          <span class="contenitore" data-contenitore="A_weapon2_cardshort"></span>
-          <span class="contenitore" data-contenitore="nA_weapon2_c1"></span>
-          <span class="contenitore" data-contenitore="nA_weapon2_c2"></span>
-          <span class="contenitore" data-contenitore="nA_weapon2_c3"></span>
-          <span class="contenitore" data-contenitore="nA_weapon2_c4"></span>
-        </div>
-      </div>
-    </div>
-    <div class="card scheda-oggetto">
-      <h3>Ultimo oggetto o carta scelto</h3>
-      <div class="titolo" data-uscita="ITEM_TITLE"></div>
-      <div class="dati">
-        <span><span data-uscita="ITEM1"></span> <strong data-uscita="ITEM_DATA"></strong></span>
-        <span><span data-uscita="ITEM2"></span> <strong data-uscita="ITEM_W_LV"></strong></span>
-        <span><span data-uscita="ITEM3"></span> <strong data-uscita="ITEM_LV"></strong></span>
-        <span><span data-uscita="ITEM4"></span> <strong data-uscita="ITEM_WAIT"></strong></span>
-      </div>
-      <div class="descrizione" data-uscita="B_SETUMEI"></div>
-    </div>
-  </div>
-  <div class="card" style="margin-top:14px">
+  <!-- slot nell'ordine in cui la griglia a due colonne li dispone come nel gioco: a sinistra
+       testa alto, testa basso, arma, mantello, accessorio; a destra il resto -->
+  <div class="card equip">
     <div class="slot">
       <span class="slot-nome">Testa, alto</span><select class="raff" data-campo="A_HEAD_REFINE" aria-label="Raffinamento"></select>
       <span class="principale" data-campo="A_head1" data-cerca></span>
@@ -461,14 +438,42 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
       <div class="extra"><select data-campo="A_HSE_HEAD1" aria-label="Incantamento"></select></div>
     </div>
     <div class="slot">
-      <span class="slot-nome">Scudo</span><select class="raff" data-campo="A_LEFT_REFINE" aria-label="Raffinamento"></select>
-      <span class="principale" data-campo="A_left" data-cerca></span>
-      <div class="extra"><span data-campo="A_left_card" data-cerca></span></div>
-    </div>
-    <div class="slot">
       <span class="slot-nome">Armatura</span><select class="raff" data-campo="A_BODY_REFINE" aria-label="Raffinamento"></select>
       <span class="principale" data-campo="A_body" data-cerca></span>
       <div class="extra"><span data-campo="A_body_card" data-cerca></span><select data-campo="A_HSE" aria-label="Incantamento"></select></div>
+    </div>
+    <div class="slot">
+      <span class="slot-nome">Arma</span><select class="raff" data-campo="A_Weapon_refine" aria-label="Raffinamento"></select>
+      <span class="principale" data-campo="A_weapon1" data-cerca></span>
+      <div class="extra">
+        <label class="voce"><span class="etichetta">Elemento</span><select data-campo="A_Weapon_element"></select></label>
+        <select data-campo="A_cardshort" aria-label="Combinazione di carte"></select>
+        <div class="carte">
+          <span data-campo="A_weapon1_card1" data-cerca></span>
+          <span data-campo="A_weapon1_card2" data-cerca></span>
+          <span data-campo="A_weapon1_card3" data-cerca></span>
+          <span data-campo="A_weapon1_card4" data-cerca></span>
+        </div>
+      </div>
+      <div id="mano-sinistra" class="arma" hidden>
+        <h3 data-uscita="A_SobWeaponName"></h3>
+        <div class="riga">
+          <span class="contenitore" data-contenitore="A_w2"></span>
+          <span class="contenitore" data-contenitore="A_weapon2refine"></span>
+        </div>
+        <div class="riga">
+          <span class="contenitore" data-contenitore="A_weapon2_cardshort"></span>
+          <span class="contenitore" data-contenitore="nA_weapon2_c1"></span>
+          <span class="contenitore" data-contenitore="nA_weapon2_c2"></span>
+          <span class="contenitore" data-contenitore="nA_weapon2_c3"></span>
+          <span class="contenitore" data-contenitore="nA_weapon2_c4"></span>
+        </div>
+      </div>
+    </div>
+    <div class="slot">
+      <span class="slot-nome">Scudo</span><select class="raff" data-campo="A_LEFT_REFINE" aria-label="Raffinamento"></select>
+      <span class="principale" data-campo="A_left" data-cerca></span>
+      <div class="extra"><span data-campo="A_left_card" data-cerca></span></div>
     </div>
     <div class="slot">
       <span class="slot-nome">Mantello</span><select class="raff" data-campo="A_SHOULDER_REFINE" aria-label="Raffinamento"></select>
@@ -490,6 +495,17 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
       <span class="principale" data-campo="A_acces2" data-cerca></span>
       <div class="extra"><span data-campo="A_acces2_card" data-cerca></span><select data-campo="A_DICASTES_ACCESSORY2_PRIMARY" aria-label="Dicastes livello 1"></select><select data-campo="A_DICASTES_ACCESSORY2_STATS" aria-label="Dicastes livello 2"></select><select data-campo="A_DICASTES_ACCESSORY2_STATS2" aria-label="Dicastes livello 3"></select></div>
     </div>
+  </div>
+  <div class="card scheda-oggetto">
+    <h3>Ultimo oggetto o carta scelto</h3>
+    <div class="titolo" data-uscita="ITEM_TITLE"></div>
+    <div class="dati">
+      <span><span data-uscita="ITEM1"></span> <strong data-uscita="ITEM_DATA"></strong></span>
+      <span><span data-uscita="ITEM2"></span> <strong data-uscita="ITEM_W_LV"></strong></span>
+      <span><span data-uscita="ITEM3"></span> <strong data-uscita="ITEM_LV"></strong></span>
+      <span><span data-uscita="ITEM4"></span> <strong data-uscita="ITEM_WAIT"></strong></span>
+    </div>
+    <div class="descrizione" data-uscita="B_SETUMEI"></div>
   </div>
   <details class="pannello" data-pannello="ID_ARG" data-apri="Buf9SW" data-attivo="A9used"><summary>Incantamenti aggiuntivi e modifiche manuali al personaggio</summary><div class="corpo"></div></details>
 

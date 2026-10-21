@@ -2,6 +2,14 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.5] - 2026-10-21
+
+- Equipaggiamento disposto come nella finestra del gioco, su due colonne: a sinistra testa
+  alto, testa basso, arma, mantello e accessorio, a destra testa centro, armatura, scudo,
+  calzature e accessorio. Sul telefono resta una colonna, in quest'ordine. L'arma e' uno slot
+  come gli altri, con le quattro carte due per riga, e sotto c'e' la seconda arma quando la
+  classe ne usa due. La scheda dell'ultimo oggetto scelto sta sotto l'equipaggiamento
+
 ## [1.4] - 2026-10-21
 
 - Scelta della classe: l'elenco e' diviso in sezioni (Novice, prime classi, seconde, rinate, High,

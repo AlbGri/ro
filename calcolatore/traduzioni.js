@@ -4,6 +4,8 @@
 
 // testo intero di un nodo (spazi esterni esclusi)
 const ESATTE = {
+  // seconda arma
+  "Refine (Left):": "Raffinamento",
   // sezioni del menu Classe
   "First classes": "Prime classi",
   "Second classes": "Seconde classi",
