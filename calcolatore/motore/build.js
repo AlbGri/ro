@@ -224,7 +224,7 @@ function scriviBuild() {
     "i",
     numeroBuild(c.A_ActiveSkill.value, 2),
     numeroBuild(c.A_ActiveSkillLV.value, 1),
-    numeroBuild(c.contains(c.SkillSubNum) ? c.SkillSubNum.value : 0, 3),
+    numeroBuild(c.SkillSubNum ? c.SkillSubNum.value : 0, 3),
     numeroBuild(targetData[0], 2),
     numeroBuild(c.B_AtkSkill.value, 2),
     numeroBuild(SKILL_NEMICO_CON_VALORE.includes(n_B_AtkSkill) ? c.BSkillSubNum.value : 0, 3),
@@ -412,7 +412,7 @@ function leggiBuild(build) {
   ClickActiveSkill();
   c.A_ActiveSkillLV.value = x(p + 9);
   var valoreSkill = x(p + 10, 3);
-  if (c.contains(c.SkillSubNum)) c.SkillSubNum.value = valoreSkill;
+  if (c.SkillSubNum) c.SkillSubNum.value = valoreSkill;
   // Double Bolt (skill passiva 441): la scelta della probabilita' la crea questa skill. Il
   // livello e' il testo del campo, come nell'originale: anche "0" conta
   var doppio = m_JobBuff[n_A_JOB].slice(0, 21).indexOf(441) >= 0 && c.A_skill6.value;

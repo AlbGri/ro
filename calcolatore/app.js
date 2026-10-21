@@ -1,6 +1,6 @@
 // Interfaccia del calcolatore. Il motore (file in motore/) lavora su un documento finto
 // (motore/forma.js): qui la pagina ne rispecchia campi e risultati, in italiano, e gli
-// riporta ogni scelta eseguendo il gestore che il campo aveva nella pagina originale.
+// riporta ogni scelta con scegli() del motore (valore e gestore del campo).
 import { traduci } from "./traduzioni.js";
 
 const STORAGE_KEY = "ragnarok-calcolatore/stato";
@@ -60,22 +60,7 @@ function apriBuild(build) {
   location.reload();
 }
 
-// ---------- gestori del motore ----------
-
-// il gestore scritto nel campo (onchange, onclick), con "this" che si comporta come una
-// <select> del browser anche per this[this.selectedIndex]
-function eseguiGestore(v) {
-  const codice = v.getAttribute("onchange") || v.getAttribute("onclick");
-  if (!codice) return;
-  const questo = new Proxy(v, {
-    get(t, p) {
-      if (typeof p === "string" && /^\d+$/.test(p)) return t._lista()[Number(p)];
-      const x = t[p];
-      return typeof x === "function" ? x.bind(t) : x;
-    },
-  });
-  new Function("event", codice).call(questo, { target: questo });
-}
+// ---------- scelte e calcolo ----------
 
 function calcola() {
   try {
@@ -86,13 +71,10 @@ function calcola() {
   }
 }
 
-// una scelta dell'utente su un campo del motore
+// una scelta dell'utente su un campo del motore: valore e gestore (window.scegli), poi calcolo
 function scegli(v, valore) {
   try {
-    if (v.tag === "select") v.value = valore;
-    else if (v.type === "checkbox") v.checked = valore;
-    else v.value = valore;
-    eseguiGestore(v);
+    window.scegli(v, valore);
   } catch (e) {
     mostraErrore(e);
   }
@@ -169,7 +151,7 @@ function controllo(v) {
     el.type = "button";
     el.className = "btn small";
     el.textContent = traduci(v.value || v.textContent);
-    el.addEventListener("click", () => { try { eseguiGestore(el._v); } catch (e) { mostraErrore(e); } calcola(); sincronizza(); });
+    el.addEventListener("click", () => { try { window.scegli(el._v); } catch (e) { mostraErrore(e); } calcola(); sincronizza(); });
   } else {
     el = document.createElement("input");
     el.type = "text";

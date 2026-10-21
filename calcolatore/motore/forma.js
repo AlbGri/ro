@@ -191,6 +191,19 @@ Object.defineProperty(EP, "innerText", {
   get: function () { return this.textContent; },
   set: function (t) { this.textContent = t; },
 });
+// il gestore scritto nel campo (onchange, onclick) come funzione, compilata una volta;
+// this[this.selectedIndex] e' l'opzione scelta. onkeyup non conta: la pagina non lo esegue
+Object.defineProperty(EP, "gestore", {
+  get: function () {
+    var codice = this.attributi.onchange || this.attributi.onclick;
+    if (!codice) return null;
+    if (this._codice !== codice) {
+      this._codice = codice;
+      this._gestore = new Function("event", codice.replace(/this\[this\.selectedIndex\]/g, "this.options[this.selectedIndex]"));
+    }
+    return this._gestore;
+  },
+});
 EP.focus = function () {};
 EP.blur = function () {};
 EP.addEventListener = function () {};
@@ -409,21 +422,30 @@ DP._registra = function (el) {
   var id = el.attributi.id, nome = el.attributi.name;
   if (id) metti(this.perId, id, el);
   if (CONTROLLI.has(el.tag)) {
-    if (nome) metti(this.perNome, nome, el);
-    if (id && id !== nome) metti(this.perNome, id, el);
+    if (nome) { metti(this.perNome, nome, el); this._campo(nome); }
+    if (id && id !== nome) { metti(this.perNome, id, el); this._campo(id); }
   }
   if (el.tag === "form" && nome === "calcForm" && !this.form) {
     this.form = el;
-    this.calcForm = this._formPerNome(el);
+    this.calcForm = {};
+    for (var k of this.perNome.keys()) this._campo(k);
   }
 };
 DP._togli = function (el) {
   var id = el.attributi.id, nome = el.attributi.name;
   if (id) leva(this.perId, id, el);
   if (CONTROLLI.has(el.tag)) {
-    if (nome) leva(this.perNome, nome, el);
-    if (id && id !== nome) leva(this.perNome, id, el);
+    if (nome) { leva(this.perNome, nome, el); this._campo(nome); }
+    if (id && id !== nome) { leva(this.perNome, id, el); this._campo(id); }
   }
+};
+// calcForm.NOME e' il campo con quel name o id dentro il form, come nel browser: il primo
+// registrato, se ce n'e' piu' d'uno
+DP._campo = function (nome) {
+  if (!this.form) return;
+  var l = this.perNome.get(nome);
+  if (l) for (var i = 0; i < l.length; i++) if (this.form.contains(l[i])) { this.calcForm[nome] = l[i]; return; }
+  delete this.calcForm[nome];
 };
 DP._collega = function (n) {
   if (!(n instanceof Elemento)) return;
@@ -434,22 +456,6 @@ DP._scollega = function (n) {
   if (!(n instanceof Elemento)) return;
   for (var f of n.figli) this._scollega(f);
   this._togli(n);
-};
-// form.NOME restituisce il campo con quel name o id, come nel browser
-DP._formPerNome = function (form) {
-  var doc = this;
-  return new Proxy(form, {
-    get: function (t, p) {
-      if (typeof p === "string" && !(p in t)) {
-        var l = doc.perNome.get(p);
-        if (l) for (var i = 0; i < l.length; i++) if (form.contains(l[i])) return l[i];
-        return undefined;
-      }
-      var v = t[p];
-      return typeof v === "function" ? v.bind(t) : v;
-    },
-    set: function (t, p, v) { t[p] = v; return true; },
-  });
 };
 // HTML -> nodi, con le chiusure implicite del browser che servono al motore
 DP._analizza = function (html, contenitore) {
