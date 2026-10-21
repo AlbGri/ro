@@ -143,3 +143,20 @@ test("Back Stab: ricarica fissa di 0,333 secondi", () => {
   assert.equal(m.n_Delay[3], 0.333);
   assert.equal(m.n_Delay[2], 0);
 });
+
+test("El Dicastes: livelli 2 e 3 da +1/+2 (+3 sui Feral), sommabili sulla stessa statistica", () => {
+  const m = creaMotore();
+  const c = m.documento.calcForm;
+  const testi = (nome) => [...c[nome].options].slice(1).map((o) => o.text);
+  assert.deepEqual(testi("A_DICASTES_ACCESSORY1_STATS"), ["AGI +1", "AGI +2", "DEX +1", "DEX +2", "INT +1", "INT +2"]);
+  assert.deepEqual(testi("A_DICASTES_ACCESSORY1_STATS2"), testi("A_DICASTES_ACCESSORY1_STATS"));
+  assert.equal(testi("A_DICASTES_SHOES_STATS2").length, 9);
+  scegli(m, "A_JOB", 7); // Knight
+  scegli(m, "A_acces1", costante(m, "EQUIPID").LIGHT_OF_EL_DICASTES);
+  const dex = () => numero(m, "A_DEXp");
+  const senza = dex();
+  scegli(m, "A_DICASTES_ACCESSORY1_STATS", 7); // DEX +2
+  scegli(m, "A_DICASTES_ACCESSORY1_STATS2", 7); // DEX +2
+  assert.deepEqual([c.A_DICASTES_ACCESSORY1_STATS.value, c.A_DICASTES_ACCESSORY1_STATS2.value].map(Number), [7, 7]);
+  assert.equal(dex() - senza, 4);
+});

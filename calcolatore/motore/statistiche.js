@@ -2007,52 +2007,29 @@ function ApplyBastionEnchants() {
 function IsDicastesAccessory(l) {
   return l == EQUIPID.GOLDEN_TRINKET || l == EQUIPID.LIGHT_OF_EL_DICASTES;
 }
+// i menu degli incantamenti si vedono solo con un oggetto di El Dicastes; Feral Tail e Feral Boots
+// non si raffinano e le Feral Boots non hanno Bastion
 function UpdateDicastesEnchantControls() {
-  for (
-    var l = 1 * c.A_shoulder.value == EQUIPID.FERAL_TAIL,
-      A = 1 * c.A_shoes.value == EQUIPID.FERAL_BOOTS,
-      n = [
-        [
-          c.A_DICASTES_SHOULDER_PRIMARY,
-          c.A_DICASTES_SHOULDER_STATS,
-          c.A_DICASTES_SHOULDER_STATS2,
-          l,
-          5,
-        ],
-        [c.A_DICASTES_SHOES_PRIMARY, c.A_DICASTES_SHOES_STATS, c.A_DICASTES_SHOES_STATS2, A, 5],
-        [
-          c.A_DICASTES_ACCESSORY1_PRIMARY,
-          c.A_DICASTES_ACCESSORY1_STATS,
-          c.A_DICASTES_ACCESSORY1_STATS2,
-          IsDicastesAccessory(1 * c.A_acces1.value),
-          4,
-        ],
-        [
-          c.A_DICASTES_ACCESSORY2_PRIMARY,
-          c.A_DICASTES_ACCESSORY2_STATS,
-          c.A_DICASTES_ACCESSORY2_STATS2,
-          IsDicastesAccessory(1 * c.A_acces2.value),
-          4,
-        ],
-      ],
-      s = 0;
-    s < n.length;
-    s++
-  ) {
-    for (var _ = 0; _ < 3; _++) {
-      var a = n[s][_],
-        E = n[s][3];
-      ((a.hidden = !E), (a.disabled = !E), E || (a.value = 0));
+  var coda = 1 * c.A_shoulder.value == EQUIPID.FERAL_TAIL,
+    stivali = 1 * c.A_shoes.value == EQUIPID.FERAL_BOOTS;
+  var posti = [
+    ["SHOULDER", coda],
+    ["SHOES", stivali],
+    ["ACCESSORY1", IsDicastesAccessory(1 * c.A_acces1.value)],
+    ["ACCESSORY2", IsDicastesAccessory(1 * c.A_acces2.value)],
+  ];
+  for (const [posto, attivo] of posti)
+    for (const livello of ["PRIMARY", "STATS", "STATS2"]) {
+      var sel = c["A_DICASTES_" + posto + "_" + livello];
+      sel.hidden = sel.disabled = !attivo;
+      if (!attivo) sel.value = 0;
     }
-    n[s][3] && UpdateDicastesStatPairOptions(n[s][1], n[s][2], n[s][4]);
-  }
-  ((c.A_SHOULDER_REFINE.disabled = l),
-    l && (c.A_SHOULDER_REFINE.value = 0),
-    (c.A_SHOES_REFINE.disabled = A),
-    A && (c.A_SHOES_REFINE.value = 0),
-    (c.A_BASTION_SHOES.hidden = A),
-    (c.A_BASTION_SHOES.disabled = A),
-    A && (c.A_BASTION_SHOES.value = BASTIONENCHANTID.NONE));
+  c.A_SHOULDER_REFINE.disabled = coda;
+  if (coda) c.A_SHOULDER_REFINE.value = 0;
+  c.A_SHOES_REFINE.disabled = stivali;
+  if (stivali) c.A_SHOES_REFINE.value = 0;
+  c.A_BASTION_SHOES.hidden = c.A_BASTION_SHOES.disabled = stivali;
+  if (stivali) c.A_BASTION_SHOES.value = BASTIONENCHANTID.NONE;
 }
 function ResetDicastesEnchantControls() {
   for (
@@ -2105,23 +2082,6 @@ function GetDicastesStatEnchantBonuses(l) {
   var n = [BONUSID.AGI, BONUSID.DEX, BONUSID.INT],
     s = Math.floor((l - 1) / 5);
   return ((A[n[s] - 1] = ((l - 1) % 5) + 1), A);
-}
-function UpdateDicastesStatPairOptions(l, A, n) {
-  var s = 1 * l.value,
-    _ = 1 * A.value,
-    a = s ? Math.floor((s - 1) / 5) : -1,
-    E = _ ? Math.floor((_ - 1) / 5) : -1,
-    S = s ? ((s - 1) % 5) + 1 : 0,
-    b = _ ? ((_ - 1) % 5) + 1 : 0;
-  (S > n && ((l.value = 0), (s = S = 0), (a = -1)),
-    b > n && ((A.value = 0), (_ = b = 0), (E = -1)),
-    s && _ && (a == E || S + b > n) && ((A.value = 0), (_ = b = 0), (E = -1)));
-  for (var m = 1; m < l.options.length; m++) {
-    var u = Math.floor((m - 1) / 5),
-      I = ((m - 1) % 5) + 1;
-    ((l.options[m].disabled = I > n || (_ && (u == E || I + b > n))),
-      (A.options[m].disabled = I > n || (s && (u == a || I + S > n))));
-  }
 }
 function GetAllDicastesStatEnchantBonuses() {
   for (

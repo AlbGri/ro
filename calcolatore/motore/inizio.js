@@ -155,83 +155,40 @@ for (
       BastionEnchantOptions[bastionOptionIndex][0],
       BastionEnchantOptions[bastionOptionIndex][1],
     );
-for (
-  var DicastesPrimaryEnchantOptions = [
-      ["(primary enchant)", DICASTESENCHANTID.NONE],
-      ["Agile: FLEE +6", DICASTESENCHANTID.AGILE_6],
-      ["Agile: FLEE +12", DICASTESENCHANTID.AGILE_12],
-      ["Strong: ATK +2%", DICASTESENCHANTID.STRONG_2],
-      ["Strong: ATK +3%", DICASTESENCHANTID.STRONG_3],
-      ["Wise: MATK +1%", DICASTESENCHANTID.WISE_1],
-      ["Wise: MATK +2%", DICASTESENCHANTID.WISE_2],
-      ["Critical: CRIT +5", DICASTESENCHANTID.CRITICAL_5],
-      ["Critical: CRIT +7", DICASTESENCHANTID.CRITICAL_7],
-    ],
-    DicastesStatEnchantOptions = [["(stat enchant)", 0]],
-    DicastesStatNames = ["AGI", "DEX", "INT"],
-    dicastesStatIndex = 0;
-  dicastesStatIndex < DicastesStatNames.length;
-  dicastesStatIndex++
-)
-  for (var dicastesSingleAmount = 1; dicastesSingleAmount <= 5; dicastesSingleAmount++) {
-    var dicastesSingleId = 5 * dicastesStatIndex + dicastesSingleAmount;
-    DicastesStatEnchantOptions.push([
-      DicastesStatNames[dicastesStatIndex] + " +" + dicastesSingleAmount,
-      dicastesSingleId,
-    ]);
-  }
-for (
-  var DicastesEnchantControls = [
-      [
-        documento.calcForm.A_DICASTES_SHOULDER_PRIMARY,
-        documento.calcForm.A_DICASTES_SHOULDER_STATS,
-        documento.calcForm.A_DICASTES_SHOULDER_STATS2,
-      ],
-      [
-        documento.calcForm.A_DICASTES_SHOES_PRIMARY,
-        documento.calcForm.A_DICASTES_SHOES_STATS,
-        documento.calcForm.A_DICASTES_SHOES_STATS2,
-      ],
-      [
-        documento.calcForm.A_DICASTES_ACCESSORY1_PRIMARY,
-        documento.calcForm.A_DICASTES_ACCESSORY1_STATS,
-        documento.calcForm.A_DICASTES_ACCESSORY1_STATS2,
-      ],
-      [
-        documento.calcForm.A_DICASTES_ACCESSORY2_PRIMARY,
-        documento.calcForm.A_DICASTES_ACCESSORY2_STATS,
-        documento.calcForm.A_DICASTES_ACCESSORY2_STATS2,
-      ],
-    ],
-    dicastesControlIndex = 0;
-  dicastesControlIndex < DicastesEnchantControls.length;
-  dicastesControlIndex++
-) {
-  for (
-    var dicastesOptionIndex = 0;
-    dicastesOptionIndex < DicastesPrimaryEnchantOptions.length;
-    dicastesOptionIndex++
-  )
-    DicastesEnchantControls[dicastesControlIndex][0].options[dicastesOptionIndex] =
-      new documento.Opzione(
-        DicastesPrimaryEnchantOptions[dicastesOptionIndex][0],
-        DicastesPrimaryEnchantOptions[dicastesOptionIndex][1],
-      );
-  for (
-    dicastesOptionIndex = 0;
-    dicastesOptionIndex < DicastesStatEnchantOptions.length;
-    dicastesOptionIndex++
-  )
-    ((DicastesEnchantControls[dicastesControlIndex][1].options[dicastesOptionIndex] =
-      new documento.Opzione(
-        DicastesStatEnchantOptions[dicastesOptionIndex][0],
-        DicastesStatEnchantOptions[dicastesOptionIndex][1],
-      )),
-      (DicastesEnchantControls[dicastesControlIndex][2].options[dicastesOptionIndex] =
-        new documento.Opzione(
-          DicastesStatEnchantOptions[dicastesOptionIndex][0],
-          DicastesStatEnchantOptions[dicastesOptionIndex][1],
-        )));
+// Incantamenti di El Dicastes (wiki, pagina El Dicastes): livello 1 a scelta fra Agile, Strong,
+// Wise e Critical; livelli 2 e 3 AGI, DEX o INT +1 o +2, +3 al livello 3 di Feral Tail e Feral
+// Boots. I due livelli si sommano anche sulla stessa statistica (fino a +4 sugli accessori, +5 su
+// mantello e calzature). Valore di un incantamento delle statistiche: 5 * statistica + punti
+var DicastesPrimaryEnchantOptions = [
+  ["(primary enchant)", DICASTESENCHANTID.NONE],
+  ["Agile: FLEE +6", DICASTESENCHANTID.AGILE_6],
+  ["Agile: FLEE +12", DICASTESENCHANTID.AGILE_12],
+  ["Strong: ATK +2%", DICASTESENCHANTID.STRONG_2],
+  ["Strong: ATK +3%", DICASTESENCHANTID.STRONG_3],
+  ["Wise: MATK +1%", DICASTESENCHANTID.WISE_1],
+  ["Wise: MATK +2%", DICASTESENCHANTID.WISE_2],
+  ["Critical: CRIT +5", DICASTESENCHANTID.CRITICAL_5],
+  ["Critical: CRIT +7", DICASTESENCHANTID.CRITICAL_7],
+];
+function opzioniDicastesStatistiche(sel, nome, massimo) {
+  sel.options[0] = new documento.Opzione(nome, 0);
+  ["AGI", "DEX", "INT"].forEach((stat, s) => {
+    for (var punti = 1; punti <= massimo; punti++)
+      sel.options[sel.options.length] = new documento.Opzione(stat + " +" + punti, 5 * s + punti);
+  });
+}
+// [posto, punti massimi al livello 3]
+for (const [posto, massimo3] of [
+  ["SHOULDER", 3],
+  ["SHOES", 3],
+  ["ACCESSORY1", 2],
+  ["ACCESSORY2", 2],
+]) {
+  DicastesPrimaryEnchantOptions.forEach(
+    (o, i) => (c["A_DICASTES_" + posto + "_PRIMARY"].options[i] = new documento.Opzione(o[0], o[1])),
+  );
+  opzioniDicastesStatistiche(c["A_DICASTES_" + posto + "_STATS"], "(layer 2: stat)", 2);
+  opzioniDicastesStatistiche(c["A_DICASTES_" + posto + "_STATS2"], "(layer 3: stat)", massimo3);
 }
 for (n_A_Buf2 = new Array(), i = 0; i <= 21; i++) n_A_Buf2[i] = 0;
 for (n_A_Buf3 = new Array(), i = 0; i <= 46; i++) n_A_Buf3[i] = 0;
