@@ -208,19 +208,17 @@ function ClickJob(e) {
   for (
     n_SkillSW &&
       (n_A_JOB == 45
-        ? (myInnerHtml("AS12_1", "<S># of Spirit Spheres</S>", 0),
+        ? (scrivi("AS12_1", "<S># of Spirit Spheres</S>"),
           (c.A2_Skill12.disabled = !0),
           (c.A2_Skill12.value = 0),
           (n_A_Buf2[12] = 0))
-        : (myInnerHtml("AS12_1", "# of Spirit Spheres", 0), (c.A2_Skill12.disabled = !1)),
+        : (scrivi("AS12_1", "# of Spirit Spheres"), (c.A2_Skill12.disabled = !1)),
       n_A_JOB == 13 || n_A_JOB == 27
-        ? (myInnerHtml("AS11_1", "<S>" + skillName(164) + "</S>", 0),
-          (documento.getElementById("AS11_1").style.textDecoration = "line-through"),
+        ? (scrivi("AS11_1", "<S>" + skillName(164) + "</S>"),
           (c.A2_Skill11.disabled = !0),
           (c.A2_Skill11.value = 0),
           (n_A_Buf2[11] = 0))
-        : (myInnerHtml("AS11_1", skillName(164), 0),
-          (documento.getElementById("AS11_1").style.textDecoration = ""),
+        : (scrivi("AS11_1", skillName(164)),
           (c.A2_Skill11.disabled = !1))),
       n_Skill7SW && SetSpeedPotionOptions(),
       n_A_JOB != 20 && (SuperNoviceFullWeaponCHECK = 0),

@@ -443,9 +443,9 @@ DP._togli = function (el) {
 // calcForm.NOME e' il campo con quel name o id dentro il form, come nel browser: il primo
 // registrato, se ce n'e' piu' d'uno. I campi creati da campo() (campi.js) non stanno
 // nell'albero: li registra campo() e qui non si toccano
-var CAMPI_FISSI = new Set();
+var CAMPI_CODICE = new Set();
 DP._campo = function (nome) {
-  if (!this.form || CAMPI_FISSI.has(nome)) return;
+  if (!this.form || CAMPI_CODICE.has(nome)) return;
   var l = this.perNome.get(nome);
   if (l) for (var i = 0; i < l.length; i++) if (this.form.contains(l[i])) { this.calcForm[nome] = l[i]; return; }
   delete this.calcForm[nome];

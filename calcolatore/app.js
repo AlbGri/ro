@@ -434,7 +434,7 @@ function ricollega() {
 const elementiUscita = [...document.querySelectorAll("[data-uscita]")];
 const righe = [...document.querySelectorAll("[data-riga]")];
 const contenitori = [...document.querySelectorAll("[data-contenitore]")];
-const pannelli = [...document.querySelectorAll("[data-pannello]")];
+const elementiPannello = [...document.querySelectorAll("[data-pannello]")];
 const passive = document.getElementById("passive");
 const manoSinistra = document.getElementById("mano-sinistra");
 
@@ -584,98 +584,75 @@ function voce(c) {
   return l;
 }
 
-// pannelli: righe di una tabella con intestazioni di colonna; ogni intestazione raccoglie le
-// coppie delle colonne sotto di lei. Una riga che contiene un'altra tabella vale per le righe
-// di quella (modifiche manuali al personaggio)
-function righeDi(n, out = []) {
-  for (const f of n.figli) {
-    if (!f.tag || f.tag === "select") continue;
-    if (f.tag === "tr" && !contieneTabella(f)) out.push(f);
-    else righeDi(f, out);
-  }
-  return out;
+// pannelli dei buff: la descrizione del motore (pannelli[radice] in motore/campi.js), gruppi
+// di voci. Una voce si vede se ci sono i suoi campi (canti e danze ne crea e toglie alcuni);
+// un'etichetta con id e' un risultato del motore
+const campiDi = (v) => (v.riga || [v]).filter((x) => x.campo).map((x) => x.campo);
+const visibile = (v) => campiDi(v).every((n) => virtuale(n));
+const htmlDi = (t) => (t && typeof t === "object" ? window.uscite[t.id] ?? "" : t || "");
+const etichettaDi = (v) => (v.id ? window.uscite[v.id] ?? "" : v.etichetta || "");
+function spanHtml(html, classe) {
+  const s = document.createElement("span");
+  s.className = classe;
+  copiaHtml(html, s);
+  return s;
 }
-const contieneTabella = (n) => n.figli.some((f) => f.tag && (f.tag === "table" || contieneTabella(f)));
-function disegnaPannello(v, corpo) {
-  const gruppi = [];
-  let colonne = null; // intestazioni attive: [{da, a, gruppo}]
-  const nuovoGruppo = (titolo) => {
-    const g = { titolo, voci: [] };
-    gruppi.push(g);
-    return g;
-  };
-  let semplice = nuovoGruppo(null);
-  for (const r of righeDi(v)) {
-    const celle = r.figli.filter((f) => f.tag === "td" || f.tag === "th");
-    // la riga del titolo del pannello, quella che lo apriva e chiudeva
-    if (celle.some((c) => /TD$/.test(c.id))) continue;
-    if (!celle.some(contieneControlli)) {
-      const piene = celle.filter((c) => c.textContent.trim());
-      if (!piene.length) continue;
-      colonne = [];
-      let col = 0;
-      for (const c of celle) {
-        const largo = Number(c.attributi.colspan) || 1;
-        if (c.textContent.trim()) colonne.push({ da: col, a: col + largo, gruppo: nuovoGruppo(c) });
-        col += largo;
-      }
-      continue;
-    }
-    let col = 0, inAttesa = null, gruppoAttesa = null;
-    const colonnaDi = (k) => colonne && (colonne.find((x) => k >= x.da && k < x.a) || colonne[colonne.length - 1]);
-    for (const [k, c] of celle.entries()) {
-      const largo = Number(c.attributi.colspan) || 1;
-      const colonna = colonnaDi(col);
-      const g = colonna ? colonna.gruppo : semplice;
-      col += largo;
-      if (!contieneControlli(c)) {
-        if (vuoto(c)) continue;
-        // un testo seguito da una cella di un'altra colonna e' l'intestazione della sua
-        // colonna da qui in giu' ("+% Resistance" nelle modifiche manuali al personaggio)
-        if (colonna && k < celle.length - 1 && colonnaDi(col) !== colonna) {
-          colonna.gruppo = nuovoGruppo(c);
-          continue;
-        }
-        if (inAttesa) gruppoAttesa.voci.push({ nota: inAttesa });
-        inAttesa = [c];
-        gruppoAttesa = g;
-        continue;
-      }
-      const lista = coppie(gettoni(c), inAttesa);
-      inAttesa = null;
-      g.voci.push(...lista);
-    }
-    if (inAttesa) gruppoAttesa.voci.push({ nota: inAttesa });
+function voceDescritta(v) {
+  if (v.nota !== undefined) return spanHtml(htmlDi(v.nota), "nota hint");
+  if (v.riga) {
+    const d = document.createElement("div");
+    d.className = "voce in-riga";
+    for (const x of v.riga) d.appendChild(x.campo ? controllo(virtuale(x.campo)) : spanHtml(htmlDi(x), "testo"));
+    return d;
   }
+  const campo = virtuale(v.campo);
+  const l = document.createElement(campo.type === "checkbox" ? "label" : "div");
+  l.className = "voce";
+  const ctrl = controllo(campo);
+  // un'etichetta vuota (solo spazi) non c'e', come la cella vuota nell'HTML di prima
+  const etichetta = etichettaDi(v);
+  if (testoHtml(etichetta)) l.appendChild(spanHtml(etichetta, "etichetta"));
+  if (v.segno) l.appendChild(spanHtml(v.segno, "segno"));
+  l.appendChild(ctrl);
+  return l;
+}
+// cio' che cambia il disegno: voci visibili, etichette, scelte con ricerca o tendine
+function firmaPannello(gruppi) {
+  return JSON.stringify(gruppi.map((g) => [htmlDi(g.titolo), g.voci.map((v) => visibile(v) && [
+    etichettaDi(v), htmlDi(v.nota), (v.riga || []).map(htmlDi), campiDi(v).map((n) => virtuale(n)._lista().length > LUNGO),
+  ])]));
+}
+function disegnaPannello(gruppi, corpo) {
   const parti = [];
   for (const g of gruppi) {
-    if (!g.voci.length) continue;
+    const voci = g.voci.filter(visibile);
+    if (!voci.length) continue;
     if (g.titolo) {
       const h = document.createElement("h4");
-      for (const f of g.titolo.figli) { const c = copia(f); if (c) h.appendChild(c); }
+      copiaHtml(htmlDi(g.titolo), h);
       parti.push(h);
     }
     const griglia = document.createElement("div");
     griglia.className = "voci";
-    griglia.append(...g.voci.map(voce));
+    griglia.append(...voci.map(voceDescritta));
     parti.push(griglia);
   }
   corpo.replaceChildren(...parti);
 }
 
 function aggiornaPannelli() {
-  for (const el of pannelli) {
-    const v = doc.getElementById(el.dataset.pannello);
+  for (const el of elementiPannello) {
+    const gruppi = window.pannelli[el.dataset.pannello];
     const corpo = el.querySelector(".corpo");
-    const html = v ? v.innerHTML : "";
-    if (el._html !== html) {
-      el._html = html;
-      if (v) disegnaPannello(v, corpo);
+    const firma = gruppi ? firmaPannello(gruppi) : "";
+    if (el._html !== firma) {
+      el._html = firma;
+      if (gruppi) disegnaPannello(gruppi, corpo);
       else corpo.replaceChildren();
     }
     const summary = el.querySelector("summary");
     let badge = summary.querySelector(".attivo");
-    const attivo = !!doc.getElementById(el.dataset.attivo)?.textContent.trim();
+    const attivo = !!window.testo(el.dataset.attivo);
     if (attivo && !badge) {
       badge = document.createElement("span");
       badge.className = "attivo";
@@ -787,7 +764,7 @@ async function preparaA() {
   const w = iframe.contentWindow;
   try {
     if (!w.leggiBuild(stato.confronto.build)) throw new Error("la build A non è di questo calcolatore");
-    for (const el of pannelli) w[el.dataset.apri](1);
+    for (const el of elementiPannello) w[el.dataset.apri](1);
     w.StAllCalc();
     w.calc();
   } catch (e) {
@@ -1066,7 +1043,7 @@ function avvia() {
     }
   }
   // tutti i pannelli aperti nel motore: i loro campi esistono sempre, la pagina li mostra o no
-  for (const el of pannelli) window[el.dataset.apri](1);
+  for (const el of elementiPannello) window[el.dataset.apri](1);
   document.getElementById("app").before(erroreBox);
   collegaCampiFissi();
   calcola();

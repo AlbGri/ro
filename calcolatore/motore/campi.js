@@ -3,8 +3,9 @@
 
 // Un campo creato dal codice, non dall'HTML: tipo "select", "checkbox", "testo" o "pulsante";
 // gestore: la funzione eseguita alla scelta (this e' il campo), o null. imp: opzioni
-// ([valore, testo, scelta]), spuntato, disabilitato, nascosto, valore. Per ora e' un elemento
-// del documento finto fuori dall'albero, registrato in c (calcForm)
+// ([valore, testo, scelta], o { gruppo, opzioni } per un optgroup), spuntato, disabilitato,
+// nascosto, valore. Per ora e' un elemento del documento finto fuori dall'albero, registrato
+// in c (calcForm); un campo con lo stesso nome lo sostituisce, con valori e opzioni iniziali
 function campo(nome, tipo, gestore, imp) {
   imp = imp || {};
   // gli attributi come li avrebbe letti il parser dall'HTML: stessi valori iniziali
@@ -16,12 +17,58 @@ function campo(nome, tipo, gestore, imp) {
   if (imp.valore !== undefined) attributi.value = imp.valore;
   var el = new Elemento(documento, tipo === "select" ? "select" : "input", attributi);
   el._funzione = gestore;
-  (imp.opzioni || []).forEach(function (o) {
-    el.appendChild(new documento.Opzione(o[1], o[0], o[2], o[2]));
-  });
-  CAMPI_FISSI.add(nome);
+  var opzioni = function (dentro, lista) {
+    lista.forEach(function (o) {
+      if (Array.isArray(o)) return dentro.appendChild(new documento.Opzione(o[1], o[0], o[2], o[2]));
+      var g = documento.createElement("optgroup");
+      g.label = o.gruppo;
+      opzioni(g, o.opzioni);
+      dentro.appendChild(g);
+    });
+  };
+  opzioni(el, imp.opzioni || []);
+  CAMPI_CODICE.add(nome);
   documento.calcForm[nome] = el;
   return el;
+}
+function togliCampo(nome) {
+  CAMPI_CODICE.delete(nome);
+  delete documento.calcForm[nome];
+}
+
+// Pannelli dei buff (buff.js): pannelli[radice] e' la descrizione del pannello aperto, una lista
+// di gruppi { titolo, voci }. Una voce e' un campo ({ campo, tipo, gestore, etichetta, id,
+// segno, ... }), una nota ({ nota }) o una riga con testi e campi ({ riga: [...] }). La pagina
+// la disegna; il motore ne crea i campi. Un'etichetta con id e' un risultato (uscite[id]) che
+// il motore puo' cambiare; etichetta e' allora il suo contenuto iniziale. Le voci facoltative
+// le crea e le toglie il motore (canti e danze), e aprire il pannello le toglie, come prima
+// faceva l'HTML riscritto
+var pannelli = {};
+function vociDi(gruppi, f) {
+  gruppi.forEach(function (g) {
+    g.voci.forEach(function (v) {
+      (v.riga || [v]).forEach(function (x) {
+        if (x.campo) f(x);
+      });
+    });
+  });
+}
+function apriPannello(radice, gestore, gruppi) {
+  pannelli[radice] = gruppi;
+  vociDi(gruppi, function (v) {
+    if (v.facoltativo) togliCampo(v.campo);
+    else campo(v.campo, v.tipo || "select", v.gestore === undefined ? gestore : v.gestore, v);
+    if (v.id) scrivi(v.id, v.etichetta || "");
+  });
+}
+function chiudiPannello(radice) {
+  var gruppi = pannelli[radice];
+  if (!gruppi) return;
+  vociDi(gruppi, function (v) {
+    togliCampo(v.campo);
+    if (v.id) delete uscite[v.id];
+  });
+  delete pannelli[radice];
 }
 
 // Una scelta e' il valore nel campo, poi il suo gestore. Il ricalcolo (calc) lo chiede chi
