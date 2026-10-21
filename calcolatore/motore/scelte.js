@@ -1559,15 +1559,55 @@ function EnemySort() {
       n[A] != -1 && ((c.B_Enemy.options[s] = new documento.Opzione(m_Monster[n[A]][1], n[A])), s++);
   }
 }
+// toglie dall'elenco dei mostri (id, -1 = tolto) quelli fuori dai filtri: luogo (ENEMY_SORT2),
+// mappa del luogo (ENEMY_MAP, da MAPPE_LUOGO) e tipo (ENEMY_TYPE). Se non resta nessun mostro resta
+// quello scelto, perche' l'elenco non puo' essere vuoto
 function SZ(l) {
-  var A = documento.calcForm.ENEMY_SORT2.value;
-  if (A != 0)
-    for (var n = 0; n <= EnemyNum; n++)
-      if (l[n] != -1) {
-        for (var s = 0; m_MonsterMap[A][s] != "N" && l[n] != m_MonsterMap[A][s]; s++);
-        m_MonsterMap[A][s] == "N" && (l[n] = -1);
-      }
+  var luogo = 1 * c.ENEMY_SORT2.value,
+    tipo = 1 * c.ENEMY_TYPE.value,
+    ammessi = luogo != 0 ? mostriDelLuogo(luogo, c.ENEMY_MAP.value) : null,
+    scelto = targetData[0],
+    originale = l.slice(),
+    restano = 0;
+  for (var n = 0; n <= EnemyNum; n++) {
+    if (l[n] == -1) continue;
+    if ((ammessi && !ammessi.has(l[n])) || !mostroDelTipo(m_Monster[l[n]], tipo)) l[n] = -1;
+    else restano++;
+  }
+  if (restano == 0) for (n = 0; n <= EnemyNum; n++) if (originale[n] == scelto) l[n] = scelto;
   return l;
+}
+// mostri di un luogo: quelli del suo elenco piu' quelli delle sue mappe, o solo quelli della mappa
+function mostriDelLuogo(luogo, mappa) {
+  var mappe = MAPPE_LUOGO[luogo] || [];
+  if (mappa) {
+    var trovata = mappe.find((x) => x[0] == mappa);
+    if (trovata) return new Set(trovata[2]);
+  }
+  var ammessi = new Set(m_MonsterMap[luogo].filter((x) => x != "N"));
+  for (var x of mappe) for (var id of x[2]) ammessi.add(id);
+  return ammessi;
+}
+// tipo: 0 tutti, 1 MvP, 2 boss non MvP, 3 gli altri
+function mostroDelTipo(mostro, tipo) {
+  if (tipo == 0) return true;
+  if (tipo == 1) return isMvpMonster(mostro);
+  if (tipo == 2) return !isMvpMonster(mostro) && mostro[19] == 1;
+  return !isMvpMonster(mostro) && mostro[19] != 1;
+}
+// mappe del luogo scelto nel campo ENEMY_MAP (senza mappe resta solo "All maps", e il campo si
+// nasconde); il codice della mappa si aggiunge solo ai nomi ripetuti, come i Geffen Field
+function riempiMappe() {
+  var campo = c.ENEMY_MAP,
+    mappe = MAPPE_LUOGO[1 * c.ENEMY_SORT2.value] || [];
+  for (var i = campo.length; i > 0; i--) campo.options[0] = null;
+  campo.options[0] = new documento.Opzione("All maps", "");
+  mappe.forEach((x, i) => {
+    var ripetuto = mappe.some((y) => y != x && y[1] == x[1]);
+    campo.options[i + 1] = new documento.Opzione(ripetuto ? x[1] + " (" + x[0] + ")" : x[1], x[0]);
+  });
+  campo.value = "";
+  campo.hidden = !mappe.length;
 }
 function MANUKU_MONSTER() {
   for (var l = 0; l < nMANUKU.length; l++) if (targetData[0] == nMANUKU[l]) return 1;

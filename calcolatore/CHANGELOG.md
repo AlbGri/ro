@@ -2,6 +2,13 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.3] - 2026-10-21
+
+- Scelta del mostro: oltre al luogo, la mappa (per esempio Bio-life Labs 3F) e la categoria (MvP,
+  boss non MvP, normali). Le mappe e i loro mostri vengono dagli spawn di rAthena; i luoghi di
+  uaRO (Bio Labs 4, OGH, Byalan 6...) non hanno mappe. I luoghi comprendono ora tutti i mostri
+  delle loro mappe
+
 ## [1.2] - 2026-10-21
 
 Correzioni di errori ereditati dal calcolatore di Thrice:

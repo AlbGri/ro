@@ -279,6 +279,7 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
 <script defer src="motore/item.js"></script>
 <script defer src="motore/etc.js"></script>
 <script defer src="motore/monster.js"></script>
+<script defer src="motore/mappe.js"></script>
 <script defer src="motore/card.js"></script>
 <script defer src="motore/uaro.js"></script>
 <script defer src="motore/inizio.js"></script>
@@ -504,6 +505,8 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
     <h3>Nemico</h3>
     <div class="voci affiancati">
       <label class="voce"><span class="etichetta">Luogo</span><select data-campo="ENEMY_SORT2"></select></label>
+      <label class="voce" data-nascondi><span class="etichetta">Mappa</span><select data-campo="ENEMY_MAP"></select></label>
+      <label class="voce"><span class="etichetta">Categoria</span><select data-campo="ENEMY_TYPE"></select></label>
       <label class="voce"><span class="etichetta">Ordine</span><select data-campo="ENEMY_SORT"></select></label>
       <span class="voce lunga" data-campo="B_Enemy" data-cerca data-etichetta="Mostro"></span>
     </div>
@@ -635,7 +638,7 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
   </div>
 
   <footer class="crediti">
-    <p>I calcoli sono quelli del calcolatore di uaRO di Thrice e Arlix (<a href="https://uaro-calc.xdthrice.workers.dev/" rel="noopener">uaro-calc.xdthrice.workers.dev</a>), che discende dal simulatore originale di ROratorio, tradotto e adattato da Doddler e aggiornato da Gandi, Triper e kurimet; altri aggiornamenti per uaRO vengono dalle versioni di Arlix e di Bish. Il merito dei calcoli e dei dati è loro.</p>
+    <p>I calcoli sono quelli del calcolatore di uaRO di Thrice e Arlix (<a href="https://uaro-calc.xdthrice.workers.dev/" rel="noopener">uaro-calc.xdthrice.workers.dev</a>), che discende dal simulatore originale di ROratorio, tradotto e adattato da Doddler e aggiornato da Gandi, Triper e kurimet; altri aggiornamenti per uaRO vengono dalle versioni di Arlix e di Bish. Il merito dei calcoli e dei dati è loro. Le mappe in cui compaiono i mostri vengono dagli spawn di <a href="https://github.com/rathena/rathena" rel="noopener">rAthena</a>.</p>
     <p>Questa pagina li riprende con un'interfaccia in italiano. Per errori, dati mancanti o richieste degli autori, scrivi all'admin del sito.</p>
   </footer>
   </div>

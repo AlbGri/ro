@@ -245,6 +245,7 @@ for (i = 0; i < m_TempEffect.length; i++)
   (documento.calcForm.A_JOB.value = 0),
   ClickJob(0),
   allCard(),
+  riempiMappe(),
   EnemySort(),
   StCalc(),
   servers(),

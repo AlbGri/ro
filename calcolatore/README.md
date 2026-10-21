@@ -8,7 +8,7 @@ equipaggiamento, carte, buff e mostri. Pagina: `/ro/calcolatore/`.
 Il motore di calcolo e' quello del calcolatore di uaRO di Thrice e Arlix
 ([uaro-calc.xdthrice.workers.dev](https://uaro-calc.xdthrice.workers.dev/)), che discende dal
 simulatore di ROratorio, tradotto e adattato da Doddler e aggiornato da Gandi, Triper e kurimet.
-Calcoli e dati sono loro; il codice in `motore/` (tranne `forma.js`, `avvio.js` e `uaro.js`)
+Calcoli e dati sono loro; il codice in `motore/` (tranne `forma.js`, `avvio.js`, `mappe.js` e `uaro.js`)
 resta dei rispettivi autori. Da qui il calcolatore prosegue per conto suo: gli aggiornamenti
 dell'originale non si importano, e le build hanno un formato loro, che l'originale non legge.
 
@@ -16,6 +16,8 @@ Qui ci sono:
 
 - `motore/forma.js` e `motore/avvio.js`: un documento finto su cui il motore gira senza la sua
   pagina, nel browser e nei test
+- `motore/mappe.js`: le mappe di ogni luogo con i mostri che ci compaiono, generate dagli spawn
+  di [rAthena](https://github.com/rathena/rathena) (pre-renewal); i luoghi di uaRO non ci sono
 - `motore/uaro.js` e i commenti `uaRO:` nel motore: correzioni per uaRO prese dalla
   [wiki del server](https://wiki.uaro.net/), ognuna con la sua fonte
 - `index.html`, `app.js`, `traduzioni.js`: la pagina in italiano
