@@ -22,6 +22,8 @@ Le versioni della pagina `calcolatore/`.
   - incantamenti Bastion: tutti e sette, con Movement Speed (+20% alla velocita' di movimento) e
     SP Consumption (si sceglie, ma non cambia i risultati: il costo in SP delle skill non e'
     calcolato); lo stesso incantamento su copricapo e calzature conta una volta sola
+  - incantamenti di El Dicastes: ai livelli 2 e 3 AGI, DEX o INT +1 o +2 (+3 al livello 3 di
+    Feral Tail e Feral Boots), che si sommano anche sulla stessa statistica
   - tirapugni: penalita' di taglia 100/100/75%
   - Soul Strike: +7% di danno per livello contro i non morti
   - Arrow Vulcan: ritardo di 2 secondi
