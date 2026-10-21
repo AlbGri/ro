@@ -2,6 +2,11 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.4] - 2026-10-21
+
+- Scelta della classe: l'elenco e' diviso in sezioni (Novice, prime classi, seconde, rinate, High,
+  espanse) e si apre con la ricerca, come mostri e oggetti. Super Novice sta fra le espanse
+
 ## [1.3] - 2026-10-21
 
 - Scelta del mostro: oltre al luogo, la mappa (per esempio Bio-life Labs 3F) e la categoria (MvP,

@@ -4,6 +4,12 @@
 
 // testo intero di un nodo (spazi esterni esclusi)
 const ESATTE = {
+  // sezioni del menu Classe
+  "First classes": "Prime classi",
+  "Second classes": "Seconde classi",
+  "Transcendent classes": "Classi rinate",
+  "High classes": "Classi High",
+  "Expanded classes": "Classi espanse",
   // risultati
   "Player's Hit Ratio": "Probabilità di colpire",
   "Player's Dodge Ratio": "Probabilità di schivare",

@@ -1,8 +1,32 @@
 // Gestori delle scelte (classe, armi, skill, mostro) ed elenchi delle opzioni
+
+// Il menu della classe diviso in sezioni: le opzioni non sono piu' nell'ordine dei numeri, e
+// la classe si sceglie per valore (c.A_JOB.value), mai per posizione
+var SEZIONI_CLASSI = [
+  ["Novice", [0]],
+  ["First classes", [1, 2, 3, 4, 5, 6]],
+  ["Second classes", [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]],
+  ["Transcendent classes", [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]],
+  ["High classes", [34, 35, 36, 37, 38, 39, 40]],
+  ["Expanded classes", [20, 41, 42, 43, 44, 45]],
+];
+var NOMI_CLASSE_MENU = {
+  30: "Clown (iRO name: Minstrel)",
+  32: "Professor (iRO name: Scholar)",
+  33: "Creator (iRO name: Biochemist)",
+  42: "Star Gladiator (iRO name: Taekwon Master)",
+};
 function servers() {
   if (firstLoad == 0) {
-    for (c.A_JOB.length = new documento.Opzione(JobName[i], i), i = 0; i <= 45; i++)
-      c.A_JOB.options[i] = new documento.Opzione(JobName[i], i);
+    for (var [sezione, classi] of SEZIONI_CLASSI) {
+      var gruppo = documento.createElement("OPTGROUP");
+      gruppo.label = sezione;
+      c.A_JOB.appendChild(gruppo);
+      for (var classe of classi)
+        gruppo.appendChild(
+          new documento.Opzione(NOMI_CLASSE_MENU[classe] || JobName[classe], classe),
+        );
+    }
     for (
       c.A_Weapon_refine.length = 0,
         n_Nitou && (c.A_Weapon2_refine.length = 0),
@@ -23,11 +47,7 @@ function servers() {
         (c.A_SHOULDER_REFINE.options[i] = new documento.Opzione("+" + i, i)),
         (c.A_SHOES_REFINE.options[i] = new documento.Opzione("+" + i, i)));
   }
-  ((firstLoad = 1),
-    (c.A_JOB.options[30].innerHTML = "Clown (iRO name: Minstrel)"),
-    (c.A_JOB.options[32].innerHTML = "Professor (iRO name: Scholar)"),
-    (c.A_JOB.options[33].innerHTML = "Creator (iRO name: Biochemist)"),
-    (c.A_JOB.options[42].innerHTML = "Star Gladiator (iRO name: Taekwon Master)"));
+  firstLoad = 1;
   for (var e of c.A_ActiveSkill.options)
     1 * e.value == SKILLID.STAVE_CRASHER && (e.text = skillNameInSelect(SKILLID.STAVE_CRASHER));
   calc();

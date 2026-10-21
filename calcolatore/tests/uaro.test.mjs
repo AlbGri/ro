@@ -160,3 +160,14 @@ test("El Dicastes: livelli 2 e 3 da +1/+2 (+3 sui Feral), sommabili sulla stessa
   assert.deepEqual([c.A_DICASTES_ACCESSORY1_STATS.value, c.A_DICASTES_ACCESSORY1_STATS2.value].map(Number), [7, 7]);
   assert.equal(dex() - senza, 4);
 });
+
+test("menu Classe: 6 sezioni, ogni classe una volta, scelta per valore", () => {
+  const m = creaMotore();
+  const v = m.documento.calcForm.A_JOB;
+  assert.equal(v.figli.filter((f) => f.tag === "optgroup").length, 6);
+  const valori = v._lista().map((o) => Number(o.value));
+  assert.deepEqual([...valori].sort((a, b) => a - b), [...Array(46).keys()]);
+  scegli(m, "A_JOB", 20); // Super Novice, fra le espanse: posizione diversa dal valore
+  assert.equal(m.n_A_JOB, 20);
+  assert.equal(v._lista()[v.selectedIndex].text, "Super Novice");
+});
