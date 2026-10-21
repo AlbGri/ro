@@ -3,8 +3,10 @@
 export const PANNELLI = ["BufSW", "Buf3SW", "Buf4SW", "Buf6SW", "Buf7SW", "Buf9SW", "Buf10SW", "debufSW", "EnemyBufSW"];
 // descrizione dell'ultimo oggetto cliccato e titoli dei pannelli: interfaccia, non calcolo.
 // A_DodgeRatio nello scheletro conteneva BattleFLEE e "%": dalla fase 5 BattleFLEE e' fra i
-// risultati (motore/campi.js) e A_DodgeRatio non dice altro
-export const IGNORATI = /^(item-disclosure|ITEM_TITLE|ITEM\d|ITEM_DATA|ITEM_W_LV|ITEM_LV|ITEM_WAIT|B_SETUMEI|A\w*TD|A\w*used|A_DodgeRatio)$/;
+// risultati (motore/campi.js) e A_DodgeRatio non dice altro. combat-sim e cresults sono parti
+// dello scheletro che contenevano campi (e per questo non si guardavano): dalla fase 5 i campi
+// fissi non stanno piu' nello scheletro, e il loro testo sono solo le etichette
+export const IGNORATI = /^(item-disclosure|ITEM_TITLE|ITEM\d|ITEM_DATA|ITEM_W_LV|ITEM_LV|ITEM_WAIT|B_SETUMEI|A\w*TD|A\w*used|A_DodgeRatio|combat-sim|cresults)$/;
 
 export function caricaBuild(m, url, kakutyou) {
   m.leggiBuild(url);

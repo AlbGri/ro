@@ -195,6 +195,7 @@ Object.defineProperty(EP, "innerText", {
 // this[this.selectedIndex] e' l'opzione scelta. onkeyup non conta: la pagina non lo esegue
 Object.defineProperty(EP, "gestore", {
   get: function () {
+    if (this._funzione !== undefined) return this._funzione;
     var codice = this.attributi.onchange || this.attributi.onclick;
     if (!codice) return null;
     if (this._codice !== codice) {
@@ -440,9 +441,11 @@ DP._togli = function (el) {
   }
 };
 // calcForm.NOME e' il campo con quel name o id dentro il form, come nel browser: il primo
-// registrato, se ce n'e' piu' d'uno
+// registrato, se ce n'e' piu' d'uno. I campi creati da campo() (campi.js) non stanno
+// nell'albero: li registra campo() e qui non si toccano
+var CAMPI_FISSI = new Set();
 DP._campo = function (nome) {
-  if (!this.form) return;
+  if (!this.form || CAMPI_FISSI.has(nome)) return;
   var l = this.perNome.get(nome);
   if (l) for (var i = 0; i < l.length; i++) if (this.form.contains(l[i])) { this.calcForm[nome] = l[i]; return; }
   delete this.calcForm[nome];
