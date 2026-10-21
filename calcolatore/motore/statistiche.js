@@ -2403,7 +2403,7 @@ function StAllCalc() {
         ((bonusValues[71] += 5), (bonusValues[71] += 2 * n_A_SHOULDER_REFINE))),
     TimeItemNumSearch(52) && (bonusValues[71] += 3 * n_A_LEFT_REFINE),
     ClickB_Enemy(),
-    KakutyouKansuu());
+    calcolaAltreInfo());
 }
 // uaRO: lo stesso incantamento su copricapo e calzature conta una volta sola (patch del
 // 26/05/2026). Movement Speed e' calcolato con la velocita' di movimento, SP Consumption non

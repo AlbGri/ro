@@ -9,7 +9,7 @@ export function caricaBuild(m, url, kakutyou) {
   for (const p of PANNELLI) m[p](1);
   const c = m.documento.calcForm;
   c.A_Kakutyou.value = kakutyou;
-  m.KakutyouKansuu2();
+  m.preparaAltreInfo();
   m.StAllCalc();
   m.calc();
 }

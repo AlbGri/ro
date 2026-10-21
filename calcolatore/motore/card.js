@@ -3171,14 +3171,14 @@ function Click_Card(a) {
     (n_A_card[15] = 1 * c.A_acces2_card.value),
     c.A_Kakutyou.value == 28)
   )
-    if (CardNumSearch(157) || CardNumSearch(413)) KakutyouKansuu2();
-    else if (a == 157 && CardNumSearch(157) == 0) KakutyouKansuu2();
-    else if (a == 413 && CardNumSearch(413) == 0) KakutyouKansuu2();
-    else if (n_A_card[14] != 413 && n_A_card[15] != 413) KakutyouKansuu2();
+    if (CardNumSearch(157) || CardNumSearch(413)) preparaAltreInfo();
+    else if (a == 157 && CardNumSearch(157) == 0) preparaAltreInfo();
+    else if (a == 413 && CardNumSearch(413) == 0) preparaAltreInfo();
+    else if (n_A_card[14] != 413 && n_A_card[15] != 413) preparaAltreInfo();
     else {
       var r = 0;
       for (i = 0; i <= 7; i++) n_A_card[i] == 157 && (r = 1);
-      r == 0 && KakutyouKansuu2();
+      r == 0 && preparaAltreInfo();
     }
   (StAllCalc(), Card(a), calc());
 }

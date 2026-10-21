@@ -30671,7 +30671,7 @@ function getDeathFireRefineBonuses(e) {
 }
 ItemMax = itemData.length - 1;
 function Click_Item(e) {
-  (c.A_Kakutyou.value == 28 && KakutyouKansuu2(), StAllCalc(), ClickB_Item(e));
+  (c.A_Kakutyou.value == 28 && preparaAltreInfo(), StAllCalc(), ClickB_Item(e));
 }
 function ClickB_Item(e) {
   if (
