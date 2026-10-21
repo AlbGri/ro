@@ -214,7 +214,7 @@ for (n_B_debuf = new Array(), i = 0; i <= 24; i++) n_B_debuf[i] = 0;
 for (n_B_buf = new Array(), i = 0; i <= 14; i++) n_B_buf[i] = 0;
 for (n_A_Equip = new Array(), i = 0; i <= 20; i++) n_A_Equip[i] = 0;
 for (n_A_card = new Array(), i = 0; i <= 25; i++) n_A_card[i] = 0;
-for (tPlusTaiseiSyokia(), i = 0; i < m_TempEffect.length; i++)
+for (i = 0; i < m_TempEffect.length; i++)
   if (m_TempEffect[i][3] == 1) {
     var str =
       "<B>(Special Effect: [" +
