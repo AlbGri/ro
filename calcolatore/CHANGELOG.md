@@ -9,6 +9,9 @@ Le versioni della pagina `calcolatore/`.
   calzature e accessorio. Sul telefono resta una colonna, in quest'ordine. L'arma e' uno slot
   come gli altri, con le quattro carte due per riga, e sotto c'e' la seconda arma quando la
   classe ne usa due. La scheda dell'ultimo oggetto scelto sta sotto l'equipaggiamento
+- Nei campi con la ricerca (armi, equipaggiamento, carte, mostri, skill, classe) le frecce su e
+  giu' scelgono l'opzione prima o dopo, come negli altri elenchi, invece di scorrere la pagina:
+  si correggono le scelte sbagliate e si scorrono gli oggetti leggendo la scheda
 
 ## [1.4] - 2026-10-21
 

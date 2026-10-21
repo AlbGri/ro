@@ -249,6 +249,15 @@ function sceltaConRicerca(v) {
   el.className = "scelta";
   el.appendChild(document.createElement("span"));
   el.addEventListener("click", () => apriRicerca(el));
+  // frecce su e giu': l'opzione prima o dopo, come in una <select>, senza aprire la ricerca
+  el.addEventListener("keydown", (e) => {
+    if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+    e.preventDefault();
+    const v = el._v, lista = v._lista(), passo = e.key === "ArrowDown" ? 1 : -1;
+    let i = v.selectedIndex + passo;
+    while (lista[i] && lista[i].disabled) i += passo;
+    if (lista[i]) scegli(v, lista[i].value);
+  });
   return el;
 }
 
