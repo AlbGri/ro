@@ -110,6 +110,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 28px 20px 80px; }
 h2 { font-family: var(--serif); font-size: 1.55rem; line-height: 1.15; margin: 36px 0 12px; font-weight: 700; }
 h3 { font-family: var(--serif); font-size: 1.2rem; margin: 0 0 10px; font-weight: 700; }
 .hint { font-size: .88rem; color: var(--muted); margin: 0 0 12px; max-width: 72ch; }
+.card .hint { max-width: none; }
 #caricamento { padding: 18px 0; color: var(--muted); }
 
 .card {
@@ -133,6 +134,10 @@ input[type="checkbox"] { width: 18px; height: 18px; margin: 0; flex: none; accen
 .voce > select, .voce > input[type="text"], .voce > .scelta { flex: 0 1 auto; }
 .voce.lunga { grid-column: 1 / -1; }
 .voce.lunga > select, .voce.lunga > .scelta { flex: 1 1 auto; }
+/* campi affiancati su piu' colonne: etichetta su una riga accanto al suo controllo, che riempie la colonna */
+.voci.affiancati { grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr)); }
+.affiancati .voce > .etichetta { flex: none; min-width: 4.5rem; white-space: nowrap; }
+.affiancati .voce > select, .affiancati .voce > .scelta { flex: 1 1 0; }
 
 /* statistiche */
 .stat { display: grid; grid-template-columns: auto auto 1fr; gap: 6px 10px; align-items: center; }
@@ -157,6 +162,10 @@ input[type="checkbox"] { width: 18px; height: 18px; margin: 0; flex: none; accen
 .slot select, .slot .scelta { width: 100%; }
 .arma { display: grid; gap: 8px; }
 .arma .riga { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px 10px; }
+.arma .riga .scelta, .arma .riga > select { width: 100%; }
+.arma .riga:first-of-type > span { grid-column: 1 / -1; }
+.arma .voce > .etichetta { flex: none; white-space: nowrap; }
+.arma .voce > select { flex: 1 1 0; }
 .contenitore { display: contents; }
 
 /* scelta con ricerca, per gli elenchi lunghi */
@@ -221,7 +230,7 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
 .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .toolbar input[type="text"] { flex: 1 1 220px; }
 .crediti { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); font-size: .88rem; color: var(--muted); }
-.crediti p { margin: 0 0 6px; max-width: 80ch; }
+.crediti p { margin: 0 0 6px; }
 .errore { margin: 0 0 12px; padding: 10px 14px; border-left: 4px solid var(--warn); background: var(--surface); border-radius: 0 8px 8px 0; }
 
 .toast {
@@ -243,6 +252,7 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
   .slot > .raff { grid-column: 2; }
   .slot > .principale, .slot > .extra { grid-column: 1 / -1; }
   .voci, .risultati { grid-template-columns: minmax(0, 1fr); }
+  .affiancati .voce > .etichetta, .arma .voce > .etichetta { white-space: normal; }
   /* confronto: il nome della voce su una riga, sotto A, B e la differenza */
   table.confronto, table.confronto thead, table.confronto tbody { display: block; }
   table.confronto tr { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid var(--line); }
@@ -380,7 +390,7 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
 
   <h2>Equipaggiamento</h2>
   <div class="card">
-    <div class="voci">
+    <div class="voci affiancati">
       <label class="voce"><span class="etichetta">Oggetti fino all'episodio</span><select data-campo="episode"></select></label>
       <label class="voce"><span class="etichetta">Frecce, proiettili</span><select data-campo="A_Arrow"></select></label>
     </div>
@@ -458,22 +468,22 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
     <div class="slot">
       <span class="slot-nome">Mantello</span><select class="raff" data-campo="A_SHOULDER_REFINE" aria-label="Raffinamento"></select>
       <span class="principale" data-campo="A_shoulder" data-cerca></span>
-      <div class="extra"><span data-campo="A_shoulder_card" data-cerca></span><select data-campo="A_DICASTES_SHOULDER_PRIMARY" aria-label="Incantamento Dicastes"></select><select data-campo="A_DICASTES_SHOULDER_STATS" aria-label="Statistiche Dicastes"></select><select data-campo="A_DICASTES_SHOULDER_STATS2" aria-label="Seconde statistiche Dicastes"></select></div>
+      <div class="extra"><span data-campo="A_shoulder_card" data-cerca></span><select data-campo="A_DICASTES_SHOULDER_PRIMARY" aria-label="Dicastes livello 1"></select><select data-campo="A_DICASTES_SHOULDER_STATS" aria-label="Dicastes livello 2"></select><select data-campo="A_DICASTES_SHOULDER_STATS2" aria-label="Dicastes livello 3"></select></div>
     </div>
     <div class="slot">
       <span class="slot-nome">Calzature</span><select class="raff" data-campo="A_SHOES_REFINE" aria-label="Raffinamento"></select>
       <span class="principale" data-campo="A_shoes" data-cerca></span>
-      <div class="extra"><span data-campo="A_shoes_card" data-cerca></span><select data-campo="A_BASTION_SHOES" aria-label="Incantamento Bastion"></select><select data-campo="A_DICASTES_SHOES_PRIMARY" aria-label="Incantamento Dicastes"></select><select data-campo="A_DICASTES_SHOES_STATS" aria-label="Statistiche Dicastes"></select><select data-campo="A_DICASTES_SHOES_STATS2" aria-label="Seconde statistiche Dicastes"></select></div>
+      <div class="extra"><span data-campo="A_shoes_card" data-cerca></span><select data-campo="A_BASTION_SHOES" aria-label="Incantamento Bastion"></select><select data-campo="A_DICASTES_SHOES_PRIMARY" aria-label="Dicastes livello 1"></select><select data-campo="A_DICASTES_SHOES_STATS" aria-label="Dicastes livello 2"></select><select data-campo="A_DICASTES_SHOES_STATS2" aria-label="Dicastes livello 3"></select></div>
     </div>
     <div class="slot">
       <span class="slot-nome">Accessorio 1</span><span class="raff"></span>
       <span class="principale" data-campo="A_acces1" data-cerca></span>
-      <div class="extra"><span data-campo="A_acces1_card" data-cerca></span><select data-campo="A_DICASTES_ACCESSORY1_PRIMARY" aria-label="Incantamento Dicastes"></select><select data-campo="A_DICASTES_ACCESSORY1_STATS" aria-label="Statistiche Dicastes"></select><select data-campo="A_DICASTES_ACCESSORY1_STATS2" aria-label="Seconde statistiche Dicastes"></select></div>
+      <div class="extra"><span data-campo="A_acces1_card" data-cerca></span><select data-campo="A_DICASTES_ACCESSORY1_PRIMARY" aria-label="Dicastes livello 1"></select><select data-campo="A_DICASTES_ACCESSORY1_STATS" aria-label="Dicastes livello 2"></select><select data-campo="A_DICASTES_ACCESSORY1_STATS2" aria-label="Dicastes livello 3"></select></div>
     </div>
     <div class="slot">
       <span class="slot-nome">Accessorio 2</span><span class="raff"></span>
       <span class="principale" data-campo="A_acces2" data-cerca></span>
-      <div class="extra"><span data-campo="A_acces2_card" data-cerca></span><select data-campo="A_DICASTES_ACCESSORY2_PRIMARY" aria-label="Incantamento Dicastes"></select><select data-campo="A_DICASTES_ACCESSORY2_STATS" aria-label="Statistiche Dicastes"></select><select data-campo="A_DICASTES_ACCESSORY2_STATS2" aria-label="Seconde statistiche Dicastes"></select></div>
+      <div class="extra"><span data-campo="A_acces2_card" data-cerca></span><select data-campo="A_DICASTES_ACCESSORY2_PRIMARY" aria-label="Dicastes livello 1"></select><select data-campo="A_DICASTES_ACCESSORY2_STATS" aria-label="Dicastes livello 2"></select><select data-campo="A_DICASTES_ACCESSORY2_STATS2" aria-label="Dicastes livello 3"></select></div>
     </div>
   </div>
   <details class="pannello" data-pannello="ID_ARG" data-apri="Buf9SW" data-attivo="A9used"><summary>Incantamenti aggiuntivi e modifiche manuali al personaggio</summary><div class="corpo"></div></details>
@@ -492,7 +502,7 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
   <h2>Combattimento</h2>
   <div class="card">
     <h3>Nemico</h3>
-    <div class="voci">
+    <div class="voci affiancati">
       <label class="voce"><span class="etichetta">Luogo</span><select data-campo="ENEMY_SORT2"></select></label>
       <label class="voce"><span class="etichetta">Ordine</span><select data-campo="ENEMY_SORT"></select></label>
       <span class="voce lunga" data-campo="B_Enemy" data-cerca data-etichetta="Mostro"></span>
@@ -598,7 +608,7 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
 
   <div class="card" style="margin-top:14px">
     <h3>Condizioni</h3>
-    <div class="voci">
+    <div class="voci affiancati">
       <label class="voce"><span class="etichetta">Ambiente</span><select data-campo="A8_Skill14"></select></label>
       <label class="voce"><span class="etichetta">Investimento in difesa (solo WoE)</span><select data-campo="A8_Skill15"></select></label>
       <label class="voce"><span class="etichetta">Ritardo minimo fra due skill <span class="name" tabindex="0">?<span class="nametext">Il client non manda più skill di così al secondo, anche con ASPD e ritardi più bassi.</span></span></span><select data-campo="Conf01"></select></label>
