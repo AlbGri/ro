@@ -3216,8 +3216,9 @@ function descrizioneCarta(a) {
   for (var r = 0, e = 4; m_Card[a][e] != 0; e += 2)
     if (m_Card[a][e] == 90) {
       CBIstr += "<HR><B>When equipping " + SetCardName(m_Card[a][e + 1]);
+      // l'originale confrontava con w_SE, la tabella delle combinazioni degli oggetti
       for (var n = w_SC[m_Card[a][e + 1]][0]; m_Card[a][e + 2] != 0 && r == 0;)
-        n == w_SE[m_Card[a][e + 3]][0]
+        n == w_SC[m_Card[a][e + 3]][0]
           ? ((CBIstr += " or<BR>" + SetCardName(m_Card[a][e + 3])), (e += 2))
           : (r = 1);
       ((CBIstr += " at the same time:</B><BR>"), (r = 0));

@@ -2,6 +2,12 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.6] - 2026-10-21
+
+- Modifiche manuali al personaggio e al nemico: tradotte le intestazioni ("Bonus % al danno
+  fisico", "Bonus % alle resistenze", "Altri bonus") e le frasi rimaste in inglese (DEF e MDEF
+  ignorate, resistenze per taglia, razza e a distanza, riflesso aggiuntivo)
+
 ## [1.5] - 2026-10-21
 
 - Equipaggiamento disposto come nella finestra del gioco, su due colonne: a sinistra testa
