@@ -2,6 +2,11 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.1] - 2026-10-21
+
+- Build salvate: "Copia link" copia l'indirizzo che apre la build scelta nell'elenco, senza
+  doverla prima caricare
+
 ## [1.0] - 2026-10-21
 
 - Prima versione: statistiche, danni fatti e subiti di un personaggio di uaRO, con

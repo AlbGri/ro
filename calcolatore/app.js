@@ -827,6 +827,16 @@ function disegnaSalvate() {
   selSalvate.disabled = !stato.salvate.length;
 }
 
+async function copiaLink(build, messaggio) {
+  const link = location.origin + location.pathname + "#" + build;
+  try {
+    await navigator.clipboard.writeText(link);
+    avvisa(messaggio);
+  } catch {
+    prompt("Copia questo link:", link);
+  }
+}
+
 document.addEventListener("click", async (e) => {
   const el = e.target.closest("[data-azione]");
   if (!el) return;
@@ -834,13 +844,11 @@ document.addEventListener("click", async (e) => {
   if (azione === "chiudi-ricerca") {
     ricerca.close();
   } else if (azione === "copia-link") {
-    const link = location.origin + location.pathname + "#" + buildCorrente();
-    try {
-      await navigator.clipboard.writeText(link);
-      avvisa("Link copiato: chi lo apre vede questa build.");
-    } catch {
-      prompt("Copia questo link:", link);
-    }
+    await copiaLink(buildCorrente(), "Link copiato: chi lo apre vede questa build.");
+  } else if (azione === "copia-link-salvata") {
+    const s = stato.salvate[Number(selSalvate.value)];
+    if (!s) return;
+    await copiaLink(s.build, `Link copiato: chi lo apre vede la build "${s.nome}".`);
   } else if (azione === "salva") {
     const nome = nomeBuild.value.trim();
     if (!nome) {
