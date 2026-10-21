@@ -963,8 +963,6 @@ function avvia() {
   }
   // tutti i pannelli aperti nel motore: i loro campi esistono sempre, la pagina li mostra o no
   for (const el of pannelli) window[el.dataset.apri](1);
-  // la scheda dell'ultimo oggetto scelto resta sempre visibile
-  window.ClickB_Item("SW");
   document.getElementById("app").before(erroreBox);
   collegaCampiFissi();
   calcola();

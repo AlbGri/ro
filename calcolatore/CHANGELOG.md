@@ -8,6 +8,8 @@ Le versioni della pagina `calcolatore/`.
   espanse) e si apre con la ricerca, come mostri e oggetti. Super Novice sta fra le espanse
 - Un link con una build incollato nella barra degli indirizzi si apre anche con il calcolatore
   gia' aperto. Il campo "Link con la build" e il suo pulsante Apri non ci sono piu'
+- Il riquadro "Ultimo oggetto o carta scelto" mostra di nuovo la scheda: statistiche,
+  descrizione e bonus delle combinazioni. Restava sempre vuoto, con la scritta "Nessun oggetto"
 
 ## [1.3] - 2026-10-21
 

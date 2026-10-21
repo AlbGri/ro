@@ -3183,51 +3183,50 @@ function Click_Card(a) {
   (StAllCalc(), Card(a), calc());
 }
 function Card(a) {
+  if (typeof a > "u") return;
+  Item_or_Card = "Card";
+  ItemCardNumberCheck = a;
+  ActiveSkillSetPlus();
+  for (e = 1; e <= 4; e++) myInnerHtml("ITEM" + e, "", 0);
   if (
-    !(typeof a > "u") &&
-    ((Item_or_Card = "Card"), (ItemCardNumberCheck = a), ActiveSkillSetPlus(), n_itemSW != 0)
+    (myInnerHtml("ITEM_W_LV", "", 0),
+    myInnerHtml("ITEM_DATA", "", 0),
+    myInnerHtml("ITEM_LV", "", 0),
+    myInnerHtml("ITEM_WAIT", "", 0),
+    a == 106)
   ) {
-    for (e = 1; e <= 4; e++) myInnerHtml("ITEM" + e, "", 0);
-    if (
-      (myInnerHtml("ITEM_W_LV", "", 0),
-      myInnerHtml("ITEM_DATA", "", 0),
-      myInnerHtml("ITEM_LV", "", 0),
-      myInnerHtml("ITEM_WAIT", "", 0),
-      a == 106)
-    ) {
-      (myInnerHtml("ITEM_TITLE", "Very Strong or Top10", 0),
-        myInnerHtml(
-          "B_SETUMEI",
-          "1 Star Crumb adds +5 seeking damage.<BR>2 Star Crumb adds +10 seeking damage.<BR>3 Star Crumb adds +40 seeking damage.<BR>If is made by a Top 10 Blacksmith/Whitemisth Rank adds +10 seeking damage.",
-          0,
-        ));
-      return;
-    }
-    if (201 <= a && a <= 204) {
-      (myInnerHtml("ITEM_TITLE", m_Card[a][2], 0),
-        myInnerHtml("B_SETUMEI", "Weapons " + v_Element[a - 200] + " to attribute", 0));
-      return;
-    }
-    for (
-      myInnerHtml("ITEM_TITLE", m_Card[a][2] + " Card", 0), CBIstr = "", e = 4;
-      m_Card[a][e] != 0;
-      e += 2
-    )
-      Item_Setumei(m_Card[a][e], m_Card[a][e + 1]);
-    m_Card[a][3] != 0 && (CBIstr += m_Card[a][3] + "<BR>");
-    for (var r = 0, e = 4; m_Card[a][e] != 0; e += 2)
-      if (m_Card[a][e] == 90) {
-        CBIstr += "<HR><B>When equipping " + SetCardName(m_Card[a][e + 1]);
-        for (var n = w_SC[m_Card[a][e + 1]][0]; m_Card[a][e + 2] != 0 && r == 0;)
-          n == w_SE[m_Card[a][e + 3]][0]
-            ? ((CBIstr += " or<BR>" + SetCardName(m_Card[a][e + 3])), (e += 2))
-            : (r = 1);
-        ((CBIstr += " at the same time:</B><BR>"), (r = 0));
-        for (var o = 4; m_Card[n][o] != 0; o += 2) Item_Setumei(m_Card[n][o], m_Card[n][o + 1]);
-        (m_Card[n][3] != 0 && (CBIstr += m_Card[n][3] + "<BR>"), (CBIstr += ""));
-      }
-    myInnerHtml("B_SETUMEI", CBIstr, 0);
+    (myInnerHtml("ITEM_TITLE", "Very Strong or Top10", 0),
+      myInnerHtml(
+        "B_SETUMEI",
+        "1 Star Crumb adds +5 seeking damage.<BR>2 Star Crumb adds +10 seeking damage.<BR>3 Star Crumb adds +40 seeking damage.<BR>If is made by a Top 10 Blacksmith/Whitemisth Rank adds +10 seeking damage.",
+        0,
+      ));
+    return;
   }
+  if (201 <= a && a <= 204) {
+    (myInnerHtml("ITEM_TITLE", m_Card[a][2], 0),
+      myInnerHtml("B_SETUMEI", "Weapons " + v_Element[a - 200] + " to attribute", 0));
+    return;
+  }
+  for (
+    myInnerHtml("ITEM_TITLE", m_Card[a][2] + " Card", 0), CBIstr = "", e = 4;
+    m_Card[a][e] != 0;
+    e += 2
+  )
+    Item_Setumei(m_Card[a][e], m_Card[a][e + 1]);
+  m_Card[a][3] != 0 && (CBIstr += m_Card[a][3] + "<BR>");
+  for (var r = 0, e = 4; m_Card[a][e] != 0; e += 2)
+    if (m_Card[a][e] == 90) {
+      CBIstr += "<HR><B>When equipping " + SetCardName(m_Card[a][e + 1]);
+      for (var n = w_SC[m_Card[a][e + 1]][0]; m_Card[a][e + 2] != 0 && r == 0;)
+        n == w_SE[m_Card[a][e + 3]][0]
+          ? ((CBIstr += " or<BR>" + SetCardName(m_Card[a][e + 3])), (e += 2))
+          : (r = 1);
+      ((CBIstr += " at the same time:</B><BR>"), (r = 0));
+      for (var o = 4; m_Card[n][o] != 0; o += 2) Item_Setumei(m_Card[n][o], m_Card[n][o + 1]);
+      (m_Card[n][3] != 0 && (CBIstr += m_Card[n][3] + "<BR>"), (CBIstr += ""));
+    }
+  myInnerHtml("B_SETUMEI", CBIstr, 0);
 }
 ((w_SC = [
   [429, 235, 306, "NULL"],

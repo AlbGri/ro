@@ -8,7 +8,6 @@
   (w_AG = [100, 95, 90, 86, 82, 79, 76, 74, 72, 71, 70]),
   (n_FeatSW = 0),
   (n_LogSW = 0),
-  (n_itemSW = 0),
   (n_SkillSW = 0),
   (n_Skill3SW = 0),
   (n_Skill4SW = 0),

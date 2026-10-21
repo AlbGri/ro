@@ -30673,70 +30673,50 @@ ItemMax = itemData.length - 1;
 function Click_Item(e) {
   (c.A_Kakutyou.value == 28 && preparaAltreInfo(), StAllCalc(), ClickB_Item(e));
 }
+// La scheda dell'ultimo oggetto o carta scelto; con "SW" la ridisegna. Nell'originale "SW" la
+// mostrava o nascondeva a ogni chiamata, e le chiamate dell'avvio la lasciavano spenta
 function ClickB_Item(e) {
-  if (
-    (e == "SW" && (n_itemSW ? (n_itemSW = 0) : (n_itemSW = 1)),
-    documento
-      .getElementById("item-disclosure")
-      ?.setAttribute("aria-expanded", String(n_itemSW == 1)),
-    n_itemSW == 1 && e == "SW" && Item_or_Card == "Card")
-  ) {
+  if (e == "SW" && Item_or_Card == "Card") {
     Card(ItemCardNumberCheck);
     return;
   }
-  if (
-    (e != "SW" && ((Item_or_Card = "Item"), (ItemCardNumberCheck = e)),
-    ActiveSkillSetPlus(),
-    e == "SW")
-  ) {
-    if (n_itemSW == 0) {
-      for (myInnerHtml("ITEM_TITLE", "Item Data", 0), s = 1; s <= 4; s++)
-        myInnerHtml("ITEM" + s, "", 0);
-      (myInnerHtml("ITEM_W_LV", "", 0),
-        myInnerHtml("ITEM_DATA", "", 0),
-        myInnerHtml("ITEM_LV", "", 0),
-        myInnerHtml("ITEM_WAIT", "", 0),
-        myInnerHtml("B_SETUMEI", "", 0));
-      return;
+  e != "SW" && ((Item_or_Card = "Item"), (ItemCardNumberCheck = e));
+  ActiveSkillSetPlus();
+  e == "SW" && (e = ItemCardNumberCheck);
+  for (
+    myInnerHtml("ITEM_TITLE", itemData[e].name + " [" + itemData[e].slots + "]", 0),
+      myInnerHtml("ITEM3", "Req. Lvl:", 0),
+      myInnerHtml("ITEM4", "Weight:", 0),
+      itemData[e].equipType < 50
+        ? (myInnerHtml("ITEM1", "ATK:", 0),
+          myInnerHtml("ITEM2", "Weapon Lvl:", 0),
+          myInnerHtml("ITEM_W_LV", itemData[e].weaponLevel, 0))
+        : (myInnerHtml("ITEM1", "DEF:", 0),
+          myInnerHtml("ITEM2", "-", 0),
+          myInnerHtml("ITEM_W_LV", "-", 0)),
+      myInnerHtml("ITEM_DATA", itemData[e].attackOrDefense, 0),
+      myInnerHtml("ITEM_LV", itemData[e].requiredLevel, 0),
+      myInnerHtml("ITEM_WAIT", itemData[e].weight, 0),
+      CBIstr = "",
+      s = 0;
+    s < itemData[e].bonuses.length && itemData[e].bonuses[s].id > 0;
+    s++
+  )
+    Item_Setumei(itemData[e].bonuses[s].id, itemData[e].bonuses[s].value);
+  itemData[e].description != 0 && (CBIstr += itemData[e].description + "<BR>");
+  for (var bs = itemData[e].bonuses, a = 0, s = 0; s < bs.length; s++)
+    if (bs[s].id == 90) {
+      CBIstr += "<HR><B>When equipping " + SetEquipName(bs[s].value);
+      for (var t = w_SE[bs[s].value][0]; s + 1 < bs.length && a == 0;)
+        t == w_SE[bs[s + 1].value][0]
+          ? ((CBIstr += " or<BR>" + SetEquipName(bs[s + 1].value)), s++)
+          : (a = 1);
+      ((CBIstr += " at the same time:</B><BR>"), (a = 0));
+      for (const x of itemData[t].bonuses) Item_Setumei(x.id, x.value);
+      (itemData[t].description != 0 && (CBIstr += itemData[t].description + "<BR>"),
+        (CBIstr += ""));
     }
-    e = ItemCardNumberCheck;
-  }
-  if (n_itemSW != 0) {
-    for (
-      myInnerHtml("ITEM_TITLE", itemData[e].name + " [" + itemData[e].slots + "]", 0),
-        myInnerHtml("ITEM3", "Req. Lvl:", 0),
-        myInnerHtml("ITEM4", "Weight:", 0),
-        itemData[e].equipType < 50
-          ? (myInnerHtml("ITEM1", "ATK:", 0),
-            myInnerHtml("ITEM2", "Weapon Lvl:", 0),
-            myInnerHtml("ITEM_W_LV", itemData[e].weaponLevel, 0))
-          : (myInnerHtml("ITEM1", "DEF:", 0),
-            myInnerHtml("ITEM2", "-", 0),
-            myInnerHtml("ITEM_W_LV", "-", 0)),
-        myInnerHtml("ITEM_DATA", itemData[e].attackOrDefense, 0),
-        myInnerHtml("ITEM_LV", itemData[e].requiredLevel, 0),
-        myInnerHtml("ITEM_WAIT", itemData[e].weight, 0),
-        CBIstr = "",
-        s = 0;
-      s < itemData[e].bonuses.length && itemData[e].bonuses[s].id > 0;
-      s++
-    )
-      Item_Setumei(itemData[e].bonuses[s].id, itemData[e].bonuses[s].value);
-    itemData[e].description != 0 && (CBIstr += itemData[e].description + "<BR>");
-    for (var bs = itemData[e].bonuses, a = 0, s = 0; s < bs.length; s++)
-      if (bs[s].id == 90) {
-        CBIstr += "<HR><B>When equipping " + SetEquipName(bs[s].value);
-        for (var t = w_SE[bs[s].value][0]; s + 1 < bs.length && a == 0;)
-          t == w_SE[bs[s + 1].value][0]
-            ? ((CBIstr += " or<BR>" + SetEquipName(bs[s + 1].value)), s++)
-            : (a = 1);
-        ((CBIstr += " at the same time:</B><BR>"), (a = 0));
-        for (const x of itemData[t].bonuses) Item_Setumei(x.id, x.value);
-        (itemData[t].description != 0 && (CBIstr += itemData[t].description + "<BR>"),
-          (CBIstr += ""));
-      }
-    myInnerHtml("B_SETUMEI", CBIstr, 0);
-  }
+  myInnerHtml("B_SETUMEI", CBIstr, 0);
 }
 function setShieldWeight(e) {
   ((1 * c.A_ActiveSkill.value == 159 ||

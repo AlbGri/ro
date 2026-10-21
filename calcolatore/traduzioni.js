@@ -46,7 +46,6 @@ const ESATTE = {
   "Immesurable": "Non misurabile",
   "Left Hand:": "Mano sinistra",
   "Left Hand: ": "Mano sinistra",
-  "Item Data": "Nessun oggetto",
   "Weapon Lvl:": "Livello arma:",
   "Req. Lvl:": "Livello richiesto:",
   "Weight:": "Peso:",
