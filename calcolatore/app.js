@@ -433,7 +433,7 @@ function ricollega() {
 
 const elementiUscita = [...document.querySelectorAll("[data-uscita]")];
 const righe = [...document.querySelectorAll("[data-riga]")];
-const contenitori = [...document.querySelectorAll("[data-contenitore]")];
+const elementiContenitore = [...document.querySelectorAll("[data-contenitore]")];
 const elementiPannello = [...document.querySelectorAll("[data-pannello]")];
 const passive = document.getElementById("passive");
 const manoSinistra = document.getElementById("mano-sinistra");
@@ -448,9 +448,20 @@ function aggiornaUscite() {
   for (const el of righe) el.hidden = !window.testo(el.dataset.riga);
 }
 
-// contenitori del motore che cambiano forma (campi della skill scelta, mano sinistra...)
+// contenitori del motore che cambiano forma (campi della skill scelta, mano sinistra...): la
+// descrizione del motore (contenitori in motore/campi.js), come le voci di un pannello. Altre
+// informazioni sono ancora HTML del motore
 function aggiornaContenitori() {
-  for (const el of contenitori) {
+  for (const el of elementiContenitore) {
+    if (!el.dataset.contenitore.startsWith("A_Kakutyou")) {
+      const voci = window.contenitori[el.dataset.contenitore] || [];
+      const firma = JSON.stringify(firmaVoci(voci));
+      if (el._html !== firma) {
+        el._html = firma;
+        el.replaceChildren(...voci.filter(visibile).map(voceDescritta));
+      }
+      continue;
+    }
     const v = doc.getElementById(el.dataset.contenitore);
     const html = v ? v.innerHTML : "";
     if (el._html !== html) {
@@ -459,7 +470,7 @@ function aggiornaContenitori() {
       else el.replaceChildren();
     }
   }
-  manoSinistra.hidden = !doc.getElementById("A_w2")?.figli.length;
+  manoSinistra.hidden = !window.contenitori.A_w2?.length;
 }
 
 // contenuto libero: coppie di etichetta e controllo dove ci sono controlli, testo altrove
@@ -616,11 +627,12 @@ function voceDescritta(v) {
   l.appendChild(ctrl);
   return l;
 }
-// cio' che cambia il disegno: voci visibili, etichette, scelte con ricerca o tendine
+// cio' che cambia il disegno: voci visibili, etichette, tipo dei campi, scelte con ricerca o tendine
+const firmaVoci = (voci) => voci.map((v) => visibile(v) && [
+  etichettaDi(v), htmlDi(v.nota), (v.riga || []).map(htmlDi), campiDi(v).map((n) => virtuale(n).type + (virtuale(n)._lista().length > LUNGO)),
+]);
 function firmaPannello(gruppi) {
-  return JSON.stringify(gruppi.map((g) => [htmlDi(g.titolo), g.voci.map((v) => visibile(v) && [
-    etichettaDi(v), htmlDi(v.nota), (v.riga || []).map(htmlDi), campiDi(v).map((n) => virtuale(n)._lista().length > LUNGO),
-  ])]));
+  return JSON.stringify(gruppi.map((g) => [htmlDi(g.titolo), firmaVoci(g.voci)]));
 }
 function disegnaPannello(gruppi, corpo) {
   const parti = [];
@@ -662,19 +674,15 @@ function aggiornaPannelli() {
   }
 }
 
-// skill passive: P_SkillN e' il nome, P_SkillNs il controllo
+// skill passive: il contenitore P_Skill<n>s ha la voce del posto n; senza nome non si mostra
 function aggiornaPassive() {
-  const parti = [];
-  for (let i = 0; i <= 21; i++) {
-    const nome = doc.getElementById("P_Skill" + i);
-    const cella = doc.getElementById("P_Skill" + i + "s");
-    if (!nome || !cella || !nome.textContent.trim() || !contieneControlli(cella)) continue;
-    parti.push({ nome, cella });
-  }
-  const firmaPassive = parti.map((p) => p.nome.innerHTML + "|" + p.cella.innerHTML).join("#");
-  if (passive._html === firmaPassive) return;
-  passive._html = firmaPassive;
-  passive.replaceChildren(...parti.flatMap((p) => coppie(gettoni(p.cella), p.nome.figli.slice())).map(voce));
+  const voci = [];
+  for (let i = 0; i <= 21; i++)
+    for (const v of window.contenitori["P_Skill" + i + "s"] || []) if (testoHtml(etichettaDi(v))) voci.push(v);
+  const firma = JSON.stringify(firmaVoci(voci));
+  if (passive._html === firma) return;
+  passive._html = firma;
+  passive.replaceChildren(...voci.map(voceDescritta));
 }
 
 function sincronizza() {

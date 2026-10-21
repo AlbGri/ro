@@ -200,8 +200,7 @@ function scriviBuild() {
   // classe senza 999 fra le prime 20 voci di m_JobBuff scrive le skill ma non quante sono
   n_A_JobSet();
   var fine = m_JobBuff[n_A_JOB].slice(0, 20).indexOf(999);
-  for (k = 0; k < (fine < 0 ? 20 : fine); k++)
-    metti(89 + k, documento.getElementById("A_skill" + k).value, 1);
+  for (k = 0; k < (fine < 0 ? 20 : fine); k++) metti(89 + k, c["A_skill" + k].value, 1);
   if (fine >= 0) metti(88, fine, 1);
 
   var S = SEZIONI_BUILD,
@@ -356,7 +355,7 @@ function leggiBuild(build) {
   c.A_HSE_HEAD1.value = x(82, 2);
   c.A_BASTION_HEAD.value = Math.floor(x(84, 2) / 8);
   c.A_BASTION_SHOES.value = x(84, 2) % 8;
-  for (k = 0; k < x(88); k++) documento.getElementById("A_skill" + k).value = x(89 + k);
+  for (k = 0; k < x(88); k++) c["A_skill" + k].value = x(89 + k);
 
   // sezioni dei buff, in sequenza dalla posizione 110
   var p = 110;
@@ -426,11 +425,7 @@ function leggiBuild(build) {
   ];
   if (doppio && bolt.includes(n_A_ActiveSkill)) {
     var r = 1 * doppio + 3;
-    myInnerHtml(
-      "AASkill",
-      'Double Bolt chance: <select name="SkillSubNum" onChange="calc()"></select>',
-      0,
-    );
+    campoSkill("AASkill", "SkillSubNum", "Double Bolt chance: ");
     c.SkillSubNum.options[0] = new documento.Opzione("No chance (0%)", 0);
     c.SkillSubNum.options[1] = new documento.Opzione("Average chance (" + 10 * r + "%)", r);
     c.SkillSubNum.options[2] = new documento.Opzione("Max chance (100%)", 10);

@@ -275,8 +275,7 @@ var CAMPI_CANTI = [
 // skill della classe e pannelli dei buff aperti (le posizioni non lette restano com'erano)
 function leggiPannelli() {
   n_A_Buf = [];
-  for (var i = 0; m_JobBuff[n_A_JOB][i] != 999; i++)
-    n_A_Buf[i] = 1 * documento.getElementById("A_skill" + i).value;
+  for (var i = 0; m_JobBuff[n_A_JOB][i] != 999; i++) n_A_Buf[i] = 1 * c["A_skill" + i].value;
   if (n_SkillSW)
     leggiCampi(n_A_Buf2, 0, serieCampi("A2_Skill", 0, 15).concat(serieCampi("A5_Skill", 0, 5)));
   if (n_Skill3SW) {

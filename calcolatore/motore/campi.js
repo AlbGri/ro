@@ -14,7 +14,7 @@ function campo(nome, tipo, gestore, imp) {
   if (imp.spuntato) attributi.checked = "";
   if (imp.disabilitato) attributi.disabled = "";
   if (imp.nascosto) attributi.hidden = "";
-  if (imp.valore !== undefined) attributi.value = imp.valore;
+  if (imp.valore !== undefined) attributi.value = String(imp.valore);
   var el = new Elemento(documento, tipo === "select" ? "select" : "input", attributi);
   el._funzione = gestore;
   var opzioni = function (dentro, lista) {
@@ -69,6 +69,22 @@ function chiudiPannello(radice) {
     if (v.id) delete uscite[v.id];
   });
   delete pannelli[radice];
+}
+
+// Parti che il motore riempie di campi secondo le scelte (skill passive, campo in piu' della
+// skill, seconda arma): contenitori[id] e' la lista delle voci, come in un pannello. contenitore
+// toglie i campi delle voci di prima e crea i nuovi; senza voci svuota la parte. Il gestore di
+// una voce e' il suo o nessuno. Un'etichetta con id si scrive nel risultato e li' resta
+var contenitori = {};
+function contenitore(id, voci) {
+  (contenitori[id] || []).forEach(function (v) {
+    togliCampo(v.campo);
+  });
+  contenitori[id] = voci || [];
+  contenitori[id].forEach(function (v) {
+    campo(v.campo, v.tipo || "select", v.gestore || null, v);
+    if (v.id) scrivi(v.id, v.etichetta || "");
+  });
 }
 
 // Una scelta e' il valore nel campo, poi il suo gestore. Il ricalcolo (calc) lo chiede chi

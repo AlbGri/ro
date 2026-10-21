@@ -162,6 +162,52 @@ function restrictCardslot(e) {
       (c.A_acces2_card.disabled = !1));
   calc();
 }
+// la skill passiva al posto n: nome (risultato P_Skill<n>) e livello (campo A_skill<n>); il
+// gestore, se non e' detto, ricalcola le statistiche
+function passiva(n, nome, gestore) {
+  contenitore("P_Skill" + n + "s", [
+    {
+      campo: "A_skill" + n,
+      id: "P_Skill" + n,
+      etichetta: nome,
+      gestore:
+        gestore ||
+        function () {
+          StAllCalc();
+        },
+    },
+  ]);
+}
+// i campi della seconda arma oltre all'arma: raffinamento, combinazione di carte, carte
+var CONTENITORI_SINISTRA = [
+  "A_weapon2refine",
+  "A_weapon2_cardshort",
+  "nA_weapon2_c1",
+  "nA_weapon2_c2",
+  "nA_weapon2_c3",
+  "nA_weapon2_c4",
+];
+function svuotaSinistra() {
+  CONTENITORI_SINISTRA.forEach(function (id) {
+    contenitore(id);
+  });
+}
+// il campo in piu' di una skill (SkillSubNum per la tua, BSkillSubNum per quella del nemico,
+// nel contenitore dove): una tendina che ricalcola o, con valore, una casella di testo senza
+// gestore (il calcolo partiva scrivendo, onkeyup, che la pagina non esegue)
+function campoSkill(dove, nome, etichetta, valore) {
+  contenitore(dove, [
+    valore === undefined
+      ? {
+          campo: nome,
+          etichetta: etichetta,
+          gestore: function () {
+            calc();
+          },
+        }
+      : { campo: nome, tipo: "testo", etichetta: etichetta, valore: valore },
+  ]);
+}
 function myInnerHtml(e, _, n) {
   if (n == 0) {
     for (wIHOB = documento.getElementById(e); wIHOB.hasChildNodes();)
@@ -218,8 +264,7 @@ function ClickJob(e) {
           (c.A2_Skill11.disabled = !0),
           (c.A2_Skill11.value = 0),
           (n_A_Buf2[11] = 0))
-        : (scrivi("AS11_1", skillName(164)),
-          (c.A2_Skill11.disabled = !1))),
+        : (scrivi("AS11_1", skillName(164)), (c.A2_Skill11.disabled = !1))),
       n_Skill7SW && SetSpeedPotionOptions(),
       n_A_JOB != 20 && (SuperNoviceFullWeaponCHECK = 0),
       SuperNoviceFullWeaponCHECK ? (m_JobASPD[20][7] = 1.6) : (m_JobASPD[20][7] = 0),
@@ -231,60 +276,31 @@ function ClickJob(e) {
   )
     switch (m_JobBuff[e][_]) {
       case 385:
-        (myInnerHtml("P_Skill" + _, m_Skill[m_JobBuff[e][_]][2], 0),
-          myInnerHtml(
-            "P_Skill" + _ + "s",
-            "<select name=A_skill" +
-              _ +
-              " id=A_skill" +
-              _ +
-              ' onChange="StAllCalc() | WeaponSet(20) | restrictCardslot(1)"></select>',
-            0,
-          ));
+        passiva(_, m_Skill[m_JobBuff[e][_]][2], function () {
+          StAllCalc();
+          WeaponSet(20);
+          restrictCardslot(1);
+        });
         break;
       case 392:
-        (myInnerHtml("P_Skill" + _, skillName(m_Skill[m_JobBuff[e][_]][0]), 0),
-          myInnerHtml(
-            "P_Skill" + _ + "s",
-            "<select name=A_skill" +
-              _ +
-              " id=A_skill" +
-              _ +
-              ' onChange="StAllCalc()" style="width:70px;"></select>',
-            0,
-          ),
-          n_Reborn == 0 && myInnerHtml("P_Skill" + _, "", 0));
+        (passiva(_, skillName(m_Skill[m_JobBuff[e][_]][0])),
+          n_Reborn == 0 && scrivi("P_Skill" + _, ""));
         break;
       case 441:
-        (myInnerHtml("P_Skill" + _, m_Skill[m_JobBuff[e][_]][2], 0),
-          myInnerHtml(
-            "P_Skill" + _ + "s",
-            "<select name=A_skill" +
-              _ +
-              " id=A_skill" +
-              _ +
-              ' onChange="StAllCalc() | ClickActiveSkill2() | calc()"></select>',
-            0,
-          ),
-          n_Reborn == 0 && myInnerHtml("P_Skill" + _, "", 0));
+        (passiva(_, m_Skill[m_JobBuff[e][_]][2], function () {
+          StAllCalc();
+          ClickActiveSkill2();
+          calc();
+        }),
+          n_Reborn == 0 && scrivi("P_Skill" + _, ""));
         break;
       case SKILLID.IMPOSITIO_MANUS:
-        (myInnerHtml("P_Skill" + _, skillName(SKILLID.IMPOSITIO_MANUS) + " (passive)", 0),
-          myInnerHtml(
-            "P_Skill" + _ + "s",
-            "<select name=A_skill" + _ + " id=A_skill" + _ + " onChange=StAllCalc()></select>",
-            0,
-          ));
+        passiva(_, skillName(SKILLID.IMPOSITIO_MANUS) + " (passive)");
         break;
       default:
         m_JobBuff[e][_] != 999
-          ? (myInnerHtml("P_Skill" + _, skillName(m_Skill[m_JobBuff[e][_]][0]), 0),
-            myInnerHtml(
-              "P_Skill" + _ + "s",
-              "<select name=A_skill" + _ + " id=A_skill" + _ + " onChange=StAllCalc()></select>",
-              0,
-            ))
-          : (myInnerHtml("P_Skill" + _, "", 0), myInnerHtml("P_Skill" + _ + "s", "", 0));
+          ? passiva(_, skillName(m_Skill[m_JobBuff[e][_]][0]))
+          : (scrivi("P_Skill" + _, ""), contenitore("P_Skill" + _ + "s"));
     }
   for (var o = 0; o <= 20; o++)
     if (
@@ -297,10 +313,10 @@ function ClickJob(e) {
         ],
       ))
     )
-      (((t = documento.getElementById("A_skill" + o)).options[0] = new documento.Opzione("off", 0)),
+      (((t = c["A_skill" + o]).options[0] = new documento.Opzione("off", 0)),
         (t.options[1] = new documento.Opzione("on", 1)));
     else if (a != 999) {
-      var t = documento.getElementById("A_skill" + o);
+      var t = c["A_skill" + o];
       for (_ = 10; _ >= 0; _--) t.options[_] = null;
       for (_ = 0; _ <= m_Skill[m_JobBuff[e][o]][1]; _++) t.options[_] = new documento.Opzione(_, _);
       if (m_Skill[m_JobBuff[e][o]][0] == 392) {
@@ -374,7 +390,7 @@ function Bskill(e) {
         m_Skill[m_Monster[c.B_Enemy.value][i]][2] + " Lvl " + m_Monster[c.B_Enemy.value][i + 1],
         m_Monster[c.B_Enemy.value][i],
       )));
-  (myInnerHtml("BBSkill", "", 0), n_A_Equip[7] == 957 && !e && calc());
+  (contenitore("BBSkill"), n_A_Equip[7] == 957 && !e && calc());
 }
 function scheduleMonsterCalculation() {
   (monsterCalculationTimer && window.clearTimeout(monsterCalculationTimer),
@@ -417,96 +433,8 @@ function ClickWeaponType(e) {
     n_A_JobSet(),
     (n_A_JOB != 8 && n_A_JOB != 22) || e == 11)
   )
-    (scrivi("A_SobWeaponName", ""),
-      myInnerHtml("A_w2", "", 0),
-      myInnerHtml("A_weapon2refine", "", 0),
-      myInnerHtml("A_weapon2_cardshort", "", 0),
-      myInnerHtml("nA_weapon2_c1", "", 0),
-      myInnerHtml("nA_weapon2_c2", "", 0),
-      myInnerHtml("nA_weapon2_c3", "", 0),
-      myInnerHtml("nA_weapon2_c4", "", 0),
-      (n_Nitou = 0),
-      (c.A_weapon1.style.width = "auto"),
-      (c.A_cardshort.style.width = "auto"),
-      (c.A_weapon1_card1.style.width = "auto"),
-      (c.A_weapon1_card2.style.width = "auto"),
-      (c.A_weapon1_card3.style.width = "auto"),
-      (c.A_weapon1_card4.style.width = "auto"),
-      (c.A_head1.style.width = "200px"),
-      (c.A_head2.style.width = "200px"),
-      (c.A_head3.style.width = "200px"),
-      (c.A_left.style.width = "200px"),
-      (c.A_body.style.width = "200px"),
-      (c.A_shoulder.style.width = "200px"),
-      (c.A_shoes.style.width = "200px"),
-      (c.A_acces1.style.width = "200px"),
-      (c.A_acces2.style.width = "200px"),
-      (c.A_head1_card.style.width = "auto"),
-      (c.A_head2_card.style.width = "auto"),
-      (c.A_left_card.style.width = "auto"),
-      (c.A_body_card.style.width = "auto"),
-      (c.A_shoulder_card.style.width = "auto"),
-      (c.A_shoes_card.style.width = "auto"),
-      (c.A_acces1_card.style.width = "auto"),
-      (c.A_acces2_card.style.width = "auto"));
-  else if (n_Nitou == 0) {
-    (scrivi("A_SobWeaponName", "Left Hand: "),
-      myInnerHtml(
-        "A_w2",
-        '<select name="A_weapon2" style="width:185px;" onchange="ClickWeaponType2(this[this.selectedIndex].value) | Click_Item(this[this.selectedIndex].value)|restrictCardslot(1)"><option value="0">(Fist or Shield)</option></select>',
-        0,
-      ),
-      WeaponSetLeft(n_A_JOB));
-    var a = Math.max(
-      documento.documentElement.clientWidth,
-      documento.body.scrollWidth,
-      documento.documentElement.scrollWidth,
-      documento.body.offsetWidth,
-      documento.documentElement.offsetWidth,
-    );
-    (1262 <= a && a < 1480) || a < 1013
-      ? ((c.A_weapon1.style.width = "95%"),
-        (c.A_cardshort.style.width = "95%"),
-        (c.A_weapon1_card1.style.width = "95%"),
-        (c.A_weapon1_card2.style.width = "95%"),
-        (c.A_weapon1_card3.style.width = "95%"),
-        (c.A_weapon1_card4.style.width = "95%"),
-        (c.A_head1.style.width = "47%"),
-        (c.A_head2.style.width = "53%"),
-        (c.A_head3.style.width = "53%"),
-        (c.A_left.style.width = "47%"),
-        (c.A_body.style.width = "47%"),
-        (c.A_shoulder.style.width = "47%"),
-        (c.A_shoes.style.width = "47%"),
-        (c.A_acces1.style.width = "53%"),
-        (c.A_acces2.style.width = "53%"),
-        (c.A_HSE_HEAD1.style.width = "43%"),
-        (c.A_left_card.style.width = "37%"),
-        (c.A_body_card.style.width = "37%"),
-        (c.A_shoes_card.style.width = "37%"),
-        (c.A_acces1_card.style.width = "43%"),
-        (c.A_acces2_card.style.width = "43%"))
-      : ((c.A_weapon1.style.width = "auto"),
-        (c.A_cardshort.style.width = "auto"),
-        (c.A_weapon1_card1.style.width = "auto"),
-        (c.A_weapon1_card2.style.width = "auto"),
-        (c.A_weapon1_card3.style.width = "auto"),
-        (c.A_weapon1_card4.style.width = "auto"),
-        (c.A_head1.style.width = "200px"),
-        (c.A_head2.style.width = "200px"),
-        (c.A_head3.style.width = "200px"),
-        (c.A_left.style.width = "200px"),
-        (c.A_body.style.width = "200px"),
-        (c.A_shoulder.style.width = "200px"),
-        (c.A_shoes.style.width = "200px"),
-        (c.A_acces1.style.width = "200px"),
-        (c.A_acces2.style.width = "200px"),
-        (c.A_left_card.style.width = "auto"),
-        (c.A_body_card.style.width = "auto"),
-        (c.A_shoes_card.style.width = "auto"),
-        (c.A_acces1_card.style.width = "auto"),
-        (c.A_acces2_card.style.width = "auto"));
-  }
+    (scrivi("A_SobWeaponName", ""), contenitore("A_w2"), svuotaSinistra(), (n_Nitou = 0));
+  else n_Nitou == 0 && (scrivi("A_SobWeaponName", "Left Hand: "), WeaponSetLeft(n_A_JOB));
   ((n_A_Equip[0] = 1 * c.A_weapon1.value),
     UpdateSpiralPierceWeaponWeight(),
     ActiveSkillSetPlus(),
@@ -516,53 +444,47 @@ function ClickWeaponType2(e) {
   if ((n_A_JobSet(), e != 0)) {
     if (n_Nitou == 0) {
       for (
-        myInnerHtml(
-          "A_weapon2refine",
-          'Refine (Left): <select name="A_Weapon2_refine" onChange = "StAllCalc()"></select>',
-          0,
-        ),
+        contenitore("A_weapon2refine", [
+          {
+            campo: "A_Weapon2_refine",
+            etichetta: "Refine (Left): ",
+            gestore: function () {
+              StAllCalc();
+            },
+          },
+        ]),
           i = 0;
         i <= 10;
         i++
       )
         c.A_Weapon2_refine.options[i] = new documento.Opzione("+" + i, i);
       for (
-        myInnerHtml(
-          "A_weapon2_cardshort",
-          '<select name="A_cardshortLeft" onChange="Setm_CardShortLeft()|Click_Card()|ActiveSkillSetPlus()"></select>',
-          0,
-        ),
+        contenitore("A_weapon2_cardshort", [
+          {
+            campo: "A_cardshortLeft",
+            gestore: function () {
+              Setm_CardShortLeft();
+              Click_Card();
+              ActiveSkillSetPlus();
+            },
+          },
+        ]),
           c.A_cardshortLeft.options[0] = new documento.Opzione("(card shortcuts)", 0),
           i = 1;
         i <= 50;
         i++
       )
         c.A_cardshortLeft.options[i] = new documento.Opzione(m_CardShort[i + 1][0], i + 1);
-      for (
-        myInnerHtml(
-          "nA_weapon2_c1",
-          '<select name="A_weapon2_card1" onChange="Click_Card(this[this.selectedIndex].value)"></select>',
-          0,
-        ),
-          myInnerHtml(
-            "nA_weapon2_c2",
-            '<select name="A_weapon2_card2" onChange="Click_Card(this[this.selectedIndex].value)"></select>',
-            0,
-          ),
-          myInnerHtml(
-            "nA_weapon2_c3",
-            '<select name="A_weapon2_card3" onChange="Click_Card(this[this.selectedIndex].value)"></select>',
-            0,
-          ),
-          myInnerHtml(
-            "nA_weapon2_c4",
-            '<select name="A_weapon2_card4" onChange="Click_Card(this[this.selectedIndex].value)"></select>',
-            0,
-          ),
-          i = 0;
-        m_CardSort[0][i] != "NULL";
-        i++
-      )
+      for (var k = 1; k <= 4; k++)
+        contenitore("nA_weapon2_c" + k, [
+          {
+            campo: "A_weapon2_card" + k,
+            gestore: function () {
+              Click_Card(this.value);
+            },
+          },
+        ]);
+      for (i = 0; m_CardSort[0][i] != "NULL"; i++)
         c.A_weapon2_card1.options[i] = new documento.Opzione(
           m_Card[m_CardSort[0][i]][2],
           m_Card[m_CardSort[0][i]][0],
@@ -581,37 +503,9 @@ function ClickWeaponType2(e) {
             m_Card[m_CardSort[1][i]][0],
           )));
       c.A_weapon2_card4.options[1] = new documento.Opzione("* Top10 ranked", 106);
-      var _ = Math.max(
-        documento.documentElement.clientWidth,
-        documento.body.scrollWidth,
-        documento.documentElement.scrollWidth,
-        documento.body.offsetWidth,
-        documento.documentElement.offsetWidth,
-      );
-      (1262 <= _ && _ < 1480) || _ < 1013
-        ? ((c.A_weapon2.style.width = "95%"),
-          (c.A_cardshortLeft.style.width = "95%"),
-          (c.A_weapon2_card1.style.width = "95%"),
-          (c.A_weapon2_card2.style.width = "95%"),
-          (c.A_weapon2_card3.style.width = "95%"),
-          (c.A_weapon2_card4.style.width = "95%"))
-        : ((c.A_weapon2.style.width = "auto"),
-          (c.A_cardshortLeft.style.width = "auto"),
-          (c.A_weapon2_card1.style.width = "auto"),
-          (c.A_weapon2_card2.style.width = "auto"),
-          (c.A_weapon2_card3.style.width = "auto"),
-          (c.A_weapon2_card4.style.width = "auto"));
     }
     n_Nitou = 1;
-  } else
-    ((c.A_weapon2.value = 0),
-      myInnerHtml("A_weapon2refine", "", 0),
-      myInnerHtml("A_weapon2_cardshort", "", 0),
-      myInnerHtml("nA_weapon2_c1", "", 0),
-      myInnerHtml("nA_weapon2_c2", "", 0),
-      myInnerHtml("nA_weapon2_c3", "", 0),
-      myInnerHtml("nA_weapon2_c4", "", 0),
-      (n_Nitou = 0));
+  } else ((c.A_weapon2.value = 0), svuotaSinistra(), (n_Nitou = 0));
   n_Nitou &&
     ((n_A_Equip[1] = 1 * c.A_weapon2.value), ActiveSkillSetPlus(), ClickB_Item(n_A_Equip[1]));
 }
@@ -643,116 +537,53 @@ function ClickActiveSkill() {
 }
 function BClickAtkSkill() {
   if ((n_B_AtkSkill = 1 * c.B_AtkSkill.value) == 444 || n_B_AtkSkill == 445)
-    for (
-      myInnerHtml(
-        "BBSkill",
-        'Players in Range: <select name="BSkillSubNum" onChange="calc()"></select>',
-        0,
-      ),
-        i = 1;
-      i <= 99;
-      i++
-    )
+    for (campoSkill("BBSkill", "BSkillSubNum", "Players in Range: "), i = 1; i <= 99; i++)
       c.BSkillSubNum.options[i - 1] = new documento.Opzione(i, i);
   else if (n_B_AtkSkill == 489)
-    myInnerHtml(
-      "BBSkill",
-      'Enemy Remaining HP: <input type="text" inputmode="numeric" name="BSkillSubNum" onkeypress="return isNumeric(event)" onkeyup="calc()" value="' +
-        targetData[6] +
-        '" size="7" class="center">',
-      0,
-    );
+    campoSkill("BBSkill", "BSkillSubNum", "Enemy Remaining HP: ", targetData[6]);
   else if (n_B_AtkSkill == 125) {
-    myInnerHtml(
-      "BBSkill",
-      'Meteors landing on Player: <select name="BSkillSubNum" onChange="calc()"></select>',
-      0,
-    );
+    campoSkill("BBSkill", "BSkillSubNum", "Meteors landing on Player: ");
     var e;
     e = m_Monster[targetData[0]][2 * c.B_AtkSkill.selectedIndex + 22];
     var _ = 2 + Math.floor(e / 2);
     for (i = 1; i <= _; i++) c.BSkillSubNum.options[i - 1] = new documento.Opzione(i, i);
     c.BSkillSubNum.value = 2;
   } else if (n_B_AtkSkill == 131) {
-    for (
-      myInnerHtml("BBSkill", 'Hits: <select name="BSkillSubNum" onChange="calc()"></select>', 0),
-        i = 1;
-      i <= 15;
-      i++
-    )
+    for (campoSkill("BBSkill", "BSkillSubNum", "Hits: "), i = 1; i <= 15; i++)
       c.BSkillSubNum.options[i - 1] = new documento.Opzione(i, i);
     c.BSkillSubNum.value = 3;
-  } else myInnerHtml("BBSkill", "", 0);
+  } else contenitore("BBSkill");
   (calc(), n_A_Equip[7] == 957 && calc());
 }
 function ClickActiveSkill2() {
   if (SKILLID.CART_REVOLUTION == n_A_ActiveSkill || SKILLID.HIGH_SPEED_CART_RAM == n_A_ActiveSkill)
-    myInnerHtml(
-      "AASkill",
-      'Cart weight: <input type="text" inputmode="numeric" maxlength="4" name="SkillSubNum" value="8000" size=3 onkeypress="return isNumeric(event)" onkeyup="calc()">',
-      0,
-    );
+    campoSkill("AASkill", "SkillSubNum", "Cart weight: ", "8000");
   else if (SKILLID.STORM_GUST == n_A_ActiveSkill) {
-    for (
-      myInnerHtml("AASkill", 'Hits: <select name="SkillSubNum" onChange="calc()"></select>', 0),
-        i = 1;
-      i <= 15;
-      i++
-    )
+    for (campoSkill("AASkill", "SkillSubNum", "Hits: "), i = 1; i <= 15; i++)
       c.SkillSubNum.options[i - 1] = new documento.Opzione(i, i);
     c.SkillSubNum.value = 3;
   } else if (SKILLID.VENOM_SPLASHER == n_A_ActiveSkill) {
-    for (
-      myInnerHtml(
-        "AASkill",
-        'Poison React Lvl: <select name="SkillSubNum" onChange="calc()"></select>',
-        0,
-      ),
-        i = 0;
-      i <= 10;
-      i++
-    )
+    for (campoSkill("AASkill", "SkillSubNum", "Poison React Lvl: "), i = 0; i <= 10; i++)
       c.SkillSubNum.options[i] = new documento.Opzione(i, i);
     ((c.SkillSubNum.value = 0), n_A_JobClass2() == 14 && (c.SkillSubNum.value = 0));
   } else if (SKILLID.GUILLOTINE_FIST == n_A_ActiveSkill)
-    (myInnerHtml(
-      "AASkill",
-      'Remaining SP: <input type="text" inputmode="numeric" maxlength="5" name="SkillSubNum" size=3 onkeypress="return isNumeric(event)" onkeyup="calc()">',
-      0,
-    ),
+    (campoSkill("AASkill", "SkillSubNum", "Remaining SP: ", ""),
       (c.SkillSubNum.value = n_A_MaxSP - 1));
   else if (SKILLID.THROW_SHURIKEN == n_A_ActiveSkill) {
-    for (
-      myInnerHtml("AASkill", '<select name="SkillSubNum" onChange="calc()"></select>', 0), i = 0;
-      i <= 4;
-      i++
-    )
+    for (campoSkill("AASkill", "SkillSubNum", ""), i = 0; i <= 4; i++)
       c.SkillSubNum.options[i] = new documento.Opzione(m_Syuriken[i][2], i);
     c.SkillSubNum.value = 0;
   } else if (SKILLID.THROW_KUNAI == n_A_ActiveSkill) {
-    for (
-      myInnerHtml("AASkill", '<select name="SkillSubNum" onChange="calc()"></select>', 0), i = 0;
-      i <= 4;
-      i++
-    )
+    for (campoSkill("AASkill", "SkillSubNum", ""), i = 0; i <= 4; i++)
       c.SkillSubNum.options[i] = new documento.Opzione(m_Kunai[i][2], i);
     c.SkillSubNum.value = 0;
   } else if (SKILLID.KILLING_STROKE == n_A_ActiveSkill)
-    (myInnerHtml(
-      "AASkill",
-      'Remaining HP: <input type="text" inputmode="numeric" maxlength="5" name="SkillSubNum" size=4 onkeypress="return isNumeric(event)" onkeyup="calc()">',
-      0,
-    ),
+    (campoSkill("AASkill", "SkillSubNum", "Remaining HP: ", ""),
       (c.SkillSubNum.value = n_A_MaxHP - 1));
   else if (SKILLID.DESPERADO == n_A_ActiveSkill) {
     var e = ["1", "1.2", "1.6", "2", "2.4", "3", "3.6", "4", "5", "6", "7", "8", "9", "10"];
     for (
-      myInnerHtml(
-        "AASkill",
-        'Hits (considering the success chance): <select name="SkillSubNum" onChange="calc()"></select>',
-        0,
-      ),
-        i = 0;
+      campoSkill("AASkill", "SkillSubNum", "Hits (considering the success chance): "), i = 0;
       i <= 13;
       i++
     )
@@ -768,11 +599,7 @@ function ClickActiveSkill2() {
       SKILLID.LIGHTNING_BOLT_HINDSIGHT != n_A_ActiveSkill)
   )
     if (SKILLID.CHARGE_ATTACK == n_A_ActiveSkill) {
-      myInnerHtml(
-        "AASkill",
-        'Enemy distance: <select name="SkillSubNum" onChange="calc()"></select>',
-        0,
-      );
+      campoSkill("AASkill", "SkillSubNum", "Enemy distance: ");
       var _ = ["0~3 Cells", "4~6 Cells", "7~9 Cells", "10~12 Cells", "13+ Cells"];
       for (i = 0; i <= 4; i++) c.SkillSubNum.options[i] = new documento.Opzione(_[i], i);
       c.SkillSubNum.value = 4;
@@ -781,31 +608,19 @@ function ClickActiveSkill2() {
         case 159:
         case 384:
         case 324:
-          (myInnerHtml(
-            "AASkill",
-            'Shield weight: <input type="text" inputmode="numeric" maxlength="4" name="SkillSubNum" size=2 onkeypress="return isNumeric(event)" onkeyup="calc()">',
-            0,
-          ),
+          (campoSkill("AASkill", "SkillSubNum", "Shield weight: ", ""),
             (c.SkillSubNum.value = itemData[n_A_Equip[5]].weight));
           break;
         case 259:
-          (myInnerHtml(
-            "AASkill",
-            'Weapon weight: <input type="text" inputmode="numeric" maxlength="4" name="SkillSubNum" size=2 onkeypress="return isNumeric(event)" onkeyup="calc()">',
-            0,
-          ),
+          (campoSkill("AASkill", "SkillSubNum", "Weapon weight: ", ""),
             (c.SkillSubNum.value = itemData[n_A_Equip[0]].weight));
           break;
         default:
-          myInnerHtml("AASkill", "", 0);
+          contenitore("AASkill");
       }
   else {
     var n = SkillSearch(SKILLID.DOUBLE_BOLT) + 3;
-    (myInnerHtml(
-      "AASkill",
-      'Double Bolt chance: <select name="SkillSubNum" onChange="calc()"></select>',
-      0,
-    ),
+    (campoSkill("AASkill", "SkillSubNum", "Double Bolt chance: "),
       (c.SkillSubNum.options[0] = new documento.Opzione("Bad luck (0%)", 0)),
       (c.SkillSubNum.options[1] = new documento.Opzione("Average chance (" + 10 * n + "%)", n)),
       (c.SkillSubNum.options[2] = new documento.Opzione("Good luck (100%)", 10)),
@@ -1129,10 +944,15 @@ function sort(l) {
 }
 function WeaponSet(l) {
   (l === void 0 && (l = n_A_JOB),
-    myInnerHtml(
-      "A_w1",
-      '<select name="A_weapon1" style="width:185px;" onchange="ClickWeaponType(this[this.selectedIndex].value) | Click_Item(this[this.selectedIndex].value)|restrictCardslot(1)"><option value="0">(no weapon)</option></select>',
-      0,
+    campo(
+      "A_weapon1",
+      "select",
+      function () {
+        ClickWeaponType(this.value);
+        Click_Item(this.value);
+        restrictCardslot(1);
+      },
+      { opzioni: [["0", "(no weapon)"]] },
     ));
   var A = 1 * c.restrict_lvlequip.checked,
     n = 0;
@@ -1179,17 +999,19 @@ function WeaponSet(l) {
 function WeaponSetLeft(l) {
   l === void 0 && (l = n_A_JOB);
   var A = 1 * c.restrict_lvlequip.checked;
-  (myInnerHtml(
-    "A_w2",
-    '<select name="A_weapon2" style="width:185px;" onchange="ClickWeaponType2(this[this.selectedIndex].value) | StAllCalc()|ClickB_Item(this[this.selectedIndex].value)|restrictCardslot(1)"><option value="0">(Fist or Shield)</option></select>',
-    0,
-  ),
-    myInnerHtml("A_weapon2refine", "", 0),
-    myInnerHtml("A_weapon2_cardshort", "", 0),
-    myInnerHtml("nA_weapon2_c1", "", 0),
-    myInnerHtml("nA_weapon2_c2", "", 0),
-    myInnerHtml("nA_weapon2_c3", "", 0),
-    myInnerHtml("nA_weapon2_c4", "", 0),
+  (contenitore("A_w2", [
+    {
+      campo: "A_weapon2",
+      gestore: function () {
+        ClickWeaponType2(this.value);
+        StAllCalc();
+        ClickB_Item(this.value);
+        restrictCardslot(1);
+      },
+      opzioni: [["0", "(Fist or Shield)"]],
+    },
+  ]),
+    svuotaSinistra(),
     (n_Nitou = 0));
   var n = 0;
   for (k = 1; k <= 6; k++)
