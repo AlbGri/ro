@@ -7,6 +7,10 @@ Le versioni della pagina `calcolatore/`.
 - Modifiche manuali al personaggio e al nemico: tradotte le intestazioni ("Bonus % al danno
   fisico", "Bonus % alle resistenze", "Altri bonus") e le frasi rimaste in inglese (DEF e MDEF
   ignorate, resistenze per taglia, razza e a distanza, riflesso aggiuntivo)
+- Oggetti nuovi, dagli screen del gioco (e da rAthena per la formula dell'ATK): Gigantic
+  Majestic Goat (ATK) e (DEF), con ATK + livello job x 2 / 7; Meteor Plate, solo per Swordman
+  e Merchant rinati; Blood Sucker, senza recupero di HP e SP (l'assorbimento di HP e' solo
+  descritto, come per gli altri oggetti che lo hanno)
 
 ## [1.5] - 2026-10-21
 

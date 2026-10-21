@@ -161,6 +161,28 @@ test("El Dicastes: livelli 2 e 3 da +1/+2 (+3 sui Feral), sommabili sulla stessa
   assert.equal(dex() - senza, 4);
 });
 
+test("oggetti dagli screen del gioco: Gigantic Majestic Goat, Meteor Plate, Blood Sucker", () => {
+  const m = creaMotore();
+  const c = m.documento.calcForm;
+  const valori = (campo) => c[campo]._lista().map((o) => Number(o.value));
+  scegli(m, "A_JOB", 7); // Knight
+  assert.ok(!valori("A_body").includes(id(m, "Meteor Plate")), "Meteor Plate solo ai rinati");
+  scegli(m, "A_JOB", 21); // Lord Knight
+  assert.ok(valori("A_body").includes(id(m, "Meteor Plate")));
+  scegli(m, "A_BaseLV", 99);
+  scegli(m, "A_JobLV", 50);
+  const atk = () => m.bonusValues[17]; // BONUSID.ATK
+  const senza = atk();
+  scegli(m, "A_head1", id(m, "Gigantic Majestic Goat (ATK)"));
+  assert.equal(atk() - senza, 14); // 50 * 2 / 7
+  assert.equal(m.bonusValues[37], 12); // danno contro Demihuman
+  scegli(m, "A_head1", id(m, "Gigantic Majestic Goat (DEF)"));
+  assert.equal(atk() - senza, 14);
+  assert.equal(m.bonusValues[57], 12); // resistenza a Demihuman
+  scegli(m, "A_head3", id(m, "Blood Sucker"));
+  assert.deepEqual([numero(m, "A_HPR"), numero(m, "A_SPR")], [0, 0]);
+});
+
 test("menu Classe: 6 sezioni, ogni classe una volta, scelta per valore", () => {
   const m = creaMotore();
   const v = m.documento.calcForm.A_JOB;

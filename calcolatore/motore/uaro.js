@@ -3,8 +3,9 @@
 // Si caricano dopo i file dei dati e prima di inizio.js, che costruisce gli elenchi.
 // Le correzioni al codice sono nei file del motore, con un commento "uaRO:" e la fonte.
 
-// id dell'oggetto aggiunto qui che il resto del motore deve riconoscere
+// id degli oggetti aggiunti qui che il resto del motore deve riconoscere
 var OLD_MITRA_UARO = 0;
+var GIGANTIC_GOAT_UARO = [];
 
 // Chiamata da StAllCalc (statistiche.js) dopo la somma dei bonus dell'equipaggiamento
 function applyUaroHeadgearBonuses() {
@@ -18,6 +19,9 @@ function applyUaroHeadgearBonuses() {
     bonusValues[BONUSID.ATK] += 8 * k;
     bonusValues[BONUSID.MATK] += 4 * k;
   }
+  // Gigantic Majestic Goat (ATK e DEF): ATK + livello job * 2 / 7 (rAthena, bBaseAtk)
+  if (GIGANTIC_GOAT_UARO.some((id) => id == n_A_Equip[2]))
+    bonusValues[BONUSID.ATK] += Math.floor((n_A_JobLV * 2) / 7);
 }
 
 (function () {
@@ -113,5 +117,32 @@ function applyUaroHeadgearBonuses() {
     equipType: 50, attackOrDefense: 0, slots: 1, weight: 10, requiredLevel: 70, name: "Old Mitra (UARO)",
     description: "For each 2 refine levels: MaxHP +1%, MaxSP +1%, ATK +8, MATK +4, [Magnus Exorcismus] damage +4%.",
     bonuses: [{ id: BONUSID.INT, value: 1 }, { id: BONUSID.MDEF, value: 5 }],
+  });
+
+  // Dagli screen del gioco di Alberto (21/10/2026), con rAthena per cio' che non dicono: la
+  // formula dell'ATK delle Goat. Dove i due non coincidono vale lo screen: Meteor Plate senza
+  // slot (rAthena 1), Blood Sucker 1% di assorbire il 3% (rAthena 3% il 5%)
+  GIGANTIC_GOAT_UARO.push(
+    nuovo({
+      equipType: 50, attackOrDefense: 5, slots: 0, weight: 80, requiredLevel: 1, name: "Gigantic Majestic Goat (ATK)",
+      description: "ATK + Job Level * 2 / 7.",
+      bonuses: [{ id: BONUSID.DMG_DEMI_HUMAN_PERCENT, value: 12 }],
+    }),
+    nuovo({
+      equipType: 50, attackOrDefense: 5, slots: 0, weight: 80, requiredLevel: 50, name: "Gigantic Majestic Goat (DEF)",
+      description: "ATK + Job Level * 2 / 7.",
+      bonuses: [{ id: BONUSID.RESIST_DEMI_HUMAN_PERCENT, value: 12 }],
+    }),
+  );
+  // jobMask 1070: Swordman e Merchant con le loro classi, solo rinati; 151 e 152: resistenza a
+  // Stun e Freeze
+  nuovo({
+    equipType: 60, attackOrDefense: 10, slots: 0, weight: 300, requiredLevel: 55, name: "Meteor Plate", jobMask: 1070,
+    bonuses: [{ id: 151, value: 30 }, { id: 152, value: 30 }],
+  });
+  nuovo({
+    equipType: 52, attackOrDefense: 0, slots: 0, weight: 30, requiredLevel: 40, name: "Blood Sucker",
+    description: "1% chance to absorb 3% of the physical damage dealt as HP (not simulated).",
+    bonuses: [{ id: BONUSID.HP_RECOVERY_PERCENT, value: -100 }, { id: BONUSID.SP_RECOVERY_PERCENT, value: -100 }],
   });
 })();
