@@ -40,14 +40,14 @@ function azzeraAttacco() {
     skill == SKILLID.SHADOW_SLASH ||
     (skill == SKILLID.POISON_REACT && mostroVeleno())
   )
-    myInnerHtml("CRIATKname", "Critical damage (Critical rate)", 0);
+    scrivi("CRIATKname", "Critical damage (Critical rate)");
   else {
-    myInnerHtml("CRIATK", "", 0);
-    myInnerHtml("CRInum", "", 0);
-    myInnerHtml("CRIATKname", "", 0);
+    scrivi("CRIATK", "");
+    scrivi("CRInum", "");
+    scrivi("CRIATKname", "");
   }
-  myInnerHtml("bSUB3name", "", 0);
-  myInnerHtml("bSUB3", "", 0);
+  scrivi("bSUB3name", "");
+  scrivi("bSUB3", "");
 }
 // danno di un colpo uguale per Last_DMG_A e Last_DMG_B, aggiunto al testo dei risultati
 function scriviDanni(danni) {
@@ -242,7 +242,7 @@ function skillCritica() {
   for (e = 0; e <= 2; e++) n_A_CriATK[e] += EDP_DMG(e);
   if (critChance >= 100) n_Min_DMG = n_A_CriATK[0];
   if (critChance > 0) n_Max_DMG = n_A_CriATK[2];
-  myInnerHtml("CRIATK", n_A_CriATK[0] + "~" + n_A_CriATK[2], 0);
+  scrivi("CRIATK", n_A_CriATK[0] + "~" + n_A_CriATK[2]);
   ATKmod02(mod, 0);
   for (e = 0; e <= 2; e++) w_DMG[e] = BattleCalc(n_A_DMG[e], e);
   scriviDanni(danniConVeleno());
@@ -979,9 +979,9 @@ function soulDestroyer() {
 function grandCross() {
   var lv = n_A_ActiveSkillLV;
   n_PerHIT_DMG = 0;
-  myInnerHtml("CRIATKname", '<Font color="#FF0000">Health drain</Font>', 0);
-  myInnerHtml("CRIATK", '<Font color="#FF0000">' + Math.floor(n_A_MaxHP / 5) + "</Font>", 0);
-  myInnerHtml("bSUB3name", '<Font color="#FF0000">Damage backlash</Font>', 0);
+  scrivi("CRIATKname", '<Font color="#FF0000">Health drain</Font>');
+  scrivi("CRIATK", '<Font color="#FF0000">' + Math.floor(n_A_MaxHP / 5) + "</Font>");
+  scrivi("bSUB3name", '<Font color="#FF0000">Damage backlash</Font>');
   var contraccolpo = [0, 0, 0];
   var vitDEF = [n_A_VITDEF[2], n_A_VITDEF[1], n_A_VITDEF[0]];
   // MDEF da INT senza le riduzioni di StAllCalc (l'originale la scriveva in n_A_softMDEF, e
@@ -1001,10 +1001,9 @@ function grandCross() {
     d = Math.floor(d / 2);
     contraccolpo[e] = Math.floor((d * skill_dmg(n_A_ActiveSkill)) / 100);
   }
-  myInnerHtml(
+  scrivi(
     "bSUB3",
     '<Font color="#FF0000">3(hits) x ' + contraccolpo[0] + "~" + contraccolpo[2] + " damage</Font>",
-    0,
   );
   n_rangedAtk = 2;
   n_A_Weapon_element = 6;
@@ -1765,9 +1764,9 @@ function BattleCalc998() {
   }
   if (SKILLID.BASIC_ATTACK == n_A_ActiveSkill)
     w_HIT_HYOUJI -= (n_B_manual[38] * w_HIT_HYOUJI) / 100;
-  myInnerHtml("bSUBname", str_bSUBname, 0);
-  myInnerHtml("bSUB", str_bSUB, 0);
-  myInnerHtml("BattleHIT", w_HIT_HYOUJI, 0);
+  scrivi("bSUBname", str_bSUBname);
+  scrivi("bSUB", str_bSUB);
+  scrivi("BattleHIT", w_HIT_HYOUJI);
   if (
     targetData[0] == 44 &&
     SKILLID.BASIC_ATTACK != n_A_ActiveSkill &&
@@ -1797,42 +1796,41 @@ function BattleCalc998() {
         : Math.floor(w_DMG[e] * doubleBolt);
   }
   var colpi = colpiPerUccidere(w_DMG[2]);
-  myInnerHtml("MinATKnum", colpi < 10000 ? colpi : SubName[5], 0);
+  scrivi("MinATKnum", colpi < 10000 ? colpi : SubName[5]);
   if (SG_Special_HITnum != 0) {
-    if (colpi == 1) myInnerHtml("MinATKnum", "1 (" + probabilitaUnColpo() + "% chance)", 0);
+    if (colpi == 1) scrivi("MinATKnum", "1 (" + probabilitaUnColpo() + "% chance)");
     SG_Special_HITnum = 0;
   }
   if (w_HIT_HYOUJI < 100 && n_PerHIT_DMG == 0)
-    myInnerHtml("MaxATKnum", "Infinite (no 100% hit)", 0);
+    scrivi("MaxATKnum", "Infinite (no 100% hit)");
   else {
     colpi = colpiPerUccidere(w_HIT_HYOUJI < 100 ? n_PerHIT_DMG : w_DMG[0]);
-    myInnerHtml("MaxATKnum", colpi < 10000 ? colpi : SubName[5], 0);
+    scrivi("MaxATKnum", colpi < 10000 ? colpi : SubName[5]);
   }
   // con il danno medio il resto si calcola senza arrotondare il danno (come nell'originale)
   colpi = Math.floor(targetData[6] / w_DMG[1]);
   if (targetData[6] % w_DMG[1] != 0) colpi += 1;
-  myInnerHtml("nm064", "", 0);
-  myInnerHtml("AtkJobExp", "", 0);
-  myInnerHtml("nm063", "Exp Per Hit", 0);
-  myInnerHtml(
+  scrivi("nm064", "");
+  scrivi("AtkJobExp", "");
+  scrivi("nm063", "Exp Per Hit");
+  scrivi(
     "AtkBaseExp",
     colpi < 10000
       ? Math.round(targetData[16] / colpi) + " base, " + Math.round(targetData[17] / colpi) + " job"
       : SubName[7],
-    0,
   );
   if (colpi < 10000) {
-    myInnerHtml("AveATKnum", colpi, 0);
+    scrivi("AveATKnum", colpi);
     var tempo = Math.floor(100 * ((wCast + wDelay) * colpi)) / 100;
-    if (n_Delay[0]) myInnerHtml("BattleTime", "Special", 0);
-    else myInnerHtml("BattleTime", tempo + " seconds", 0);
+    if (n_Delay[0]) scrivi("BattleTime", "Special");
+    else scrivi("BattleTime", tempo + " seconds");
   } else {
-    myInnerHtml("AveATKnum", SubName[5], 0);
-    myInnerHtml("BattleTime", SubName[6], 0);
+    scrivi("AveATKnum", SubName[5]);
+    scrivi("BattleTime", SubName[6]);
   }
   var alSecondo = Math.round((1 / (wCast + wDelay)) * w_DMG[1] * 100) / 100;
-  if (n_Delay[0]) myInnerHtml("AveSecondATK", "Special", 0);
-  else myInnerHtml("AveSecondATK", alSecondo, 0);
+  if (n_Delay[0]) scrivi("AveSecondATK", "Special");
+  else scrivi("AveSecondATK", alSecondo);
   var subito = BattleHiDam();
   subito = Math.round(subito * (100 - n_A_LUCKY)) / 100;
   subito = Math.max(0, Math.round(subito * (100 - w_FLEE)) / 100);
@@ -1842,7 +1840,7 @@ function BattleCalc998() {
   if (SkillSearch(SKILLID.COUNTER_INSTINCT))
     subito = Math.round(subito * (100 - 7.5 * SkillSearch(SKILLID.COUNTER_INSTINCT))) / 100;
   subito = Math.round(100 * subito * BskillHitNum) / 100;
-  myInnerHtml("B_Ave2Atk", subito, 0);
+  scrivi("B_Ave2Atk", subito);
   updateAttackSurvivability(subito);
 }
 // colpi per togliere tutti gli HP al mostro con un danno per colpo
@@ -1897,13 +1895,13 @@ function updateAttackSurvivability(subitoMedio) {
     medio = n_B_averageDamage * BskillHitNum,
     effettivi = grezzo > 0 ? (medio > 0 ? (n_A_MaxHP * grezzo) / medio : Infinity) : NaN,
     attesi = grezzo > 0 ? (subitoMedio > 0 ? (n_A_MaxHP * grezzo) / subitoMedio : Infinity) : NaN;
-  myInnerHtml("B_EffectiveHP", formatEffectiveHP(effettivi), 0);
-  myInnerHtml("B_ExpectedEffectiveHP", formatEffectiveHP(attesi), 0);
+  scrivi("B_EffectiveHP", formatEffectiveHP(effettivi));
+  scrivi("B_ExpectedEffectiveHP", formatEffectiveHP(attesi));
   var minimo = n_B_minDamage * BskillHitNum,
     massimo = n_B_maxDamage * BskillHitNum,
     colpiMin = massimo > 0 ? Math.ceil(n_A_MaxHP / massimo) : Infinity,
     colpiMax = minimo > 0 ? Math.ceil(n_A_MaxHP / minimo) : Infinity;
-  myInnerHtml("B_SurvivalHits", formatSurvivalHits(colpiMin, colpiMax), 0);
+  scrivi("B_SurvivalHits", formatSurvivalHits(colpiMin, colpiMax));
 }
 // Danni che il mostro fa al personaggio con l'attacco o la skill scelti (B_AtkSkill), su sette
 // punti fra il minimo e il massimo: scritti nella pagina e in n_B_*Damage; restituisce il medio.
@@ -1925,7 +1923,7 @@ function BattleHiDam() {
   d[6] = Math.floor(d[6]);
   casiSpecialiNemico(d, s, lv);
   if (CardNumSearch(126) && n_B_rangedMAtk == 1) for (i = 0; i <= 6; i++) d[i] = 0;
-  myInnerHtml(
+  scrivi(
     "B_WeaponElement",
     senzaElemento
       ? "<span class=name><b style='color:#A89682'>None</b><span class=nametext>Monster's basic attacks are non-elemental, not Neutral; they bypass armor-property modifiers such as Ghostring, but are still reduced by Neutral-resistance gear/cards.</span></span> (100% vs any element)"
@@ -1935,7 +1933,6 @@ function BattleHiDam() {
           "% vs " +
           v_Element[n_A_Bodyelement] +
           "1)",
-    0,
   );
   var somma = 0;
   for (i = 0; i <= 6; i++) {
@@ -1956,17 +1953,16 @@ function BattleHiDam() {
   );
   riflessoSubito("aREFLECT2", bonusValues[71], "Damage reflected (equip/cards)", medio, d);
   if (BskillHitNum > 1) {
-    myInnerHtml("B_MinAtk", d[0] * BskillHitNum + " (" + d[0] + " x " + BskillHitNum + " hits)", 0);
-    myInnerHtml(
+    scrivi("B_MinAtk", d[0] * BskillHitNum + " (" + d[0] + " x " + BskillHitNum + " hits)");
+    scrivi(
       "B_AveAtk",
       medio * BskillHitNum + " (" + medio + " x " + BskillHitNum + " hits)",
-      0,
     );
-    myInnerHtml("B_MaxAtk", d[6] * BskillHitNum + " (" + d[6] + " x " + BskillHitNum + " hits)", 0);
+    scrivi("B_MaxAtk", d[6] * BskillHitNum + " (" + d[6] + " x " + BskillHitNum + " hits)");
   } else {
-    myInnerHtml("B_MinAtk", d[0] + "", 0);
-    myInnerHtml("B_AveAtk", medio + "", 0);
-    myInnerHtml("B_MaxAtk", d[6] + "", 0);
+    scrivi("B_MinAtk", d[0] + "");
+    scrivi("B_AveAtk", medio + "");
+    scrivi("B_MaxAtk", d[6] + "");
   }
   return medio;
 }
@@ -2136,11 +2132,11 @@ function casiSpecialiNemico(d, s, lv) {
 // danno che lo scudo o l'equipaggiamento riflettono al mostro, solo dagli attacchi in mischia
 function riflessoSubito(id, percento, nome, medio, d) {
   if (!percento) {
-    myInnerHtml(id, "", 0);
-    myInnerHtml(id + "name", "", 0);
+    scrivi(id, "");
+    scrivi(id + "name", "");
     return;
   }
-  if (nemicoDaLontano()) myInnerHtml(id, '<B style="color:blue">(no melee dmg to reflect)</B>', 0);
+  if (nemicoDaLontano()) scrivi(id, '<B style="color:blue">(no melee dmg to reflect)</B>');
   else {
     var minimo = Math.floor((d[0] * percento) / 100),
       massimo = Math.floor((d[6] * percento) / 100);
@@ -2148,9 +2144,9 @@ function riflessoSubito(id, percento, nome, medio, d) {
       if (minimo == 0) minimo = 1;
       if (massimo == 0) massimo = 1;
     }
-    myInnerHtml(id, '<B style="color:blue">' + minimo + " ~ " + massimo + "</B>", 0);
+    scrivi(id, '<B style="color:blue">' + minimo + " ~ " + massimo + "</B>");
   }
-  myInnerHtml(id + "name", '<SPAN style="color:blue">' + nome + "</SPAN>", 0);
+  scrivi(id + "name", '<SPAN style="color:blue">' + nome + "</SPAN>");
 }
 // Earthquake: ATK in piu' per livello (1-10)
 var PIU_EARTHQUAKE = [0, 200, 400, 500, 700, 900, 1100, 1200, 1400, 1500, 1700];
@@ -2685,17 +2681,16 @@ function calc() {
     (n_A_ActiveSkill == SKILLID.BASIC_ATTACK ||
       (n_A_ActiveSkill == SKILLID.POISON_REACT && mostroVeleno()))
   )
-    myInnerHtml(
+    scrivi(
       "CRIATK",
       dueArmi.unValore
         ? n_A_CriATK[0] + " + " + wLeft[2]
         : n_A_CriATK[0] + "~" + n_A_CriATK[2] + " + " + wLeft[1] + "~" + wLeft[2],
-      0,
     );
   if (n_A_ActiveSkill == SKILLID.COIN_FLING)
-    myInnerHtml("A_WeaponElement", "<b style='color:#A89682'>None</b> (100% vs any element)", 0);
+    scrivi("A_WeaponElement", "<b style='color:#A89682'>None</b> (100% vs any element)");
   else
-    myInnerHtml(
+    scrivi(
       "A_WeaponElement",
       v_Element[n_A_Weapon_element] +
         " (" +
@@ -2704,10 +2699,9 @@ function calc() {
         v_Element[Math.floor(targetData[3] / 10)] +
         (targetData[3] % 10) +
         ")",
-      0,
     );
   riflessiAttacco();
-  for (e = 0; e < InnStr.length; e++) myInnerHtml("strID_" + e, InnStr[e], 0);
+  for (e = 0; e < InnStr.length; e++) scrivi("strID_" + e, InnStr[e]);
 }
 // moltiplicatore dell'arma per la taglia del mostro (wCSize), con le eccezioni, scritto nella pagina
 function penalitaTaglia() {
@@ -2757,15 +2751,14 @@ function penalitaTaglia() {
   }
   if (m_Skill[n_A_ActiveSkill][4] < 0) mostra = false;
   if (mostra || skill == 0) {
-    myInnerHtml("nm076", "Weapon/Skill Size Modifier", 0);
-    myInnerHtml(
+    scrivi("nm076", "Weapon/Skill Size Modifier");
+    scrivi(
       "A_WeaponSize",
       100 * wCSize + '% <span style="font-weight:100;">(' + nome + ")</span>",
-      0,
     );
   } else {
-    myInnerHtml("nm076", "", 0);
-    myInnerHtml("A_WeaponSize", "", 0);
+    scrivi("nm076", "");
+    scrivi("A_WeaponSize", "");
   }
 }
 // probabilita' di colpire (w_HIT, mostrata in w_HIT_HYOUJI), di critico (w_Cri), di Raging
@@ -2830,7 +2823,7 @@ function probabilitaColpire() {
     (n_A_ActiveSkill == SKILLID.POISON_REACT && mostroVeleno())
   ) {
     w_HIT_HYOUJI = Math.floor(100 * w998K) / 100;
-    myInnerHtml("CRInum", " (" + Math.round(100 * critChance) / 100 + "%)", 0);
+    scrivi("CRInum", " (" + Math.round(100 * critChance) / 100 + "%)");
   }
 }
 // probabilita' di Double Attack (o Chain Action con il revolver), anche da carte e oggetti
@@ -2901,13 +2894,11 @@ function probabilitaSchivare() {
   if (schivata > 10000) schivata = 10000;
   if (schivata <= 0) {
     schivata = 0;
-    myInnerHtml("nm066", "", 0);
-    documento.getElementById("B_Ave2Atk").style.visibility = "hidden";
+    scrivi("nm066", "");
   } else {
-    myInnerHtml("nm066", "Average Dmg Received (w/dodge)", 0);
-    documento.getElementById("B_Ave2Atk").style.visibility = "visible";
+    scrivi("nm066", "Average Dmg Received (w/dodge)");
   }
-  myInnerHtml("BattleFLEE", schivata / 100, 0);
+  scrivi("BattleFLEE", schivata / 100);
 }
 // ATK minimo, medio e massimo dell'attacco normale (n_A_DMG, BK_n_A_DMG prima dei moltiplicatori)
 // e quello critico (n_A_CriATK, BK_n_A_CriATK); con arco e armi da fuoco conta la freccia
@@ -2984,9 +2975,9 @@ function criticoAttaccoNormale() {
       n_A_CriATK[e] += katar[e];
     }
     if (n_A_CriATK[0] == n_A_CriATK[2])
-      myInnerHtml("CRIATK", n_A_CriATK[0] - katar[0] + " + " + katar[0], 0);
+      scrivi("CRIATK", n_A_CriATK[0] - katar[0] + " + " + katar[0]);
     else
-      myInnerHtml(
+      scrivi(
         "CRIATK",
         n_A_CriATK[0] -
           katar[0] +
@@ -2996,7 +2987,6 @@ function criticoAttaccoNormale() {
           katar[0] +
           "~" +
           katar[2],
-        0,
       );
   } else if (n_Nitou) {
     // il critico della sinistra serve solo a decidere se mostrare un valore o un intervallo; il
@@ -3012,16 +3002,16 @@ function criticoAttaccoNormale() {
     sinistra[0] = BattleCalc(sinistra[0], 10);
     sinistra[2] = BattleCalc(sinistra[2], 10);
     return { unValore: n_A_CriATK[0] == n_A_CriATK[2] && sinistra[0] == sinistra[2] };
-  } else if (n_A_CriATK[0] == n_A_CriATK[2]) myInnerHtml("CRIATK", n_A_CriATK[1], 0);
-  else myInnerHtml("CRIATK", n_A_CriATK[0] + "~" + n_A_CriATK[2], 0);
+  } else if (n_A_CriATK[0] == n_A_CriATK[2]) scrivi("CRIATK", n_A_CriATK[1]);
+  else scrivi("CRIATK", n_A_CriATK[0] + "~" + n_A_CriATK[2]);
   return null;
 }
 // danno che il mostro riflette al personaggio negli attacchi in mischia: Shield Reflect del
 // mostro (n_B_buf[12]) ed equipaggiamento (n_B_manual[21]), x 1,5 con n_B_buf[1]
 function riflessiAttacco() {
   if (n_rangedAtk != 0) {
-    myInnerHtml("bREFLECT2", "", 0);
-    myInnerHtml("bREFLECT2name", "", 0);
+    scrivi("bREFLECT2", "");
+    scrivi("bREFLECT2name", "");
     return;
   }
   var scudo = n_B_buf[12],
@@ -3035,19 +3025,17 @@ function riflessiAttacco() {
       riflesso[e] = Math.floor((Last_DMG_A[e] * molt * scudo) / 100);
       if (Math.ceil((Last_DMG_A[e] * molt * scudo) / 100) == 1) riflesso[e] = 1;
     }
-    myInnerHtml(
+    scrivi(
       "bREFLECT1",
       '<B style="color:red">' + riflesso[0] + " ~ " + riflesso[2] + "</B>",
-      0,
     );
-    myInnerHtml(
+    scrivi(
       "bREFLECT1name",
       '<SPAN style="color:red">Damage reflected (Shield Reflect)</SPAN>',
-      0,
     );
   } else {
-    myInnerHtml("bREFLECT1", "", 0);
-    myInnerHtml("bREFLECT1name", "", 0);
+    scrivi("bREFLECT1", "");
+    scrivi("bREFLECT1name", "");
   }
   if (equip) {
     var woe = 1;
@@ -3057,15 +3045,14 @@ function riflessiAttacco() {
       riflessoEquip[e] = Math.floor((Last_DMG_B[e] * molt * woe * equip) / 100);
       if (Math.ceil((Last_DMG_B[e] * molt * woe * equip) / 100) == 1) riflessoEquip[e] = 1;
     }
-    myInnerHtml(
+    scrivi(
       "bREFLECT2",
       '<B style="color:red">' + riflessoEquip[0] + " ~ " + riflessoEquip[2] + "</B>",
-      0,
     );
-    myInnerHtml("bREFLECT2name", '<SPAN style="color:red">Damage reflected (equip/card)</SPAN>', 0);
+    scrivi("bREFLECT2name", '<SPAN style="color:red">Damage reflected (equip/card)</SPAN>');
   } else {
-    myInnerHtml("bREFLECT2", "", 0);
-    myInnerHtml("bREFLECT2name", "", 0);
+    scrivi("bREFLECT2", "");
+    scrivi("bREFLECT2name", "");
   }
 }
 // danno fisico da un ATK: quale = 0, 1, 2 per minimo, medio, massimo (la DEF da VIT usata), 10 per
@@ -3555,8 +3542,8 @@ function CastAndDelay() {
     nomi += "Limited Skill-Duration(?)<BR>";
     valori += Math.floor(100 * wDelay) / 100 + " seconds<BR>";
   }
-  myInnerHtml("bSUB2name", nomi, 0);
-  myInnerHtml("bSUB2", valori, 0);
+  scrivi("bSUB2name", nomi);
+  scrivi("bSUB2", valori);
 }
 // riduzioni del danno dalla parte del mostro: WoE, resistenze scritte a mano (n_B_manual), buff
 // del mostro (n_B_buf), Lex Aeterna, terreno elementale; 1 sui Plant

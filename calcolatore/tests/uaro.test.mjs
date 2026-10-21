@@ -5,19 +5,15 @@ import assert from "node:assert/strict";
 import vm from "node:vm";
 import { creaMotore } from "./motore.mjs";
 
-// imposta un campo ed esegue il suo gestore, poi ricalcola
+// imposta un campo ed esegue il suo gestore (scegli del motore), poi ricalcola
 function scegli(m, nome, valore) {
   const v = m.documento.calcForm[nome];
   assert.ok(v, "campo " + nome);
-  if (v.type === "checkbox") v.checked = valore;
-  else v.value = String(valore);
+  m.scegli(v, v.type === "checkbox" ? valore : String(valore));
   if (v.tag === "select") assert.equal(v.value, String(valore), `${nome}: opzione ${valore} assente`);
-  const codice = (v.getAttribute("onchange") || v.getAttribute("onclick") || "")
-    .replace(/this\[this\.selectedIndex\]\.value/g, JSON.stringify(String(valore)));
-  vm.runInContext("(function () {" + codice + "\n})()", m);
   m.calc();
 }
-const testo = (m, id) => m.documento.testo(id);
+const testo = (m, id) => m.testo(id);
 const numero = (m, id) => Number(testo(m, id).match(/-?\d+(\.\d+)?/)[0]);
 // le costanti del motore sono const: non sono proprieta' del contesto
 const costante = (m, nome) => vm.runInContext(nome, m);

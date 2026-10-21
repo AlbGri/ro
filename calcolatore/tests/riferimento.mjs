@@ -1,8 +1,10 @@
 // Ricarica una build dal suo indirizzo e legge i risultati, come il banco di prova
 // dell'originale (stessi pannelli aperti, stessa voce di Other Info).
 export const PANNELLI = ["BufSW", "Buf3SW", "Buf4SW", "Buf6SW", "Buf7SW", "Buf9SW", "Buf10SW", "debufSW", "EnemyBufSW"];
-// descrizione dell'ultimo oggetto cliccato e titoli dei pannelli: interfaccia, non calcolo
-export const IGNORATI = /^(item-disclosure|ITEM_TITLE|ITEM\d|ITEM_DATA|ITEM_W_LV|ITEM_LV|ITEM_WAIT|B_SETUMEI|A\w*TD|A\w*used)$/;
+// descrizione dell'ultimo oggetto cliccato e titoli dei pannelli: interfaccia, non calcolo.
+// A_DodgeRatio nello scheletro conteneva BattleFLEE e "%": dalla fase 5 BattleFLEE e' fra i
+// risultati (motore/campi.js) e A_DodgeRatio non dice altro
+export const IGNORATI = /^(item-disclosure|ITEM_TITLE|ITEM\d|ITEM_DATA|ITEM_W_LV|ITEM_LV|ITEM_WAIT|B_SETUMEI|A\w*TD|A\w*used|A_DodgeRatio)$/;
 
 export function caricaBuild(m, url, kakutyou) {
   m.leggiBuild(url);
@@ -21,6 +23,11 @@ export function istantanea(m) {
     const el = l[0];
     if (/^(input|select|option|textarea|button)$/.test(el.tag) || conControlli(el)) continue;
     const t = el.textContent.replace(/\s+/g, " ").trim();
+    if (t) out[id] = t;
+  }
+  // dalla fase 5 i risultati non stanno piu' nel documento (uscite in motore/campi.js)
+  for (const id in m.uscite || {}) {
+    const t = m.testo(id);
     if (t) out[id] = t;
   }
   return out;

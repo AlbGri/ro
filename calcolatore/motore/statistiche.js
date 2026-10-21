@@ -31,7 +31,7 @@ function StCalc(l) {
   )
     for (i = 1; i < n_A_BaseLV; i++) wStPoint += Math.floor(i / 5) + 3;
   else for (i = 1; StPoint > wStPoint && i < 99; i++) wStPoint += Math.floor(i / 5) + 3;
-  (i > 99 && (i = 99), (c.A_BaseLV.value = i), myInnerHtml("A_STPOINT", wStPoint - StPoint, 0));
+  (i > 99 && (i = 99), (c.A_BaseLV.value = i), scrivi("A_STPOINT", wStPoint - StPoint));
 }
 function StCalc2(l) {
   return Math.floor((l - 2) / 10) + 2;
@@ -345,7 +345,7 @@ function elementoDelCorpo() {
   if (n_A_Buf6[13]) n_A_Bodyelement = 2;
   if (n_A_Buf6[15]) n_A_Bodyelement = 1;
   if (n_A_Buf6[8]) n_A_Bodyelement = 9;
-  myInnerHtml("A_BodyELEMENT", v_Element[n_A_Bodyelement] + "1", 0);
+  scrivi("A_BodyELEMENT", v_Element[n_A_Bodyelement] + "1");
 }
 // bonusValues: equipaggiamento, carte, raffinamenti, incantamenti
 function sommaBonus() {
@@ -595,12 +595,11 @@ function calcolaATK() {
   if (n_A_Buf3[10] && (n_A_WeaponLV == 4 || n_A_Weapon2LV == 4)) atk += 50 + 25 * n_A_Buf3[10];
   if (n_A_Buf6[0] == 0 && n_A_Buf6[1] >= 1 && n_A_Bodyelement == 3) atk += 10 * n_A_Buf6[1];
   if (n_A_Buf2[19] == 1) atk *= 2;
-  myInnerHtml(
+  scrivi(
     "A_ATK2",
     Math.floor(wImp + atk) + "+" + (n_A_WeaponLV_refineATK + n_A_Weapon2LV_refineATK),
-    0,
   );
-  myInnerHtml(
+  scrivi(
     "A_RealATK",
     wImp +
       atk +
@@ -609,7 +608,6 @@ function calcolaATK() {
       n_A_WeaponLV_Minplus +
       "~" +
       (wImp + atk + n_A_WeaponLV_refineATK + n_A_Weapon2LV_refineATK + n_A_WeaponLV_Maxplus),
-    0,
   );
 }
 // HP massimi: 35 + HP_CLASSE_B * livello + la somma di HP_CLASSE_A * l / 100 (arrotondato) per ogni
@@ -659,8 +657,8 @@ function calcolaHP() {
   if (n_Reborn) n_A_MaxHP = Math.floor((125 * n_A_MaxHP) / 100);
   if (1 * c.A_adopted.checked) {
     n_A_MaxHP = Math.floor((70 * n_A_MaxHP) / 100);
-    myInnerHtml("A_BodySIZE", "Demi-Human & Small", 0);
-  } else myInnerHtml("A_BodySIZE", "Demi-Human & Medium", 0);
+    scrivi("A_BodySIZE", "Demi-Human & Small");
+  } else scrivi("A_BodySIZE", "Demi-Human & Medium");
   n_A_MaxHP = Math.floor(((n_A_MaxHP - riduzione) * (100 + n_A_VIT)) / 100);
   if (n_A_JOB == 41 && n_A_BaseLV >= 70) {
     if (n_A_BaseLV <= 79)
@@ -735,7 +733,7 @@ function calcolaHP() {
     n_A_MaxHP = (n_A_MaxHP * (100 + [5, 9, 12, 14, 15][n_A_Buf6[1] - 1])) / 100;
   if (SkillSearch(SKILLID.FRENZY)) n_A_MaxHP *= 3;
   n_A_MaxHP = Math.floor(n_A_MaxHP);
-  myInnerHtml("A_MaxHP", (n_A_MaxHP >= 100 && n_A_MaxHP < 10000 ? "" : " ") + n_A_MaxHP, 0);
+  scrivi("A_MaxHP", (n_A_MaxHP >= 100 && n_A_MaxHP < 10000 ? "" : " ") + n_A_MaxHP);
 }
 // SP massimi: 10 + SP_CLASSE * livello
 var SP_CLASSE = [
@@ -845,7 +843,7 @@ function calcolaSP() {
     percento += 5;
   if (n_A_Buf3[6]) percento += 15 + n_A_Buf3[6] + n_A_Buf3[26] / 10 + n_A_Buf3[36];
   n_A_MaxSP = Math.floor(n_A_MaxSP * (1 + percento / 100));
-  myInnerHtml("A_MaxSP", (n_A_MaxSP >= 100 ? "" : " ") + n_A_MaxSP, 0);
+  scrivi("A_MaxSP", (n_A_MaxSP >= 100 ? "" : " ") + n_A_MaxSP);
 }
 // DEF dell'equipaggiamento e DEF da VIT, scritte nella pagina
 function calcolaDEF() {
@@ -917,7 +915,7 @@ function calcolaDEF() {
     n_A_totalDEF = 0;
     vit = 0;
   }
-  myInnerHtml("A_totalDEF", n_A_totalDEF + "+" + vit, 0);
+  scrivi("A_totalDEF", n_A_totalDEF + "+" + vit);
   // DEF da VIT usata nei danni: minima, media, massima
   n_A_VITDEF = [];
   n_A_VITDEF[0] = Math.floor(0.5 * n_A_VIT) + Math.floor(0.3 * n_A_VIT);
@@ -983,8 +981,8 @@ function calcolaMDEF() {
     mdefInt = 0;
     n_A_softMDEF = 0;
   }
-  myInnerHtml("A_MDEF", n_A_MDEF + "+" + mdefInt, 0);
-  myInnerHtml("A_RealMDEF", n_A_MDEF + "+" + n_A_softMDEF, 0);
+  scrivi("A_MDEF", n_A_MDEF + "+" + mdefInt);
+  scrivi("A_RealMDEF", n_A_MDEF + "+" + n_A_softMDEF);
 }
 // HIT e Perfect Hit, scritti nella pagina
 function calcolaHIT() {
@@ -1020,9 +1018,9 @@ function calcolaHIT() {
   if (n_A_Buf6[11]) n_A_HIT = Math.round(0.75 * n_A_HIT);
   n_A_HIT += Math.floor(n_A_HIT * n_A_Buf9[23] * 0.01);
   if (n_A_HIT < 1) n_A_HIT = 1;
-  myInnerHtml("A_HIT", n_A_HIT, 0);
+  scrivi("A_HIT", n_A_HIT);
   bonusValues[BONUSID.PERFECT_HIT_PERCENT] += n_A_Buf9[55];
-  myInnerHtml("A_PefHIT", bonusValues[BONUSID.PERFECT_HIT_PERCENT], 0);
+  scrivi("A_PefHIT", bonusValues[BONUSID.PERFECT_HIT_PERCENT]);
 }
 // FLEE, scritto nella pagina anche ridotto in WoE
 function calcolaFLEE() {
@@ -1077,8 +1075,8 @@ function calcolaFLEE() {
   if (n_A_Buf6[14]) n_A_FLEE = 0;
   if (n_A_Buf6[15]) n_A_FLEE = 0;
   if (n_A_FLEE < 1) n_A_FLEE = 1;
-  myInnerHtml("A_FLEE", n_A_FLEE, 0);
-  myInnerHtml("A_WoeFLEE", Math.floor(0.8 * n_A_FLEE), 0);
+  scrivi("A_FLEE", n_A_FLEE);
+  scrivi("A_WoeFLEE", Math.floor(0.8 * n_A_FLEE));
 }
 // Perfect Dodge (n_A_LUCKY), scritto nella pagina
 function calcolaPerfectDodge() {
@@ -1102,7 +1100,7 @@ function calcolaPerfectDodge() {
   if (n_A_JobClass() == 41 && n_A_Equip[3] == 678) n_A_LUCKY += 2;
   n_A_LUCKY = Math.round(10 * n_A_LUCKY) / 10;
   if (n_A_LUCKY < 0) n_A_LUCKY = 0;
-  myInnerHtml("A_LUCKY", n_A_LUCKY, 0);
+  scrivi("A_LUCKY", n_A_LUCKY);
 }
 // critico, e difesa dai critici subiti (CRITSHIELD), scritti nella pagina
 function calcolaCritico() {
@@ -1147,8 +1145,8 @@ function calcolaCritico() {
   if (n_A_WeaponType == 11) n_A_CRI *= 2;
   n_A_CRI = Math.round(10 * n_A_CRI) / 10;
   if (n_A_Buf6[9]) n_A_CRI = 0;
-  myInnerHtml("A_CRI", n_A_CRI, 0);
-  myInnerHtml("A_CRITSHIELD", Math.round(10 * (1 + 0.2 * n_A_LUK)) / 10, 0);
+  scrivi("A_CRI", n_A_CRI);
+  scrivi("A_CRITSHIELD", Math.round(10 * (1 + 0.2 * n_A_LUK)) / 10);
 }
 // MATK minima, media e massima (n_A_MATK; BK_n_A_MATK prima di Mind Breaker e Mystical
 // Amplification), scritta nella pagina
@@ -1240,7 +1238,7 @@ function calcolaMATK() {
   if (n_A_Buf6[4]) ogni((x) => Math.floor((x * (100 + 20 * n_A_Buf6[4])) / 100));
   if (SkillSearch(SKILLID.MYSTICAL_AMPLIFICATION))
     ogni((x) => Math.floor(x * (1 + 0.05 * SkillSearch(SKILLID.MYSTICAL_AMPLIFICATION))));
-  myInnerHtml("A_MATK", n_A_MATK[0] + "~" + n_A_MATK[2], 0);
+  scrivi("A_MATK", n_A_MATK[0] + "~" + n_A_MATK[2]);
   if (n_A_MATK[0] != n_A_MATK[2]) n_A_MATK[2] -= 1;
   n_A_MATK[1] = (n_A_MATK[2] + n_A_MATK[0]) / 2;
 }
@@ -1261,7 +1259,7 @@ function calcolaVelocita() {
     velocita -= 2 * n_A_Buf3[37] + Math.floor(n_A_Buf3[39] / 10) + Math.round(n_A_Buf3[27] / 2);
   if (n_A_Buf6[22]) velocita = 25;
   else if (SkillSearch(SKILLID.MENTAL_STRENGTH)) velocita = 20;
-  myInnerHtml("A_MovSPEED", velocita + " %", 0);
+  scrivi("A_MovSPEED", velocita + " %");
 }
 // ASPD, scritta nella pagina, e ritardo dell'attacco normale (n_Delay[1], sandanDelay)
 function calcolaASPD() {
@@ -1311,7 +1309,7 @@ function calcolaASPD() {
   if (thirdClass === 1 && n_A_ASPD > 193) n_A_ASPD = 193;
   else if (n_A_ASPD > 190 + 1 * c.maxASPD.value) n_A_ASPD = 190 + 1 * c.maxASPD.value;
   n_A_ASPD = Math.floor(10 * n_A_ASPD) / 10;
-  myInnerHtml("A_ASPD", n_A_ASPD, 0);
+  scrivi("A_ASPD", n_A_ASPD);
   n_A_ASPD = (200 - n_A_ASPD) / 50;
   n_Delay[1] = Math.floor(1000 * n_A_ASPD) / 1000;
   if (SKILLID.ENVENOM == n_A_ActiveSkill) n_Delay[1] = Math.floor(75 * n_A_ASPD) / 100;
@@ -1533,7 +1531,7 @@ function calcolaLancio() {
     "%<br>DEX: " +
     n_A_DEX +
     " </span></span>";
-  myInnerHtml("A_cTime", testo, 0);
+  scrivi("A_cTime", testo);
   testo =
     '<span class=name style="color:var(--color-positive);">' +
     Math.floor(100 - AC_I - ((100 - AC_I) * bonusValues[BONUSID.ACD_REDUCTION_PERCENT]) / 100) +
@@ -1544,7 +1542,7 @@ function calcolaLancio() {
     "%<br>Gear: " +
     AC_I +
     "%</span></span>";
-  myInnerHtml("A_cDelay", testo, 0);
+  scrivi("A_cDelay", testo);
 }
 // peso trasportabile oltre 2000
 var PESO_CLASSE = [
@@ -1567,7 +1565,7 @@ function calcolaPeso() {
   for (var i = 0; i <= 10; i++) peso += itemData[n_A_Equip[i]].weight;
   var carico = Math.floor((10000 * peso) / limite);
   var colore = carico < 5000 ? "var(--color-positive)" : "var(--color-negative)";
-  myInnerHtml(
+  scrivi(
     "A_Weight",
     '<span class=name style="color:' +
       colore +
@@ -1578,7 +1576,6 @@ function calcolaPeso() {
       " / " +
       limite +
       "</span></span>",
-    0,
   );
   return carico;
 }
@@ -1646,7 +1643,7 @@ function rigenerazioneHP(carico) {
         "Increase HP Recovery Lvl " + livello + "<br>Each 10 seconds",
       );
   }
-  myInnerHtml("A_HPR", n_A_HPR + extra, 0);
+  scrivi("A_HPR", n_A_HPR + extra);
 }
 // rigenerazione degli SP, con quella delle skill, scritta nella pagina
 function rigenerazioneSP(carico) {
@@ -1711,7 +1708,7 @@ function rigenerazioneSP(carico) {
         "Increase SP Recovery Lvl " + livello + "<br>Each 10 seconds",
       );
   }
-  myInnerHtml("A_SPR", n_A_SPR + extra, 0);
+  scrivi("A_SPR", n_A_SPR + extra);
 }
 // bonus dopo le statistiche: danni per elemento, razza e taglia, resistenze, cure
 function bonusFinali() {
@@ -2429,23 +2426,23 @@ function StPlusCalc() {
     (n_A_DEX += E),
     (n_A_LUK += S),
     n >= 0
-      ? myInnerHtml("A_STRp", " + " + n + " (" + n_A_STR + ")", 0)
-      : myInnerHtml("A_STRp", " - " + -n + " (" + n_A_STR + ")", 0),
+      ? scrivi("A_STRp", " + " + n + " (" + n_A_STR + ")")
+      : scrivi("A_STRp", " - " + -n + " (" + n_A_STR + ")"),
     s >= 0
-      ? myInnerHtml("A_AGIp", " + " + s + " (" + n_A_AGI + ")", 0)
-      : myInnerHtml("A_AGIp", " - " + -s + " (" + n_A_AGI + ")", 0),
+      ? scrivi("A_AGIp", " + " + s + " (" + n_A_AGI + ")")
+      : scrivi("A_AGIp", " - " + -s + " (" + n_A_AGI + ")"),
     _ >= 0
-      ? myInnerHtml("A_VITp", " + " + _ + " (" + n_A_VIT + ")", 0)
-      : myInnerHtml("A_VITp", " - " + -_ + " (" + n_A_VIT + ")", 0),
+      ? scrivi("A_VITp", " + " + _ + " (" + n_A_VIT + ")")
+      : scrivi("A_VITp", " - " + -_ + " (" + n_A_VIT + ")"),
     a >= 0
-      ? myInnerHtml("A_INTp", " + " + a + " (" + n_A_INT + ")", 0)
-      : myInnerHtml("A_INTp", " - " + -a + " (" + n_A_INT + ")", 0),
+      ? scrivi("A_INTp", " + " + a + " (" + n_A_INT + ")")
+      : scrivi("A_INTp", " - " + -a + " (" + n_A_INT + ")"),
     E >= 0
-      ? myInnerHtml("A_DEXp", " + " + E + " (" + n_A_DEX + ")", 0)
-      : myInnerHtml("A_DEXp", " - " + -E + " (" + n_A_DEX + ")", 0),
+      ? scrivi("A_DEXp", " + " + E + " (" + n_A_DEX + ")")
+      : scrivi("A_DEXp", " - " + -E + " (" + n_A_DEX + ")"),
     S >= 0
-      ? myInnerHtml("A_LUKp", " + " + S + " (" + n_A_LUK + ")", 0)
-      : myInnerHtml("A_LUKp", " - " + -S + " (" + n_A_LUK + ")", 0));
+      ? scrivi("A_LUKp", " + " + S + " (" + n_A_LUK + ")")
+      : scrivi("A_LUKp", " - " + -S + " (" + n_A_LUK + ")"));
 }
 function StPlusCalc2(l) {
   for (var A = 0, n = 0; n <= 20; n++)

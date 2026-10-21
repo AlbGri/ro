@@ -30683,20 +30683,20 @@ function ClickB_Item(e) {
   e != "SW" && ((Item_or_Card = "Item"), (ItemCardNumberCheck = e));
   ActiveSkillSetPlus();
   e == "SW" && (e = ItemCardNumberCheck);
-  myInnerHtml("ITEM_TITLE", itemData[e].name + " [" + itemData[e].slots + "]", 0);
-  myInnerHtml("ITEM3", "Req. Lvl:", 0);
-  myInnerHtml("ITEM4", "Weight:", 0);
+  scrivi("ITEM_TITLE", itemData[e].name + " [" + itemData[e].slots + "]");
+  scrivi("ITEM3", "Req. Lvl:");
+  scrivi("ITEM4", "Weight:");
   itemData[e].equipType < 50
-    ? (myInnerHtml("ITEM1", "ATK:", 0),
-      myInnerHtml("ITEM2", "Weapon Lvl:", 0),
-      myInnerHtml("ITEM_W_LV", itemData[e].weaponLevel, 0))
-    : (myInnerHtml("ITEM1", "DEF:", 0),
-      myInnerHtml("ITEM2", "-", 0),
-      myInnerHtml("ITEM_W_LV", "-", 0));
-  myInnerHtml("ITEM_DATA", itemData[e].attackOrDefense, 0);
-  myInnerHtml("ITEM_LV", itemData[e].requiredLevel, 0);
-  myInnerHtml("ITEM_WAIT", itemData[e].weight, 0);
-  myInnerHtml("B_SETUMEI", descrizioneOggetto(e), 0);
+    ? (scrivi("ITEM1", "ATK:"),
+      scrivi("ITEM2", "Weapon Lvl:"),
+      scrivi("ITEM_W_LV", itemData[e].weaponLevel))
+    : (scrivi("ITEM1", "DEF:"),
+      scrivi("ITEM2", "-"),
+      scrivi("ITEM_W_LV", "-"));
+  scrivi("ITEM_DATA", itemData[e].attackOrDefense);
+  scrivi("ITEM_LV", itemData[e].requiredLevel);
+  scrivi("ITEM_WAIT", itemData[e].weight);
+  scrivi("B_SETUMEI", descrizioneOggetto(e));
 }
 // Il testo della scheda di un oggetto: effetti, descrizione e combinazioni. Senza toccare la
 // pagina: lo usa anche la ricerca negli effetti

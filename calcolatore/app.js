@@ -128,12 +128,17 @@ function copia(n) {
   return el;
 }
 function copiaFigli(n, dentro) {
+  copiaNodi(n.figli, dentro);
+}
+function copiaNodi(nodi, dentro) {
   dentro.replaceChildren();
-  for (const f of n.figli) {
+  for (const f of nodi) {
     const c = copia(f);
     if (c) dentro.appendChild(c);
   }
 }
+// un risultato del motore (uscite in motore/campi.js): HTML con pochi tag
+const copiaHtml = (html, dentro) => copiaNodi(doc._analizza(html), dentro);
 
 // controlli collegati: ogni controllo della pagina sa a quale campo del motore corrisponde
 const collegati = new Set();
@@ -426,7 +431,7 @@ function ricollega() {
   }
 }
 
-const uscite = [...document.querySelectorAll("[data-uscita]")];
+const elementiUscita = [...document.querySelectorAll("[data-uscita]")];
 const righe = [...document.querySelectorAll("[data-riga]")];
 const contenitori = [...document.querySelectorAll("[data-contenitore]")];
 const pannelli = [...document.querySelectorAll("[data-pannello]")];
@@ -434,18 +439,13 @@ const passive = document.getElementById("passive");
 const manoSinistra = document.getElementById("mano-sinistra");
 
 function aggiornaUscite() {
-  for (const el of uscite) {
-    const v = doc.getElementById(el.dataset.uscita);
-    const html = v ? v.innerHTML : "";
+  for (const el of elementiUscita) {
+    const html = window.uscite[el.dataset.uscita] ?? "";
     if (el._html === html) continue;
     el._html = html;
-    if (v) copiaFigli(v, el);
-    else el.replaceChildren();
+    copiaHtml(html, el);
   }
-  for (const el of righe) {
-    const v = doc.getElementById(el.dataset.riga);
-    el.hidden = !v || !v.textContent.trim();
-  }
+  for (const el of righe) el.hidden = !window.testo(el.dataset.riga);
 }
 
 // contenitori del motore che cambiano forma (campi della skill scelta, mano sinistra...)
@@ -814,8 +814,8 @@ function numeroDi(testo) {
 }
 const arrotonda = (x) => String(Math.round(x * 100) / 100);
 
-function valoreDi(m, d) {
-  const testo = d.testo(m.id).replace(/\s+/g, " ").trim();
+function valoreDi(m, motore) {
+  const testo = motore.testo(m.id).replace(/\s+/g, " ").trim();
   const numero = testo ? numeroDi(testo) : null;
   let mostra = traduci(testo) || "—";
   if (m.primo) mostra = testo.match(/^[-\d.]+\s*%?/)?.[0] ?? mostra;
@@ -908,7 +908,7 @@ function aggiornaConfronto() {
       gruppo = m.gruppo;
       continue;
     }
-    const va = valoreDi(m, dA), vb = valoreDi(m, doc);
+    const va = valoreDi(m, motoreA.finestra), vb = valoreDi(m, window);
     const diff = differenza(m, va, vb);
     if (soloDifferenze.checked && !diff.diversa) continue;
     if (gruppo) righe.push(riga([[gruppo]], "gruppo"));

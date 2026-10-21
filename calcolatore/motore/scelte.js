@@ -419,7 +419,7 @@ function ClickWeaponType(e) {
     n_A_JobSet(),
     (n_A_JOB != 8 && n_A_JOB != 22) || e == 11)
   )
-    (myInnerHtml("A_SobWeaponName", "", 0),
+    (scrivi("A_SobWeaponName", ""),
       myInnerHtml("A_w2", "", 0),
       myInnerHtml("A_weapon2refine", "", 0),
       myInnerHtml("A_weapon2_cardshort", "", 0),
@@ -452,7 +452,7 @@ function ClickWeaponType(e) {
       (c.A_acces1_card.style.width = "auto"),
       (c.A_acces2_card.style.width = "auto"));
   else if (n_Nitou == 0) {
-    (myInnerHtml("A_SobWeaponName", "Left Hand: ", 0),
+    (scrivi("A_SobWeaponName", "Left Hand: "),
       myInnerHtml(
         "A_w2",
         '<select name="A_weapon2" style="width:185px;" onchange="ClickWeaponType2(this[this.selectedIndex].value) | Click_Item(this[this.selectedIndex].value)|restrictCardslot(1)"><option value="0">(Fist or Shield)</option></select>',
@@ -839,19 +839,19 @@ function ClickB_Enemy() {
         (n_B2[24] =
           targetData[7] + (Math.floor(targetData[7] / 20) * Math.floor(targetData[7] / 20) - 1)),
         n_B2[23] > n_B2[24] && (n_B2[24] = n_B2[23])),
-    myInnerHtml("B_6", targetData[6], 0),
-    myInnerHtml("B_16", targetData[16], 0),
-    myInnerHtml("B_12", targetData[12], 0),
-    myInnerHtml("B_13", targetData[13], 0),
-    myInnerHtml("B_17", targetData[17], 0),
-    myInnerHtml("B_14", targetData[14], 0),
-    myInnerHtml("B_23", targetData[23], 0),
-    myInnerHtml("B_15", targetData[15], 0),
-    myInnerHtml("B_vit", targetData[7], 0),
-    myInnerHtml("B_agi", targetData[8], 0),
-    myInnerHtml("B_int", targetData[9], 0),
-    myInnerHtml("B_dex", targetData[10], 0),
-    myInnerHtml("B_luk", targetData[11], 0),
+    scrivi("B_6", targetData[6]),
+    scrivi("B_16", targetData[16]),
+    scrivi("B_12", targetData[12]),
+    scrivi("B_13", targetData[13]),
+    scrivi("B_17", targetData[17]),
+    scrivi("B_14", targetData[14]),
+    scrivi("B_23", targetData[23]),
+    scrivi("B_15", targetData[15]),
+    scrivi("B_vit", targetData[7]),
+    scrivi("B_agi", targetData[8]),
+    scrivi("B_int", targetData[9]),
+    scrivi("B_dex", targetData[10]),
+    scrivi("B_luk", targetData[11]),
     (n_B2[23] = targetData[7]),
     (n_B2[24] =
       targetData[7] + (Math.floor(targetData[7] / 20) * Math.floor(targetData[7] / 20) - 1)),
@@ -1084,8 +1084,8 @@ function ClickB_Enemy() {
       (targetData[17] = Math.floor((targetData[17] * (125 + 11 * n_A_Buf3[8])) / 100))));
   ((targetData[21] = targetData[27] + 20),
     (targetData[22] = targetData[26] + 75),
-    myInnerHtml("B_AA", " + ", 0),
-    myInnerHtml("B_AB", " + ", 0));
+    scrivi("B_AA", " + "),
+    scrivi("B_AB", " + "));
   var s = [6, 12, 13, 21, 22, 14, 15, 23, 25],
     u = [16, 17],
     I = "<B style='color:blue'>",
@@ -1095,20 +1095,20 @@ function ClickB_Enemy() {
     var r = targetData[s[i]];
     (targetData[s[i]] < n_B2[s[i]] && (r = I + targetData[s[i]] + f),
       targetData[s[i]] > n_B2[s[i]] && (r = D + targetData[s[i]] + f),
-      myInnerHtml("B_" + s[i], r, 0));
+      scrivi("B_" + s[i], r));
   }
   for (i = 0; i <= 1; i++)
     ((r = targetData[u[i]]),
       targetData[u[i]] < n_B2[u[i]] && (r = D + targetData[u[i]] + f),
       targetData[u[i]] > n_B2[u[i]] && (r = I + targetData[u[i]] + f),
-      myInnerHtml("B_" + u[i], r, 0));
-  (myInnerHtml("B_2", v_Race[targetData[2]], 0),
+      scrivi("B_" + u[i], r));
+  (scrivi("B_2", v_Race[targetData[2]]),
     (o = Math.floor(targetData[3] / 10)),
     targetData[3] != n_B2[3]
-      ? myInnerHtml("B_3", "<b>" + D + (v_Element[o] + (targetData[3] % 10)) + f + "</b>", 0)
-      : myInnerHtml("B_3", "<b>" + (v_Element[o] + (targetData[3] % 10)) + "</b>", 0),
-    myInnerHtml("B_4", v_Size[targetData[4]], 0),
-    myInnerHtml("B_type", v_Type[targetData[19]], 0),
+      ? scrivi("B_3", "<b>" + D + (v_Element[o] + (targetData[3] % 10)) + f + "</b>")
+      : scrivi("B_3", "<b>" + (v_Element[o] + (targetData[3] % 10)) + "</b>"),
+    scrivi("B_4", v_Size[targetData[4]]),
+    scrivi("B_type", v_Type[targetData[19]]),
     (targetData[27] += n_B_manual[37]),
     c.A8_Skill14.value == 1 ? (n_WoE = 1) : (n_WoE = 0),
     n_WoE && (targetData[27] = Math.floor(0.8 * targetData[27])),

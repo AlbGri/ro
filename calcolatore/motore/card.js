@@ -3187,21 +3187,20 @@ function Card(a) {
   Item_or_Card = "Card";
   ItemCardNumberCheck = a;
   ActiveSkillSetPlus();
-  for (var e = 1; e <= 4; e++) myInnerHtml("ITEM" + e, "", 0);
-  myInnerHtml("ITEM_W_LV", "", 0);
-  myInnerHtml("ITEM_DATA", "", 0);
-  myInnerHtml("ITEM_LV", "", 0);
-  myInnerHtml("ITEM_WAIT", "", 0);
-  myInnerHtml(
+  for (var e = 1; e <= 4; e++) scrivi("ITEM" + e, "");
+  scrivi("ITEM_W_LV", "");
+  scrivi("ITEM_DATA", "");
+  scrivi("ITEM_LV", "");
+  scrivi("ITEM_WAIT", "");
+  scrivi(
     "ITEM_TITLE",
     a == 106
       ? "Very Strong or Top10"
       : 201 <= a && a <= 204
         ? m_Card[a][2]
         : m_Card[a][2] + " Card",
-    0,
   );
-  myInnerHtml("B_SETUMEI", descrizioneCarta(a), 0);
+  scrivi("B_SETUMEI", descrizioneCarta(a));
 }
 // Il testo della scheda di una carta, senza toccare la pagina (come descrizioneOggetto)
 function descrizioneCarta(a) {
