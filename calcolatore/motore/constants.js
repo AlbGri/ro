@@ -1,5 +1,4 @@
-const SERVERID = { IRO_CLASSIC: 0, UARO: 10, PRIVATE_CLASSIC: 20, IRO_RENEWAL: 50 },
-  JOBID = {
+const JOBID = {
     NOVICE: 0,
     SWORDMAN: 1,
     THIEF: 2,

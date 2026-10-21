@@ -489,7 +489,7 @@
     "<b>For each refine level:</b> Casting Time -1%<BR>[Refine Rate 9~10] MATK +2%",
     0,
   ],
-  [178, 2, "Lord Knight", "Enables use of [" + skillName(258, SRV) + "] Lvl 1", 15, -50, 0],
+  [178, 2, "Lord Knight", "Enables use of [" + skillName(258) + "] Lvl 1", 15, -50, 0],
   [179, 2, "Blue Acidus", "[Refine Rate 0~4] MaxSP +40, SP Recovery Rate +5%", 14, 40, 0],
   [180, 2, "Seyren Windsor", "<b>For each refine level:</b> STR +1", 1, -6, 0],
   [181, 4, "Waste Stove", 0, 4, 1, 17, 5, 0],
@@ -607,7 +607,7 @@
     224,
     4,
     "Anolian",
-    "If you learned [" + skillName(42, SRV) + "] Lvl 10, you will cast Lvl 10 instead.",
+    "If you learned [" + skillName(42) + "] Lvl 10, you will cast Lvl 10 instead.",
     221,
     56,
     0,
@@ -645,7 +645,7 @@
     236,
     7,
     "Violy",
-    "If you learned [" + skillName(201, SRV) + "] Lvl 5, you will cast Lvl 5 instead.",
+    "If you learned [" + skillName(201) + "] Lvl 5, you will cast Lvl 5 instead.",
     221,
     60,
     0,
@@ -866,7 +866,7 @@
     4,
     "Aliza",
     "When receiving ATK based damage, 5% chance to cast [" +
-      skillName(539, SRV) +
+      skillName(539) +
       "] on your attacker.<BR>If equipped by a [Dancer] class job: 10% chance instead.",
     0,
   ],
@@ -1555,7 +1555,7 @@
     100,
     0,
     "Movement Speed +5%<BR>Disables the auto-casting of [" +
-      skillName(167, SRV) +
+      skillName(167) +
       "].<BR>Recover 1 SP when dealing ATK based damage.<BR><b>[Thief Class]</b><br>Removes the consumption of gemstones from skills that usually would.",
     1,
     5,
@@ -1659,11 +1659,11 @@
     100,
     0,
     "If the user knows [" +
-      skillName(174, SRV) +
+      skillName(174) +
       "] Lvl 5, 5% chance to cast [" +
-      skillName(174, SRV) +
+      skillName(174) +
       "] Lvl 5 when performing an ATK based attack.<BR><b>[Rogue Class]</b><br>All skill's SP cost -20%, Disables the auto-casting of [" +
-      skillName(167, SRV) +
+      skillName(167) +
       "].",
     1,
     6,
@@ -2131,7 +2131,7 @@
     2,
     "Parus",
     "If equipped by a [Acolyte] class job: Your [Heal], [Sanctuary], and [" +
-      skillName(245, SRV) +
+      skillName(245) +
       "] effectiveness +(refine/2)%",
     99,
     3,

@@ -8398,9 +8398,9 @@ const itemData = [
     extraInfo: 0,
     description:
       "Autocasted [" +
-      skillName(416, SRV) +
+      skillName(416) +
       "] level is equal to the [" +
-      skillName(416, SRV) +
+      skillName(416) +
       "] skill level that the user has learned.",
     bonuses: [
       { id: BONUSID.HIT, value: -10 },
@@ -8616,7 +8616,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "<b>[Refine Rate 7~10]</b><br>MATK +1%<br>ATK based damage +1% (versus Normal/Boss/Guardian)<br>Your [Heal], [Sanctuary], and [" +
-      skillName(245, SRV) +
+      skillName(245) +
       "] effectiveness +1%",
     bonuses: [
       { id: BONUSID.MDEF, value: 7 },
@@ -9664,7 +9664,7 @@ const itemData = [
     requiredLevel: 55,
     name: "Drill Katar",
     extraInfo: 0,
-    description: "<b>NOTE: " + skillName(440, SRV) + " available in <i>Other Info</i>.</b>",
+    description: "<b>NOTE: " + skillName(440) + " available in <i>Other Info</i>.</b>",
     bonuses: [
       { id: BONUSID.HIT, value: 30 },
       { id: 221, value: 124 },
@@ -9849,7 +9849,7 @@ const itemData = [
     name: "Healing Staff",
     extraInfo: 0,
     description:
-      "Your [Heal], [Sanctuary], and [" + skillName(245, SRV) + "] effectiveness +(refine*3/2)",
+      "Your [Heal], [Sanctuary], and [" + skillName(245) + "] effectiveness +(refine*3/2)",
     bonuses: [
       { id: BONUSID.WEAPON_ELEMENT, value: 6 },
       { id: BONUSID.MATK_PERCENT, value: 15 },
@@ -9885,7 +9885,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "[" +
-      skillName(276, SRV) +
+      skillName(276) +
       "] skill Casting Time -50%<br><b>Each two refine levels:</b> MATK +1%<br>All skills' SP cost +(refine*2)%<br>When receiving ATK based damage, (Refine*2)% chance to cast [Jupitel Thunder] Lvl 5 on your attacker.",
     bonuses: [
       { id: 195, value: 1 },
@@ -12490,7 +12490,7 @@ const itemData = [
     requiredLevel: 60,
     name: "Gangster Scarf",
     extraInfo: 0,
-    description: "<b>[Rogue Class]</b><br>Enables the use of [" + skillName(180, SRV) + "] Lvl 1",
+    description: "<b>[Rogue Class]</b><br>Enables the use of [" + skillName(180) + "] Lvl 1",
     bonuses: [{ id: BONUSID.ATK, value: 5 }],
   },
   {
@@ -12732,7 +12732,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "When performing an ATK based attack, 1% chance you gain ASPD +7% for 7 seconds. Every refine increases the chance by 0.2%<BR>[" +
-      skillName(44, SRV) +
+      skillName(44) +
       "] skill pushes your target 3 cells back.",
     bonuses: [],
   },
@@ -14364,7 +14364,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "When performing an ATK based attack, 5% chance to completely negate the Casting Time on [" +
-      skillName(197, SRV) +
+      skillName(197) +
       "] for 6 seconds.",
     bonuses: [
       { id: 194, value: 1 },
@@ -14666,7 +14666,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "5% chance to increase [Throw Huuma Shuriken] and [" +
-      skillName(405, SRV) +
+      skillName(405) +
       "] skills damage +100% for 10 seconds.",
     bonuses: [
       { id: 194, value: 1 },
@@ -14928,7 +14928,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "When using [Double Strafe] skill, 2% chance to cast [" +
-      skillName(44, SRV) +
+      skillName(44) +
       "] at the same time.",
     bonuses: [],
   },
@@ -14960,11 +14960,11 @@ const itemData = [
     extraInfo: 0,
     description:
       "When performing an ATK based attack, 3% chance to cast [" +
-      skillName(261, SRV) +
+      skillName(261) +
       "] Lvl 1 on your target.<br>1% chance to cast [Summon Spirit Sphere] Lvl 5 when performing an ATK based attack.<br>10% chance to cast [" +
-      skillName(193, SRV) +
+      skillName(193) +
       "] Lvl 1 when [" +
-      skillName(288, SRV) +
+      skillName(288) +
       "] is casted",
     bonuses: [],
   },
@@ -15001,7 +15001,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "The [" +
-      skillName(199, SRV) +
+      skillName(199) +
       "] skill pushes your target 2 cells back.<br>The [Arrow Vulcan] skill pushes your target 3 cells back.",
     bonuses: [
       { id: BONUSID.AGI, value: 2 },
@@ -15021,7 +15021,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "When using [" +
-      skillName(199, SRV) +
+      skillName(199) +
       "] skill, 10% chance to cause [Stun] status effect on your target.<br><b>[Refine Rate 9~10]</b>The chance to cause [Stun] increases to 20%",
     bonuses: [{ id: BONUSID.INT, value: 2 }],
   },
@@ -15038,7 +15038,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "When using [" +
-      skillName(207, SRV) +
+      skillName(207) +
       "] skill, 10% chance to cause [Freeze] status effect on your target.<br><b>[Refine Rate 9~10]</b>The chance to cause [Freeze] increases to 20%",
     bonuses: [{ id: BONUSID.INT, value: 2 }],
   },
@@ -15055,7 +15055,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "The [" +
-      skillName(207, SRV) +
+      skillName(207) +
       "] skill pushes your target 2 cells back.<br>The [Arrow Vulcan] skill pushes your target 3 cells back.",
     bonuses: [
       { id: BONUSID.AGI, value: 2 },
@@ -15875,9 +15875,9 @@ const itemData = [
     extraInfo: 0,
     description:
       "When using [Heal], [Sanctuary], and [" +
-      skillName(245, SRV) +
+      skillName(245) +
       "] skills, 5% chance your [Heal], [Sanctuary], and [" +
-      skillName(245, SRV) +
+      skillName(245) +
       "] effectiveness +20% for 3 seconds.",
     bonuses: [
       { id: BONUSID.INT, value: 2 },
@@ -16395,7 +16395,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "When receiving ATK based damage, 5% chance to cast [" +
-      skillName(539, SRV) +
+      skillName(539) +
       "] Lvl 1 on your attacker.",
     bonuses: [{ id: BONUSID.MDEF, value: 3 }],
   },
@@ -17173,7 +17173,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "INT +(Refine Level)<br><b>[Refine Rate 6~10]</b><br>All skills' SP cost -10%<br><b>[Refine Rate 9~10]</b><br>100% chance to cast [Lex Aeterna] Lvl 1 when using [" +
-      skillName(283, SRV) +
+      skillName(283) +
       "] skill.<br><b>[Refine Rate 10]</b><br>INT +5",
     bonuses: [
       { id: BONUSID.INT, value: 1 },
@@ -17198,7 +17198,7 @@ const itemData = [
       "] race monster by 5%<br><font color=red>[Slaughter] Lvl 2:</font> Increases ATK based damage against [" +
       v_Race[7] +
       "] race monsters by (refine level - 3) ^ 2<br><b>[Refine Rate 9~10]</b><br>3% chance to cast [Aura Blade] Lvl 1 or the user's level if its higher, on yourself when performing an ATK based attack.<br>3% chance to cast [" +
-      skillName(256, SRV) +
+      skillName(256) +
       "] Lvl 1 or the user's level if its higher, on yourself when performing an ATK based attack.",
     bonuses: [
       { id: BONUSID.DMG_DEMI_HUMAN_PERCENT, value: 70 },
@@ -17223,7 +17223,7 @@ const itemData = [
       "] race monster by 5%<br><font color=red>[Slaughter] Lvl 1:</font> Increases ATK based damage against [" +
       v_Race[7] +
       "] race monsters by (refine level - 4) ^ 2<br>ASPD +10%<br><b>[Refine Rate 9~10]</b><br>If used by a [Knight] class job, 20% chance to cast [Critical Wound] Lvl 2 on your target when [Pierce] is used<br>If used by a [Crusader] class job, 10% chance to cast [" +
-      skillName(283, SRV) +
+      skillName(283) +
       "] Lvl 5 on your target when performing an ATK based attack.",
     bonuses: [
       { id: BONUSID.DMG_DEMI_HUMAN_PERCENT, value: 95 },
@@ -17248,7 +17248,7 @@ const itemData = [
       "] race monster by 5%<br><font color=red>[Slaughter] Lvl 1:</font> Increases ATK based damage against [" +
       v_Race[7] +
       "] race monsters by (refine level - 4) ^ 2<br><b>[Refine Rate 9~10]</b><br>If used by a [Knight] class job, 20% chance to cast [Critical Wound] Lvl 2 on your target when [Pierce] is used<br>If used by a [Crusader] class job, 20% chance to cast [" +
-      skillName(283, SRV) +
+      skillName(283) +
       "] Lvl 5 on your target when performing an ATK based attack.",
     bonuses: [
       { id: BONUSID.DMG_DEMI_HUMAN_PERCENT, value: 70 },
@@ -17314,11 +17314,11 @@ const itemData = [
     extraInfo: 0,
     description:
       "<b>[Refine Rate 6~10]</b><br>Your [Heal], [Sanctuary] and [" +
-      skillName(245, SRV) +
+      skillName(245) +
       "] effectiveness + (5 + (refine level - 5) * 2)%<br>On [" +
       v_Race[7] +
       "] race targets, ignore 5% MDEF<br><b>[Refine Rate 9~10]</b><br>10% chance to cast [Heal] Lvl 10 when using [Heal] skill.<br><b>[Refine Rate 10]</b><br>Your [Heal], [Sanctuary] and [" +
-      skillName(245, SRV) +
+      skillName(245) +
       "] effectiveness +10%",
     bonuses: [
       { id: BONUSID.MATK_PERCENT, value: 15 },
@@ -17574,7 +17574,7 @@ const itemData = [
       "] race monsters by (refine level - 4) ^ 2<br>Pierces Defense of [" +
       v_Race[7] +
       "] race monster by 5%<br><b>[Refine Rate 9~10]</b><br>(refine level*10 - 50)% chance to cast [" +
-      skillName(193, SRV) +
+      skillName(193) +
       "] Lvl 1 when dealing ATK based damage<br>(refine level * 10 - 50)% chance to cast [Decrease Agility] Lvl 1 when dealing ATK based damage",
     bonuses: [
       { id: BONUSID.DMG_DEMI_HUMAN_PERCENT, value: 95 },
@@ -17599,11 +17599,11 @@ const itemData = [
       "] race monsters by (refine level - 4) ^ 2<br>Pierces Defense of [" +
       v_Race[7] +
       "] race monster by 5%<br><b>[Refine Rate 9~10]</b><br>[" +
-      skillName(197, SRV) +
+      skillName(197) +
       "] skill Casting Time -100%<br>100% chance to cast [" +
-      skillName(291, SRV) +
+      skillName(291) +
       "] when [" +
-      skillName(195, SRV) +
+      skillName(195) +
       "] skill is used.",
     bonuses: [
       { id: BONUSID.DMG_DEMI_HUMAN_PERCENT, value: 95 },
@@ -17652,11 +17652,11 @@ const itemData = [
       "] race monster by 5%<br><font color=red>[Slaughter] Lvl 1:</font> Increases ATK based damage against [" +
       v_Race[7] +
       "] race monsters by (refine level - 4) ^ 2<br><b>[Refine Rate 9~10]</b><br><b>For each refine level:</b> [" +
-      skillName(428, SRV) +
+      skillName(428) +
       "] skill damage +2%<br>100% chance to cast [" +
-      skillName(416, SRV) +
+      skillName(416) +
       "] Lvl 1 when [" +
-      skillName(428, SRV) +
+      skillName(428) +
       "] skill is used.",
     bonuses: [
       { id: BONUSID.DMG_DEMI_HUMAN_PERCENT, value: 55 },
@@ -17729,9 +17729,9 @@ const itemData = [
       "] race monster by 5%<br><font color=red>[Slaughter] Lvl 1:</font> Increases ATK based damage against [" +
       v_Race[7] +
       "] race monsters by (refine level - 4) ^ 2<br><b>[Refine Rate 9~10]</b><br><b>For each refine level:</b> [" +
-      skillName(436, SRV) +
+      skillName(436) +
       "] skill damage +2%<br>20% chance to cause [Stun] status effect on your target when [" +
-      skillName(436, SRV) +
+      skillName(436) +
       "] skill is used.",
     bonuses: [
       { id: BONUSID.DMG_DEMI_HUMAN_PERCENT, value: 55 },
@@ -17757,9 +17757,9 @@ const itemData = [
       "] race monster by 5%<br><font color=red>[Slaughter] Lvl 1:</font> Increases ATK based damage against [" +
       v_Race[7] +
       "] race monsters by (refine level - 4) ^ 2<br><b>[Refine Rate 9~10]</b><br><b>For each refine level:</b> [" +
-      skillName(437, SRV) +
+      skillName(437) +
       "] skill damage +2%<br>20% chance to cause [Stun] status effect on your target when [" +
-      skillName(436, SRV) +
+      skillName(436) +
       "] skill is used.<br>When performing an ATK based attack, 20% chance you gain ASPD +20% for 20 seconds.",
     bonuses: [
       { id: BONUSID.DMG_DEMI_HUMAN_PERCENT, value: 35 },
@@ -18621,7 +18621,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "When using [" +
-      skillName(171, SRV) +
+      skillName(171) +
       "] skill, 10% chance to cause [Poison] status effect on your target.<br>When dealing ATK based damage, 0.5% chance to increase ATK based damage by 10% for 5 seconds.",
     bonuses: [],
   },
@@ -18685,7 +18685,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "For each level of [Divine Protection] the user has learned, user's [Heal], [Sanctuary], and [" +
-      skillName(245, SRV) +
+      skillName(245) +
       "] effectiveness +1%<br>For each level of [Mace Mastery] the user has learned, CRIT +2",
     bonuses: [
       { id: BONUSID.INT, value: 1 },
@@ -19049,7 +19049,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "When receiving ATK based damage, 2% chance to cast [" +
-      skillName(95, SRV) +
+      skillName(95) +
       "] Lvl 1 on yourself.",
     bonuses: [{ id: BONUSID.MDEF, value: 2 }],
   },
@@ -20547,7 +20547,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "<b>[Refine Rate 7~10]</b><br>MDEF +1<br>MATK +2%<br>Your [Heal], [Sanctuary], and [" +
-      skillName(245, SRV) +
+      skillName(245) +
       "] effectiveness +3%",
     bonuses: [
       { id: BONUSID.RESIST_WATER_PERCENT, value: 5 },
@@ -20567,7 +20567,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "<b>[Refine Rate 7~10]</b><br>Small chance to cast [" +
-      skillName(346, SRV) +
+      skillName(346) +
       "] Lvl 1 (" +
       v_Element[2] +
       " Endow) when receiving ATK based damage.",
@@ -20687,7 +20687,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "<b>[Refine Rate 7~10]</b><br>Small chance to cast [" +
-      skillName(346, SRV) +
+      skillName(346) +
       "] Lvl 2 (" +
       v_Element[4] +
       " Endow) when receiving ATK based damage<br><b>[Refine Rate 9~10]</b><br>FLEE +5<br>ATK based damage +3% (versus Normal/Boss/Guardian)",
@@ -20779,7 +20779,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "<b>[Refine Rate 7~10]</b><br>Small chance to cast [" +
-      skillName(346, SRV) +
+      skillName(346) +
       "] Lvl 3 (" +
       v_Element[1] +
       " Endow) when receiving ATK based damage<br><b>[Refine Rate 8~10]</b><br>ASPD +2%<br><b>[Refine Rate 9~10]</b><br>When performing an ATK based attack, there's a chance to cast [Frost Nova] Lvl 5<br><b>[Refine Rate 10]</b><br>ASPD +2%<br>ATK +5",
@@ -20869,7 +20869,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "<b>[Refine Rate 7~10]</b><br>When performing an ATK based attack, 5% chance to cast [" +
-      skillName(382, SRV) +
+      skillName(382) +
       "] Lvl 1",
     bonuses: [
       { id: BONUSID.RESIST_EARTH_PERCENT, value: 5 },
@@ -20890,7 +20890,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "Enables the use of [" +
-      skillName(211, SRV) +
+      skillName(211) +
       "] Lvl 1 (only available when equipping a whip weapon)",
     bonuses: [
       { id: 200, value: 1 },
@@ -22115,7 +22115,7 @@ const itemData = [
     requiredLevel: 35,
     name: "Observer",
     extraInfo: 0,
-    description: "Enables use of [" + skillName(123, SRV) + "] Lvl 1.",
+    description: "Enables use of [" + skillName(123) + "] Lvl 1.",
     bonuses: [],
   },
   {
@@ -22605,7 +22605,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "Enables use of [" +
-      skillName(123, SRV) +
+      skillName(123) +
       "] Lvl 1.<br />When performing an ATK based attack, 50% chance to cast [Increase Agility] Lvl 1.",
     bonuses: [{ id: BONUSID.LUK, value: 3 }],
   },
@@ -22671,9 +22671,9 @@ const itemData = [
     extraInfo: 0,
     description:
       "10% chance to obtain a [Buche De Noel] item when killing monster ID no.530<br>10% chance to obtain a [Candy Cane] item when killing monster ID no.12354<br><b>[Refine Rate 0~7]</b><br>When receiving ATK or MATK based attack, 2% chance to cast [" +
-      skillName(201, SRV) +
+      skillName(201) +
       "] Lvl 1 on yourself.<br><b>[Refine Rate 8~10]</b><br>When receiving ATK or MATK based attack, 2% chance to cast [" +
-      skillName(201, SRV) +
+      skillName(201) +
       "] Lvl 5 on yourself.",
     bonuses: [
       { id: BONUSID.MDEF, value: 3 },
@@ -24909,7 +24909,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "<b>[Refine Rate 7~10]</b><br>DEF +1<br>FLEE + 10<br>5% chance to cast [" +
-      skillName(346, SRV) +
+      skillName(346) +
       "] Lvl 4 (" +
       v_Element[3] +
       " Endow) when receiving ATK based damage.",
@@ -27503,7 +27503,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "If a higher level of [" +
-      skillName(263, SRV) +
+      skillName(263) +
       "] skill is learned then that level will be autocasted instead.<BR><b>[Base STR >= 99]</b> ATK +30",
     bonuses: [
       { id: BONUSID.CRIT, value: -20 },
@@ -27755,7 +27755,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "Increases damage of [Hundred Spears] skill by 50%<BR>Enables the use of [" +
-      skillName(157, SRV) +
+      skillName(157) +
       "] Lvl 1",
     bonuses: [{ id: BONUSID.HP_PERCENT, value: 14 }],
   },
@@ -27828,7 +27828,7 @@ const itemData = [
     extraInfo: 0,
     description:
       "Increases damage of [Wind Cutter] and [Sonic Wave] by 100%.<BR>Adds a chance of activating [" +
-      skillName(256, SRV) +
+      skillName(256) +
       "] and adding 2 ASPD while physically attacking.",
     bonuses: [{ id: BONUSID.ATK_NORMAL_BOSS_GUARDIAN_PERCENT, value: 10 }],
   },
@@ -30698,8 +30698,7 @@ function Click_Item(e) {
 }
 function ClickB_Item(e) {
   if (
-    ((SRV = 1 * c.server.value),
-    e == "SW" && (n_itemSW ? (n_itemSW = 0) : (n_itemSW = 1)),
+    (e == "SW" && (n_itemSW ? (n_itemSW = 0) : (n_itemSW = 1)),
     documento
       .getElementById("item-disclosure")
       ?.setAttribute("aria-expanded", String(n_itemSW == 1)),
@@ -30712,7 +30711,7 @@ function ClickB_Item(e) {
     (e != "SW" && ((Item_or_Card = "Item"), (ItemCardNumberCheck = e)),
     ActiveSkillSetPlus(),
     e == "SW")
-  )
+  ) {
     if (n_itemSW == 0) {
       for (myInnerHtml("ITEM_TITLE", "Item Data", 0), s = 1; s <= 4; s++)
         myInnerHtml("ITEM" + s, "", 0);
@@ -30722,7 +30721,9 @@ function ClickB_Item(e) {
         myInnerHtml("ITEM_WAIT", "", 0),
         myInnerHtml("B_SETUMEI", "", 0));
       return;
-    } else e = ItemCardNumberCheck;
+    }
+    e = ItemCardNumberCheck;
+  }
   if (n_itemSW != 0) {
     for (
       myInnerHtml("ITEM_TITLE", m_Item[e][8] + " [" + m_Item[e][5] + "]", 0),
@@ -30767,29 +30768,28 @@ function setShieldWeight(e) {
     calc());
 }
 function Item_Setumei(e, a) {
-  ((SRV = 1 * c.server.value),
-    (wNAME1 = [
-      "0",
-      "STR",
-      "AGI",
-      "VIT",
-      "INT",
-      "DEX",
-      "LUK",
-      "All Stats",
-      "HIT",
-      "FLEE",
-      "CRIT",
-      "Perfect Dodge",
-      "ASPD",
-      "MaxHP",
-      "MaxSP",
-      "MaxHP",
-      "MaxSP",
-      "ATK",
-      "DEF",
-      "MDEF",
-    ]),
+  ((wNAME1 = [
+    "0",
+    "STR",
+    "AGI",
+    "VIT",
+    "INT",
+    "DEX",
+    "LUK",
+    "All Stats",
+    "HIT",
+    "FLEE",
+    "CRIT",
+    "Perfect Dodge",
+    "ASPD",
+    "MaxHP",
+    "MaxSP",
+    "MaxHP",
+    "MaxSP",
+    "ATK",
+    "DEF",
+    "MDEF",
+  ]),
     a > 0 ? ((wIS = " +"), (wISS = " ")) : a < 0 && ((wIS = " "), (wISS = " +")),
     1 <= e && e <= 11 && (CBIstr += wNAME1[e] + wIS + a + "<BR>"),
     e == 12 && (CBIstr += wNAME1[e] + wIS + a + "%<BR>"),
@@ -30798,9 +30798,10 @@ function Item_Setumei(e, a) {
     17 <= e && e <= 19 && (CBIstr += wNAME1[e] + wIS + a + "<BR>"),
     e == 20 && (CBIstr += v_Element[a] + " Element Weapon<BR>"),
     e == 22 &&
-      (a == 1
-        ? (CBIstr += "Bypass your target's defence [not on Boss type]<BR>")
-        : (CBIstr += "Bypass your target's defence [also works on Boss type]<BR>")),
+      (CBIstr +=
+        a == 1
+          ? "Bypass your target's defence [not on Boss type]<BR>"
+          : "Bypass your target's defence [also works on Boss type]<BR>"),
     e == 23 &&
       (CBIstr +=
         "Your damage depends on your target's VIT and DEF<br><b><font color=red>NOTE:</font> [VIT+DEF]>100, +1% for each value above 100 | [VIT+DEF]<100, -1% for each value below 100</b><BR>"),
@@ -30844,14 +30845,12 @@ function Item_Setumei(e, a) {
     e == 70 && (CBIstr += "Critical damage +" + a + "%<BR>"),
     e == 71 && (CBIstr += "Reflect melee ATK based damage by " + a + "%<BR>"),
     e == 72 && (CBIstr += "Fixed Casting Time" + wIS + a + "%<BR>"),
-    e == 73 &&
-      (SRV < SERVERID.IRO_RENEWAL
-        ? (CBIstr += "Casting Time" + wIS + a + "%<BR>")
-        : (CBIstr += "Variable Casting Time" + wIS + a + "%<BR>")),
+    e == 73 && (CBIstr += "Casting Time" + wIS + a + "%<BR>"),
     e == 74 &&
-      (a > 0
-        ? (CBIstr += "All skills' After-cast Delay -" + a + "%<BR>")
-        : (CBIstr += "All skills' After-cast Delay +" + a * -1 + "%<BR>")),
+      (CBIstr +=
+        a > 0
+          ? "All skills' After-cast Delay -" + a + "%<BR>"
+          : "All skills' After-cast Delay +" + a * -1 + "%<BR>"),
     e == 75 && (CBIstr += "HP Recovery Rate" + wIS + a + "%<BR>"),
     e == 76 && (CBIstr += "SP Recovery Rate" + wIS + a + "%<BR>"),
     e == 77 && (CBIstr += "Receive" + wISS + -1 * a + "% damage from [Boss] type monsters.<BR>"),
@@ -30889,13 +30888,13 @@ function Item_Setumei(e, a) {
     e == 96 &&
       (CBIstr +=
         "[Sanctuary] skill damage" + wIS + a + "% against [" + v_Race[6] + "] race monsters.<BR>"),
-    e == 97 && (CBIstr += "Your [" + skillName(245, SRV) + "] effectiveness" + wIS + a + "%<BR>"),
+    e == 97 && (CBIstr += "Your [" + skillName(245) + "] effectiveness" + wIS + a + "%<BR>"),
     e == 98 &&
-      (CBIstr += "Received [" + skillName(245, SRV) + "] effectiveness" + wIS + a + "%<BR>"),
+      (CBIstr += "Received [" + skillName(245) + "] effectiveness" + wIS + a + "%<BR>"),
     e == 99 &&
       (CBIstr +=
         "Your [Heal], [Sanctuary], and [" +
-        skillName(245, SRV) +
+        skillName(245) +
         "] effectiveness" +
         wIS +
         a +
@@ -30903,7 +30902,7 @@ function Item_Setumei(e, a) {
     e == 100 &&
       (CBIstr +=
         "Received [Heal], [Sanctuary], and [" +
-        skillName(245, SRV) +
+        skillName(245) +
         "] effectiveness" +
         wIS +
         a +
@@ -30945,11 +30944,10 @@ function Item_Setumei(e, a) {
       (CBIstr += "Completely ignore defense of [" + v_Race[e - 180] + "] race monsters.<BR>"),
     190 <= e &&
       e <= 192 &&
-      (a > 0
-        ? (CBIstr +=
-            "Decrease damage from [" + v_Size[e - 190] + "] size monsters by " + a + "%<BR>")
-        : (CBIstr +=
-            "Increase damage from [" + v_Size[e - 190] + "] size monsters by " + -1 * a + "%<BR>")),
+      (CBIstr +=
+        a > 0
+          ? "Decrease damage from [" + v_Size[e - 190] + "] size monsters by " + a + "%<BR>"
+          : "Increase damage from [" + v_Size[e - 190] + "] size monsters by " + -1 * a + "%<BR>"),
     e == 193 && (CBIstr += "<Font color='#FF00FF'>Unrefinable</Font><BR>"),
     e == 194 && (CBIstr += "<Font color='#0000FF'>Unbreakable (except when upgrading)</Font><BR>"),
     e == 195 && (CBIstr += "<B>Two-Handed Staff</B><BR>"),
@@ -30993,7 +30991,7 @@ function Item_Setumei(e, a) {
     e == 220 &&
       (CBIstr +=
         "Enables the use of [" +
-        skillName(m_Skill[m_EnableSkill[a][2]][0], SRV) +
+        skillName(m_Skill[m_EnableSkill[a][2]][0]) +
         "] Lvl " +
         m_EnableSkill[a][3] +
         "<BR>"),
@@ -31016,7 +31014,7 @@ function Item_Setumei(e, a) {
       m_AutoSpellSkill[a][4] != 0
         ? (CBIstr += m_AutoSpellSkill[a][4] + "%")
         : (CBIstr += "there's a"),
-      (CBIstr += " chance to cast [" + skillName(m_Skill[m_AutoSpellSkill[a][2]][0], SRV) + "]"),
+      (CBIstr += " chance to cast [" + skillName(m_Skill[m_AutoSpellSkill[a][2]][0]) + "]"),
       m_AutoSpellSkill[a][3] != 0 && (CBIstr += " Lvl " + m_AutoSpellSkill[a][3]),
       (CBIstr += "<BR>")),
     BONUSID.FIRE_MAGIC_DMG_PERCENT == e &&
@@ -31044,19 +31042,13 @@ function Item_Setumei(e, a) {
         "Receive " + wIS + a + "% damage from [" + v_Element[e - 330] + "] element monsters.<BR>"),
     5e3 <= e &&
       e <= 6999 &&
-      (CBIstr += "[" + skillName(m_Skill[e - 5e3][0], SRV) + "] skill damage" + wIS + a + "%<BR>"),
+      (CBIstr += "[" + skillName(m_Skill[e - 5e3][0]) + "] skill damage" + wIS + a + "%<BR>"),
     7e3 <= e &&
       e <= 8999 &&
-      (a > 0
-        ? (CBIstr +=
-            "[" + skillName(m_Skill[e - 7e3][0], SRV) + "] skill Casting Time " + -1 * a + "%<BR>")
-        : (CBIstr +=
-            "[" +
-            skillName(m_Skill[e - 7e3][0], SRV) +
-            "] skill Casting Time" +
-            wIS +
-            a +
-            "%<BR>")));
+      (CBIstr +=
+        a > 0
+          ? "[" + skillName(m_Skill[e - 7e3][0]) + "] skill Casting Time " + -1 * a + "%<BR>"
+          : "[" + skillName(m_Skill[e - 7e3][0]) + "] skill Casting Time" + wIS + a + "%<BR>"));
 }
 ((w_SE = [
   [737, 436, 475, "NULL"],

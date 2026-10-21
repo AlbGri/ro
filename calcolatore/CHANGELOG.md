@@ -16,6 +16,8 @@ Le versioni della pagina `calcolatore/`.
 - Confronto fra due build: si fissa la build attuale come A e la si confronta con quella che si
   sta modificando, contro lo stesso mostro (statistiche, danni fatti e subiti, con la differenza
   in verde se migliora e in rosso se peggiora)
+- Solo uaRO: tolte le varianti degli altri server (iRO classic e renewal, private), che la
+  pagina non permetteva di scegliere
 - Correzioni per uaRO dalla wiki del server:
   - incantamenti Bastion: tutti e sette, con Movement Speed (+20% alla velocita' di movimento) e
     SP Consumption (si sceglie, ma non cambia i risultati: il costo in SP delle skill non e'

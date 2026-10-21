@@ -1,34 +1,23 @@
-function skillName(e, a) {
-  if (a == SERVERID.UARO && e == SKILLID.STAVE_CRASHER) return "Magic Crasher";
-  var i = 2,
-    r = 3,
-    n = "Alt.";
-  if (m_Skill[e][r]) {
-    (a == SERVERID.UARO || a == SERVERID.PRIVATE_CLASSIC) && ((i = 3), (r = 2), (n = "iRO"));
-    var t =
-      "<span class=name>" +
-      m_Skill[e][i] +
-      "<span class=nametext><b><u>" +
-      n +
-      " name</u>:</b><br>" +
-      m_Skill[e][r] +
-      "</span></span>";
-  } else var t = m_Skill[e][2];
-  return t;
+// Nome della skill su uaRO: m_Skill[e][3] e' il nome iRO, quando c'e', e prende il posto di
+// quello ufficiale (m_Skill[e][2]), che resta nel suggerimento
+function skillName(e) {
+  if (e == SKILLID.STAVE_CRASHER) return "Magic Crasher";
+  if (!m_Skill[e][3]) return m_Skill[e][2];
+  return (
+    "<span class=name>" +
+    m_Skill[e][3] +
+    "<span class=nametext><b><u>iRO name</u>:</b><br>" +
+    m_Skill[e][2] +
+    "</span></span>"
+  );
 }
-function skillNameInSelect(e, a) {
-  if (a == SERVERID.UARO && e == SKILLID.STAVE_CRASHER) return "Magic Crasher";
-  var i = 2,
-    r = 3,
-    n = "alt.";
-  if (m_Skill[e][r]) {
-    (a == SERVERID.UARO || a == SERVERID.PRIVATE_CLASSIC) && ((i = 3), (r = 2), (n = "iRO"));
-    var t = m_Skill[e][i] + " (" + n + " name: " + m_Skill[e][r] + ")";
-  } else var t = m_Skill[e][2];
-  return t;
+function skillNameInSelect(e) {
+  if (e == SKILLID.STAVE_CRASHER) return "Magic Crasher";
+  if (!m_Skill[e][3]) return m_Skill[e][2];
+  return m_Skill[e][3] + " (iRO name: " + m_Skill[e][2] + ")";
 }
-function skillIdForServer(e, a) {
-  if (a != SERVERID.UARO) return e;
+// le skill che su uaRO hanno una versione propria
+function uaroSkillId(e) {
   switch (e) {
     case SKILLID.MAGNUS_EXORCISMUS:
       return SKILLID.MAGNUS_EXORCISMUS_UARO;
