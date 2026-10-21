@@ -10,6 +10,11 @@ Le versioni della pagina `calcolatore/`.
   gia' aperto. Il campo "Link con la build" e il suo pulsante Apri non ci sono piu'
 - Il riquadro "Ultimo oggetto o carta scelto" mostra di nuovo la scheda: statistiche,
   descrizione e bonus delle combinazioni. Restava sempre vuoto, con la scritta "Nessun oggetto"
+- Alla prima apertura la Novice aveva vuoti gli elenchi di copricapi, armature e accessori
+- Cambiando classe, in fondo agli elenchi dell'equipaggiamento restavano oggetti della classe
+  precedente, che si potevano scegliere anche se la classe nuova non li indossa (errore del
+  calcolatore di Thrice). Una build con uno di questi oggetti ora lo toglie all'apertura: e'
+  successo a 15 delle build di prova
 
 ## [1.3] - 2026-10-21
 

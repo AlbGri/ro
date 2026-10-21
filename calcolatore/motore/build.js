@@ -348,6 +348,9 @@ function leggiBuild(build) {
     c[campo].value = x(pos, larghezza);
     pos += larghezza;
   }
+  // un oggetto che la classe non indossa (l'originale lo lasciava negli elenchi, vedi
+  // WeaponSet2) torna alla voce vuota
+  for (campo of ELENCHI_ARMATURE) if (c[campo].selectedIndex < 0) c[campo].selectedIndex = 0;
   c.A_adopted.checked = bit(x(79))[0];
   c.A_HSE.value = x(80, 2);
   c.A_HSE_HEAD1.value = x(82, 2);

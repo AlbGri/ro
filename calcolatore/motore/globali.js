@@ -37,6 +37,8 @@ var n_B_AtkSkill = 0,
 ((str_bSUBname = ""),
   (str_bSUB = ""),
   (SuperNoviceFullWeaponCHECK = 0),
+  // letto da WeaponSet2 alla prima ClickJob, prima di StAllCalc
+  (n_A_BaseLV = 1),
   (cast_kotei = 0),
   (b = 0),
   (n_PerHIT_DMG = 0),
@@ -45,8 +47,7 @@ var n_B_AtkSkill = 0,
   (BK_n_A_CriATK = [0, 0, 0]),
   (bonusValues = new Array()));
 for (var i = 0; i <= 450; i++) bonusValues[i] = 0;
-var first_check = 0,
-  targetData = new Array();
+var targetData = new Array();
 ((Last_DMG_A = [0, 0, 0]),
   (Last_DMG_B = [0, 0, 0]),
   (InnStr = new Array()),

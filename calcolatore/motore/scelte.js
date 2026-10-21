@@ -1229,34 +1229,28 @@ function WeaponSetLeft(l) {
           n++);
     }
 }
+var ELENCHI_ARMATURE = [
+  "A_head1",
+  "A_head2",
+  "A_head3",
+  "A_left",
+  "A_body",
+  "A_shoulder",
+  "A_shoes",
+  "A_acces1",
+  "A_acces2",
+];
 function WeaponSet2(l) {
   var A = 1 * c.restrict_lvlequip.checked;
   if (!l || A != 1) {
     n_A_JobSet();
-    for (var n = 0; n < c.A_head1.length; n++) c.A_head1.options[0] = null;
-    for (n = 0; n < c.A_head2.length; n++) c.A_head2.options[0] = null;
-    for (n = 0; n < c.A_head3.length; n++) c.A_head3.options[0] = null;
-    for (n = 0; n < c.A_left.length; n++) c.A_left.options[0] = null;
-    for (n = 0; n < c.A_body.length; n++) c.A_body.options[0] = null;
-    for (n = 0; n < c.A_shoulder.length; n++) c.A_shoulder.options[0] = null;
-    for (n = 0; n < c.A_shoes.length; n++) c.A_shoes.options[0] = null;
-    for (n = 0; n < c.A_acces1.length; n++)
-      ((c.A_acces1.options[0] = null), (c.A_acces2.options[0] = null));
-    if (first_check == 0)
-      return (
-        (first_check = 1),
-        (c.A_head1.options[0] = new documento.Opzione(itemData[142].name, itemData[142].id)),
-        (c.A_head2.options[0] = new documento.Opzione(itemData[243].name, itemData[243].id)),
-        (c.A_head3.options[0] = new documento.Opzione(itemData[268].name, itemData[268].id)),
-        (c.A_left.options[0] = new documento.Opzione(itemData[305].name, itemData[305].id)),
-        (c.A_body.options[0] = new documento.Opzione(itemData[279].name, itemData[279].id)),
-        (c.A_shoulder.options[0] = new documento.Opzione(itemData[311].name, itemData[311].id)),
-        (c.A_shoes.options[0] = new documento.Opzione(itemData[317].name, itemData[317].id)),
-        (c.A_acces1.options[0] = new documento.Opzione(itemData[326].name, itemData[326].id)),
-        void (c.A_acces2.options[0] = new documento.Opzione(itemData[326].name, itemData[326].id))
-      );
-    first_check = 2;
-    var s = new Array(),
+    // uaRO: l'originale toglieva options[0] mentre n saliva e la lunghezza scendeva: in fondo
+    // al nuovo elenco restava meta' di quello della classe precedente
+    for (var campo of ELENCHI_ARMATURE) c[campo].length = 0;
+    // uaRO: nell'originale la prima chiamata metteva solo le voci vuote, e gli elenchi si
+    // riempivano al primo passaggio del mouse sulla tabella (FirstNovis), che la pagina non ha
+    var n,
+      s = new Array(),
       _ = 1 * c.restrict_jobequip.checked;
     for (A = 1 * c.restrict_lvlequip.checked, n = 0; n <= 7; n++) s[n] = new Array();
     var a = new Array();
@@ -1375,9 +1369,6 @@ function WeaponSet2(l) {
           : ((c.A_acces1.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id)),
             (c.A_acces2.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id))));
   }
-}
-function FirstNovis() {
-  first_check == 1 && ((first_check = 2), WeaponSet2());
 }
 function ActiveSkillSetPlus() {
   for (w_ASSP0 = new Array(), w_ASSP9 = new Array(), n = 0; n < 20; n++)
