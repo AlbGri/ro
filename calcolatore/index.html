@@ -131,6 +131,14 @@ input[type="checkbox"] { width: 18px; height: 18px; margin: 0; flex: none; accen
 .voce { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .voce > .etichetta { flex: 1 1 auto; min-width: 0; font-size: .92rem; }
 .voce > select, .voce > input[type="text"], .voce > .scelta { flex: 0 1 auto; }
+/* tendine e caselle della stessa larghezza, qualunque sia l'opzione piu' lunga (0-5, 0-10, off) */
+.voce > select, .voce > input[type="text"] { box-sizing: border-box; min-width: 5.6em; }
+.voce > input[type="text"] { width: 5.6em; }
+/* modifiche manuali: "AGI  + [0]", e "+ [0] vs [elemento]" su una riga */
+.voce > .segno { flex: none; color: var(--muted); }
+.voce.in-riga { flex-wrap: wrap; gap: 6px; }
+.voce.in-riga > .testo { flex: none; font-size: .92rem; }
+@media (min-width: 641px) { .voci > .voce.in-riga { grid-column: span 2; } }
 .voce.lunga { grid-column: 1 / -1; }
 .voce.lunga > select, .voce.lunga > .scelta { flex: 1 1 auto; }
 /* campi affiancati su piu' colonne: etichetta su una riga accanto al suo controllo, che riempie la colonna */

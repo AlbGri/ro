@@ -15,6 +15,12 @@ Le versioni della pagina `calcolatore/`.
   precedente, che si potevano scegliere anche se la classe nuova non li indossa (errore del
   calcolatore di Thrice). Una build con uno di questi oggetti ora lo toglie all'apertura: e'
   successo a 15 delle build di prova
+- Modifiche manuali al nemico e al personaggio: ogni campo ha il nome a sinistra e "+ [0]" a
+  destra, come gli altri; prima il "+" faceva da etichetta e il nome finiva in una cella a se'.
+  Le statistiche del personaggio hanno i loro due gruppi, e le resistenze ("+% Resistance") un
+  gruppo proprio invece di stare sotto "+% ATK based damage"
+- Tendine e caselle brevi hanno tutte la stessa larghezza (prima dipendeva dall'opzione piu'
+  lunga: 0-5, 0-10, off)
 
 ## [1.3] - 2026-10-21
 

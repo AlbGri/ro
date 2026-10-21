@@ -444,16 +444,48 @@ function gettoni(n, out = []) {
   }
   return out;
 }
+// un testo che finisce con un "+" o un meno da solo: il segno va con il controllo che segue
+function staccaSegno(nodi) {
+  const ultimo = nodi[nodi.length - 1];
+  const t = ultimo && (ultimo.tag ? ultimo.textContent : ultimo.testo).trim();
+  return /^[+\-–]$/.test(t) ? { resto: nodi.slice(0, -1), segno: ultimo } : { resto: nodi, segno: null };
+}
 // coppie: testo prima del controllo, o dopo una casella; un controllo senza testo vicino
-// prende il testo rimasto in attesa (la cella prima)
+// prende il testo rimasto in attesa (la cella prima). Nelle modifiche manuali le righe sono
+// "+ [casella] AGI": l'etichetta e' il testo dopo; "+ [casella] vs [elemento]" resta intera
 function coppie(g, inAttesa = null) {
   const out = [];
+  let segno = null;
   for (let i = 0; i < g.length; i++) {
     const x = g[i];
     if (x.a_capo) continue;
     if (x.testo) {
       if (inAttesa) out.push({ nota: inAttesa });
-      inAttesa = x.testo;
+      ({ resto: inAttesa, segno } = staccaSegno(x.testo));
+      if (!inAttesa.length) inAttesa = null;
+      continue;
+    }
+    if (segno) {
+      if (inAttesa) out.push({ nota: inAttesa });
+      inAttesa = null;
+      const s = segno;
+      segno = null;
+      const dopo = g[i + 1]?.testo ? staccaSegno(g[i + 1].testo) : null;
+      if (dopo && !dopo.segno && g[i + 2]?.controllo) {
+        const riga = [s, x.controllo, ...dopo.resto, g[i + 2].controllo];
+        i += 2;
+        const coda = g[i + 1]?.testo ? staccaSegno(g[i + 1].testo) : null;
+        if (coda) {
+          riga.push(...coda.resto);
+          segno = coda.segno;
+          i++;
+        }
+        out.push({ riga });
+      } else if (dopo) {
+        out.push({ etichetta: dopo.resto.length ? dopo.resto : null, segno: s, controllo: x.controllo });
+        segno = dopo.segno;
+        i++;
+      } else out.push({ segno: s, controllo: x.controllo });
       continue;
     }
     if (inAttesa) {
@@ -482,24 +514,36 @@ function voce(c) {
     p.className = "nota hint";
     return p;
   }
+  if (c.riga) {
+    const d = document.createElement("div");
+    d.className = "voce in-riga";
+    for (const n of c.riga) {
+      if (n.tag === "select" || n.tag === "input") d.appendChild(controllo(n));
+      else d.appendChild(testoDi([n])).className = "testo";
+    }
+    return d;
+  }
   const l = document.createElement(c.controllo.type === "checkbox" ? "label" : "div");
   l.className = "voce";
   const ctrl = controllo(c.controllo);
   if (c.etichetta) l.appendChild(testoDi(c.etichetta));
+  if (c.segno) l.appendChild(testoDi([c.segno])).className = "segno";
   l.appendChild(ctrl);
   return l;
 }
 
 // pannelli: righe di una tabella con intestazioni di colonna; ogni intestazione raccoglie le
-// coppie delle colonne sotto di lei
+// coppie delle colonne sotto di lei. Una riga che contiene un'altra tabella vale per le righe
+// di quella (modifiche manuali al personaggio)
 function righeDi(n, out = []) {
   for (const f of n.figli) {
     if (!f.tag || f.tag === "select") continue;
-    if (f.tag === "tr") out.push(f);
+    if (f.tag === "tr" && !contieneTabella(f)) out.push(f);
     else righeDi(f, out);
   }
   return out;
 }
+const contieneTabella = (n) => n.figli.some((f) => f.tag && (f.tag === "table" || contieneTabella(f)));
 function disegnaPannello(v, corpo) {
   const gruppi = [];
   let colonne = null; // intestazioni attive: [{da, a, gruppo}]
@@ -526,12 +570,20 @@ function disegnaPannello(v, corpo) {
       continue;
     }
     let col = 0, inAttesa = null, gruppoAttesa = null;
-    for (const c of celle) {
+    const colonnaDi = (k) => colonne && (colonne.find((x) => k >= x.da && k < x.a) || colonne[colonne.length - 1]);
+    for (const [k, c] of celle.entries()) {
       const largo = Number(c.attributi.colspan) || 1;
-      const g = (colonne && colonne.find((x) => col >= x.da && col < x.a)?.gruppo) || (colonne ? colonne[colonne.length - 1].gruppo : semplice);
+      const colonna = colonnaDi(col);
+      const g = colonna ? colonna.gruppo : semplice;
       col += largo;
       if (!contieneControlli(c)) {
         if (vuoto(c)) continue;
+        // un testo seguito da una cella di un'altra colonna e' l'intestazione della sua
+        // colonna da qui in giu' ("+% Resistance" nelle modifiche manuali al personaggio)
+        if (colonna && k < celle.length - 1 && colonnaDi(col) !== colonna) {
+          colonna.gruppo = nuovoGruppo(c);
+          continue;
+        }
         if (inAttesa) gruppoAttesa.voci.push({ nota: inAttesa });
         inAttesa = [c];
         gruppoAttesa = g;
