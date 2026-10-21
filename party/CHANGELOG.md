@@ -2,6 +2,10 @@
 
 Le versioni della pagina `party/`.
 
+## [1.4] - 2026-10-21
+
+- I testi occupano tutta la larghezza della pagina e vanno a capo solo dove finisce lo spazio, invece che a metà pagina
+
 ## [1.3] - 2026-10-19
 
 - Il party minimo è fisso, di 5: 2 High Priest, 1 Sniper, 1 Clown/Bard, 1 Professor. Tolti i campi per cambiarlo

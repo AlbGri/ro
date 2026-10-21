@@ -2,6 +2,10 @@
 
 Le versioni della pagina `livelli/`.
 
+## [1.13] - 2026-10-21
+
+- I testi occupano tutta la larghezza della pagina e vanno a capo solo dove finisce lo spazio, invece che a metà pagina
+
 ## [1.12] - 2026-10-18
 
 - Il menu in alto a destra si apre con l'ingranaggio, come in tutte le pagine del sito

@@ -3,6 +3,10 @@
 Le versioni della guida `nuovo-mondo.html`. Il numero e' quello scritto in
 testa a ogni export delle note.
 
+## [9.4] - 2026-10-21
+
+- I testi occupano tutta la larghezza della pagina e vanno a capo solo dove finisce lo spazio, invece che a meta' pagina
+
 ## [9.3] - 2026-10-18
 
 - Il menu in alto a destra si apre con l'ingranaggio, come in tutte le pagine del sito, invece che con "Altro"
