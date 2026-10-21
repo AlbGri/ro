@@ -119,11 +119,10 @@ test("formato della build: i Bastion nuovi tornano uguali, le build di Thrice no
   scegli(m, "A_JOB", 23);
   scegli(m, "A_BASTION_HEAD", costante(m, "BASTIONENCHANTID").SP_CONSUMPTION);
   scegli(m, "A_BASTION_SHOES", costante(m, "BASTIONENCHANTID").MOVEMENT_SPEED);
-  const build = String(m.URLOUT());
+  const build = String(m.scriviBuild());
   const carica = (b) => {
     const n = creaMotore();
-    n.documento.getElementById("otherURL_TEXT").value = "x#" + b;
-    return [n.URLIN(1), n];
+    return [n.leggiBuild(b), n];
   };
   const [ok, n] = carica(build);
   assert.equal(ok, true);

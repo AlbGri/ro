@@ -5,8 +5,7 @@ export const PANNELLI = ["BufSW", "Buf3SW", "Buf4SW", "Buf6SW", "Buf7SW", "Buf9S
 export const IGNORATI = /^(item-disclosure|ITEM_TITLE|ITEM\d|ITEM_DATA|ITEM_W_LV|ITEM_LV|ITEM_WAIT|B_SETUMEI|A\w*TD|A\w*used)$/;
 
 export function caricaBuild(m, url, kakutyou) {
-  m.documento.getElementById("otherURL_TEXT").value = "x#" + url;
-  m.URLIN(1);
+  m.leggiBuild(url);
   for (const p of PANNELLI) m[p](1);
   const c = m.documento.calcForm;
   c.A_Kakutyou.value = kakutyou;

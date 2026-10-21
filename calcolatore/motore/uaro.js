@@ -1,12 +1,12 @@
 // Correzioni per uaRO ai dati del motore, prese dalla wiki del server
 // (wiki.uaro.net: Item Changes, Dimonka Headgear Quests, Scaraba Hole, patch note).
-// Si caricano dopo i file dei dati e prima di foot.js, che costruisce gli elenchi.
+// Si caricano dopo i file dei dati e prima di inizio.js, che costruisce gli elenchi.
 // Le correzioni al codice sono nei file del motore, con un commento "uaRO:" e la fonte.
 
 // id dell'oggetto aggiunto qui che il resto del motore deve riconoscere
 var OLD_MITRA_UARO = 0;
 
-// Chiamata da StAllCalc (foot.js) dopo la somma dei bonus dell'equipaggiamento
+// Chiamata da StAllCalc (statistiche.js) dopo la somma dei bonus dell'equipaggiamento
 function applyUaroHeadgearBonuses() {
   // Mitra: MATK +10 con INT base almeno 90 (Item Changes, Dimonka)
   if (n_A_Equip[2] == 1876 && SU_INT >= 90) bonusValues[BONUSID.MATK] += 10;

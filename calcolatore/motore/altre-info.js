@@ -1,0 +1,2286 @@
+// Altre informazioni (Other Info): KakutyouKansuu scrive la voce scelta in A_Kakutyou
+function KakutyouKansuu() {
+  if (((wKK = 1 * c.A_Kakutyou.value), wKK == 40)) {
+    var l = documento.getElementById("NonDamageCastSkill"),
+      A = documento.getElementById("NonDamageCastSkillLevel");
+    if (!l || !A) return;
+    var n = 1 * l.value,
+      s = 1 * A.value,
+      _ = m_NonDamageSkillCast[n];
+    if (!_) {
+      myInnerHtml("A_KakutyouData", "", 0);
+      return;
+    }
+    var a = Array.isArray(_[0]) ? _[0][s - 1] : _[0],
+      E = NonDamageSkillCastMultiplier(n, _[1]),
+      S = Math.floor((a * E) / 10 + 1e-9) / 100,
+      b = Math.floor(a / 10) / 100,
+      m = Math.floor(1e4 * (1 - E)) / 100,
+      u = Array.isArray(_[2]) ? _[2][s - 1] : _[2] || 0,
+      I = 100 - AC_I - ((100 - AC_I) * bonusValues[74]) / 100,
+      D = Math.floor((u / 1e3) * I) / 100,
+      T = Math.floor(u / 10) / 100,
+      d = AspdMotionDelayForSkill(),
+      B = Math.max(D, d),
+      p = D > d ? "ACD" : D < d ? "ASPD motion" : "ACD / ASPD motion",
+      e = (1 * c.Conf01.value) / 100,
+      v = Math.max(S + B, e),
+      U = v > 0 ? Math.floor(1e3 / v + 1e-9) / 1e3 : 0,
+      C = '<table><tr><td class="right"><b>Base cast time:</b></td><td>' + b + " seconds</td></tr>";
+    ((C += '<tr><td class="right"><b>Cast-time reduction:</b></td><td>' + m + "%</td></tr>"),
+      (C += '<tr><td class="right"><b>Final cast time:</b></td><td>' + S + " seconds</td></tr>"),
+      (C += '<tr><td class="right"><b>Base ACD:</b></td><td>' + T + " seconds</td></tr>"),
+      (C += '<tr><td class="right"><b>Final ACD:</b></td><td>' + D + " seconds</td></tr>"),
+      (C += '<tr><td class="right"><b>ASPD motion delay:</b></td><td>' + d + " seconds</td></tr>"),
+      (C +=
+        '<tr><td class="right"><b>Effective post-cast delay:</b></td><td>' +
+        B +
+        " seconds (" +
+        p +
+        ")</td></tr>"),
+      (C += '<tr><td class="right"><b>Skills per second:</b></td><td>' + U + "</td></tr></table>"),
+      (C +=
+        "<small>Repeat rate includes final cast time and the configured minimum input delay.</small><br>"),
+      _[1] & 1 && (C += "<small>DEX does not reduce this skill's cast time.</small><br>"),
+      _[1] & 2 && (C += "<small>Status effects do not reduce this skill's cast time.</small><br>"),
+      myInnerHtml("A_KakutyouData", C, 0));
+    return;
+  }
+  if (wKK != 0) {
+    if (((Heal = new Array()), (Heal2 = new Array()), wKK == 2)) {
+      for (
+        r =
+          "<table><tr><td></td><td class=title>Heal on yourself</td><td class=title>Heal on other player</td></tr>",
+          o = 0;
+        o <= 10;
+        o++
+      )
+        ((Heal[o] = HealCalc(o, 1)), (Heal2[o] = HealCalc(o, 0)));
+      (n_A_JobClass() == 3 ||
+      n_A_JOB == 13 ||
+      n_A_JOB == 14 ||
+      n_A_JOB == 20 ||
+      n_A_JOB == 27 ||
+      n_A_JOB == 28
+        ? ((r +=
+            "<tr><td><b>Heal Level 1</b></td><td class=center>" +
+            Heal[1] +
+            "</td><td class=center>" +
+            Heal2[1] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Heal Level 2</b></td><td class=center>" +
+            Heal[2] +
+            "</td><td class=center>" +
+            Heal2[2] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Heal Level 3</b></td><td class=center>" +
+            Heal[3] +
+            "</td><td class=center>" +
+            Heal2[3] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Heal Level 4</b></td><td class=center>" +
+            Heal[4] +
+            "</td><td class=center>" +
+            Heal2[4] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Heal Level 5</b></td><td class=center>" +
+            Heal[5] +
+            "</td><td class=center>" +
+            Heal2[5] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Heal Level 6</b></td><td class=center>" +
+            Heal[6] +
+            "</td><td class=center>" +
+            Heal2[6] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Heal Level 7</b></td><td class=center>" +
+            Heal[7] +
+            "</td><td class=center>" +
+            Heal2[7] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Heal Level 8</b></td><td class=center>" +
+            Heal[8] +
+            "</td><td class=center>" +
+            Heal2[8] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Heal Level 9</b></td><td class=center>" +
+            Heal[9] +
+            "</td><td class=center>" +
+            Heal2[9] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Heal Level 10</b></td><td class=center>" +
+            Heal[10] +
+            "</td><td class=center>" +
+            Heal2[10] +
+            "</td></tr></table>"))
+        : ((r +=
+            "<tr><td><b>Heal Level 1 [Vitata Card]</b></td><td class=center>" +
+            Heal[1] +
+            "</td><td class=center>" +
+            Heal2[1] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Heal Level 2</b></td><td class=center>" +
+            Heal[2] +
+            "</td><td class=center>" +
+            Heal2[2] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Heal Level 3</b></td><td class=center>" +
+            Heal[3] +
+            "</td><td class=center>" +
+            Heal2[3] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Heal Level 4</b></td><td class=center>" +
+            Heal[4] +
+            "</td><td class=center>" +
+            Heal2[4] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Heal Level 5 [Scroll]</b></td><td class=center>" +
+            Heal[5] +
+            "</td><td class=center>" +
+            Heal2[5] +
+            "</td></tr></table>")),
+        (r +=
+          "<BR><B>Heal Boost:</B> " +
+          (Math.floor(
+            (1 + (bonusValues[91] + bonusValues[99]) / 100) *
+              (1 + 0.02 * SkillSearch(SKILLID.MEDIATIO)) *
+              100,
+          ) -
+            100) +
+          "%"),
+        (r += "<br><b>Required Int/Lvl for next bonus:</b> +" + (8 - ((n_A_BaseLV + n_A_INT) % 8))),
+        myInnerHtml("A_KakutyouData", r, 0));
+    } else if (wKK == 4) {
+      if (n_A_JOB == 9 || n_A_JOB == 14 || n_A_JOB == 23 || n_A_JOB == 28) {
+        for (Sanctuary = new Array(), Sanctuary2 = new Array(), o = 0; o <= 10; o++)
+          ((Sanctuary[o] = SanctuaryCalc(o, 1)), (Sanctuary2[o] = SanctuaryCalc(o, 0)));
+        ((r =
+          "<table><tr><td></td><td class=title>Sanctuary on yourself</td><td class=title>Sanctuary on other player</td></tr>"),
+          (r +=
+            "<tr><td><b>Sanctuary Level 1</b></td><td class=center>" +
+            Sanctuary[1] +
+            " x 4 = " +
+            4 * Sanctuary[1] +
+            "</td><td class=center>" +
+            Sanctuary2[1] +
+            " x 4 = " +
+            4 * Sanctuary2[1] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Sanctuary Level 2</b></td><td class=center>" +
+            Sanctuary[2] +
+            " x 5 = " +
+            5 * Sanctuary[2] +
+            "</td><td class=center>" +
+            Sanctuary2[2] +
+            " x 5 = " +
+            5 * Sanctuary2[2] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Sanctuary Level 3</b></td><td class=center>" +
+            Sanctuary[3] +
+            " x 6 = " +
+            6 * Sanctuary[3] +
+            "</td><td class=center>" +
+            Sanctuary2[3] +
+            " x 6 = " +
+            6 * Sanctuary2[3] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Sanctuary Level 4</b></td><td class=center>" +
+            Sanctuary[4] +
+            " x 7 = " +
+            7 * Sanctuary[4] +
+            "</td><td class=center>" +
+            Sanctuary2[4] +
+            " x 7 = " +
+            7 * Sanctuary2[4] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Sanctuary Level 5</b></td><td class=center>" +
+            Sanctuary[5] +
+            " x 8 = " +
+            8 * Sanctuary[5] +
+            "</td><td class=center>" +
+            Sanctuary2[5] +
+            " x 8 = " +
+            8 * Sanctuary2[5] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Sanctuary Level 6</b></td><td class=center>" +
+            Sanctuary[6] +
+            " x 9 = " +
+            9 * Sanctuary[6] +
+            "</td><td class=center>" +
+            Sanctuary2[6] +
+            " x 9 = " +
+            9 * Sanctuary2[6] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Sanctuary Level 7</b></td><td class=center>" +
+            Sanctuary[7] +
+            " x 10 = " +
+            10 * Sanctuary[7] +
+            "</td><td class=center>" +
+            Sanctuary2[7] +
+            " x 10 = " +
+            10 * Sanctuary2[7] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Sanctuary Level 8</b></td><td class=center>" +
+            Sanctuary[8] +
+            " x 11 = " +
+            11 * Sanctuary[8] +
+            "</td><td class=center>" +
+            Sanctuary2[8] +
+            " x 11 = " +
+            11 * Sanctuary2[8] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Sanctuary Level 9</b></td><td class=center>" +
+            Sanctuary[9] +
+            " x 12 = " +
+            12 * Sanctuary[9] +
+            "</td><td class=center>" +
+            Sanctuary2[9] +
+            " x 12 = " +
+            12 * Sanctuary2[9] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td><b>Sanctuary Level 10</b></td><td class=center>" +
+            Sanctuary[10] +
+            " x 13 = " +
+            13 * Sanctuary[10] +
+            "</td><td class=center>" +
+            Sanctuary2[10] +
+            " x 13 = " +
+            13 * Sanctuary2[10] +
+            "</td></tr></table>"),
+          (r += "<BR><B>Heal Boost:</B> " + (1 * bonusValues[94] + 1 * bonusValues[99]) + "%"));
+      } else r = '<p class="center">Not available for this class.</p>';
+      myInnerHtml("A_KakutyouData", r, 0);
+    } else if (wKK != 5)
+      if (wKK == 6)
+        n_A_JobClass() == 1 || n_A_JOB == 20
+          ? ((HPRLV = 1 * c.A_KakutyouSelNum.value),
+            (r = "<br>HP regen: " + Math.floor((5 + n_A_MaxHP / 500) * HPRLV)),
+            (EquipNumSearch(EQUIPID.BEER_HAT) || n_A_JOB == 20) &&
+              ((SPRLV = 1 * c.A_KakutyouSelNumSP.value),
+              (r += "<br>SP regen: " + Math.floor((3 + n_A_MaxSP / 500) * SPRLV))),
+            myInnerHtml("A_KakutyouData", r, 0))
+          : n_A_JobClass() == 5 || n_A_JOB == 9 || n_A_JOB == 23 || n_A_JOB == 44
+            ? ((SPRLV = 1 * c.A_KakutyouSelNum.value),
+              (r = "<br>SP regen: " + Math.floor((3 + n_A_MaxSP / 500) * SPRLV)),
+              EquipNumSearch(EQUIPID.BEER_HAT) &&
+                ((HPRLV = 1 * c.A_KakutyouSelNumHP.value),
+                (r += "<br>HP regen: " + Math.floor((5 + n_A_MaxHP / 500) * HPRLV))),
+              myInnerHtml("A_KakutyouData", r, 0))
+            : EquipNumSearch(EQUIPID.BEER_HAT)
+              ? ((HPRLV = 1 * c.A_KakutyouSelNumHP.value),
+                (SPRLV = 1 * c.A_KakutyouSelNumSP.value),
+                (N = Math.floor((5 + n_A_MaxHP / 500) * HPRLV)),
+                (w2 = Math.floor((3 + n_A_MaxSP / 500) * SPRLV)),
+                myInnerHtml("A_KakutyouData", "<br>HP regen: " + N + "<br>SP regen: " + w2, 0))
+              : myInnerHtml("A_KakutyouData", "", 0);
+      else if (wKK == 7) {
+        ((Pot1 = 1 * c.pot1.value),
+          (Pot2 = 1 * c.pot2.value),
+          (Pot3 = 1 * c.pot3.value),
+          (Pot4 = 1 * c.pot4.value),
+          (Pot5 = 1 * c.pot5.value),
+          (Pot6 = 1 * c.pot6.value),
+          (Pot7 = 1 * c.pot7.value),
+          (c.zEA1.value = m_HPpotion[Pot1][1]),
+          (c.zEA2.value = m_HPpotion[Pot2][1]),
+          (c.zEA3.value = m_HPpotion[Pot3][1]),
+          (c.zEA4.value = m_HPpotion[Pot4][1]),
+          (c.zEA5.value = m_HPpotion[Pot5][1]),
+          (c.zEA6.value = m_HPpotion[Pot6][1]),
+          (c.zEA7.value = m_HPpotion[Pot7][1]),
+          (H_Bonus = 0),
+          EquipNumSearch(EQUIPID.ASSAULTER_SET) && (H_Bonus += 10),
+          n_A_Equip[2] == 1768 && (H_Bonus += 5),
+          n_A_Equip[8] == 1194 && (H_Bonus += 5),
+          n_A_Equip[8] == 712 && Pot1 < 4 && (H_Bonus += 20),
+          n_A_Equip[4] == 712 && Pot1 == 37 && (H_Bonus += 25),
+          n_A_Equip[2] == 1448 && Pot1 == 71 && (H_Bonus += 25),
+          CardNumSearch(487) && Pot1 == 35 && (H_Bonus += 100),
+          CardNumSearch(495) && Pot1 == 40 && (H_Bonus += 100),
+          CardNumSearch(262) &&
+            (Pot1 == 56 && (H_Bonus += 50),
+            Pot1 == 57 && (H_Bonus += 50),
+            Pot1 == 58 && (H_Bonus += 50)),
+          CardNumSearch(297) && Pot1 == 48 && (H_Bonus += 50),
+          CardNumSearch(297) && Pot1 == 55 && (H_Bonus += 50),
+          CardNumSearch(314) && Pot1 == 39 && (H_Bonus += 50),
+          CardNumSearch(314) && Pot1 == 40 && (H_Bonus += 50),
+          CardNumSearch(324) && Pot1 == 34 && (H_Bonus += 50),
+          CardNumSearch(324) && Pot1 == 49 && (H_Bonus += 50),
+          CardNumSearch(389) &&
+            (Pot1 == 38 && (H_Bonus += 50),
+            Pot1 == 63 && (H_Bonus += 50),
+            Pot1 == 72 && (H_Bonus += 50)),
+          CardNumSearch(450) &&
+            n_A_JobClass() == 1 &&
+            (Pot1 == 0 && (H_Bonus += 50),
+            Pot1 == 2 && (H_Bonus += 50),
+            Pot1 == 3 && (H_Bonus += 50)));
+        for (var r = "", h = 1; h <= 7; h++)
+          (m_HPpotion["Pot" + h][4] == 0
+            ? (r = Math.floor((m_HPpotion["Pot" + h][3] * n_A_MaxHP) / 100))
+            : ((potheal1 = Math.floor(
+                m_HPpotion["Pot" + h][3] * (1 + 0.02 * n_A_VIT) * (1 + H_Bonus / 100),
+              )),
+              (potheal2 = Math.floor(
+                m_HPpotion["Pot" + h][4] * (1 + 0.02 * n_A_VIT) * (1 + H_Bonus / 100),
+              )),
+              (r = potheal1 + " ~ " + potheal2)),
+            myInnerHtml("AmRe" + h, r, 0),
+            myInnerHtml(
+              "AmWe" + h,
+              Math.floor((potheal1 + potheal2) / 2 / m_HPpotion["Pot" + h][2]),
+              0,
+            ),
+            myInnerHtml(
+              "AmZe" + h,
+              Math.floor((potheal1 + potheal2) / 2 / (1 * ("c.zEA" + h + ".value"))),
+              0,
+            ));
+        myInnerHtml("A_KakutyouData", "", 0);
+      } else if (wKK == 8)
+        n_A_JOB == 15 || n_A_JOB == 29
+          ? ((SPRLV = 1 * c.A_KakutyouSelNum.value),
+            (N = Math.floor((4 + n_A_MaxHP / 500) * SPRLV)),
+            (w2 = Math.floor((2 + n_A_MaxSP / 500) * SPRLV)),
+            myInnerHtml("A_KakutyouData", "<br>HP regen: " + N + "<br>SP regen: " + w2, 0))
+          : myInnerHtml("A_KakutyouData", "", 0);
+      else if (wKK == 10) {
+        for (
+          wLimitJob = [
+            0, 800, 400, 400, 600, 200, 800, 800, 400, 600, 700, 400, 1e3, 800, 400, 600, 700, 700,
+            400, 1e3, 0, 800, 400, 600, 700, 400, 1e3, 800, 400, 600, 700, 700, 400, 1e3, 0, 0, 0,
+            0, 0, 0, 0, 800, 800, 400, 600, 800,
+          ],
+            wLimit = 2e3 + wLimitJob[n_A_JOB],
+            wLimitR = 1 * c.A_KakutyouSelNum2.value * 200,
+            1 * c.A_adopted.checked && (wLimit = 2e3),
+            // uaRO: Super Novice: +2000 di peso anche in Other Info (Class Changes, Super Novice)
+            n_A_JOB == 20 && (wLimit += 2e3),
+            wLimit += 1 * c.A_STR.value * 30,
+            SkillSearch(SKILLID.CAVALIER_MASTERY) && (wLimit += 1e3),
+            (n_A_JobClass() != 6 && n_A_JOB != 20) ||
+              (wLimit += 1 * c.A_KakutyouSelNum.value * 200),
+            n_A_JOB == 42 ? (Knowledge = 1 + 1 * c.SG_Weight.value * 0.1) : (Knowledge = 1),
+            EquipKG = 0,
+            o = 0;
+          o <= 10;
+          o++
+        )
+          EquipKG += itemData[n_A_Equip[o]].weight;
+        ((r = "<table>"),
+          (r +=
+            "<tr><td><b><font color=red>Weight Limit: </font></b>" +
+            (Math.floor(wLimit * Knowledge) + wLimitR) +
+            "</td></tr><tr><td><b>Total Weight of Equipment: </b>" +
+            EquipKG),
+          (r += "</td></tr></table>"),
+          myInnerHtml("A_KakutyouData", r, 0));
+      } else if (wKK == 12) {
+        var f = new Array();
+        ((f[0] = Math.floor((100 * (3 + n_A_VIT)) / 100)),
+          (f[1] = f[0]),
+          (f[2] = Math.floor((100 * (3 + n_A_MDEF)) / 100)),
+          (f[3] = Math.floor((100 * (3 + n_A_LUK)) / 100)),
+          (f[4] = Math.floor((100 * (3 + (n_A_INT + n_A_VIT) / 2)) / 100)),
+          (f[5] = Math.floor((100 * (3 + n_A_INT)) / 100)),
+          (f[6] = f[0]),
+          (f[7] = Math.floor((100 * (3 + (n_A_STR + n_A_INT) / 2)) / 100)),
+          (f[8] = f[0]),
+          (f[9] = Math.floor(100 * n_A_MDEF) / 100),
+          n_A_LUK < 1 && (f[3] = 100),
+          n_A_VIT >= 100 && (f[3] = 100),
+          n_A_Bodyelement == 9 && ((f[2] = 100), (f[8] = 100), (f[9] = 100)));
+        for (var o = 0; o <= 9; o++)
+          ((f[o] += Math.floor((100 - f[o]) * bonusValues[150 + o]) / 100),
+            (f[o] = Math.floor(100 * f[o]) / 100),
+            f[o] > 100 && (f[o] = 100),
+            f[o] < 0 && (f[o] = 0));
+        var g = [
+            0.75 * n_A_VIT,
+            n_A_VIT,
+            n_A_MDEF,
+            n_A_VIT,
+            (n_A_VIT + n_A_INT) / 2,
+            n_A_INT,
+            n_A_VIT,
+            (n_A_STR + n_A_INT) / 2,
+            n_A_VIT,
+            0,
+          ],
+          J = [
+            n_A_LUK / 10,
+            n_A_LUK / 100,
+            0,
+            n_A_LUK / 100,
+            n_A_LUK / 100,
+            n_A_LUK / 100,
+            n_A_LUK / 100,
+            n_A_LUK / 100,
+            n_A_LUK / 100,
+            0,
+          ],
+          L = new Array();
+        for (o = 0; o <= 8; o++) {
+          ((g[o] = Math.min(100, Math.floor(g[o] * 100) / 100)),
+            (J[o] = Math.floor(J[o] * 100) / 100));
+          var V = Math.max(1, 1e3 - Math.floor((1e3 * g[o]) / 100) - 1e3 * J[o]),
+            G = Math.floor(V) / 1e3,
+            Y = Math.floor(((1e3 - V) / 10) * 100) / 100;
+          L[o] = " <small>(duration " + G + "s, -" + Y + "%)</small>";
+        }
+        ((L[9] = " <small>(duration 1s, -0%)</small>"),
+          (r = "<table>"),
+          (r +=
+            "<tr><td class='right'><b>" +
+            (100 - n_A_element[0]) +
+            "</b> % vs</td><td class='data'>" +
+            v_Element[0] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            bonusValues[50] +
+            "</b> % vs</td><td class='data'>" +
+            v_Race[0] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            f[0] +
+            "</b> % vs</td><td><b>" +
+            v_Effect[0] +
+            "</b>" +
+            L[0] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>" +
+            (100 - n_A_element[1]) +
+            "</b> % vs</td><td class='data'>" +
+            v_Element[1] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            bonusValues[51] +
+            "</b> % vs</td><td class='data'>" +
+            v_Race[1] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            f[1] +
+            "</b> % vs</td><td><b>" +
+            v_Effect[1] +
+            "</b>" +
+            L[1] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>" +
+            (100 - n_A_element[2]) +
+            "</b> % vs</td><td class='data'>" +
+            v_Element[2] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            bonusValues[52] +
+            "</b> % vs</td><td class='data'>" +
+            v_Race[2] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            f[2] +
+            "</b> % vs</td><td><b>" +
+            v_Effect[2] +
+            "</b>" +
+            L[2] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>" +
+            (100 - n_A_element[3]) +
+            "</b> % vs</td><td class='data'>" +
+            v_Element[3] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            bonusValues[53] +
+            "</b> % vs</td><td class='data'>" +
+            v_Race[3] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            f[3] +
+            "</b> % vs</td><td><b>" +
+            v_Effect[3] +
+            "</b>" +
+            L[3] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>" +
+            (100 - n_A_element[4]) +
+            "</b> % vs</td><td class='data'>" +
+            v_Element[4] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            bonusValues[54] +
+            "</b> % vs</td><td class='data'>" +
+            v_Race[4] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            f[4] +
+            "</b> % vs</td><td><b>" +
+            v_Effect[4] +
+            "</b>" +
+            L[4] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>" +
+            (100 - n_A_element[5]) +
+            "</b> % vs</td><td class='data'>" +
+            v_Element[5] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            bonusValues[55] +
+            "</b> % vs</td><td class='data'>" +
+            v_Race[5] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            f[5] +
+            "</b> % vs</td><td><b>" +
+            v_Effect[5] +
+            "</b>" +
+            L[5] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>" +
+            (100 - n_A_element[6]) +
+            "</b> % vs</td><td class='data'>" +
+            v_Element[6] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            bonusValues[56] +
+            "</b> % vs</td><td class='data'>" +
+            v_Race[6] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            f[6] +
+            "</b> % vs</td><td><b>" +
+            v_Effect[6] +
+            "</b>" +
+            L[6] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>" +
+            (100 - n_A_element[7]) +
+            "</b> % vs</td><td class='data'>" +
+            v_Element[7] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            bonusValues[57] +
+            "</b> % vs</td><td class='data'>" +
+            v_Race[7] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            f[7] +
+            "</b> % vs</td><td><b>" +
+            v_Effect[7] +
+            "</b>" +
+            L[7] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>" +
+            (100 - n_A_element[8]) +
+            "</b> % vs</td><td class='data'>" +
+            v_Element[8] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            bonusValues[58] +
+            "</b> % vs</td><td class='data'>" +
+            v_Race[8] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            f[8] +
+            "</b> % vs</td><td><b>" +
+            v_Effect[8] +
+            "</b>" +
+            L[8] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>" +
+            (100 - n_A_element[9]) +
+            "</b> % vs</td><td class='data'>" +
+            v_Element[9] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            bonusValues[59] +
+            "</b> % vs</td><td class='data'>" +
+            v_Race[9] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>" +
+            f[9] +
+            "</b> % vs</td><td><b>" +
+            v_Effect[9] +
+            "</b>" +
+            L[9] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td colspan='6' class='center'>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</td></tr></table>"),
+          (r +=
+            "<small>Displayed duration assumes a 1s base duration. Freeze is additionally extended by 0.01s per point of caster LUK.</small>"),
+          (r += "<table>"),
+          (r +=
+            "<tr><td class='right'><b>" +
+            bonusValues[190] +
+            "</b> % vs</td><td class='data'><b>Small size</b></td>"),
+          (r +=
+            "<td class='right'><b>" +
+            bonusValues[77] +
+            "</b> % vs</td><td><b>Boss monsters</b></td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>" +
+            bonusValues[191] +
+            "</b> % vs</td><td class='data'><b>Medium size</b></td>"),
+          (r +=
+            "<td class='right'><b>" +
+            bonusValues[79] +
+            "</b> % vs</td><td><b>Normal monsters</b></td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>" +
+            bonusValues[192] +
+            "</b> % vs</td><td class='data'><b>Large size</b></td>"),
+          (r +=
+            "<td class='right'><b>" +
+            bonusValues[78] +
+            "</b> % vs</td><td><b>Long-range attacks</b></td></tr>"),
+          (r += "</table>"),
+          myInnerHtml("A_KakutyouData", r, 0));
+      } else if (wKK == 14) {
+        for (
+          F_MOD = 0,
+            G_MOD = bonusValues[80],
+            B_MOD = bonusValues[80] + bonusValues[BONUSID.PHYSICAL_BOSS_DMG_PERCENT],
+            SM_MOD = 0,
+            o = 0;
+          o <= 7;
+          o++
+        )
+          n_A_card[o] == 244 && (G_MOD += 40);
+        for (
+          EquipNumSearch(EQUIPID.DIABOLUS_MANTEAU) && (SM_MOD += 10),
+            (n_A_Equip[9] != 844 && n_A_Equip[9] != 1753) || (SM_MOD += 10),
+            (n_A_Equip[10] != 844 && n_A_Equip[10] != 1753) || (SM_MOD += 10),
+            o = 0;
+          o < 8;
+          o += 2
+        )
+          n_A_Buf9[o] == 29 && (SM_MOD += n_A_Buf9[o + 1]);
+        for (o = 0; o < 8; o += 2) n_A_Buf9[o] == 26 && (G_MOD += n_A_Buf9[o + 1]);
+        switch (
+          ((F_M1 = 1 * c.R_OBJ.value),
+          (F_M2 = 1 * c.S_OBJ.value),
+          (F_M3 = 1 * c.E_OBJ.value),
+          (F_M4 = 1 * c.B_OBJ.value),
+          (F_M5 = 1 * c.SP_OBJ.value),
+          F_M1)
+        ) {
+          case 0:
+            F_M1 = bonusValues[30];
+            break;
+          case 1:
+            F_M1 = bonusValues[31];
+            break;
+          case 2:
+            F_M1 = bonusValues[32];
+            break;
+          case 3:
+            F_M1 = bonusValues[33];
+            break;
+          case 4:
+            F_M1 = bonusValues[34];
+            break;
+          case 5:
+            F_M1 = bonusValues[35];
+            break;
+          case 6:
+            F_M1 = bonusValues[36];
+            break;
+          case 7:
+            F_M1 = bonusValues[37];
+            break;
+          case 8:
+            F_M1 = bonusValues[38];
+            break;
+          case 9:
+            F_M1 = bonusValues[39];
+            break;
+        }
+        switch (F_M2) {
+          case 0:
+            F_M2 = bonusValues[27];
+            break;
+          case 1:
+            F_M2 = bonusValues[28];
+            break;
+          case 2:
+            F_M2 = bonusValues[29];
+            break;
+        }
+        switch (F_M3) {
+          case 0:
+            F_M3 = bonusValues[40];
+            break;
+          case 1:
+            F_M3 = bonusValues[41];
+            break;
+          case 2:
+            F_M3 = bonusValues[42];
+            break;
+          case 3:
+            F_M3 = bonusValues[43];
+            break;
+          case 4:
+            F_M3 = bonusValues[44];
+            break;
+          case 5:
+            F_M3 = bonusValues[45];
+            break;
+          case 6:
+            F_M3 = bonusValues[46];
+            break;
+          case 7:
+            F_M3 = bonusValues[47];
+            break;
+          case 8:
+            F_M3 = bonusValues[48];
+            break;
+          case 9:
+            F_M3 = bonusValues[49];
+            break;
+        }
+        switch (F_M4) {
+          case 0:
+            F_M4 = bonusValues[80];
+            break;
+          case 1:
+            F_M4 = B_MOD;
+            break;
+        }
+        switch (F_M5) {
+          case 0:
+            F_M5 = 0;
+            break;
+          case 1:
+            F_M5 = bonusValues[81];
+            break;
+          case 2:
+            F_M5 = bonusValues[84];
+            break;
+          case 3:
+            F_M5 = G_MOD;
+            break;
+          case 4:
+            F_M5 = bonusValues[82];
+            break;
+          case 5:
+            F_M5 = bonusValues[83];
+            break;
+          case 6:
+            F_M5 = SM_MOD;
+            break;
+        }
+        ((F_M1 = 1 + F_M1 / 100),
+          (F_M2 = 1 + F_M2 / 100),
+          (F_M3 = 1 + F_M3 / 100),
+          (F_M4 = 1 + F_M4 / 100),
+          (F_M5 = 1 + F_M5 / 100),
+          (F_M6 = 1 + bonusValues[25] / 100),
+          (F_M7 = 1 + bonusValues[70] / 100),
+          (F_MOD = Math.round(F_M1 * F_M2 * F_M3 * F_M4 * F_M5 * 100)),
+          (F_MOD2 = Math.round(F_M1 * F_M2 * F_M3 * F_M4 * F_M5 * F_M6 * 100)),
+          (F_MOD3 = Math.round(F_M1 * F_M2 * F_M3 * F_M4 * F_M5 * F_M7 * 100)),
+          (F_MOD4 = Math.round(F_M1 * F_M2 * F_M3 * F_M4 * F_M5 * F_M6 * F_M7 * 100)),
+          (r = "<table>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[40] +
+            "</b>%</td><td class='data'>vs " +
+            v_Element[0] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>+" +
+            bonusValues[30] +
+            "</b>%</td><td class='data'>vs " +
+            v_Race[0] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>+" +
+            bonusValues[81] +
+            "</b>%</td><td>vs <b>Goblin</b></td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[41] +
+            "</b>%</td><td class='data'>vs " +
+            v_Element[1] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>+" +
+            bonusValues[31] +
+            "</b>%</td><td class='data'>vs " +
+            v_Race[1] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>+" + bonusValues[84] + "</b>%</td><td>vs <b>Golem</b></td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[42] +
+            "</b>%</td><td class='data'>vs " +
+            v_Element[2] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>+" +
+            bonusValues[32] +
+            "</b>%</td><td class='data'>vs " +
+            v_Race[2] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>+" +
+            bonusValues[82] +
+            "</b>%</td><td>vs <b>Kobold</b></td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[43] +
+            "</b>%</td><td class='data'>vs " +
+            v_Element[3] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>+" +
+            bonusValues[33] +
+            "</b>%</td><td class='data'>vs " +
+            v_Race[3] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>+" + bonusValues[83] + "</b>%</td><td>vs <b>Orc</b></td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[44] +
+            "</b>%</td><td class='data'>vs " +
+            v_Element[4] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>+" +
+            bonusValues[34] +
+            "</b>%</td><td class='data'>vs " +
+            v_Race[4] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>+" + SM_MOD + "</b>%</td><td>vs <b>Satan Morroc</b></td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[45] +
+            "</b>%</td><td class='data'>vs " +
+            v_Element[5] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>+" +
+            bonusValues[35] +
+            "</b>%</td><td class='data'>vs " +
+            v_Race[5] +
+            "</td>"),
+          (r += "<td class='right'><b>+" + G_MOD + "</b>%</td><td>vs <b>Guardian</b></td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[46] +
+            "</b>%</td><td class='data'>vs " +
+            v_Element[6] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>+" +
+            bonusValues[36] +
+            "</b>%</td><td class='data'>vs " +
+            v_Race[6] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>+" +
+            bonusValues[80] +
+            "</b>%</td><td>vs <b>Normal</b></td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[47] +
+            "</b>%</td><td class='data'>vs " +
+            v_Element[7] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>+" +
+            bonusValues[37] +
+            "</b>%</td><td class='data'>vs " +
+            v_Race[7] +
+            "</td>"),
+          (r += "<td class='right'><b>+" + B_MOD + "</b>%</td><td>vs <b>Boss</b></td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[48] +
+            "</b>%</td><td class='data'>vs " +
+            v_Element[8] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>+" +
+            bonusValues[38] +
+            "</b>%</td><td class='data'>vs " +
+            v_Race[8] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>+" +
+            bonusValues[25] +
+            "</b>%</td><td><b>long-range dmg</b></td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[49] +
+            "</b>%</td><td class='data'>vs " +
+            v_Element[9] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>+" +
+            bonusValues[39] +
+            "</b>%</td><td class='data'>vs " +
+            v_Race[9] +
+            "</td>"),
+          (r +=
+            "<td class='right'><b>+" +
+            bonusValues[70] +
+            "</b>%</td><td><b>critical damage</b></td></tr>"),
+          (r +=
+            "<tr><td colspan='6' class='center'>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</td></tr></table>"),
+          (r += "<table>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[27] +
+            "</b>% vs</td><td class='data'><b>Small</b></td>"),
+          (r +=
+            "<td class='right'><b>+" +
+            bonusValues[28] +
+            "</b>% vs</td><td class='data'><b>Medium</b></td>"),
+          (r +=
+            "<td class='right'><b>+" + bonusValues[29] + "</b>% vs</td><td><b>Large</b></td></tr>"),
+          (r += "</table>"),
+          (r += "<hr><table>"),
+          (r +=
+            "<tr><td><b>Final non-critical melee ATK based damage modifier: </b>" +
+            F_MOD +
+            " %</td></tr>"),
+          (r +=
+            "<tr><td><b>Final non-critical long-range ATK based damage modifier: </b>" +
+            F_MOD2 +
+            " %</td></tr>"),
+          (r +=
+            "<tr><td><b>Final critical melee ATK based damage modifier: </b>" +
+            F_MOD3 +
+            " %</td></tr>"),
+          (r +=
+            "<tr><td><b>Final critical long-range ATK based damage modifier: </b>" +
+            F_MOD4 +
+            " %</td></tr>"),
+          (r += "</table>"),
+          myInnerHtml("A_KakutyouSel", r, 0));
+      } else if (wKK == 16)
+        ((r = "<table>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[170] +
+            "</b> % vs</td><td>" +
+            v_Race[0] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[171] +
+            "</b> % vs</td><td>" +
+            v_Race[1] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[172] +
+            "</b> % vs</td><td>" +
+            v_Race[2] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[173] +
+            "</b> % vs</td><td>" +
+            v_Race[3] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[174] +
+            "</b> % vs</td><td>" +
+            v_Race[4] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[175] +
+            "</b> % vs</td><td>" +
+            v_Race[5] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[176] +
+            "</b> % vs</td><td>" +
+            v_Race[6] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[177] +
+            "</b> % vs</td><td>" +
+            v_Race[7] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[178] +
+            "</b> % vs</td><td>" +
+            v_Race[8] +
+            "</td></tr>"),
+          (r +=
+            "<tr><td class='right'><b>+" +
+            bonusValues[179] +
+            "</b> % vs</td><td>" +
+            v_Race[9] +
+            "</td></tr>"),
+          (r += "</table>"),
+          myInnerHtml("A_KakutyouData", r, 0));
+      else if (wKK == 18) {
+        var t;
+        ((t =
+          "<b>Cast Time: </b>" +
+          Math.floor(1e4 * n_A_CAST) / 100 +
+          " % (<b>" +
+          skillName(204) +
+          ":</b> " +
+          nb_tok +
+          " %| <b>Gear:</b> " +
+          -bonusValues[73] +
+          " % | <b>DEX:</b> " +
+          n_A_DEX +
+          " )<BR>"),
+          (t +=
+            "<b>Cast Delay: </b>" +
+            Math.floor(100 - AC_I - ((100 - AC_I) * bonusValues[74]) / 100) +
+            " % (<b>" +
+            skillName(204) +
+            ":</b> " +
+            bonusValues[74] +
+            " % | <b>Gear:</b> " +
+            AC_I +
+            " %)<BR>"),
+          myInnerHtml("A_KakutyouData", t, 0));
+      } else if (wKK == 20) {
+        var F = 1 * c.A_KakutyouSelNum.value,
+          O = 1 * c.A_KakutyouSelNum2.value;
+        ((0 <= F && F < 100) || ((F = 0), (c.A_KakutyouSelNum.value = 0)),
+          (0 <= O && O < 100) || ((O = 0), (c.A_KakutyouSelNum2.value = 0)));
+        var H = 0;
+        (n_A_JOB == 0 && n_Reborn && (H = 1),
+          ((1 <= n_A_JOB && n_A_JOB <= 6) || n_A_JOB == 41 || n_A_JOB == 20) &&
+            ((H = 2), n_Reborn && (H = 3)),
+          ((7 <= n_A_JOB && n_A_JOB <= 19) || n_A_JOB == 43) && (H = 4),
+          21 <= n_A_JOB && n_A_JOB <= 33 && (H = 5),
+          n_A_JOB == 42 && (H = 7),
+          (n_A_JOB != 44 && n_A_JOB != 45) || (H = 6),
+          (F = Math.floor((PC_BaseExp[n_Reborn][n_A_BaseLV] * F) / 100)),
+          (r =
+            "Required BaseExp for Base Up: <B>" +
+            Kanma(PC_BaseExp[n_Reborn][n_A_BaseLV] - F) +
+            " </B>exp<BR>"));
+        var R = 0,
+          q = 0;
+        if (targetData[16] != 0) {
+          for (o = n_A_BaseLV; o < 99; o++) {
+            var M = PC_BaseExp[n_Reborn][o];
+            for (R += N = Math.floor((M - F) / targetData[16]), F += N * targetData[16]; F < M;)
+              ((F += targetData[16]), (R += 1));
+            (q == 0 &&
+              ((q = 1),
+              (r +=
+                "(Equals <B>" +
+                Kanma(R) +
+                "</B> " +
+                targetData[1] +
+                " kill" +
+                (Kanma(R) != 1 ? "s" : "") +
+                ")<BR>")),
+              (F -= M) > M - 1 && (F = M - 1));
+          }
+          r +=
+            "Until Base Lvl 99: <B>" +
+            Kanma(R) +
+            "</B> more " +
+            targetData[1] +
+            " kill" +
+            (Kanma(R) != 1 ? "s" : "") +
+            "<BR><BR>";
+        }
+        if (
+          ((O = Math.floor((PC_JobExp[H][n_A_JobLV] * O) / 100)),
+          ((1 <= n_A_JOB && n_A_JOB <= 6) || n_A_JOB == 41) && n_A_JobLV == 50 && (O = 0),
+          (r +=
+            "Required JobExp for Job Up: <B>" +
+            Kanma(PC_JobExp[H][n_A_JobLV] - O) +
+            "</B> exp<BR>"),
+          (R = 0),
+          (q = 0),
+          targetData[17] != 0)
+        ) {
+          for (o = 1; PC_JobExp[H][o] != 0; o++);
+          var K = o;
+          for (
+            ((1 <= n_A_JOB && n_A_JOB <= 6) || n_A_JOB == 41) && (K = 50), o = n_A_JobLV;
+            o < K;
+            o++
+          ) {
+            var N;
+            for (
+              M = PC_JobExp[H][o],
+                R += N = Math.floor((M - O) / targetData[17]),
+                O += N * targetData[17];
+              O < M;
+            )
+              ((O += targetData[17]), (R += 1));
+            (q == 0 &&
+              ((q = 1),
+              (r +=
+                "(Equals <B>" +
+                Kanma(R) +
+                "</B> " +
+                targetData[1] +
+                " kill" +
+                (Kanma(R) != 1 ? "s" : "") +
+                ")<BR>")),
+              (O -= M) > M - 1 && (O = M - 1));
+          }
+          r +=
+            "Until JobLvl " +
+            K +
+            ": <B>" +
+            Kanma(R) +
+            "</B> more " +
+            targetData[1] +
+            " kill" +
+            (Kanma(R) != 1 ? "s" : "") +
+            "<BR>";
+        }
+        myInnerHtml("A_KakutyouData", r, 0);
+      } else if (wKK == 22)
+        if (((H_Bonus = 1), (H_Bonus2 = 1), (H_Bonus3 = 1), n_A_JOB == 19 || n_A_JOB == 33)) {
+          for (
+            slv = 1 * c.SL_LV.value,
+              evit = 1 * c.E_VIT.value,
+              eint = 1 * c.E_INT.value,
+              potr = 1 * c.POT_RLevel.value,
+              isp = 1 * c.ISP.value,
+              irp = 1 * c.IRP.value,
+              rank_bonus = 1 * c.RNK_BNS.value,
+              pot1 = 1 * c.PP.value,
+              prate1 = m_Potion2[pot1][1],
+              prate2 = m_Potion2[pot1][2],
+              rank_bonus == 1 && (prate1 *= 1.5),
+              rank_bonus == 1 && (prate2 *= 1.5),
+              n_A_JOB == 33 &&
+                ((pot2 = 1 * c.SPP.value),
+                (prate3 = m_Potion3[pot2][1]),
+                (prate4 = m_Potion3[pot2][2])),
+              EquipNumSearch(EQUIPID.FRICCOS_SHOES) && (H_Bonus2 += 0.2),
+              EquipNumSearch(EQUIPID.VITAL_TREE_SHOES) && (H_Bonus3 += 0.05),
+              o = 8;
+            o < 12;
+            o++
+          )
+            n_A_Buf8[o] == 10 && EquipNumSearch(1e3) && (H_Bonus += 0.2);
+          for (o = 8; o <= 9; o++)
+            (n_A_card[o] == 332 && (H_Bonus += 0.3), n_A_card[o] == 513 && (H_Bonus += 0.03));
+          ((n_A_Equip[9] != 844 && n_A_Equip[9] != 1753) || (H_Bonus += 0.05),
+            (n_A_Equip[10] != 844 && n_A_Equip[10] != 1753) || (H_Bonus += 0.05),
+            n_A_Equip[9] == 1111 && (H_Bonus += 0.05),
+            n_A_Equip[10] == 1111 && (H_Bonus += 0.05),
+            EquipNumSearch(EQUIPID.ERDE) && (H_Bonus += 0.1),
+            EquipNumSearch(EQUIPID.ANUBIS_HAT) && (H_Bonus += 0.1),
+            EquipNumSearch(EQUIPID.VITAL_TREE_SHOES) && (H_Bonus += 0.05),
+            n_A_HEAD_REFINE >= 7 && EquipNumSearch(EQUIPID.CANCER_DIADEM) && (H_Bonus += 0.03),
+            n_A_HEAD_REFINE >= 9 &&
+              EquipNumSearch(EQUIPID.CAPRICORN_DIADEM_OLD) &&
+              (H_Bonus += 0.04),
+            n_A_HEAD_REFINE >= 9 && EquipNumSearch(EQUIPID.CAPRICORN_DIADEM) && (H_Bonus += 0.04),
+            ((n_A_Equip[9] == 1111 && n_A_Equip[10] == 983) ||
+              (n_A_Equip[10] == 1111 && n_A_Equip[9] == 983)) &&
+              (H_Bonus += 0.05),
+            EquipNumSearch(EQUIPID.GLORIOUS_SUIT) &&
+              EquipNumSearch(EQUIPID.GLORIOUS_SHOES) &&
+              EquipNumSearch(EQUIPID.GLORIOUS_MUFFLER) &&
+              (H_Bonus += 0.03),
+            EquipNumSearch(EQUIPID.ELITE_ENGINEERS_ARMOR) &&
+              EquipNumSearch(EQUIPID.CAPTAINS_MANTEAU) &&
+              EquipNumSearch(EQUIPID.BATTLE_GREAVES) &&
+              (H_Bonus += 0.1),
+            (H_HEALS = 1 + 0.1 * irp),
+            (S_HEALS = 1 + 0.1 * isp),
+            pot1 == 4
+              ? ((potheal1 = Math.floor(
+                  prate1 *
+                    (1 + 0.1 * potr + 0.05 * pot1) *
+                    (1 + slv / 100) *
+                    (1 + 0.02 * eint) *
+                    S_HEALS,
+                )),
+                (potheal2 = Math.floor(
+                  prate2 *
+                    (1 + 0.1 * potr + 0.05 * pot1) *
+                    (1 + slv / 100) *
+                    (1 + 0.02 * eint) *
+                    S_HEALS,
+                )))
+              : ((potheal1 = Math.floor(
+                  prate1 *
+                    (1 + 0.1 * potr + 0.05 * pot1) *
+                    (1 + slv / 100) *
+                    (1 + 0.02 * evit) *
+                    H_HEALS *
+                    H_Bonus *
+                    H_Bonus2 *
+                    H_Bonus3,
+                )),
+                (potheal2 = Math.floor(
+                  prate2 *
+                    (1 + 0.1 * potr + 0.05 * pot1) *
+                    (1 + slv / 100) *
+                    (1 + 0.02 * evit) *
+                    H_HEALS *
+                    H_Bonus *
+                    H_Bonus2 *
+                    H_Bonus3,
+                ))),
+            n_A_JOB == 33 &&
+              ((potheal3 = Math.floor(
+                prate3 * (1 + 0.1 * potr + 0.1 * pot2) * (1 + 0.02 * evit) * H_HEALS * H_Bonus3,
+              )),
+              (potheal4 = Math.floor(
+                prate4 * (1 + 0.1 * potr + 0.1 * pot2) * (1 + 0.02 * evit) * H_HEALS * H_Bonus3,
+              ))),
+            (Heal_POT =
+              "<table><tr><td><b>Potion Pitcher heals: </b>" +
+              potheal1 +
+              " ~ " +
+              potheal2 +
+              "</td>"),
+            n_A_JOB == 33 &&
+              (Heal_POT += "<td><b>Slim Potion Pitch heals: </b>" + potheal3 + " ~ " + potheal4),
+            (Heal_POT += "</td></tr></table>"),
+            myInnerHtml("A_KakutyouData", Heal_POT, 0));
+        } else myInnerHtml("A_KakutyouData", "", 0);
+      else if (wKK == 24)
+        switch (n_A_JOB) {
+          case 12:
+          case 26:
+            ((smithing = 1 * c.A_SmithT.value),
+              (orideconres = 1 * c.A_OriR.value),
+              (weaponres = 1 * c.A_WepR.value),
+              (starcrumb = 1 * c.A_StarC.value),
+              (elemstone = 1 * c.A_ElemS.value),
+              (anvil = 1 * c.A_KakutyouSelNum.value),
+              (iron = 1 * c.A_Iron.value),
+              (steel = 1 * c.A_Steel.value),
+              (stone = 1 * c.A_StoneC.value),
+              (anvil2 = m_Anvil[anvil][1]),
+              (adopted = 1 * c.A_adopted.checked),
+              (srate1 =
+                Math.floor(
+                  100 *
+                    (50 +
+                      5 * smithing +
+                      weaponres +
+                      anvil2 +
+                      0.2 * n_A_JobLV +
+                      0.1 * (n_A_DEX + n_A_LUK) -
+                      15 * starcrumb -
+                      20 * elemstone),
+                ) / 100),
+              (srate2 =
+                Math.floor(
+                  100 *
+                    (50 +
+                      5 * smithing +
+                      weaponres +
+                      anvil2 +
+                      0.2 * n_A_JobLV +
+                      0.1 * (n_A_DEX + n_A_LUK) -
+                      15 * starcrumb -
+                      20 * elemstone -
+                      20),
+                ) / 100),
+              (srate3 =
+                Math.floor(
+                  100 *
+                    (50 +
+                      5 * smithing +
+                      orideconres +
+                      weaponres +
+                      anvil2 +
+                      0.2 * n_A_JobLV +
+                      0.1 * (n_A_DEX + n_A_LUK) -
+                      15 * starcrumb -
+                      20 * elemstone -
+                      30),
+                ) / 100),
+              (srate4 =
+                Math.floor(100 * (40 + 0.2 * n_A_JobLV + 0.1 * (n_A_DEX + n_A_LUK) + 5 * iron)) /
+                100),
+              (srate5 =
+                Math.floor(100 * (30 + 0.2 * n_A_JobLV + 0.1 * (n_A_DEX + n_A_LUK) + 5 * steel)) /
+                100),
+              (srate6 =
+                Math.floor(100 * (10 + 0.2 * n_A_JobLV + 0.1 * (n_A_DEX + n_A_LUK) + 5 * stone)) /
+                100),
+              (srate1 < 0 || smithing == 0) && (srate1 = 0),
+              (srate2 < 0 || smithing == 0) && (srate2 = 0),
+              (srate3 < 0 || smithing == 0) && (srate3 = 0),
+              (srate4 < 0 || iron == 0) && (srate4 = 0),
+              (srate5 < 0 || steel == 0) && (srate5 = 0),
+              (srate6 < 0 || stone == 0) && (srate6 = 0),
+              adopted &&
+                ((srate1 = Math.floor(0.7 * srate1 * 100) / 100),
+                (srate2 = Math.floor(0.7 * srate2 * 100) / 100),
+                (srate3 = Math.floor(0.7 * srate3 * 100) / 100)),
+              (r = "<br><table><tr><td><b>Weapon Lvl 1: </b>" + srate1 + " %</td>"),
+              (r += "<td><b>Weapon Lvl 2: </b>" + srate2 + " %</td>"),
+              (r += "<td><b>Weapon Lvl 3: </b>" + srate3 + " %</td></tr>"),
+              (r += "<tr><td><b>Iron: </b>" + srate4 + " %</td>"),
+              (r += "<td><b>Steel: </b>" + srate5 + " %</td>"),
+              (r += "<td><b>Elemental Stone: </b>" + srate6 + " %</td></tr></table>"),
+              myInnerHtml("A_KakutyouData", r, 0));
+            break;
+          case 19:
+          case 33:
+            ((potionr = 1 * c.A_PotionRLevel.value),
+              (vani = 1 * c.A_Van.value),
+              (preparep = 1 * c.A_PreparePLevel.value),
+              (selpot = 1 * c.A_KakutyouSelNum.value),
+              (potrate = m_Potion[selpot][1]),
+              (adopted = 1 * c.A_adopted.checked),
+              (srate =
+                Math.floor(
+                  100 * potionr +
+                    300 * preparep +
+                    20 * n_A_JobLV +
+                    10 * (n_A_DEX + n_A_LUK) +
+                    5 * n_A_INT +
+                    100 * potrate +
+                    100 * vani,
+                ) / 100),
+              (srate < 0 || potionr == 0 || preparep == 0) && (srate = 0),
+              adopted && (srate = Math.floor(0.7 * srate)),
+              (brate = m_Potion[selpot][3]),
+              (frate1 = Math.floor(100 * (srate - brate)) / 100),
+              frate1 < 0 && (frate1 = 0),
+              (frate2 = Math.floor(100 * (srate + brate)) / 100),
+              frate2 < 0 && (frate2 = 0),
+              myInnerHtml(
+                "A_KakutyouData",
+                "<b><br>Sucess rate: </b>" + srate + " % [ " + frate1 + " % ~ " + frate2 + " % ]",
+                0,
+              ));
+            break;
+          case 22:
+            (myInnerHtml(
+              "A_KakutyouSel",
+              'Potion to Create: <select name="A_KakutyouSelNum" onChange="StAllCalc()"></select><BR>',
+              0,
+            ),
+              (documento.calcForm.A_KakutyouSelNum.options[0] = new documento.Opzione(
+                "Poison Bottle",
+                0,
+              )),
+              (srate = Math.floor(200 + 4 * n_A_DEX + 2 * n_A_LUK) / 10),
+              myInnerHtml("A_KakutyouData", "<b><br>Sucess rate: </b>" + srate + " %", 0));
+            break;
+          default:
+            myInnerHtml("A_KakutyouData", "", 0);
+        }
+      else if (wKK == 26)
+        ((r = ""),
+          (n_A_JobClass() == 2 ||
+            EquipNumSearch(EQUIPID.ANNIVERSARY_THIEF_HAT) ||
+            CardNumSearch(152)) &&
+            ((E_DEX1 = 1 * c.E_DEX.value),
+            (StealLV = 1 * c.Steal_LV.value),
+            (DropC = 1 * c.DropChance.value),
+            (StealC = Math.round(DropC * (10 + 3 * StealLV + n_A_DEX - E_DEX1)) / 100),
+            myInnerHtml("Steal_CHANCE", StealC + " %", 0),
+            (n_A_JOB != 14 && n_A_JOB != 28) ||
+              ((SmugLV = 1 * c.Steal_LV.value),
+              (SmugC = Math.round(DropC * (10 + 3 * SmugLV + n_A_DEX - E_DEX1)) / 100),
+              myInnerHtml("Smug_CHANCE", SmugC + " %", 0))),
+          myInnerHtml("A_KakutyouData", "", 0));
+      else if (wKK == 28)
+        ((CardNumSearch(157) ||
+          CardNumSearch(413) ||
+          EquipNumSearch(EQUIPID.DRILL_KATAR) ||
+          n_A_JOB == 14 ||
+          n_A_JOB == 28 ||
+          n_A_JOB == 45) &&
+          ((E_DEX1 = 1 * c.E_DEX.value),
+          (n_A_JOB != 14 && n_A_JOB != 28 && n_A_JOB != 45) ||
+            ((S_LV1 = 1 * c.S_LV.value),
+            (Strip = 5 + 5 * S_LV1 + (n_A_DEX - E_DEX1) / 5),
+            (S_Time = 60 + 15 * S_LV1 + (n_A_DEX - E_DEX1) / 2),
+            Strip < 5 + 5 * S_LV1 && (Strip = 5 + 5 * S_LV1),
+            S_Time < 60 && (S_Time = 60),
+            myInnerHtml("S_CHANCE", Math.floor(10 * Strip) / 10 + " %", 0),
+            myInnerHtml("S_TIME", Math.floor(10 * S_Time) / 10 + " seconds", 0)),
+          n_A_JOB == 28 &&
+            ((FS_LV1 = 1 * c.FS_LV.value),
+            (FStrip = 5 + 2 * FS_LV1 + (n_A_DEX - E_DEX1) / 5),
+            (FS_Time = 60 + 15 * FS_LV1 + (n_A_DEX - E_DEX1) / 2),
+            FStrip < 5 + 2 * FS_LV1 && (FStrip = 5 + 2 * FS_LV1),
+            FS_Time < 60 && (FS_Time = 60),
+            myInnerHtml("FS_CHANCE", Math.floor(10 * FStrip) / 10 + " %", 0),
+            myInnerHtml("FS_TIME", Math.floor(10 * FS_Time) / 10 + " seconds", 0)),
+          CardNumSearch(157) &&
+            ((S_LV1 = 1 * c.S2_LV.value),
+            (Strip = 5 + 5 * S_LV1 + (n_A_DEX - E_DEX1) / 5),
+            (S_Time = 60 + 15 * S_LV1 + (n_A_DEX - E_DEX1) / 2),
+            Strip < 5 + 5 * S_LV1 && (Strip = 5 + 5 * S_LV1),
+            S_Time < 60 && (S_Time = 60),
+            myInnerHtml("S2_CHANCE", Math.floor(10 * Strip) / 10 + " %", 0),
+            myInnerHtml("S2_TIME", Math.floor(10 * S_Time) / 10 + " seconds", 0)),
+          CardNumSearch(413) &&
+            ((S_LV1 = 1 * c.S3_LV.value),
+            (Strip = 5 + 5 * S_LV1 + (n_A_DEX - E_DEX1) / 5),
+            (S_Time = 60 + 15 * S_LV1 + (n_A_DEX - E_DEX1) / 2),
+            Strip < 5 + 5 * S_LV1 && (Strip = 5 + 5 * S_LV1),
+            S_Time < 60 && (S_Time = 60),
+            myInnerHtml("S3_CHANCE", Math.floor(10 * Strip) / 10 + " %", 0),
+            myInnerHtml("S3_TIME", Math.floor(10 * S_Time) / 10 + " seconds", 0)),
+          EquipNumSearch(EQUIPID.DRILL_KATAR) &&
+            ((FS_LV1 = 1 * c.FS2_LV.value),
+            (FStrip = 5 + 2 * FS_LV1 + (n_A_DEX - E_DEX1) / 5),
+            (FS_Time = 60 + 15 * FS_LV1 + (n_A_DEX - E_DEX1) / 2),
+            FStrip < 5 + 2 * FS_LV1 && (FStrip = 5 + 2 * FS_LV1),
+            FS_Time < 60 && (FS_Time = 60),
+            myInnerHtml("FS2_CHANCE", Math.floor(10 * FStrip) / 10 + " %", 0),
+            myInnerHtml("FS2_TIME", Math.floor(10 * FS_Time) / 10 + " seconds", 0))),
+          myInnerHtml("A_KakutyouData", "", 0));
+      else if (wKK == 30)
+        ((Flv1 = 1 * c.Flv.value),
+          (FStat1 = 1 * c.FStat.value),
+          (CKit1 = 1 * c.CKit.value),
+          (CExp1 = 1 * c.CExp.value),
+          (adopted = 1 * c.A_adopted.checked),
+          (ItemN = 1),
+          CExp1 > 2e3 && (CExp1 = 2e3),
+          adopted ? (adp = 0.7) : (adp = 1),
+          Flv1 == 1 && FStat1 == 4 && (ItemN = 2),
+          ((Flv1 == 1 && FStat1 != 4) ||
+            (Flv1 == 2 && FStat1 == 4) ||
+            (Flv1 == 3 && FStat1 == 4)) &&
+            (ItemN = 3),
+          ((Flv1 == 2 && FStat1 != 4) ||
+            (Flv1 == 3 && (FStat1 == 2 || FStat1 == 3 || FStat1 == 6)) ||
+            (Flv1 == 6 && FStat1 == 2)) &&
+            (ItemN = 4),
+          ((Flv1 == 3 && (FStat1 == 1 || FStat1 == 5)) ||
+            (Flv1 == 4 && (FStat1 != 1 || FStat1 != 5)) ||
+            (Flv1 == 5 && FStat1 != 5) ||
+            (Flv1 == 6 && (FStat1 != 2 || FStat1 != 5)) ||
+            (Flv1 == 7 && FStat1 == 4)) &&
+            (ItemN = 5),
+          ((Flv1 == 4 && (FStat1 == 4 || FStat1 == 5)) ||
+            (Flv1 == 5 && FStat1 == 5) ||
+            (Flv1 == 6 && FStat1 == 5) ||
+            (Flv1 == 7 && FStat1 != 4) ||
+            (Flv1 == 8 && FStat1 != 5)) &&
+            (ItemN = 6),
+          ((Flv1 == 8 && FStat1 == 5) || Flv1 == 9) && (ItemN = 7),
+          Flv1 == 10 && (ItemN = 8),
+          (Food_Powa =
+            1200 * (CKit1 + 1) +
+            20 * (n_A_BaseLV + 1) +
+            20 * n_A_DEX -
+            400 * Flv1 -
+            10 * (100 - (n_A_LUK + 1)) -
+            500 * (ItemN - 1)),
+          (Food_MIN = Math.round(Food_Powa + 100 * (6 + CExp1 / 80 + 0) * adp) / 100),
+          (Food_AVG = Math.round(Food_Powa + 100 * (6 + CExp1 / 80 + 12) * adp) / 100),
+          (Food_MAX = Math.round(Food_Powa + 100 * (6 + CExp1 / 80 + 24) * adp) / 100),
+          (FDA1 = Math.round(100 * (Food_MIN - 5)) / 100),
+          (FDA2 = Math.round(100 * (Food_MIN - 1)) / 100),
+          (FDB1 = Math.round(100 * (Food_AVG - 5)) / 100),
+          (FDB2 = Math.round(100 * (Food_AVG - 1)) / 100),
+          (FDC1 = Math.round(100 * (Food_MAX - 5)) / 100),
+          (FDC2 = Math.round(100 * (Food_MAX - 1)) / 100),
+          Food_MIN <= 0 && ((Food_MIN = 0), (FDA1 = 0), (FDA2 = 0)),
+          FDA1 <= 0 && (FDA1 = 0),
+          FDA2 <= 0 && ((FDA1 = 0), (FDA2 = 0)),
+          Food_AVG <= 0 && ((Food_AVG = 0), (FDB1 = 0), (FDB2 = 0)),
+          FDB1 <= 0 && (FDB1 = 0),
+          FDB2 <= 0 && ((FDB1 = 0), (FDB2 = 0)),
+          Food_MAX <= 0 && ((Food_MAX = 0), (FDC1 = 0), (FDC2 = 0)),
+          FDC1 <= 0 && (FDC1 = 0),
+          FDC2 <= 0 && ((FDC1 = 0), (FDC2 = 0)),
+          Food_MIN > 100 && (Food_MIN = 100),
+          FDA1 > 100 && (FDA1 = 100),
+          FDA2 > 100 && (FDA2 = 100),
+          Food_AVG > 100 && (Food_AVG = 100),
+          FDB1 > 100 && (FDB1 = 100),
+          FDB2 > 100 && (FDB2 = 100),
+          Food_MAX > 100 && (Food_MAX = 100),
+          FDC1 > 100 && (FDC1 = 100),
+          FDC2 > 100 && (FDC2 = 100),
+          CKit1 == 4
+            ? (myInnerHtml("COOK_MIN", "100%", 0),
+              myInnerHtml("COOK_AVE", "", 0),
+              myInnerHtml("COOK_MAX", "", 0))
+            : (myInnerHtml(
+                "COOK_MIN",
+                "Minimum: " + Food_MIN + "% [" + FDA1 + "% ~ " + FDA2 + "%]",
+                0,
+              ),
+              myInnerHtml(
+                "COOK_AVE",
+                "Average: " + Food_AVG + "% [" + FDB1 + "% ~ " + FDB2 + "%]",
+                0,
+              ),
+              myInnerHtml(
+                "COOK_MAX",
+                "Maximum: " + Food_MAX + "% [" + FDC1 + "% ~ " + FDC2 + "%]",
+                0,
+              )),
+          myInnerHtml("A_KakutyouData", "", 0));
+      else if (wKK == 32) {
+        var X = 1 * c.Pet.value,
+          Z = 1 * c.PetHP.value,
+          x =
+            Math.round(
+              ((m_Pets[0][X] + 30 * (n_A_BaseLV - m_Monster[X][5]) + 20 * n_A_LUK) *
+                (100 - (Z - 100))) /
+                100,
+            ) / 100;
+        (x < 0 && (x = 0),
+          (r = "<HR><table><tr><td>Chance to pet: " + x + " %</td></tr></table>"),
+          myInnerHtml("A_KakutyouData", r, 0));
+      } else if (wKK == 34) {
+        refinetype = [
+          [
+            [1, 1, 1, 1, 1, 1, 1, 0.6, 0.24, 0.048],
+            [1, 1, 1, 1, 1, 1, 0.6, 0.24, 0.048, 0.0096],
+            [1, 1, 1, 1, 1, 0.6, 0.3, 0.06, 0.012, 0.0024],
+            [1, 1, 1, 1, 0.6, 0.24, 0.096, 0.0192, 0.00384, 384e-6],
+            [1, 1, 1, 1, 0.6, 0.24, 0.096, 0.0192, 0.00384, 384e-6],
+          ],
+          [
+            [1, 1, 1, 1, 1, 1, 1, 0.9, 0.54, 0.108],
+            [1, 1, 1, 1, 1, 1, 0.9, 0.54, 0.162, 0.0324],
+            [1, 1, 1, 1, 1, 0.9, 0.675, 0.2025, 0.06075, 0.0121],
+            [1, 1, 1, 1, 0.9, 0.54, 0.324, 0.0972, 0.02916, 0.002916],
+            [1, 1, 1, 1, 0.9, 0.54, 0.324, 0.0972, 0.02916, 0.002916],
+          ],
+          [
+            [
+              0.9, 0.81, 0.729, 0.6561, 0.52488, 0.419904, 0.2519424, 0.15116544, 0.060466176,
+              0.0120932352,
+            ],
+            [
+              0.9, 0.81, 0.729, 0.5832, 0.46656, 0.279936, 0.1679616, 0.06718464, 0.013436928,
+              0.0026873856,
+            ],
+            [
+              0.9, 0.81, 0.648, 0.5184, 0.31104, 0.186624, 0.093312, 0.0186624, 0.00373248,
+              746496e-9,
+            ],
+            [
+              0.9, 0.72, 0.576, 0.3456, 0.20736, 0.082944, 0.0331776, 0.00663552, 0.001327104,
+              0.0001327104,
+            ],
+            [
+              0.8, 0.64, 0.512, 0.3072, 0.18432, 0.073728, 0.0294912, 0.00589824, 0.001179648,
+              0.0001179648,
+            ],
+          ],
+          [
+            [1, 1, 1, 1, 1, 1, 1, 0.6, 0.24, 0.048],
+            [1, 1, 1, 1, 1, 1, 0.6, 0.24, 0.048, 0.0096],
+            [1, 1, 1, 1, 1, 0.6, 0.3, 0.06, 0.012, 0.0024],
+            [1, 1, 1, 1, 0.6, 0.24, 0.096, 0.0192, 0.00384, 384e-6],
+            [1, 1, 1, 1, 0.6, 0.24, 0.096, 0.0192, 0.00384, 384e-6],
+          ],
+        ];
+        var y = 1 * c.EquipValue.value,
+          P = 1 * c.EquipType.value,
+          $ = 1 * c.OreType.value,
+          __ = 1 * c.OreValue.value,
+          W = 1 * c.npcCost.value,
+          Q = 1 * c.DesiredRefine.value,
+          z = refinetype[$][P][Q - 1],
+          e_ = Math.round((y + (__ + W) * Q) / z) - y;
+        ((r =
+          "<HR><table><tr><td>Chance to refine up to +" +
+          Q +
+          " = " +
+          Math.round(1e6 * z) / 1e4 +
+          " %</td></tr>"),
+          (r += "<tr><td>Mean investment = " + e_ + " zeny</td></tr></table>"),
+          myInnerHtml("A_KakutyouData", r, 0));
+      } else if (wKK == 36) {
+        y = 1 * c.EquipValue.value;
+        var a_ = 1 * c.ItemValue.value,
+          n_ = ((W = 1 * c.npcCost.value), 1 * c.SocketChance.value);
+        ((r =
+          "<HR><table><tr><td>Mean investment = " +
+          Math.round((y + a_ + W) / (n_ / 100)) +
+          " zeny</td></tr></table>"),
+          myInnerHtml("A_KakutyouData", r, 0));
+      } else
+        wKK == 38
+          ? ((hiddentype = [
+              [0.2, 0.4, 0.0667, 0.2667, 0.0444, 0.1333, 0.0222],
+              [0.28, 0.36, 0.06, 0.24, 0.04, 0.12, 0.02],
+              [0.3333, 0.3333, 0.0555, 0.2222, 0.037, 0.1111, 0.0185],
+            ]),
+            (y = 1 * c.EquipValue.value),
+            (P = 1 * c.EquipType.value),
+            (W = 1 * c.npcCost.value),
+            (r =
+              '<HR><table style="text-align:right;"><tr><td></td><td class=title>Chance to get</td><td class=title>Mean zeny cost</td></tr>'),
+            (r +=
+              "<tr><td>Any +1 stat enchant</td><td>" +
+              (1e6 * hiddentype[P][1]) / 1e4 +
+              " %</td><td>" +
+              Math.round((y + W) / hiddentype[P][1]) +
+              "</td></tr>"),
+            (r +=
+              "<tr><td>Specific +1 stat enchant</td><td>" +
+              (1e6 * hiddentype[P][2]) / 1e4 +
+              " %</td><td>" +
+              Math.round((y + W) / hiddentype[P][2]) +
+              "</td></tr>"),
+            (r +=
+              "<tr><td>Any +2 stat enchant</td><td>" +
+              (1e6 * hiddentype[P][3]) / 1e4 +
+              " %</td><td>" +
+              Math.round((y + W) / hiddentype[P][3]) +
+              "</td></tr>"),
+            (r +=
+              "<tr><td>Specific +2 stat enchant</td><td>" +
+              (1e6 * hiddentype[P][4]) / 1e4 +
+              " %</td><td>" +
+              Math.round((y + W) / hiddentype[P][4]) +
+              "</td></tr>"),
+            (r +=
+              "<tr><td>Any +3 stat enchant</td><td>" +
+              (1e6 * hiddentype[P][5]) / 1e4 +
+              " %</td><td>" +
+              Math.round((y + W) / hiddentype[P][5]) +
+              "</td></tr>"),
+            (r +=
+              "<tr><td>Specific +3 stat enchant</td><td>" +
+              (1e6 * hiddentype[P][6]) / 1e4 +
+              " %</td><td>" +
+              Math.round((y + W) / hiddentype[P][6]) +
+              "</td></tr>"),
+            (r +=
+              "<tr><td>Break</td><td>" + (1e6 * hiddentype[P][0]) / 1e4 + " %</td><td></td></tr>"),
+            (r += "</table>"),
+            myInnerHtml("A_KakutyouData", r, 0))
+          : wKK == 40 &&
+            (n_A_JOB == 19 || n_A_JOB == 33
+              ? ((Amistr = n_A_STR + n_A_AGI + n_A_VIT),
+                (Filir = n_A_STR + n_A_AGI + n_A_LUK),
+                (Vanilmirth = n_A_INT + n_A_DEX + n_A_LUK),
+                (Lif = n_A_VIT + n_A_INT + n_A_DEX),
+                (homontotal = Amistr + Filir + Vanilmirth + Lif),
+                (Amistr = (Amistr / homontotal) * 100),
+                (Filir = (Filir / homontotal) * 100),
+                (Vanilmirth = (Vanilmirth / homontotal) * 100),
+                (Lif = (Lif / homontotal) * 100),
+                (r =
+                  "<table><tr><td>Chance to get Amistr: </td><td>" +
+                  Math.floor(10 * Amistr) / 10 +
+                  " %</td></tr>"),
+                (r +=
+                  "<tr><td>Chance to get Filir: </td><td>" +
+                  Math.floor(10 * Filir) / 10 +
+                  " %</td></tr>"),
+                (r +=
+                  "<tr><td>Chance to get Vanilmirth: </td><td>" +
+                  Math.floor(10 * Vanilmirth) / 10 +
+                  " %</td></tr>"),
+                (r +=
+                  "<tr><td>Chance to get Lif: </td><td>" +
+                  Math.floor(10 * Lif) / 10 +
+                  " %</td></tr></table>"))
+              : (r = '<p class="center">Not available for this class.</p>'),
+            myInnerHtml("A_KakutyouData", r, 0));
+  } else myInnerHtml("A_KakutyouData", "", 0);
+}
+function Kanma(l) {
+  var A = "",
+    n = new Array();
+  l < 0 && ((l *= -1), (A += "-"));
+  for (var s = 0; Math.floor(l / 1e3) != 0; s++) {
+    var _ = l % 1e3;
+    ((n[s] = _ == 0 ? ",000" : _ < 10 ? ",00" + _ : _ < 100 ? ",0" + _ : "," + _),
+      (l = Math.floor(l / 1e3)));
+  }
+  for (n[s] = l; s >= 0;) ((A += n[s]), s--);
+  return A;
+}
+function NonDamageSkillCastMultiplier(l, A) {
+  var n = A & 1 ? 1 : Math.max(0, 1 - n_A_DEX / 150),
+    s = n_B_Cast;
+  (A & 2 && nb_tok < 100 && (s /= 1 - nb_tok / 100), (n *= s / 100));
+  var _ = 100 - StPlusCalc2(7e3 + l) - StPlusCard(7e3 + l);
+  return (
+    _ < 0 && (_ = 0),
+    (n *= _ / 100),
+    A & 2 ||
+      (n_A_Buf2[10] && (n *= (100 - 15 * n_A_Buf2[10]) / 100),
+      SkillSearch(SKILLID.MEMORIZE) && (n /= 2)),
+    Math.max(0, n)
+  );
+}
+function NonDamageCastSkillChanged(l) {
+  var A = documento.getElementById("NonDamageCastSkill"),
+    n = documento.getElementById("NonDamageCastSkillLevel");
+  if (A && n) {
+    var s = 1 * A.value;
+    n.length = 0;
+    for (var _ = 1; _ <= m_Skill[s][1]; _++) n.options[_ - 1] = new documento.Opzione(_, _);
+    ((n.value = m_Skill[s][1]), l && StAllCalc());
+  }
+}
+function KakutyouKansuu2() {
+  if (((wKK = 1 * c.A_Kakutyou.value), wKK == 40)) {
+    var l =
+      '<table><tr><td class="right">Skill:</td><td><select id="NonDamageCastSkill" name="NonDamageCastSkill" onChange="NonDamageCastSkillChanged(1)"></select></td></tr>';
+    ((l +=
+      '<tr><td class="right">Skill level:</td><td><select id="NonDamageCastSkillLevel" name="NonDamageCastSkillLevel" onChange="StAllCalc()"></select></td></tr></table>'),
+      myInnerHtml("A_KakutyouSel", l, 0));
+    var A = documento.getElementById("NonDamageCastSkill"),
+      n = Object.keys(m_NonDamageSkillCast);
+    n.sort(function (E, S) {
+      return skillNameInSelect(1 * E).localeCompare(skillNameInSelect(1 * S));
+    });
+    for (var s = 0; s < n.length; s++) {
+      var _ = 1 * n[s];
+      A.options[s] = new documento.Opzione(skillNameInSelect(_), _);
+    }
+    ((A.value = SKILLID.ASSUMPTIO), NonDamageCastSkillChanged(0));
+    return;
+  }
+  if (wKK == 6) {
+    if (n_A_JobClass() == 1 || n_A_JOB == 20) {
+      for (
+        HPRname =
+          'Increase HP Recovery Lvl: <select name="A_KakutyouSelNum" onChange="StAllCalc()"></select>',
+          n_A_JOB == 20
+            ? (HPRname +=
+                '<br>Increase SP Recovery Lvl: <select name="A_KakutyouSelNumSP" onChange="StAllCalc()"></select>')
+            : EquipNumSearch(EQUIPID.BEER_HAT) &&
+              (HPRname +=
+                '<br>Increase SP Recovery Lvl: <select name="A_KakutyouSelNumSP" onChange="StAllCalc()"><option value="3">3</option></select>'),
+          myInnerHtml("A_KakutyouSel", HPRname, 0),
+          i = 0;
+        i <= 10;
+        i++
+      )
+        c.A_KakutyouSelNum.options[i] = new documento.Opzione(i, i);
+      if (((c.A_KakutyouSelNum.value = 10), n_A_JOB == 20)) {
+        for (i = 0; i <= 10; i++) c.A_KakutyouSelNumSP.options[i] = new documento.Opzione(i, i);
+        c.A_KakutyouSelNumSP.value = 10;
+      }
+      return;
+    }
+    if (n_A_JobClass() == 5 || n_A_JOB == 9 || n_A_JOB == 23 || n_A_JOB == 44) {
+      for (
+        SPRname = "Increase SP Recovery Lvl: ",
+          n_A_JOB == 44 && (SPRname = "Ninja Mastery Lvl: "),
+          SPRname += '<select name="A_KakutyouSelNum" onChange="StAllCalc()"></select>',
+          EquipNumSearch(EQUIPID.BEER_HAT) &&
+            (SPRname +=
+              '<br>Increase HP Recovery Lvl: <select name="A_KakutyouSelNumHP" onChange="StAllCalc()"><option value="3">3</option></select>'),
+          myInnerHtml("A_KakutyouSel", SPRname, 0),
+          i = 0;
+        i <= 10;
+        i++
+      )
+        c.A_KakutyouSelNum.options[i] = new documento.Opzione(i, i);
+      return void (c.A_KakutyouSelNum.value = 10);
+    }
+    return EquipNumSearch(EQUIPID.BEER_HAT)
+      ? ((a =
+          'Increase HP Recovery Lvl: <select name="A_KakutyouSelNumHP" onChange="StAllCalc()"><option value="3">3</option></select><br>'),
+        (a +=
+          'Increase SP Recovery Lvl: <select name="A_KakutyouSelNumSP" onChange="StAllCalc()"><option value="3">3</option></select><br>'),
+        void myInnerHtml("A_KakutyouSel", a, 0))
+      : void myInnerHtml("A_KakutyouSel", '<p class="center">Not available for this class.</p>', 0);
+  }
+  if (wKK != 7)
+    if (wKK != 8)
+      if (wKK != 10)
+        if (wKK != 14) {
+          var a;
+          if (wKK == 20)
+            return (
+              (a =
+                'Current Base Exp <input type="tel" name="A_KakutyouSelNum" value="0" size=4 onkeyup="StAllCalc()" style="text-align: right;">%<BR>'),
+              (a +=
+                'Current Job Exp <input type="tel" name="A_KakutyouSelNum2" value="0" size=4 onkeyup="StAllCalc()" style="text-align: right;">%<BR>'),
+              void myInnerHtml("A_KakutyouSel", a, 0)
+            );
+          if (wKK != 22)
+            if (wKK != 24) {
+              if (wKK != 26) {
+                if (wKK != 28)
+                  if (wKK != 30)
+                    if (wKK != 32)
+                      if (wKK != 34)
+                        if (wKK != 36) {
+                          if (wKK == 38)
+                            return (
+                              (a =
+                                '<table style="text-align:right;"><tr><td>Equipment zeny value:</td><td><input type="text" name="EquipValue" onkeyup="StAllCalc()" value="0" size="9" class="center"></td></tr>'),
+                              (a +=
+                                '<tr><td>Equipment type:</td><td><select name="EquipType" onChange="StAllCalc()"><option value="0">Non slotted</option><option value="1">Slotted</option><option value="2">Special</option></select></td></tr>'),
+                              (a +=
+                                '<tr><td>Enchanting zeny cost:</td><td><input type="text" name="npcCost" onkeyup="StAllCalc()" value="0" size="6" class="center"></td></tr></table>'),
+                              void myInnerHtml("A_KakutyouSel", a, 0)
+                            );
+                          myInnerHtml("A_KakutyouSel", "", 0);
+                        } else {
+                          for (
+                            a =
+                              '<table style="text-align:right;"><tr><td>Equipment zeny value:</td><td class=left><input type="text" name="EquipValue" onkeyup="StAllCalc()" value="0" size="9" class="center"></td></tr>',
+                              a +=
+                                '<tr><td>Used item zeny value:</td><td class=left><input type="text" name="ItemValue" onkeyup="StAllCalc()" value="0" size="6" class="center"></td></tr>',
+                              a +=
+                                '<tr><td>Enchanting zeny cost:</td><td class=left><input type="text" name="npcCost" onkeyup="StAllCalc()" value="0" size="6" class="center"></td></tr>',
+                              a +=
+                                '<tr><td>Enchanting success chance:</td><td class=left><select name="SocketChance" onChange="StAllCalc()"></select></td></tr></table>',
+                              myInnerHtml("A_KakutyouSel", a, 0),
+                              i = 1;
+                            i <= 100;
+                            i++
+                          )
+                            c.SocketChance.options[i - 1] = new documento.Opzione(i + " %", i);
+                          c.SocketChance.value = 1;
+                        }
+                      else {
+                        for (
+                          a =
+                            '<table style="text-align:right;"><tr><td>Equipment zeny value:</td><td class=left><input type="text" name="EquipValue" onkeyup="StAllCalc()" value="0" size="9" class="center"></td></tr>',
+                            a +=
+                              '<tr><td>Equipment type:</td><td class=left><select name="EquipType" onChange="StAllCalc()"><option value="0">Weapon Lvl 1</option><option value="1">Weapon Lvl 2</option><option value="2">Weapon Lvl 3</option><option value="3">Weapon Lvl 4</option><option value="4">Armor</option></select></td></tr>',
+                            a +=
+                              '<tr><td>Ore type:</td><td class=left><select name="OreType" onChange="StAllCalc()"><option value="0">Normal Ores</option><option value="1">Enriched Ores</option><option value="2">Normal Ores (F2P server)</option><option value="3">Enriched Ores (F2P server)</option></select></td></tr>',
+                            a +=
+                              '<tr><td>Ore zeny value:</td><td class=left><input type="text" name="OreValue" onkeyup="StAllCalc()" value="0" size="4" class="center"></td></tr>',
+                            a +=
+                              '<tr><td>Refining zeny cost:</td><td class=left><input type="text" name="npcCost" onkeyup="StAllCalc()" value="0" size="4" class="center"></td></tr>',
+                            a +=
+                              '<tr><td>Desired refine:</td><td class=left><select name="DesiredRefine" onChange="StAllCalc()"></select></td></tr></table>',
+                            myInnerHtml("A_KakutyouSel", a, 0),
+                            i = 1;
+                          i <= 10;
+                          i++
+                        )
+                          c.DesiredRefine.options[i - 1] = new documento.Opzione("+" + i, i);
+                        c.DesiredRefine.value = 1;
+                      }
+                    else {
+                      for (
+                        a =
+                          '<table style="text-align:right;"><tr><td>Monster to pet:</td><td class=left><select name="Pet" onChange="StAllCalc()"></select></td></tr>',
+                          a +=
+                            '<tr><td>Monster remaining HP:</td><td class=left><select name="PetHP" onChange="StAllCalc()"></select></td></tr>',
+                          myInnerHtml("A_KakutyouSel", a, 0),
+                          i = 0;
+                        i <= 55;
+                        i++
+                      )
+                        c.Pet.options[i] = new documento.Opzione(m_Monster[m_Pets[1][i]][1], i);
+                      for (c.Pet.value = 0, i = 0; i <= 100; i++)
+                        c.PetHP.options[i] = new documento.Opzione(i + " %", i);
+                      c.PetHP.value = 100;
+                    }
+                  else {
+                    for (
+                      a =
+                        '<table><tr><td>Level of the Food:</td><td><select name="Flv" onChange="StAllCalc()"></select></td><td class="title">Success Rate</td></tr>',
+                        a +=
+                          '<tr><td>Stat of the Food:</td><td><select name="FStat" onChange="StAllCalc()"></select></td><td class="center"><span id="COOK_MIN"></span></td></tr>',
+                        a +=
+                          '<tr><td>Cooking Kit Used:</td><td><select name="CKit" onChange="StAllCalc()" style="width:130px;"></select></td><td class="center"><span id="COOK_AVE"></span></td></tr>',
+                        a +=
+                          '<tr><td>Cooking Experience:</td><td><input type="text" onkeyup="StAllCalc()" name="CExp" value="0" size=2></td><td class="center"><span id="COOK_MAX"></span></td></tr></table>',
+                        myInnerHtml("A_KakutyouSel", a, 0),
+                        i = 1;
+                      i <= 10;
+                      i++
+                    )
+                      c.Flv.options[i - 1] = new documento.Opzione(i, i);
+                    for (c.Flv.value = 10, i = 0; i <= 5; i++)
+                      c.FStat.options[i] = new documento.Opzione(m_Stat_Food[i][1], i);
+                    for (c.FStat.value = 0, i = 0; i < Cook_Kit_Max; i++)
+                      c.CKit.options[i] = new documento.Opzione(m_Cook_Kit[i][1], i);
+                    c.CKit.value = 0;
+                  }
+                else if (
+                  ((a = ""),
+                  CardNumSearch(157) ||
+                  CardNumSearch(413) ||
+                  EquipNumSearch(EQUIPID.DRILL_KATAR) ||
+                  n_A_JOB == 14 ||
+                  n_A_JOB == 28 ||
+                  n_A_JOB == 45
+                    ? ((a +=
+                        '<table><tr><td>Enemy DEX: <select name="E_DEX" onChange="StAllCalc()"></select></td><td class="title">Skill Lvl</td><td class="title">Chance</td><td class="title">Duration Time</td></tr>'),
+                      (n_A_JOB != 14 && n_A_JOB != 28) ||
+                        (a +=
+                          '<tr class="center"><td>' +
+                          skillName(538) +
+                          ' Helm, Armor, Weapon or Shield</td><td><select name="S_LV" onChange="StAllCalc()"></select></td><td><span id="S_CHANCE"></span></td><td><span id="S_TIME"></span></td></tr>'),
+                      n_A_JOB == 28 &&
+                        (a +=
+                          '<tr class="center"><td>' +
+                          skillName(440) +
+                          '</td><td><select name="FS_LV" onChange="StAllCalc()"></select></td><td><span id="FS_CHANCE"></span></td><td><span id="FS_TIME"></span></td></tr>'),
+                      n_A_JOB == 45 &&
+                        (a +=
+                          '<tr class="center"><td>Disarm</td><td><select name="S_LV" onChange="StAllCalc()"></select></td><td><span id="S_CHANCE"></span></td><td><span id="S_TIME"></span></td></tr>'),
+                      CardNumSearch(157) &&
+                        (a +=
+                          '<tr class="center"><td>' +
+                          skillName(172) +
+                          ' (Auto-Casted)</td><td><select name="S2_LV" onChange="StAllCalc()"><option value="1">1</option></select></td><td><span id="S2_CHANCE"></span></td><td><span id="S2_TIME"></span></td></tr>'),
+                      CardNumSearch(413) &&
+                        (a +=
+                          '<tr class="center"><td>' +
+                          skillName(174) +
+                          ' (Auto-Casted)</td><td><select name="S3_LV" onChange="StAllCalc()"></select></td><td><span id="S3_CHANCE"></span></td><td><span id="S3_TIME"></span></td></tr>'),
+                      EquipNumSearch(EQUIPID.DRILL_KATAR) &&
+                        (a +=
+                          '<tr class="center"><td>' +
+                          skillName(440) +
+                          ' (Auto-Casted)</td><td><select name="FS2_LV" onChange="StAllCalc()"><option value="1">1</option></select></td><td><span id="FS2_CHANCE"></span></td><td><span id="FS2_TIME"></span></td></tr>'),
+                      (a += "</table>"),
+                      myInnerHtml("A_KakutyouSel", a, 0))
+                    : myInnerHtml(
+                        "A_KakutyouSel",
+                        '<p class="center">Not available for this class.</p>',
+                        0,
+                      ),
+                  CardNumSearch(157) ||
+                    CardNumSearch(413) ||
+                    EquipNumSearch(EQUIPID.DRILL_KATAR) ||
+                    n_A_JOB == 14 ||
+                    n_A_JOB == 28 ||
+                    n_A_JOB == 45)
+                ) {
+                  for (i = 0; i <= 200; i++) c.E_DEX.options[i] = new documento.Opzione(i, i);
+                  if (((c.E_DEX.value = 0), n_A_JOB == 14 || n_A_JOB == 28 || n_A_JOB == 45)) {
+                    for (i = 1; i <= 5; i++) c.S_LV.options[i - 1] = new documento.Opzione(i, i);
+                    c.S_LV.value = 1;
+                  }
+                  if (n_A_JOB == 28) {
+                    for (i = 1; i <= 5; i++) c.FS_LV.options[i - 1] = new documento.Opzione(i, i);
+                    c.FS_LV.value = 1;
+                  }
+                  CardNumSearch(413) &&
+                    (CardNumSearch(113) &&
+                    CardNumSearch(295) &&
+                    CardNumSearch(391) &&
+                    CardNumSearch(260) &&
+                    (n_A_JOB == 14 || n_A_JOB == 28)
+                      ? (c.S3_LV.options[0] = new documento.Opzione("5", 5))
+                      : (c.S3_LV.options[0] = new documento.Opzione("1", 1)));
+                }
+              } else if (
+                ((a =
+                  '<table><tr><td>Enemy DEX: <select name="E_DEX" onChange="StAllCalc()"></select></td><td></td><td></td></tr>'),
+                (a +=
+                  '<tr><td>Monster Item Drop Chance: <input type="text" name="DropChance" onkeyup="StAllCalc()" value="0" size="4" class="center">%</td><td class="title">Skill Lvl</td><td class="title">Chance</td></tr>'),
+                n_A_JobClass() == 2 ||
+                EquipNumSearch(EQUIPID.ANNIVERSARY_THIEF_HAT) ||
+                CardNumSearch(152)
+                  ? ((a +=
+                      '<tr class="center"><td style="text-align:right;">Steal</td><td><select name="Steal_LV" onChange="StAllCalc()"></select></td><td><span id="Steal_CHANCE"></span></td></tr>'),
+                    (n_A_JOB != 14 && n_A_JOB != 28) ||
+                      (a +=
+                        '<tr class="center"><td style="text-align:right;">Smug</td><td><select name="Smug_LV" onChange="StAllCalc()"></select></td><td><span id="Smug_CHANCE"></span></td></tr>'),
+                    (a += "</table>"))
+                  : (a = '<p class="center">Not available for this class.</p>'),
+                myInnerHtml("A_KakutyouSel", a, 0),
+                n_A_JobClass() == 2 ||
+                  EquipNumSearch(EQUIPID.ANNIVERSARY_THIEF_HAT) ||
+                  CardNumSearch(152))
+              ) {
+                for (i = 0; i <= 200; i++) c.E_DEX.options[i] = new documento.Opzione(i, i);
+                if (((c.E_DEX.value = 0), n_A_JobClass() == 2)) {
+                  for (i = 1; i <= 10; i++) c.Steal_LV.options[i - 1] = new documento.Opzione(i, i);
+                  c.Steal_LV.value = 1;
+                } else if (EquipNumSearch(EQUIPID.ANNIVERSARY_THIEF_HAT) || CardNumSearch(152)) {
+                  for (i = 1; i <= 1; i++) c.Steal_LV.options[i - 1] = new documento.Opzione(i, i);
+                  c.Steal_LV.value = 1;
+                }
+                if (n_A_JOB == 14 || n_A_JOB == 28) {
+                  for (i = 1; i <= 5; i++) c.Smug_LV.options[i - 1] = new documento.Opzione(i, i);
+                  c.Smug_LV.value = 1;
+                }
+              }
+            } else {
+              if (n_A_JOB == 12 || n_A_JOB == 26) {
+                for (
+                  a = '<table style="text-align:right;">',
+                    a +=
+                      '<tr><td>Oridecon Research: </td><td class="data"><select name="A_OriR" onChange="StAllCalc()"></select></td><td>Anvil:</td><td class=left><select name="A_KakutyouSelNum" onChange="StAllCalc()"></select></td></tr>',
+                    a +=
+                      '<tr><td>Weapon Research: </td><td class="data"><select name="A_WepR" onChange="StAllCalc()"></select></td><td>Star Crumb:</td><td class=left><select name="A_StarC" onChange="StAllCalc()"></select></td></tr>',
+                    a +=
+                      '<tr><td>Iron Tempering: </td><td class="data"><select name="A_Iron" onChange="StAllCalc()"></select></td><td>Elemental Stone:</td><td class=left><select name="A_ElemS" onChange="StAllCalc()"></select></td></tr>',
+                    a +=
+                      '<tr><td>Steel Tempering: </td><td class="data"><select name="A_Steel" onChange="StAllCalc()"></select></td><td>Enchanted Stone Craft:</td><td class=left><select name="A_StoneC" onChange="StAllCalc()"></select></td></tr>',
+                    a +=
+                      '<tr><td>Smith (weapon) Lvl: </td><td class="data"><select name="A_SmithT" onChange="StAllCalc()"></select></td><td></td></tr>',
+                    a += "</table>",
+                    myInnerHtml("A_KakutyouSel", a, 0),
+                    i = 0;
+                  i < Anvil_Max;
+                  i++
+                )
+                  c.A_KakutyouSelNum.options[i] = new documento.Opzione(m_Anvil[i][2], i);
+                for (c.A_KakutyouSelNum.value = 0, i = 0; i <= 5; i++)
+                  c.A_OriR.options[i] = new documento.Opzione(i, i);
+                for (c.A_OriR.value = 0, i = 0; i <= 10; i++)
+                  c.A_WepR.options[i] = new documento.Opzione(i, i);
+                for (c.A_WepR.value = 0, i = 0; i <= 3; i++)
+                  c.A_StarC.options[i] = new documento.Opzione(i, i);
+                for (c.A_StarC.value = 0, i = 0; i <= 1; i++)
+                  c.A_ElemS.options[i] = new documento.Opzione(i, i);
+                for (c.A_ElemS.value = 0, i = 0; i <= 3; i++)
+                  c.A_SmithT.options[i] = new documento.Opzione(i, i);
+                for (c.A_SmithT.value = 0, i = 0; i <= 5; i++)
+                  c.A_Iron.options[i] = new documento.Opzione(i, i);
+                for (c.A_Iron.value = 0, i = 0; i <= 5; i++)
+                  c.A_Steel.options[i] = new documento.Opzione(i, i);
+                for (c.A_Steel.value = 0, i = 0; i <= 5; i++)
+                  c.A_StoneC.options[i] = new documento.Opzione(i, i);
+                return void (c.A_StoneC.value = 0);
+              }
+              if (n_A_JOB == 19 || n_A_JOB == 33) {
+                for (
+                  potiontext =
+                    '<table style="text-align:right;"><tr><td>Potion to Create:</td><td class=left><select name="A_KakutyouSelNum" onChange="StAllCalc()"></select></td></tr>',
+                    potiontext +=
+                      '<tr><td>Learning Potion:</td><td class=left><select name="A_PotionRLevel" onChange="StAllCalc()"></select></td></tr>',
+                    potiontext +=
+                      '<tr><td>Change Instruction Level:</td><td class=left><select name="A_Van" onChange="StAllCalc()"></select><td></tr>',
+                    potiontext +=
+                      '<tr><td>Pharmacy:</td><td class=left><select name="A_PreparePLevel" onChange="StAllCalc()"></select></td></tr></table>',
+                    myInnerHtml("A_KakutyouSel", potiontext + "", 0),
+                    i = 0;
+                  i < Potion_Max;
+                  i++
+                )
+                  c.A_KakutyouSelNum.options[i] = new documento.Opzione(m_Potion[i][2], i);
+                for (c.A_KakutyouSelNum.value = 0, i = 0; i <= 10; i++)
+                  c.A_PotionRLevel.options[i] = new documento.Opzione(i, i);
+                for (c.A_PotionRLevel.value = 0, i = 0; i <= 5; i++)
+                  c.A_Van.options[i] = new documento.Opzione(i, i);
+                for (c.A_Van.value = 0, i = 0; i <= 10; i++)
+                  c.A_PreparePLevel.options[i] = new documento.Opzione(i, i);
+                return void (c.A_PreparePLevel.value = 0);
+              }
+              myInnerHtml(
+                "A_KakutyouSel",
+                '<p class="center">Not available for this class.</p>',
+                0,
+              );
+            }
+          else {
+            if (n_A_JOB == 19 || n_A_JOB == 33) {
+              for (
+                a = '<table style="text-align:right;">',
+                  n_A_JOB == 33 &&
+                    (a +=
+                      '<tr><td>Slim Potion Pitcher:</td><td colspan="3"><select style="float:left" name="SPP" onChange="StAllCalc()"></select></td><td></td></tr>'),
+                  a +=
+                    '<tr><td>Potion Pitcher:</td><td colspan="2"><select style="float:left" name="PP" onChange="StAllCalc()"></select></td><td>Target\'s VIT:</td><td class=left><select name="E_VIT" onChange="StAllCalc()"></select></td></tr>',
+                  a +=
+                    '<tr><td>Learning Potion:</td><td class=left><select name="POT_RLevel" onChange="StAllCalc()"></select></td><td></td><td>Target\'s INT:</td><td class=left><select name="E_INT" onChange="StAllCalc()"></select></td></tr>',
+                  a +=
+                    '<tr><td>Ranked:</td><td class=left><select name="RNK_BNS" onChange="StAllCalc()"></select></td><td colspan=2>Increase SP Recovery: <td class=left><select name="ISP" onChange="StAllCalc()"></select></td></tr>',
+                  a +=
+                    '<tr><td>Soul Linker Lvl:</td><td class=left><select name="SL_LV" onChange="StAllCalc()"></select></td><td colspan=2>Increase HP Recovery: <td class=left><select name="IRP" onChange="StAllCalc()"></select></td></tr>',
+                  a += "</tr></table>",
+                  myInnerHtml("A_KakutyouSel", a + "<br>", 0),
+                  i = 0;
+                i < Potion_Max_2;
+                i++
+              )
+                c.PP.options[i] = new documento.Opzione(m_Potion2[i][3], i);
+              if (((c.PP.value = 0), n_A_JOB == 33)) {
+                for (i = 0; i < Potion_Max_3; i++)
+                  c.SPP.options[i] = new documento.Opzione(m_Potion3[i][3], i);
+                c.SPP.value = 0;
+              }
+              for (i = 0; i <= 10; i++) c.POT_RLevel.options[i] = new documento.Opzione(i, i);
+              for (c.POT_RLevel.value = 0, i = 0; i <= 1; i++)
+                c.RNK_BNS.options[i] = new documento.Opzione(Pot_Rank[i][1], i);
+              for (c.RNK_BNS.value = 0, i = 0; i <= 200; i++)
+                c.E_VIT.options[i] = new documento.Opzione(i, i);
+              for (c.E_VIT.value = 0, i = 0; i <= 200; i++)
+                c.E_INT.options[i] = new documento.Opzione(i, i);
+              for (c.E_INT.value = 0, i = 0; i <= 99; i++)
+                c.SL_LV.options[i] = new documento.Opzione(i, i);
+              for (c.SL_LV.value = 0, i = 0; i <= 10; i++)
+                c.ISP.options[i] = new documento.Opzione(i, i);
+              for (c.ISP.value = 0, i = 0; i <= 10; i++)
+                c.IRP.options[i] = new documento.Opzione(i, i);
+              return void (c.IRP.value = 0);
+            }
+            myInnerHtml("A_KakutyouSel", '<p class="center">Not available for this class.</p>', 0);
+          }
+        } else {
+          for (
+            a = "<table>",
+              a +=
+                '<tr><td>Target: <select name="R_OBJ" onChange = "StAllCalc()"></select><select name="S_OBJ" onChange = "StAllCalc()"></select><select name="E_OBJ" onChange = "calc()"></select><select name="B_OBJ" onChange = "calc()"></select><select name="SP_OBJ" onChange = "calc()"></select></td></tr>',
+              a += "</table>",
+              myInnerHtml("A_KakutyouData", a, 0),
+              i = 0;
+            i < v_Race_.length;
+            i++
+          )
+            c.R_OBJ.options[i] = new documento.Opzione(v_Race_[i], i);
+          for (c.R_OBJ.value = 0, i = 0; i < v_Size.length; i++)
+            c.S_OBJ.options[i] = new documento.Opzione(v_Size[i], i);
+          for (c.S_OBJ.value = 0, i = 0; i < v_Element_.length; i++)
+            c.E_OBJ.options[i] = new documento.Opzione(v_Element_[i], i);
+          for (c.E_OBJ.value = 0, i = 0; i < v_Type.length; i++)
+            c.B_OBJ.options[i] = new documento.Opzione(v_Type[i], i);
+          for (c.B_OBJ.value = 0, i = 0; i < v_Race2.length; i++)
+            c.SP_OBJ.options[i] = new documento.Opzione(v_Race2[i], i);
+          c.SP_OBJ.value = 0;
+        }
+      else if (n_A_JobClass() == 6 || n_A_JOB == 20) {
+        for (
+          myInnerHtml(
+            "A_KakutyouSel",
+            'Enlarge Weight Limit Lvl: <select name="A_KakutyouSelNum" onChange="StAllCalc()"></select><BR>Enlarge Weight Limit R Lvl: <select name="A_KakutyouSelNum2" onChange="StAllCalc()"></select><BR>',
+            0,
+          ),
+            i = 0;
+          i <= 10;
+          i++
+        )
+          c.A_KakutyouSelNum2.options[i] = new documento.Opzione(i, i);
+        for (i = 0; i <= 10; i++) c.A_KakutyouSelNum.options[i] = new documento.Opzione(i, i);
+        n_A_JOB == 20 ? (c.A_KakutyouSelNum.value = 0) : (c.A_KakutyouSelNum.value = 10);
+      } else if (n_A_JOB == 42) {
+        for (
+          myInnerHtml(
+            "A_KakutyouSel",
+            'Enlarge Weight Limit R Lvl: <select name="A_KakutyouSelNum2" onChange="StAllCalc()"></select><BR>Knowledge of the Sun, Moon and Stars Lvl: <select name="SG_Weight" onChange="StAllCalc()"></select><BR>',
+            0,
+          ),
+            i = 0;
+          i <= 10;
+          i++
+        )
+          c.A_KakutyouSelNum2.options[i] = new documento.Opzione(i, i);
+        for (i = 0; i <= 10; i++) c.SG_Weight.options[i] = new documento.Opzione(i, i);
+      } else
+        for (
+          myInnerHtml(
+            "A_KakutyouSel",
+            'Enlarge Weight Limit R Lvl: <select name="A_KakutyouSelNum2" onChange="StAllCalc()"></select><BR>',
+            0,
+          ),
+            i = 0;
+          i <= 10;
+          i++
+        )
+          c.A_KakutyouSelNum2.options[i] = new documento.Opzione(i, i);
+    else {
+      if (n_A_JOB == 15 || n_A_JOB == 29) {
+        for (
+          myInnerHtml(
+            "A_KakutyouSel",
+            'Spiritual Cadence Lvl: <select name="A_KakutyouSelNum" onChange="StAllCalc()"></select>',
+            0,
+          ),
+            i = 0;
+          i <= 5;
+          i++
+        )
+          c.A_KakutyouSelNum.options[i] = new documento.Opzione(i, i);
+        return void (c.A_KakutyouSelNum.value = 5);
+      }
+      myInnerHtml("A_KakutyouSel", '<p class="center">Not available for this class.</p>', 0);
+    }
+  else
+    for (
+      a =
+        '<table><tr><td class="title">Potions</td><td class="title">Zeny/each</td><td class="title">Amount restored</td><td class="title">Amount/Weight</td><td class="title">Amount/Zeny</td></tr>',
+        a +=
+          '<tr><td><select name="pot1" onChange="StAllCalc()" style="width:99px;"></select></td><td><input type="text" name="zEA1" onkeyup="m_HPpotion[pot1.value][1]=this.value | StAllCalc()" value="m_HPpotion[pot1.value][1]" size="1" class="center"></td><td class="center"><span id="AmRe1"></span></td><td class="center"><span id="AmWe1"></span></td><td class="center"><span id="AmZe1"></span></td></tr>',
+        a +=
+          '<tr><td><select name="pot2" onChange="StAllCalc()" style="width:99px;"></select></td><td><input type="text" name="zEA2" onkeyup="PotZenySet(this.value) | StAllCalc()" value="m_HPpotion[pot1.value][1]" size="1" class="center"></td><td class="center"><span id="AmRe2"></span></td><td class="center"><span id="AmWe2"></span></td><td class="center"><span id="AmZe2"></span></td></tr>',
+        a +=
+          '<tr><td><select name="pot3" onChange="StAllCalc()" style="width:99px;"></select></td><td><input type="text" name="zEA3" onkeyup="PotZenySet(this.value) | StAllCalc()" value="m_HPpotion[pot1.value][1]" size="1" class="center"></td><td class="center"><span id="AmRe3"></span></td><td class="center"><span id="AmWe3"></span></td><td class="center"><span id="AmZe3"></span></td></tr>',
+        a +=
+          '<tr><td><select name="pot4" onChange="StAllCalc()" style="width:99px;"></select></td><td><input type="text" name="zEA4" onkeyup="PotZenySet(this.value) | StAllCalc()" value="m_HPpotion[pot1.value][1]" size="1" class="center"></td><td class="center"><span id="AmRe4"></span></td><td class="center"><span id="AmWe4"></span></td><td class="center"><span id="AmZe4"></span></td></tr>',
+        a +=
+          '<tr><td><select name="pot5" onChange="StAllCalc()" style="width:99px;"></select></td><td><input type="text" name="zEA5" onkeyup="PotZenySet(this.value) | StAllCalc()" value="m_HPpotion[pot1.value][1]" size="1" class="center"></td><td class="center"><span id="AmRe5"></span></td><td class="center"><span id="AmWe5"></span></td><td class="center"><span id="AmZe5"></span></td></tr>',
+        a +=
+          '<tr><td><select name="pot6" onChange="StAllCalc()" style="width:99px;"></select></td><td><input type="text" name="zEA6" onkeyup="PotZenySet(this.value) | StAllCalc()" value="38" size="1" class="center"></td><td class="center"><span id="AmRe6"></span></td><td class="center"><span id="AmWe6"></span></td><td class="center"><span id="AmZe6"></span></td></tr>',
+        a +=
+          '<tr><td><select name="pot7" onChange="StAllCalc()" style="width:99px;"></select></td><td><input type="text" name="zEA7" onkeyup="PotZenySet(this.value) | StAllCalc()" value="38" size="1" class="center"></td><td class="center"><span id="AmRe7"></span></td><td class="center"><span id="AmWe7"></span></td><td class="center"><span id="AmZe7"></span></td></tr>',
+        a += "</tr></table>",
+        myInnerHtml("A_KakutyouSel", a, 0),
+        i = 0;
+      i <= 69;
+      i++
+    )
+      ((c.pot1.options[i] = new documento.Opzione(m_HPpotion[i][5], i)),
+        (c.pot2.options[i] = new documento.Opzione(m_HPpotion[i][5], i)),
+        (c.pot3.options[i] = new documento.Opzione(m_HPpotion[i][5], i)),
+        (c.pot4.options[i] = new documento.Opzione(m_HPpotion[i][5], i)),
+        (c.pot5.options[i] = new documento.Opzione(m_HPpotion[i][5], i)),
+        (c.pot6.options[i] = new documento.Opzione(m_HPpotion[i][5], i)),
+        (c.pot7.options[i] = new documento.Opzione(m_HPpotion[i][5], i)));
+}

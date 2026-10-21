@@ -3,7 +3,8 @@ import vm from "node:vm";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
-export const ORDINE = ["forma", "pagina", "avvio", "constants", "skill", "head", "item", "etc", "monster", "card", "uaro", "foot"];
+// le funzioni (statistiche ... build) prima di tutto, poi dati e avvio, come in index.html
+export const ORDINE = ["forma", "pagina", "avvio", "constants", "statistiche", "danni", "buff", "scelte", "altre-info", "build", "skill", "globali", "item", "etc", "monster", "card", "uaro", "inizio"];
 const CARTELLA = fileURLToPath(new URL("../motore/", import.meta.url));
 
 export function creaMotore() {

@@ -36,14 +36,11 @@ function ripristina() {
     stato = normalizza({});
   }
 }
-// la build nel formato dell'indirizzo (il testo dopo #), con la versione nel primo carattere
+// la build nel formato dell'indirizzo (il testo dopo #, vedi motore/build.js)
 function buildCorrente() {
-  return String(window.URLOUT());
+  return String(window.scriviBuild());
 }
 const LINK_ESTRANEO = "Il link non contiene una build di questo calcolatore.";
-function buildValida(build) {
-  return window.StoN3(build.charAt(0)) === window.FORMATO_BUILD;
-}
 let timerSalva;
 function salvaPresto() {
   clearTimeout(timerSalva);
@@ -685,8 +682,7 @@ async function preparaA() {
   if (mia !== preparazioneA) return iframe.remove();
   const w = iframe.contentWindow;
   try {
-    w.documento.getElementById("otherURL_TEXT").value = "x#" + stato.confronto.build;
-    if (!w.URLIN(1)) throw new Error("la build A non è di questo calcolatore");
+    if (!w.leggiBuild(stato.confronto.build)) throw new Error("la build A non è di questo calcolatore");
     for (const el of pannelli) w[el.dataset.apri](1);
     w.StAllCalc();
     w.calc();
@@ -883,7 +879,7 @@ document.addEventListener("click", async (e) => {
       avvisa("Nel link non c'è una build: deve contenere # seguito dalla build.");
       return;
     }
-    if (!buildValida(build)) {
+    if (!window.buildValida(build)) {
       avvisa(LINK_ESTRANEO);
       return;
     }
@@ -962,12 +958,11 @@ function avvia() {
   // altrimenti, o se non e' del formato di questo calcolatore, si riprende quella lasciata
   // l'ultima volta
   const daLink = location.hash.length > 1;
-  const estranea = daLink && !buildValida(location.hash.slice(1));
+  const estranea = daLink && !window.buildValida(location.hash.slice(1));
   if (daLink) history.replaceState(null, "", location.pathname);
   if ((!daLink || estranea) && stato.corrente) {
-    doc.getElementById("otherURL_TEXT").value = "x#" + stato.corrente;
     try {
-      window.URLIN(1);
+      window.leggiBuild(stato.corrente);
     } catch (e) {
       mostraErrore(e);
     }
