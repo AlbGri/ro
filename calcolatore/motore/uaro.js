@@ -23,7 +23,6 @@ function applyUaroHeadgearBonuses() {
 (function () {
   function correggi(id, campi) {
     Object.assign(itemData[id], campi);
-    m_Item[id] = itemDataToLegacyRow(itemData[id]);
   }
   // Gli oggetti aggiunti qui hanno id fissi da 3000: gli elenchi dei dati possono crescere
   // senza cambiarli, e le build salvate restano valide (l'indirizzo arriva fino a 3843)
@@ -33,12 +32,10 @@ function applyUaroHeadgearBonuses() {
     while (itemData.length < PRIMO_ID) {
       var vuoto = { id: itemData.length, equipType: -1, jobMask: 0, attackOrDefense: 0, weaponLevel: 0, slots: 0, weight: 0, requiredLevel: 0, name: "", extraInfo: 0, description: "", bonuses: [] };
       itemData.push(vuoto);
-      m_Item.push(itemDataToLegacyRow(vuoto));
     }
     var o = Object.assign({ id: itemData.length, jobMask: 0, weaponLevel: 0, extraInfo: 0, description: "", bonuses: [] }, campi);
     itemData.push(o);
-    m_Item.push(itemDataToLegacyRow(o));
-    ItemMax = m_Item.length - 1;
+    ItemMax = itemData.length - 1;
     return o.id;
   }
   function senzaBonus(id, bonus) {

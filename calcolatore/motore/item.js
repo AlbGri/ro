@@ -19034,7 +19034,6 @@ const itemData = [
     extraInfo: 0,
     description: "All skills' SP cost +5%",
     bonuses: [],
-    legacyValuesAfterTerminator: [3, 1, 8, -5, 0],
   },
   {
     id: 1183,
@@ -30667,32 +30666,10 @@ const itemData = [
     bonuses: [{ id: 192, value: 5 }],
   },
 ];
-function itemDataToLegacyRow(e) {
-  return [
-    e.id,
-    e.equipType,
-    e.jobMask,
-    e.attackOrDefense,
-    e.weaponLevel,
-    e.slots,
-    e.weight,
-    e.requiredLevel,
-    e.name,
-    e.extraInfo,
-    e.description,
-    ...e.bonuses.flatMap((a) => [a.id, a.value]),
-    0,
-    ...(e.legacyValuesAfterTerminator ?? []),
-  ];
-}
-m_Item = itemData.map(itemDataToLegacyRow);
-function normalizeEquipmentId(e) {
-  return 1 * e == EQUIPID.DEATH_FIRE_LEGACY_PLUS_9 ? EQUIPID.DEATH_FIRE : e;
-}
 function getDeathFireRefineBonuses(e) {
   return { aspd: 3 * e, dex: e >= 7 ? 3 : 0, rangedDamage: e >= 9 ? 10 : 0 };
 }
-ItemMax = m_Item.length - 1;
+ItemMax = itemData.length - 1;
 function Click_Item(e) {
   (c.A_Kakutyou.value == 28 && KakutyouKansuu2(), StAllCalc(), ClickB_Item(e));
 }
@@ -30726,36 +30703,37 @@ function ClickB_Item(e) {
   }
   if (n_itemSW != 0) {
     for (
-      myInnerHtml("ITEM_TITLE", m_Item[e][8] + " [" + m_Item[e][5] + "]", 0),
+      myInnerHtml("ITEM_TITLE", itemData[e].name + " [" + itemData[e].slots + "]", 0),
         myInnerHtml("ITEM3", "Req. Lvl:", 0),
         myInnerHtml("ITEM4", "Weight:", 0),
-        m_Item[e][1] < 50
+        itemData[e].equipType < 50
           ? (myInnerHtml("ITEM1", "ATK:", 0),
             myInnerHtml("ITEM2", "Weapon Lvl:", 0),
-            myInnerHtml("ITEM_W_LV", m_Item[e][4], 0))
+            myInnerHtml("ITEM_W_LV", itemData[e].weaponLevel, 0))
           : (myInnerHtml("ITEM1", "DEF:", 0),
             myInnerHtml("ITEM2", "-", 0),
             myInnerHtml("ITEM_W_LV", "-", 0)),
-        myInnerHtml("ITEM_DATA", m_Item[e][3], 0),
-        myInnerHtml("ITEM_LV", m_Item[e][7], 0),
-        myInnerHtml("ITEM_WAIT", m_Item[e][6], 0),
+        myInnerHtml("ITEM_DATA", itemData[e].attackOrDefense, 0),
+        myInnerHtml("ITEM_LV", itemData[e].requiredLevel, 0),
+        myInnerHtml("ITEM_WAIT", itemData[e].weight, 0),
         CBIstr = "",
-        s = 11;
-      m_Item[e][s] > 0;
-      s += 2
+        s = 0;
+      s < itemData[e].bonuses.length && itemData[e].bonuses[s].id > 0;
+      s++
     )
-      Item_Setumei(m_Item[e][s], m_Item[e][s + 1]);
-    m_Item[e][10] != 0 && (CBIstr += m_Item[e][10] + "<BR>");
-    for (var a = 0, s = 11; m_Item[e][s] != 0; s += 2)
-      if (m_Item[e][s] == 90) {
-        CBIstr += "<HR><B>When equipping " + SetEquipName(m_Item[e][s + 1]);
-        for (var t = w_SE[m_Item[e][s + 1]][0]; m_Item[e][s + 2] != 0 && a == 0;)
-          t == w_SE[m_Item[e][s + 3]][0]
-            ? ((CBIstr += " or<BR>" + SetEquipName(m_Item[e][s + 3])), (s += 2))
+      Item_Setumei(itemData[e].bonuses[s].id, itemData[e].bonuses[s].value);
+    itemData[e].description != 0 && (CBIstr += itemData[e].description + "<BR>");
+    for (var bs = itemData[e].bonuses, a = 0, s = 0; s < bs.length; s++)
+      if (bs[s].id == 90) {
+        CBIstr += "<HR><B>When equipping " + SetEquipName(bs[s].value);
+        for (var t = w_SE[bs[s].value][0]; s + 1 < bs.length && a == 0;)
+          t == w_SE[bs[s + 1].value][0]
+            ? ((CBIstr += " or<BR>" + SetEquipName(bs[s + 1].value)), s++)
             : (a = 1);
         ((CBIstr += " at the same time:</B><BR>"), (a = 0));
-        for (var n = 11; m_Item[t][n] != 0; n += 2) Item_Setumei(m_Item[t][n], m_Item[t][n + 1]);
-        (m_Item[t][10] != 0 && (CBIstr += m_Item[t][10] + "<BR>"), (CBIstr += ""));
+        for (const x of itemData[t].bonuses) Item_Setumei(x.id, x.value);
+        (itemData[t].description != 0 && (CBIstr += itemData[t].description + "<BR>"),
+          (CBIstr += ""));
       }
     myInnerHtml("B_SETUMEI", CBIstr, 0);
   }
@@ -30764,7 +30742,7 @@ function setShieldWeight(e) {
   ((1 * c.A_ActiveSkill.value == 159 ||
     1 * c.A_ActiveSkill.value == 384 ||
     1 * c.A_ActiveSkill.value == 324) &&
-    (c.SkillSubNum.value = m_Item[e][6]),
+    (c.SkillSubNum.value = itemData[e].weight),
     calc());
 }
 function Item_Setumei(e, a) {
@@ -30889,16 +30867,10 @@ function Item_Setumei(e, a) {
       (CBIstr +=
         "[Sanctuary] skill damage" + wIS + a + "% against [" + v_Race[6] + "] race monsters.<BR>"),
     e == 97 && (CBIstr += "Your [" + skillName(245) + "] effectiveness" + wIS + a + "%<BR>"),
-    e == 98 &&
-      (CBIstr += "Received [" + skillName(245) + "] effectiveness" + wIS + a + "%<BR>"),
+    e == 98 && (CBIstr += "Received [" + skillName(245) + "] effectiveness" + wIS + a + "%<BR>"),
     e == 99 &&
       (CBIstr +=
-        "Your [Heal], [Sanctuary], and [" +
-        skillName(245) +
-        "] effectiveness" +
-        wIS +
-        a +
-        "%<BR>"),
+        "Your [Heal], [Sanctuary], and [" + skillName(245) + "] effectiveness" + wIS + a + "%<BR>"),
     e == 100 &&
       (CBIstr +=
         "Received [Heal], [Sanctuary], and [" +
@@ -31221,21 +31193,13 @@ function Item_Setumei(e, a) {
 ]),
   (SE_MAXnum = w_SE.length - 1));
 for (var i = 0; i <= SE_MAXnum; i++)
-  for (var k = 1; w_SE[i][k] != "NULL"; k++) {
-    for (var j = 11; m_Item[w_SE[i][k]][j] != 0; j += 2);
-    ((m_Item[w_SE[i][k]][j] = 90),
-      (m_Item[w_SE[i][k]][j + 1] = i),
-      (m_Item[w_SE[i][k]][j + 2] = 0));
-    const e = itemData[w_SE[i][k]];
-    e.bonuses.push({ id: BONUSID.GEAR_SET_ID, value: i });
-    const a = m_Item[w_SE[i][k]].slice(j + 3);
-    a.length ? (e.legacyValuesAfterTerminator = a) : delete e.legacyValuesAfterTerminator;
-  }
+  for (var k = 1; w_SE[i][k] != "NULL"; k++)
+    itemData[w_SE[i][k]].bonuses.push({ id: BONUSID.GEAR_SET_ID, value: i });
 function SetEquipName(e) {
   for (var a = "", s = 0; s <= SE_MAXnum; s++)
     if (s == e) {
       for (var t = 1; w_SE[s][t] != "NULL"; t++)
-        ((a += "[" + m_Item[w_SE[s][t]][8] + "]"), w_SE[s][t + 1] != "NULL" && (a += "+"));
+        ((a += "[" + itemData[w_SE[s][t]].name + "]"), w_SE[s][t + 1] != "NULL" && (a += "+"));
       return a;
     }
 }

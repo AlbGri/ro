@@ -21,7 +21,7 @@ const testo = (m, id) => m.documento.testo(id);
 const numero = (m, id) => Number(testo(m, id).match(/-?\d+(\.\d+)?/)[0]);
 // le costanti del motore sono const: non sono proprieta' del contesto
 const costante = (m, nome) => vm.runInContext(nome, m);
-const id = (m, nome) => m.m_Item.findIndex((r) => r[8] === nome);
+const id = (m, nome) => costante(m, "itemData").findIndex((o) => o.name === nome);
 
 test("tirapugni: penalita' di taglia 100/100/75%", () => {
   const m = creaMotore();
@@ -40,7 +40,7 @@ test("Luna Bow: DEF +2, +3 da +6, +5 da +9", () => {
 test("Adrenaline Rush anche con una spada a una mano", () => {
   const m = creaMotore();
   scegli(m, "A_JOB", 12); // Blacksmith
-  const spada = m.m_Item.findIndex((r) => r[1] == 2 && r[8] === "Sword");
+  const spada = costante(m, "itemData").findIndex((o) => o.equipType == 2 && o.name === "Sword");
   scegli(m, "A_weapon1", spada);
   const i = [...Array(22).keys()].find((k) => /^A(n)?drenaline Rush/.test(testo(m, "P_Skill" + k)));
   assert.ok(i !== undefined, "Adrenaline Rush fra le skill passive");

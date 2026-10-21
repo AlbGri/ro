@@ -292,13 +292,13 @@ function restrictEquipslot() {
         (c.A_left.disabled = !1),
         c.A_left.value &&
           card_restrict &&
-          m_Item[c.A_left.value][5] != 0 &&
+          itemData[c.A_left.value].slots != 0 &&
           (c.A_left_card.disabled = !1)));
 }
 function restrictCardslot(e) {
   if ((card_restrict = 1 * c.restrict_cardslot.checked)) {
     if (c.A_weapon1.value) {
-      if (typeof (n = m_Item[c.A_weapon1.value][5]) == "string") {
+      if (typeof (n = itemData[c.A_weapon1.value].slots) == "string") {
         var _ = n.split("/");
         n = _[1];
       }
@@ -318,7 +318,8 @@ function restrictCardslot(e) {
     if (n_Nitou)
       if (c.A_weapon2.value) {
         var n;
-        (typeof (n = m_Item[c.A_weapon2.value][5]) == "string" && ((_ = n.split("/")), (n = _[1])),
+        (typeof (n = itemData[c.A_weapon2.value].slots) == "string" &&
+          ((_ = n.split("/")), (n = _[1])),
           (c.A_weapon2_card1.disabled = !(n > 0)),
           (c.A_weapon2_card2.disabled = !(n > 1)),
           (c.A_weapon2_card3.disabled = !(n > 2)),
@@ -332,28 +333,28 @@ function restrictCardslot(e) {
           (c.A_weapon2_card3.value = 0),
           (c.A_weapon2_card4.disabled = !0),
           (c.A_weapon2_card4.value = 0));
-    (c.A_head1.value && m_Item[c.A_head1.value][5] != 0
+    (c.A_head1.value && itemData[c.A_head1.value].slots != 0
       ? (c.A_head1_card.disabled = !1)
       : ((c.A_head1_card.disabled = !0), (c.A_head1_card.value = 0)),
-      c.A_head2.value && m_Item[c.A_head2.value][5] != 0
+      c.A_head2.value && itemData[c.A_head2.value].slots != 0
         ? (c.A_head2_card.disabled = !1)
         : ((c.A_head2_card.disabled = !0), (c.A_head2_card.value = 0)),
-      c.A_left.value && m_Item[c.A_left.value][5] != 0
+      c.A_left.value && itemData[c.A_left.value].slots != 0
         ? (c.A_left_card.disabled = !1)
         : ((c.A_left_card.disabled = !0), (c.A_left_card.value = 0)),
-      c.A_body.value && m_Item[c.A_body.value][5] != 0
+      c.A_body.value && itemData[c.A_body.value].slots != 0
         ? (c.A_body_card.disabled = !1)
         : ((c.A_body_card.disabled = !0), (c.A_body_card.value = 0)),
-      c.A_shoulder.value && m_Item[c.A_shoulder.value][5] != 0
+      c.A_shoulder.value && itemData[c.A_shoulder.value].slots != 0
         ? (c.A_shoulder_card.disabled = !1)
         : ((c.A_shoulder_card.disabled = !0), (c.A_shoulder_card.value = 0)),
-      c.A_shoes.value && m_Item[c.A_shoes.value][5] != 0
+      c.A_shoes.value && itemData[c.A_shoes.value].slots != 0
         ? (c.A_shoes_card.disabled = !1)
         : ((c.A_shoes_card.disabled = !0), (c.A_shoes_card.value = 0)),
-      c.A_acces1.value && m_Item[c.A_acces1.value][5] != 0
+      c.A_acces1.value && itemData[c.A_acces1.value].slots != 0
         ? (c.A_acces1_card.disabled = !1)
         : ((c.A_acces1_card.disabled = !0), (c.A_acces1_card.value = 0)),
-      c.A_acces2.value && m_Item[c.A_acces2.value][5] != 0
+      c.A_acces2.value && itemData[c.A_acces2.value].slots != 0
         ? (c.A_acces2_card.disabled = !1)
         : ((c.A_acces2_card.disabled = !0), (c.A_acces2_card.value = 0)));
   } else
@@ -713,7 +714,7 @@ function BattleCalc999() {
       else if (SKILLID.GRIMTOOTH == n_A_ActiveSkill)
         (n_A_ActiveSkillLV >= 3 && (n_rangedAtk = 1), (wMod += 0.2 * n_A_ActiveSkillLV));
       else if (SKILLID.SMITE == n_A_ActiveSkill)
-        ((wMod += 0.2 * n_A_ActiveSkillLV), m_Item[n_A_Equip[5]][0] == 305 && (wMod = 0));
+        ((wMod += 0.2 * n_A_ActiveSkillLV), itemData[n_A_Equip[5]].id == 305 && (wMod = 0));
       else if (SKILLID.HOLY_CROSS == n_A_ActiveSkill || SKILLID.HOLY_CROSS_UARO == n_A_ActiveSkill)
         ((wMod += 0.35 * n_A_ActiveSkillLV),
           SKILLID.HOLY_CROSS_UARO == n_A_ActiveSkill && n_A_WeaponType == 5 && (wMod *= 2),
@@ -981,7 +982,7 @@ function BattleCalc999() {
           (Last_DMG_A[e] = Last_DMG_B[e] = w_DMG[e] + EDP_DMG(e)),
           (InnStr[e] += Last_DMG_A[e]),
           SKILLID.SMITE == n_A_ActiveSkill &&
-            m_Item[n_A_Equip[5]][0] == 305 &&
+            itemData[n_A_Equip[5]].id == 305 &&
             ((w_DMG[e] = 0), (InnStr[e] = w_DMG[e] + " (no shield equiped)")),
           wActiveHitNum > 1 &&
             (InnStr[e] += " (" + w_DMG[e] / wActiveHitNum + " x " + wActiveHitNum + " hits)"));
@@ -1190,7 +1191,7 @@ function BattleCalc999() {
           (w_DMG[e] = ApplyModifiers(w_DMG[e]) + wSBr),
           M_DEF1 != 0 && (w_DMG[2] = w_DMG[1] = w_DMG[0]),
           w_DMG[e] < 1 && (w_DMG[e] = 1),
-          m_Item[n_A_Equip[5]][0] == 305
+          itemData[n_A_Equip[5]].id == 305
             ? ((w_DMG[e] = 0), (InnStr[e] += w_DMG[e] + " (no shield equiped)"))
             : ((w_DMG[e] = Math.floor(w_DMG[e] * element[targetData[3]][0])),
               (Last_DMG_A[e] = Last_DMG_B[e] = w_DMG[e]),
@@ -1248,7 +1249,7 @@ function BattleCalc999() {
             5 * n_A_LEFT_REFINE * 2),
           (w_DMG[e] = ApplyModifiers(w_DMG[e])),
           w_DMG[e] < 1 && (w_DMG[e] = 1),
-          m_Item[n_A_Equip[5]][0] == 305
+          itemData[n_A_Equip[5]].id == 305
             ? ((w_DMG[e] = 0), (InnStr[e] += w_DMG[e] + " (no shield equiped)"))
             : ((w_DMG[e] = Math.floor(w_DMG[e] * element[targetData[3]][0])),
               (Last_DMG_B[e] = Math.floor(w_DMG[e] / 5) + Math.floor(n_B_DEF2[e] / 3 - 1)),
@@ -3193,11 +3194,11 @@ function UpdateSpiralPierceWeaponWeight() {
     _ = c.SkillSubNum;
   if (e == SKILLID.CLASHING_SPIRAL && _) {
     var n = n_A_Equip[0];
-    _.value = m_Item[n][6];
+    _.value = itemData[n].weight;
   }
 }
 function ClickWeaponType(e) {
-  (n_A_JobSet(), (e = m_Item[c.A_weapon1.value][1]));
+  (n_A_JobSet(), (e = itemData[c.A_weapon1.value].equipType));
   var _ = 0 <= c.A_Arrow.selectedIndex ? c.A_Arrow.options[c.A_Arrow.selectedIndex].text : "";
   c.A_Arrow.disabled = !1;
   for (var n = 0; n < 23; n++) c.A_Arrow.options[0] = null;
@@ -3674,7 +3675,7 @@ function ClickActiveSkill2() {
             'Shield weight: <input type="text" inputmode="numeric" maxlength="4" name="SkillSubNum" size=2 onkeypress="return isNumeric(event)" onkeyup="calc()">',
             0,
           ),
-            (c.SkillSubNum.value = m_Item[n_A_Equip[5]][6]));
+            (c.SkillSubNum.value = itemData[n_A_Equip[5]].weight));
           break;
         case 259:
           (myInnerHtml(
@@ -3682,7 +3683,7 @@ function ClickActiveSkill2() {
             'Weapon weight: <input type="text" inputmode="numeric" maxlength="4" name="SkillSubNum" size=2 onkeypress="return isNumeric(event)" onkeyup="calc()">',
             0,
           ),
-            (c.SkillSubNum.value = m_Item[n_A_Equip[0]][6]));
+            (c.SkillSubNum.value = itemData[n_A_Equip[0]].weight));
           break;
         default:
           myInnerHtml("AASkill", "", 0);

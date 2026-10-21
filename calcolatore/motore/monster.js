@@ -19494,45 +19494,9 @@ EnemyNum = m_Monster.length - 1;
 function isMvpMonster(E) {
   return !!(E && E[18]);
 }
-var LEGACY_REMOVED_MONSTER_IDS_V13 = [
-  394, 547, 549, 550, 551, 552, 553, 554, 555, 556, 557, 558, 559, 560, 561, 562, 563, 564, 565,
-  566, 567, 568, 569, 570, 571, 572, 586, 588, 589, 591, 592, 593, 595, 596, 597, 599, 600, 601,
-  602, 603, 604, 605, 606, 607, 608, 609, 610, 611, 612, 613, 614, 615, 616, 617, 618, 619, 620,
-  621, 622, 623, 625, 626, 627, 628, 629, 630, 631, 634, 635, 636, 637, 638, 639, 640, 641, 642,
-  643, 644, 645, 646, 647, 648, 649, 650, 651, 652, 653, 654, 666, 668, 669, 670, 671, 672, 673,
-  674, 675, 676, 677, 678,
-];
-function migrateLegacyMonsterIdV13(E) {
-  if (((E = Number(E)), !Number.isInteger(E) || E < 0)) return -1;
-  var I = {
-    668: 561,
-    669: 562,
-    670: 563,
-    671: 581,
-    672: 582,
-    673: 583,
-    674: 584,
-    675: 585,
-    676: 586,
-    677: 587,
-    678: 588,
-  }[E];
-  if (I != null) return I;
-  for (var M = 0, D = 0; D < LEGACY_REMOVED_MONSTER_IDS_V13.length; D++) {
-    var A = LEGACY_REMOVED_MONSTER_IDS_V13[D];
-    if (A == E) return -1;
-    if (A < E) M++;
-    else break;
-  }
-  var L = E - M;
-  return m_Monster[L] ? L : -1;
-}
-function normalizeSavedMonsterId(E, I) {
-  return (
-    (E = Number(E)),
-    I && (E = migrateLegacyMonsterIdV13(E)),
-    Number.isInteger(E) && m_Monster[E] ? E : 0
-  );
+// un mostro che non c'e' piu' diventa il primo dell'elenco
+function normalizeSavedMonsterId(E) {
+  return ((E = Number(E)), Number.isInteger(E) && m_Monster[E] ? E : 0);
 }
 for (let E = 0; E <= EnemyNum; E++)
   ((m_Monster[E][21] = 20 + m_Monster[E][5] + m_Monster[E][8]),

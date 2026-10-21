@@ -40,18 +40,18 @@ function SuperNoviceFullWeapon(l) {
   var A = n_A_WeaponTypesArray.length;
   for (i = 0; i < A; i++) n_A_WeaponTypesArray[0] = null;
   for (j = 0, i = 0; i <= 21; i++) m_JobASPD[20][i] != 0 && ((n_A_WeaponTypesArray[j] = i), j++);
-  if (m_Item[n_A_Equip[0]][2] != 7 && JobEquipItemSearch(m_Item[n_A_Equip[0]][2])) {
+  if (itemData[n_A_Equip[0]].jobMask != 7 && JobEquipItemSearch(itemData[n_A_Equip[0]].jobMask)) {
     var n = n_A_Equip[0];
-    ((n_A_WeaponType = m_Item[n][1]),
-      ClickWeaponType(m_Item[n][1]),
+    ((n_A_WeaponType = itemData[n].equipType),
+      ClickWeaponType(itemData[n].equipType),
       WeaponSet2(),
       (c.A_weapon1.value = n));
   } else (ClickWeaponType(0), WeaponSet2());
-  (JobEquipItemSearch(m_Item[n_A_Equip[2]][2], m_Item[n_A_Equip[2]][1]) &&
+  (JobEquipItemSearch(itemData[n_A_Equip[2]].jobMask, itemData[n_A_Equip[2]].equipType) &&
     (c.A_head1.value = n_A_Equip[2]),
-    JobEquipItemSearch(m_Item[n_A_Equip[3]][2], m_Item[n_A_Equip[3]][1]) &&
+    JobEquipItemSearch(itemData[n_A_Equip[3]].jobMask, itemData[n_A_Equip[3]].equipType) &&
       (c.A_head2.value = n_A_Equip[3]),
-    JobEquipItemSearch(m_Item[n_A_Equip[4]][2], m_Item[n_A_Equip[4]][1]) &&
+    JobEquipItemSearch(itemData[n_A_Equip[4]].jobMask, itemData[n_A_Equip[4]].equipType) &&
       (c.A_head3.value = n_A_Equip[4]),
     (c.A_left.value = n_A_Equip[5]),
     (c.A_body.value = n_A_Equip[6]),
@@ -93,8 +93,8 @@ function StAllCalc() {
     (SU_DEX = n_A_DEX),
     (SU_INT = n_A_INT),
     (SU_LUK = n_A_LUK),
-    (n_A_WeaponType = m_Item[c.A_weapon1.value][1]),
-    n_Nitou && (n_A_Weapon2Type = m_Item[c.A_weapon2.value][1]),
+    (n_A_WeaponType = itemData[c.A_weapon1.value].equipType),
+    n_Nitou && (n_A_Weapon2Type = itemData[c.A_weapon2.value].equipType),
     (n_A_Arrow = 1 * c.A_Arrow.value),
     (n_A_HEAD_REFINE = 1 * c.A_HEAD_REFINE.value),
     (n_A_BODY_REFINE = 1 * c.A_BODY_REFINE.value),
@@ -127,8 +127,8 @@ function StAllCalc() {
       ? ((w_SE[59] = [999, "NULL"]), (w_SE[163] = [1864, "NULL"]))
       : ((w_SE[59] = [999, 987, 998, 1001, "NULL"]), (w_SE[163] = [1864, 987, 998, 1863, "NULL"])),
     SetEquip(),
-    (n_A_WeaponLV = m_Item[n_A_Equip[0]][4]),
-    (n_A_Weapon_ATK = m_Item[n_A_Equip[0]][3]),
+    (n_A_WeaponLV = itemData[n_A_Equip[0]].weaponLevel),
+    (n_A_Weapon_ATK = itemData[n_A_Equip[0]].attackOrDefense),
     (n_A_Weapon_refine = 1 * c.A_Weapon_refine.value),
     (W_REF = 0),
     (n_A_WeaponLV_refineATK = 0),
@@ -166,8 +166,8 @@ function StAllCalc() {
     (n_A_Weapon2LV_Maxplus = 0),
     n_Nitou &&
       ((W_REF2 = 0),
-      (n_A_Weapon2LV = m_Item[n_A_Equip[1]][4]),
-      (n_A_Weapon2_ATK = m_Item[n_A_Equip[1]][3]),
+      (n_A_Weapon2LV = itemData[n_A_Equip[1]].weaponLevel),
+      (n_A_Weapon2_ATK = itemData[n_A_Equip[1]].attackOrDefense),
       (n_A_Weapon2_refine = 1 * c.A_Weapon2_refine.value),
       n_A_Weapon2LV == 1
         ? ((n_A_Weapon2LV_refineATK = 2 * n_A_Weapon2_refine),
@@ -215,10 +215,8 @@ function StAllCalc() {
     (n_A_Weapon2_element = n_A_Weapon_element),
     n_A_Weapon_element == 0)
   ) {
-    for (p = 0; m_Item[n_A_Equip[0]][p + 11] != 0; p += 2)
-      m_Item[n_A_Equip[0]][p + 11] == 20 && (n_A_Weapon_element = m_Item[n_A_Equip[0]][p + 12]);
-    for (p = 0; m_Item[n_A_Equip[1]][p + 11] != 0; p += 2)
-      m_Item[n_A_Equip[1]][p + 11] == 20 && (n_A_Weapon2_element = m_Item[n_A_Equip[1]][p + 12]);
+    for (const b of itemData[n_A_Equip[0]].bonuses) b.id == 20 && (n_A_Weapon_element = b.value);
+    for (const b of itemData[n_A_Equip[1]].bonuses) b.id == 20 && (n_A_Weapon2_element = b.value);
     (201 <= m_Card[n_A_card[0]][0] &&
       m_Card[n_A_card[0]][0] <= 204 &&
       (n_A_Weapon_element = m_Card[n_A_card[0]][0] - 200),
@@ -558,7 +556,7 @@ function StAllCalc() {
       (n_A_Weapon_refine >= 7 && (bonusValues[BONUSID.CRIT] += 20),
       n_A_Weapon_refine >= 8 && (bonusValues[BONUSID.ASPD] += 10),
       n_A_Weapon_refine >= 9 && (bonusValues[BONUSID.ATK] += 50)),
-    EQUIPID.DEATH_FIRE == n_A_Equip[0] || EQUIPID.DEATH_FIRE_LEGACY_PLUS_9 == n_A_Equip[0])
+    EQUIPID.DEATH_FIRE == n_A_Equip[0])
   ) {
     var s = getDeathFireRefineBonuses(n_A_Weapon_refine);
     ((bonusValues[BONUSID.ASPD] += s.aspd),
@@ -628,7 +626,9 @@ function StAllCalc() {
             : n_A_WeaponType == 9 &&
               ((c.A_LEFT_REFINE.disabled = !1),
               (c.A_left.disabled = !1),
-              card_restrict && m_Item[c.A_left.value][5] != 0 && (c.A_left_card.disabled = !1)),
+              card_restrict &&
+                itemData[c.A_left.value].slots != 0 &&
+                (c.A_left_card.disabled = !1)),
           bonusValues[200] == 1
             ? ((c.A_head2.disabled = !0),
               (c.A_head2.value = 243),
@@ -1336,7 +1336,7 @@ function StAllCalc() {
     l <= 10;
     l++
   )
-    n_A_DEF += m_Item[n_A_Equip[l]][3];
+    n_A_DEF += itemData[n_A_Equip[l]].attackOrDefense;
   // uaRO: Luna Bow: DEF +2, +3 da +6, +5 da +9 (Item Changes; patch del 04/08/2026). Nel
   // codice c'erano i valori ufficiali
   (n_A_Equip[0] == 521 &&
@@ -2016,7 +2016,7 @@ function StAllCalc() {
     (O *= 1 + 0.1 * SkillSearch(SKILLID.SLS_COURIER)),
     (wLimitR = 200 * SkillSearch(SKILLID.ENLARGE_WEIGHT_LIMIT_R)));
   var H = n_A_Buf9[28];
-  for (l = 0; l <= 10; l++) H += m_Item[n_A_Equip[l]][6];
+  for (l = 0; l <= 10; l++) H += itemData[n_A_Equip[l]].weight;
   var R = Math.floor((1e4 * H) / (Math.floor(O) + wLimitR)),
     q = "var(--color-negative)";
   (R < 5e3 && (q = "var(--color-positive)"),
@@ -2578,8 +2578,7 @@ function StPlusCalc() {
   (EQUIPID.TEMPORAL_INT_BOOTS == n_A_Equip[8] && ((a += b), (E += b)),
     EQUIPID.TEMPORAL_STR_BOOTS == n_A_Equip[8] && (n += b),
     EQUIPID.TEMPORAL_DEX_BOOTS == n_A_Equip[8] && (E += b),
-    (EQUIPID.DEATH_FIRE == n_A_Equip[0] || EQUIPID.DEATH_FIRE_LEGACY_PLUS_9 == n_A_Equip[0]) &&
-      (E += getDeathFireRefineBonuses(n_A_Weapon_refine).dex),
+    EQUIPID.DEATH_FIRE == n_A_Equip[0] && (E += getDeathFireRefineBonuses(n_A_Weapon_refine).dex),
     EQUIPID.AVENGER == n_A_Equip[0] && n_A_Weapon_refine >= 7 && (E += 3),
     EQUIPID.FORTIFIED_DAGGER == n_A_Equip[0] && n_A_Weapon_refine >= 7 && (a += 5),
     EQUIPID.VALKYRIE_KNIFE == n_A_Equip[0] &&
@@ -2906,8 +2905,7 @@ function StPlusCalc() {
 }
 function StPlusCalc2(l) {
   for (var A = 0, n = 0; n <= 20; n++)
-    for (var s = 0; m_Item[n_A_Equip[n]][s + 11] != 0; s += 2)
-      l == Math.abs(m_Item[n_A_Equip[n]][s + 11]) && (A += m_Item[n_A_Equip[n]][s + 12]);
+    for (const b of itemData[n_A_Equip[n]].bonuses) l == Math.abs(b.id) && (A += b.value);
   return A;
 }
 function StPlusCard(l) {
@@ -2955,7 +2953,7 @@ function StPlusCard(l) {
 function sort(l) {
   for (var A = 1; l[A] != "EOF"; A++)
     for (var n = A; n > 0; n--)
-      if (m_Item[l[n - 1]][8] > m_Item[l[n]][8]) {
+      if (itemData[l[n - 1]].name > itemData[l[n]].name) {
         var s = l[n - 1];
         ((l[n - 1] = l[n]), (l[n] = s));
       }
@@ -2984,20 +2982,21 @@ function WeaponSet(l) {
         i <= ItemMax;
         i++
       )
-        m_Item[i][1] == n_A_WeaponType &&
-          (JobEquipItemSearch(m_Item[i][2]) == 1 && (m_Item[i][7] <= c.A_BaseLV.value || A == 0)
+        itemData[i].equipType == n_A_WeaponType &&
+          (JobEquipItemSearch(itemData[i].jobMask) == 1 &&
+          (itemData[i].requiredLevel <= c.A_BaseLV.value || A == 0)
             ? ((work[j] = i), j++)
-            : m_Item[i][4] >= 1 &&
+            : itemData[i].weaponLevel >= 1 &&
               SuperNoviceFullWeaponCHECK &&
-              (m_Item[i][1] == 1 && m_Item[i][4] == 4 && ((work[j] = i), j++),
-              (m_Item[i][1] == 2 || m_Item[i][1] > 3) && ((work[j] = i), j++)));
+              (itemData[i].equipType == 1 && itemData[i].weaponLevel == 4 && ((work[j] = i), j++),
+              (itemData[i].equipType == 2 || itemData[i].equipType > 3) && ((work[j] = i), j++)));
       if (j > 0) {
         for (work[j] = "EOF", work = sort(work), i = 1; i < j + 1; i++) {
           var _ = "";
-          (m_Item[work[i - 1]][5] && (_ = " [" + m_Item[work[i - 1]][5] + "]"),
+          (itemData[work[i - 1]].slots && (_ = " [" + itemData[work[i - 1]].slots + "]"),
             (c.A_weapon1.options[i + n] = new documento.Opzione(
-              m_Item[work[i - 1]][8] + _,
-              m_Item[work[i - 1]][0],
+              itemData[work[i - 1]].name + _,
+              itemData[work[i - 1]].id,
             )),
             s.appendChild(c.A_weapon1.options[i + n]));
         }
@@ -3039,17 +3038,17 @@ function WeaponSetLeft(l) {
         i <= ItemMax;
         i++
       )
-        m_Item[i][1] == n_A_Weapon2Type &&
-          JobEquipItemSearch(m_Item[i][2]) == 1 &&
-          (m_Item[i][7] <= c.A_BaseLV.value || A == 0) &&
+        itemData[i].equipType == n_A_Weapon2Type &&
+          JobEquipItemSearch(itemData[i].jobMask) == 1 &&
+          (itemData[i].requiredLevel <= c.A_BaseLV.value || A == 0) &&
           ((work[j] = i), j++);
       if (j > 0) {
         for (work[j] = "EOF", work = sort(work), i = 1; i < j + 1; i++) {
           var _ = "";
-          (m_Item[work[i - 1]][5] && (_ = " [" + m_Item[work[i - 1]][5] + "]"),
+          (itemData[work[i - 1]].slots && (_ = " [" + itemData[work[i - 1]].slots + "]"),
             (c.A_weapon2.options[i + n] = new documento.Opzione(
-              m_Item[work[i - 1]][8] + _,
-              m_Item[work[i - 1]][0],
+              itemData[work[i - 1]].name + _,
+              itemData[work[i - 1]].id,
             )),
             s.appendChild(c.A_weapon2.options[i + n]));
         }
@@ -3076,15 +3075,15 @@ function WeaponSet2(l) {
     if (first_check == 0)
       return (
         (first_check = 1),
-        (c.A_head1.options[0] = new documento.Opzione(m_Item[142][8], m_Item[142][0])),
-        (c.A_head2.options[0] = new documento.Opzione(m_Item[243][8], m_Item[243][0])),
-        (c.A_head3.options[0] = new documento.Opzione(m_Item[268][8], m_Item[268][0])),
-        (c.A_left.options[0] = new documento.Opzione(m_Item[305][8], m_Item[305][0])),
-        (c.A_body.options[0] = new documento.Opzione(m_Item[279][8], m_Item[279][0])),
-        (c.A_shoulder.options[0] = new documento.Opzione(m_Item[311][8], m_Item[311][0])),
-        (c.A_shoes.options[0] = new documento.Opzione(m_Item[317][8], m_Item[317][0])),
-        (c.A_acces1.options[0] = new documento.Opzione(m_Item[326][8], m_Item[326][0])),
-        void (c.A_acces2.options[0] = new documento.Opzione(m_Item[326][8], m_Item[326][0]))
+        (c.A_head1.options[0] = new documento.Opzione(itemData[142].name, itemData[142].id)),
+        (c.A_head2.options[0] = new documento.Opzione(itemData[243].name, itemData[243].id)),
+        (c.A_head3.options[0] = new documento.Opzione(itemData[268].name, itemData[268].id)),
+        (c.A_left.options[0] = new documento.Opzione(itemData[305].name, itemData[305].id)),
+        (c.A_body.options[0] = new documento.Opzione(itemData[279].name, itemData[279].id)),
+        (c.A_shoulder.options[0] = new documento.Opzione(itemData[311].name, itemData[311].id)),
+        (c.A_shoes.options[0] = new documento.Opzione(itemData[317].name, itemData[317].id)),
+        (c.A_acces1.options[0] = new documento.Opzione(itemData[326].name, itemData[326].id)),
+        void (c.A_acces2.options[0] = new documento.Opzione(itemData[326].name, itemData[326].id))
       );
     first_check = 2;
     var s = new Array(),
@@ -3093,39 +3092,41 @@ function WeaponSet2(l) {
     var a = new Array();
     for (n = 0; n <= 7; n++) a[n] = 0;
     for (n = 0; n <= ItemMax; n++)
-      m_Item[n][1] == 50 &&
-      (JobEquipItemSearch(m_Item[n][2], m_Item[n][1]) == 1 ||
+      itemData[n].equipType == 50 &&
+      (JobEquipItemSearch(itemData[n].jobMask, itemData[n].equipType) == 1 ||
         SuperNoviceFullWeaponCHECK ||
         _ == 0) &&
-      (m_Item[n][7] <= n_A_BaseLV || SuperNoviceFullWeaponCHECK || A == 0)
+      (itemData[n].requiredLevel <= n_A_BaseLV || SuperNoviceFullWeaponCHECK || A == 0)
         ? ((s[0][a[0]] = n), a[0]++)
-        : m_Item[n][1] == 51 &&
-            (JobEquipItemSearch(m_Item[n][2], m_Item[n][1]) == 1 ||
+        : itemData[n].equipType == 51 &&
+            (JobEquipItemSearch(itemData[n].jobMask, itemData[n].equipType) == 1 ||
               SuperNoviceFullWeaponCHECK ||
               _ == 0) &&
-            (m_Item[n][7] <= n_A_BaseLV || SuperNoviceFullWeaponCHECK || A == 0)
+            (itemData[n].requiredLevel <= n_A_BaseLV || SuperNoviceFullWeaponCHECK || A == 0)
           ? ((s[1][a[1]] = n), a[1]++)
-          : m_Item[n][1] == 52 &&
-              (JobEquipItemSearch(m_Item[n][2], m_Item[n][1]) == 1 ||
+          : itemData[n].equipType == 52 &&
+              (JobEquipItemSearch(itemData[n].jobMask, itemData[n].equipType) == 1 ||
                 SuperNoviceFullWeaponCHECK ||
                 _ == 0) &&
-              (m_Item[n][7] <= n_A_BaseLV || SuperNoviceFullWeaponCHECK || A == 0)
+              (itemData[n].requiredLevel <= n_A_BaseLV || SuperNoviceFullWeaponCHECK || A == 0)
             ? ((s[2][a[2]] = n), a[2]++)
-            : m_Item[n][1] != 61 ||
-                (JobEquipItemSearch(m_Item[n][2], m_Item[n][1]) != 1 && _ != 0) ||
-                !(m_Item[n][7] <= n_A_BaseLV || A == 0)
-              ? m_Item[n][1] != 60 ||
-                (JobEquipItemSearch(m_Item[n][2], m_Item[n][1]) != 1 && _ != 0) ||
-                !(m_Item[n][7] <= n_A_BaseLV || A == 0)
-                ? m_Item[n][1] != 62 ||
-                  (JobEquipItemSearch(m_Item[n][2], m_Item[n][1]) != 1 && _ != 0) ||
-                  !(m_Item[n][7] <= n_A_BaseLV || A == 0)
-                  ? m_Item[n][1] != 63 ||
-                    (JobEquipItemSearch(m_Item[n][2], m_Item[n][1]) != 1 && _ != 0) ||
-                    !(m_Item[n][7] <= n_A_BaseLV || A == 0)
-                    ? m_Item[n][1] != 64 ||
-                      (JobEquipItemSearch(m_Item[n][2], m_Item[n][1]) != 1 && _ != 0) ||
-                      !(m_Item[n][7] <= n_A_BaseLV || A == 0) ||
+            : itemData[n].equipType != 61 ||
+                (JobEquipItemSearch(itemData[n].jobMask, itemData[n].equipType) != 1 && _ != 0) ||
+                !(itemData[n].requiredLevel <= n_A_BaseLV || A == 0)
+              ? itemData[n].equipType != 60 ||
+                (JobEquipItemSearch(itemData[n].jobMask, itemData[n].equipType) != 1 && _ != 0) ||
+                !(itemData[n].requiredLevel <= n_A_BaseLV || A == 0)
+                ? itemData[n].equipType != 62 ||
+                  (JobEquipItemSearch(itemData[n].jobMask, itemData[n].equipType) != 1 && _ != 0) ||
+                  !(itemData[n].requiredLevel <= n_A_BaseLV || A == 0)
+                  ? itemData[n].equipType != 63 ||
+                    (JobEquipItemSearch(itemData[n].jobMask, itemData[n].equipType) != 1 &&
+                      _ != 0) ||
+                    !(itemData[n].requiredLevel <= n_A_BaseLV || A == 0)
+                    ? itemData[n].equipType != 64 ||
+                      (JobEquipItemSearch(itemData[n].jobMask, itemData[n].equipType) != 1 &&
+                        _ != 0) ||
+                      !(itemData[n].requiredLevel <= n_A_BaseLV || A == 0) ||
                       ((s[7][a[7]] = n), a[7]++)
                     : ((s[6][a[6]] = n), a[6]++)
                   : ((s[5][a[5]] = n), a[5]++)
@@ -3136,73 +3137,73 @@ function WeaponSet2(l) {
     var S = 0;
     for (n = 0; n < a[0]; n++)
       ((S = s[0][n]),
-        m_Item[S][5]
+        itemData[S].slots
           ? (c.A_head1.options[n] = new documento.Opzione(
-              m_Item[S][8] + " [" + m_Item[S][5] + "]",
-              m_Item[S][0],
+              itemData[S].name + " [" + itemData[S].slots + "]",
+              itemData[S].id,
             ))
-          : (c.A_head1.options[n] = new documento.Opzione(m_Item[S][8], m_Item[S][0])));
+          : (c.A_head1.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id)));
     for (n = 0; n < a[1]; n++)
       ((S = s[1][n]),
-        m_Item[S][5]
+        itemData[S].slots
           ? (c.A_head2.options[n] = new documento.Opzione(
-              m_Item[S][8] + " [" + m_Item[S][5] + "]",
-              m_Item[S][0],
+              itemData[S].name + " [" + itemData[S].slots + "]",
+              itemData[S].id,
             ))
-          : (c.A_head2.options[n] = new documento.Opzione(m_Item[S][8], m_Item[S][0])));
+          : (c.A_head2.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id)));
     for (n = 0; n < a[2]; n++)
       ((S = s[2][n]),
-        m_Item[S][5]
+        itemData[S].slots
           ? (c.A_head3.options[n] = new documento.Opzione(
-              m_Item[S][8] + " [" + m_Item[S][5] + "]",
-              m_Item[S][0],
+              itemData[S].name + " [" + itemData[S].slots + "]",
+              itemData[S].id,
             ))
-          : (c.A_head3.options[n] = new documento.Opzione(m_Item[S][8], m_Item[S][0])));
+          : (c.A_head3.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id)));
     for (n = 0; n < a[3]; n++)
       ((S = s[3][n]),
-        m_Item[S][5]
+        itemData[S].slots
           ? (c.A_left.options[n] = new documento.Opzione(
-              m_Item[S][8] + " [" + m_Item[S][5] + "]",
-              m_Item[S][0],
+              itemData[S].name + " [" + itemData[S].slots + "]",
+              itemData[S].id,
             ))
-          : (c.A_left.options[n] = new documento.Opzione(m_Item[S][8], m_Item[S][0])));
+          : (c.A_left.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id)));
     for (n = 0; n < a[4]; n++)
       ((S = s[4][n]),
-        m_Item[S][5]
+        itemData[S].slots
           ? (c.A_body.options[n] = new documento.Opzione(
-              m_Item[S][8] + " [" + m_Item[S][5] + "]",
-              m_Item[S][0],
+              itemData[S].name + " [" + itemData[S].slots + "]",
+              itemData[S].id,
             ))
-          : (c.A_body.options[n] = new documento.Opzione(m_Item[S][8], m_Item[S][0])));
+          : (c.A_body.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id)));
     for (n = 0; n < a[5]; n++)
       ((S = s[5][n]),
-        m_Item[S][5]
+        itemData[S].slots
           ? (c.A_shoulder.options[n] = new documento.Opzione(
-              m_Item[S][8] + " [" + m_Item[S][5] + "]",
-              m_Item[S][0],
+              itemData[S].name + " [" + itemData[S].slots + "]",
+              itemData[S].id,
             ))
-          : (c.A_shoulder.options[n] = new documento.Opzione(m_Item[S][8], m_Item[S][0])));
+          : (c.A_shoulder.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id)));
     for (n = 0; n < a[6]; n++)
       ((S = s[6][n]),
-        m_Item[S][5]
+        itemData[S].slots
           ? (c.A_shoes.options[n] = new documento.Opzione(
-              m_Item[S][8] + " [" + m_Item[S][5] + "]",
-              m_Item[S][0],
+              itemData[S].name + " [" + itemData[S].slots + "]",
+              itemData[S].id,
             ))
-          : (c.A_shoes.options[n] = new documento.Opzione(m_Item[S][8], m_Item[S][0])));
+          : (c.A_shoes.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id)));
     for (n = 0; n < a[7]; n++)
       ((S = s[7][n]),
-        m_Item[S][5]
+        itemData[S].slots
           ? ((c.A_acces1.options[n] = new documento.Opzione(
-              m_Item[S][8] + " [" + m_Item[S][5] + "]",
-              m_Item[S][0],
+              itemData[S].name + " [" + itemData[S].slots + "]",
+              itemData[S].id,
             )),
             (c.A_acces2.options[n] = new documento.Opzione(
-              m_Item[S][8] + " [" + m_Item[S][5] + "]",
-              m_Item[S][0],
+              itemData[S].name + " [" + itemData[S].slots + "]",
+              itemData[S].id,
             )))
-          : ((c.A_acces1.options[n] = new documento.Opzione(m_Item[S][8], m_Item[S][0])),
-            (c.A_acces2.options[n] = new documento.Opzione(m_Item[S][8], m_Item[S][0]))));
+          : ((c.A_acces1.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id)),
+            (c.A_acces2.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id))));
   }
 }
 function FirstNovis() {
@@ -3307,12 +3308,12 @@ function ActiveSkillSetPlus() {
   j = 0;
   var l = 0;
   for (n = 0; n <= 20; n++)
-    for (j2 = 0; m_Item[n_A_Equip[n]][11 + j2] != 0; j2 += 2)
-      ((l = m_Item[n_A_Equip[n]][12 + j2]),
-        Math.abs(m_Item[n_A_Equip[n]][11 + j2]) == 220
+    for (const b of itemData[n_A_Equip[n]].bonuses)
+      ((l = b.value),
+        Math.abs(b.id) == 220
           ? m_EnableSkill[l][1] == 1 &&
             ((w_ASSP0[j] = m_EnableSkill[l][2]), (w_ASSP9[j] = m_EnableSkill[l][0] + 3e3), j++)
-          : Math.abs(m_Item[n_A_Equip[n]][11 + j2]) == 221 &&
+          : Math.abs(b.id) == 221 &&
             m_AutoSpellSkill[l][1] == 1 &&
             ((w_ASSP0[j] = m_AutoSpellSkill[l][2]),
             (w_ASSP9[j] = m_AutoSpellSkill[l][0] + 2e3),
@@ -3759,7 +3760,7 @@ function KakutyouKansuu() {
           o <= 10;
           o++
         )
-          EquipKG += m_Item[n_A_Equip[o]][6];
+          EquipKG += itemData[n_A_Equip[o]].weight;
         ((r = "<table>"),
           (r +=
             "<tr><td><b><font color=red>Weight Limit: </font></b>" +
@@ -5826,8 +5827,8 @@ function URLOUT() {
     (SaveData[8] = NtoS2(1 * c.A_INT.value, 2)),
     (SaveData[9] = NtoS2(1 * c.A_LUK.value, 2)),
     (SaveData[10] = NtoS2(10 * n_A_Buf7[35] + 1 * c.A_Weapon_element.value, 1)),
-    (SaveData[11] = NtoS2(m_Item[c.A_weapon1.value][1], 1)),
-    n_Nitou && (SaveData[12] = NtoS2(m_Item[c.A_weapon2.value][1], 1)),
+    (SaveData[11] = NtoS2(itemData[c.A_weapon1.value].equipType, 1)),
+    n_Nitou && (SaveData[12] = NtoS2(itemData[c.A_weapon2.value].equipType, 1)),
     (n_A_JobClass() == 2 || n_A_JobClass() == 4 || (n_A_JOB == 45 && n_A_WeaponType != 0)) &&
       (SaveData[13] = NtoS2(1 * c.A_Arrow.value, 1)),
     (SaveData[14] = NtoS2(1 * c.A_weapon1.value, 2)),
@@ -6365,7 +6366,7 @@ function URLIN(l) {
     (c.A_LUK.value = StoN3(_.substr(17, 2))),
     (n_A_Buf7[35] = Math.floor(StoN3(_.substr(19, 1)) / 10)),
     (c.A_Weapon_element.value = StoN3(_.substr(19, 1)) % 10));
-  var m = normalizeEquipmentId(StoN3(_.substr(23, 2)));
+  var m = StoN3(_.substr(23, 2));
   ((c.A_weapon1.value = m),
     (n_A_WeaponType = StoN3(_.substr(20, 1))),
     ClickWeaponType(n_A_WeaponType),
@@ -6816,7 +6817,7 @@ function URLIN(l) {
       }
       break;
     }
-  var h = normalizeSavedMonsterId(StoN3(_.substr(e + 14, 2)), !1);
+  var h = normalizeSavedMonsterId(StoN3(_.substr(e + 14, 2)));
   ((targetData[0] = h),
     (c.B_Enemy.value = h),
     calc(),
@@ -7166,9 +7167,9 @@ for (tPlusTaiseiSyokia(), i = 0; i < m_TempEffect.length; i++)
       "<B>(Special Effect: [" +
       m_TempEffect[i][2] +
       "] can be activated under 'Additional Effects' at 'BUFF, ITEMS AND OTHER STUFF')</B>";
-    m_Item[m_TempEffect[i][4]][10] == 0
-      ? (m_Item[m_TempEffect[i][4]][10] = str)
-      : (m_Item[m_TempEffect[i][4]][10] += "<BR>" + str);
+    itemData[m_TempEffect[i][4]].description == 0
+      ? (itemData[m_TempEffect[i][4]].description = str)
+      : (itemData[m_TempEffect[i][4]].description += "<BR>" + str);
   }
 for (i = 0; i < m_TempEffect.length; i++)
   m_TempEffect[i][3] == 2 &&
