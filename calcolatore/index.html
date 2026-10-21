@@ -215,6 +215,9 @@ dialog.ricerca li.gruppo { font-weight: 700; color: var(--muted); font-size: .82
 dialog.ricerca button.opz { display: block; width: 100%; text-align: left; background: none; border: 0; padding: 6px 8px; border-radius: 6px; cursor: pointer; }
 dialog.ricerca button.opz:hover, dialog.ricerca button.opz:focus-visible { background: var(--surface-2); }
 dialog.ricerca button.opz[aria-current="true"] { font-weight: 700; color: var(--bradium); }
+/* ricerca negli effetti: pulsante acceso e, sotto il nome, le righe degli effetti trovate */
+#ricerca-effetti[aria-pressed="true"] { border-color: var(--bradium); color: var(--bradium); font-weight: 700; }
+dialog.ricerca .effetto { display: block; font-size: .82rem; font-weight: 400; color: var(--muted); }
 
 /* pannelli dei buff */
 details.pannello { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); margin-bottom: 10px; }
@@ -667,6 +670,7 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
 <dialog class="ricerca" id="ricerca">
   <div class="testa">
     <input type="search" id="ricerca-testo" placeholder="Cerca" aria-label="Cerca">
+    <button class="btn" type="button" id="ricerca-effetti" aria-pressed="false" title="Cerca anche negli effetti (per esempio ASPD, AGI, Reflect)">Effetti</button>
     <button class="btn" type="button" data-azione="chiudi-ricerca">Chiudi</button>
   </div>
   <ul id="ricerca-lista"></ul>

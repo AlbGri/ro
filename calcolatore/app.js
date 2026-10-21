@@ -264,6 +264,7 @@ function sceltaConRicerca(v) {
 function apriRicerca(el) {
   ricercaPer = el;
   ricercaTesto.value = "";
+  effettiBtn.hidden = !tipoEffetti(el._v);
   disegnaRicerca();
   ricerca.showModal();
   ricercaTesto.focus();
@@ -271,15 +272,69 @@ function apriRicerca(el) {
 function normale(s) {
   return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 }
+
+// ricerca negli effetti: per oggetti e carte anche il testo della loro scheda
+const effettiBtn = document.getElementById("ricerca-effetti");
+let cercaEffetti = false;
+effettiBtn.addEventListener("click", () => {
+  cercaEffetti = !cercaEffetti;
+  effettiBtn.setAttribute("aria-pressed", String(cercaEffetti));
+  disegnaRicerca();
+  ricercaTesto.focus();
+});
+// "o" per gli oggetti (valore = posto in itemData), "c" per le carte (posto in m_Card)
+function tipoEffetti(v) {
+  const nome = v.getAttribute("name") || "";
+  if (/^A_(weapon[12]|head[123]|left|body|shoulder|shoes|acces[12])$/.test(nome)) return "o";
+  if (/_card\d?$/.test(nome)) return "c";
+  return null;
+}
+// le righe della scheda, con davanti gli altri oggetti per le righe di una combinazione
+const effetti = new Map();
+const appoggio = document.createElement("template");
+function testoHtml(html) {
+  appoggio.innerHTML = html;
+  return appoggio.content.textContent.replace(/\s+/g, " ").trim();
+}
+function righeEffetti(tipo, id, nome) {
+  const chiave = tipo + id;
+  if (!effetti.has(chiave)) {
+    const html = tipo === "o" ? window.descrizioneOggetto(id) : window.descrizioneCarta(id);
+    const righe = [];
+    html.split(/<hr\s*\/?>/i).forEach((parte, k) => {
+      let prefisso = "";
+      if (k > 0) {
+        const testa = (parte.match(/<b>([\s\S]*?)<\/b>/i) || [])[1] || "";
+        const altri = [...testoHtml(testa).matchAll(/\[([^\]]+)\]/g)].map((m) => m[1]).filter((n) => !nome.includes(n) && !n.includes(nome));
+        prefisso = (altri.length ? "con " + [...new Set(altri)].join(" + ") : "in combinazione") + ": ";
+        parte = parte.replace(/<b>[\s\S]*?<\/b>/i, "");
+      }
+      for (const riga of parte.split(/<br\s*\/?>/i)) {
+        const t = testoHtml(riga);
+        if (t) righe.push(prefisso + traduci(t));
+      }
+    });
+    effetti.set(chiave, righe);
+  }
+  return effetti.get(chiave);
+}
+
 function disegnaRicerca() {
   const v = ricercaPer._v;
   const parole = normale(ricercaTesto.value).split(/\s+/).filter(Boolean);
   const frammento = document.createDocumentFragment();
   const scelta = v.selectedIndex;
+  const tipo = cercaEffetti && parole.length ? tipoEffetti(v) : null;
   let gruppo = null, mostrate = 0;
   v._lista().forEach((o, i) => {
     const testo = traduci(o.text);
-    if (parole.length && !parole.every((p) => normale(testo).includes(p))) return;
+    let trovate = [];
+    if (tipo) {
+      const righe = righeEffetti(tipo, o.value, o.text);
+      const tutto = normale(testo + " " + righe.join(" "));
+      if (!parole.every((p) => tutto.includes(p))) return;
+      trovate = righe.filter((r) => parole.some((p) => normale(r).includes(p)));
+    } else if (parole.length && !parole.every((p) => normale(testo).includes(p))) return;
     const g = o.padre && o.padre.tag === "optgroup" ? o.padre : null;
     if (g && g !== gruppo) {
       const li = document.createElement("li");
@@ -294,6 +349,12 @@ function disegnaRicerca() {
     b.type = "button";
     b.className = "opz";
     b.textContent = testo;
+    for (const r of trovate.slice(0, 2)) {
+      const s = document.createElement("span");
+      s.className = "effetto";
+      s.textContent = r;
+      b.appendChild(s);
+    }
     b.dataset.indice = i;
     if (i === scelta) b.setAttribute("aria-current", "true");
     li.appendChild(b);

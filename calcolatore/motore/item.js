@@ -30683,25 +30683,26 @@ function ClickB_Item(e) {
   e != "SW" && ((Item_or_Card = "Item"), (ItemCardNumberCheck = e));
   ActiveSkillSetPlus();
   e == "SW" && (e = ItemCardNumberCheck);
-  for (
-    myInnerHtml("ITEM_TITLE", itemData[e].name + " [" + itemData[e].slots + "]", 0),
-      myInnerHtml("ITEM3", "Req. Lvl:", 0),
-      myInnerHtml("ITEM4", "Weight:", 0),
-      itemData[e].equipType < 50
-        ? (myInnerHtml("ITEM1", "ATK:", 0),
-          myInnerHtml("ITEM2", "Weapon Lvl:", 0),
-          myInnerHtml("ITEM_W_LV", itemData[e].weaponLevel, 0))
-        : (myInnerHtml("ITEM1", "DEF:", 0),
-          myInnerHtml("ITEM2", "-", 0),
-          myInnerHtml("ITEM_W_LV", "-", 0)),
-      myInnerHtml("ITEM_DATA", itemData[e].attackOrDefense, 0),
-      myInnerHtml("ITEM_LV", itemData[e].requiredLevel, 0),
-      myInnerHtml("ITEM_WAIT", itemData[e].weight, 0),
-      CBIstr = "",
-      s = 0;
-    s < itemData[e].bonuses.length && itemData[e].bonuses[s].id > 0;
-    s++
-  )
+  myInnerHtml("ITEM_TITLE", itemData[e].name + " [" + itemData[e].slots + "]", 0);
+  myInnerHtml("ITEM3", "Req. Lvl:", 0);
+  myInnerHtml("ITEM4", "Weight:", 0);
+  itemData[e].equipType < 50
+    ? (myInnerHtml("ITEM1", "ATK:", 0),
+      myInnerHtml("ITEM2", "Weapon Lvl:", 0),
+      myInnerHtml("ITEM_W_LV", itemData[e].weaponLevel, 0))
+    : (myInnerHtml("ITEM1", "DEF:", 0),
+      myInnerHtml("ITEM2", "-", 0),
+      myInnerHtml("ITEM_W_LV", "-", 0));
+  myInnerHtml("ITEM_DATA", itemData[e].attackOrDefense, 0);
+  myInnerHtml("ITEM_LV", itemData[e].requiredLevel, 0);
+  myInnerHtml("ITEM_WAIT", itemData[e].weight, 0);
+  myInnerHtml("B_SETUMEI", descrizioneOggetto(e), 0);
+}
+// Il testo della scheda di un oggetto: effetti, descrizione e combinazioni. Senza toccare la
+// pagina: lo usa anche la ricerca negli effetti
+function descrizioneOggetto(e) {
+  CBIstr = "";
+  for (var s = 0; s < itemData[e].bonuses.length && itemData[e].bonuses[s].id > 0; s++)
     Item_Setumei(itemData[e].bonuses[s].id, itemData[e].bonuses[s].value);
   itemData[e].description != 0 && (CBIstr += itemData[e].description + "<BR>");
   for (var bs = itemData[e].bonuses, a = 0, s = 0; s < bs.length; s++)
@@ -30713,10 +30714,9 @@ function ClickB_Item(e) {
           : (a = 1);
       ((CBIstr += " at the same time:</B><BR>"), (a = 0));
       for (const x of itemData[t].bonuses) Item_Setumei(x.id, x.value);
-      (itemData[t].description != 0 && (CBIstr += itemData[t].description + "<BR>"),
-        (CBIstr += ""));
+      itemData[t].description != 0 && (CBIstr += itemData[t].description + "<BR>");
     }
-  myInnerHtml("B_SETUMEI", CBIstr, 0);
+  return CBIstr;
 }
 function setShieldWeight(e) {
   ((1 * c.A_ActiveSkill.value == 159 ||

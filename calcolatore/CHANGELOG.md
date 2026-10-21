@@ -12,6 +12,10 @@ Le versioni della pagina `calcolatore/`.
 - Nei campi con la ricerca (armi, equipaggiamento, carte, mostri, skill, classe) le frecce su e
   giu' scelgono l'opzione prima o dopo, come negli altri elenchi, invece di scorrere la pagina:
   si correggono le scelte sbagliate e si scorrono gli oggetti leggendo la scheda
+- Ricerca negli effetti: nella ricerca di oggetti e carte il pulsante "Effetti" fa cercare anche
+  nel testo della scheda (per esempio "aspd", "agi", "reflect", in inglese come nel gioco), e
+  sotto ogni risultato mostra le righe degli effetti trovate, con l'oggetto da abbinare per le
+  combinazioni ("con Cold Heart: ASPD +3%")
 
 ## [1.4] - 2026-10-21
 
