@@ -217,8 +217,8 @@ function myInnerHtml(e, _, n) {
 }
 function ClickJob(e) {
   if (
-    (myInnerHtml("A_KakutyouSel", "", 0),
-    myInnerHtml("A_KakutyouData", "", 0),
+    (contenitore("A_KakutyouSel"),
+    scrivi("A_KakutyouData", ""),
     (c.A_Kakutyou.value = 0),
     n_A_JobSet(),
     (e = n_A_JOB) < 46)
@@ -300,7 +300,7 @@ function ClickJob(e) {
       default:
         m_JobBuff[e][_] != 999
           ? passiva(_, skillName(m_Skill[m_JobBuff[e][_]][0]))
-          : (scrivi("P_Skill" + _, ""), contenitore("P_Skill" + _ + "s"));
+          : (contenitore("P_Skill" + _ + "s"), scrivi("P_Skill" + _, ""));
     }
   for (var o = 0; o <= 20; o++)
     if (

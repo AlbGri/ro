@@ -3,20 +3,43 @@
 // calcolaAltreInfo e preparaAltreInfo dell'originale, specializzate per voce con terser il
 // 21/10/2026; i rami delle voci che la pagina non offre (6, 7, 8, 10, 18, 26, 38 e il calcolo
 // degli homunculus per la 40) non si eseguivano mai e non ci sono piu'
+// i campi di una voce stanno nel contenitore A_KakutyouSel, il risultato in A_KakutyouData.
+// Un campo: tendina che ricalcola le statistiche (gestore StAllCalc, se non e' detto), o con
+// valore una casella di testo senza gestore (il calcolo partiva scrivendo, onkeyup, che la
+// pagina non esegue)
+function campoInfo(nome, etichetta, valore, gestore) {
+  return valore === undefined
+    ? {
+        campo: nome,
+        etichetta: etichetta,
+        gestore:
+          gestore ||
+          function () {
+            StAllCalc();
+          },
+      }
+    : { campo: nome, tipo: "testo", etichetta: etichetta, valore: valore };
+}
+var NON_DISPONIBILE = '<p class="center">Not available for this class.</p>';
+// una voce che la classe non ha: nessun campo, e l'avviso subito (anche se il calcolo si ferma)
+function nonDisponibile() {
+  contenitore("A_KakutyouSel");
+  scrivi("A_KakutyouData", NON_DISPONIBILE);
+}
 var ALTRE_INFO = {
   // nessuna voce
   0: {
     controlli: function () {
-      myInnerHtml("A_KakutyouSel", "", 0);
+      contenitore("A_KakutyouSel");
     },
     calcolo: function () {
-      myInnerHtml("A_KakutyouData", "", 0);
+      scrivi("A_KakutyouData", "");
     },
   },
   // Heal amount
   2: {
     controlli: function () {
-      myInnerHtml("A_KakutyouSel", "", 0);
+      contenitore("A_KakutyouSel");
     },
     calcolo: function () {
       var Heal = [],
@@ -135,7 +158,7 @@ var ALTRE_INFO = {
             100) +
           "%"),
         (r += "<br><b>Required Int/Lvl for next bonus:</b> +" + (8 - ((n_A_BaseLV + n_A_INT) % 8))),
-        myInnerHtml("A_KakutyouData", r, 0));
+        scrivi("A_KakutyouData", r));
       var r;
       var o;
     },
@@ -143,7 +166,7 @@ var ALTRE_INFO = {
   // Sanctuary amount
   4: {
     controlli: function () {
-      myInnerHtml("A_KakutyouSel", "", 0);
+      contenitore("A_KakutyouSel");
     },
     calcolo: function () {
       if (n_A_JOB == 9 || n_A_JOB == 14 || n_A_JOB == 23 || n_A_JOB == 28) {
@@ -252,8 +275,8 @@ var ALTRE_INFO = {
             13 * Sanctuary2[10] +
             "</td></tr></table>"),
           (r += "<BR><B>Heal Boost:</B> " + (1 * bonusValues[94] + 1 * bonusValues[99]) + "%"));
-      } else r = '<p class="center">Not available for this class.</p>';
-      myInnerHtml("A_KakutyouData", r, 0);
+      } else r = NON_DISPONIBILE;
+      scrivi("A_KakutyouData", r);
       var r;
       var o;
     },
@@ -261,7 +284,7 @@ var ALTRE_INFO = {
   // Player Resistance
   12: {
     controlli: function () {
-      myInnerHtml("A_KakutyouSel", "", 0);
+      contenitore("A_KakutyouSel");
     },
     calcolo: function () {
       var r;
@@ -549,19 +572,28 @@ var ALTRE_INFO = {
           bonusValues[78] +
           "</b> % vs</td><td><b>Long-range attacks</b></td></tr>"),
         (r += "</table>"),
-        myInnerHtml("A_KakutyouData", r, 0));
+        scrivi("A_KakutyouData", r));
     },
   },
   // +% ATK based Damage Modifiers
   14: {
     controlli: function () {
-      var a;
+      var ricalcola = function () {
+        calc();
+      };
       for (
-        a = "<table>",
-          a +=
-            '<tr><td>Target: <select name="R_OBJ" onChange = "StAllCalc()"></select><select name="S_OBJ" onChange = "StAllCalc()"></select><select name="E_OBJ" onChange = "calc()"></select><select name="B_OBJ" onChange = "calc()"></select><select name="SP_OBJ" onChange = "calc()"></select></td></tr>',
-          a += "</table>",
-          myInnerHtml("A_KakutyouData", a, 0),
+        contenitore("A_KakutyouSel", [
+          {
+            riga: [
+              "Target",
+              campoInfo("R_OBJ"),
+              campoInfo("S_OBJ"),
+              campoInfo("E_OBJ", "", undefined, ricalcola),
+              campoInfo("B_OBJ", "", undefined, ricalcola),
+              campoInfo("SP_OBJ", "", undefined, ricalcola),
+            ],
+          },
+        ]),
           i = 0;
         i < v_Race_.length;
         i++
@@ -897,13 +929,13 @@ var ALTRE_INFO = {
           F_MOD4 +
           " %</td></tr>"),
         (r += "</table>"),
-        myInnerHtml("A_KakutyouSel", r, 0));
+        scrivi("A_KakutyouData", r));
     },
   },
   // +% MATK based Damage Modifiers
   16: {
     controlli: function () {
-      myInnerHtml("A_KakutyouSel", "", 0);
+      contenitore("A_KakutyouSel");
     },
     calcolo: function () {
       var r;
@@ -969,20 +1001,16 @@ var ALTRE_INFO = {
           v_Race[9] +
           "</td></tr>"),
         (r += "</table>"),
-        myInnerHtml("A_KakutyouData", r, 0));
+        scrivi("A_KakutyouData", r));
     },
   },
   // Experience
   20: {
     controlli: function () {
-      var a;
-      return (
-        (a =
-          'Current Base Exp <input type="tel" name="A_KakutyouSelNum" value="0" size=4 onkeyup="StAllCalc()" style="text-align: right;">%<BR>'),
-        (a +=
-          'Current Job Exp <input type="tel" name="A_KakutyouSelNum2" value="0" size=4 onkeyup="StAllCalc()" style="text-align: right;">%<BR>'),
-        void myInnerHtml("A_KakutyouSel", a, 0)
-      );
+      contenitore("A_KakutyouSel", [
+        campoInfo("A_KakutyouSelNum", "Current Base Exp (%)", "0"),
+        campoInfo("A_KakutyouSelNum2", "Current Job Exp (%)", "0"),
+      ]);
     },
     calcolo: function () {
       var r;
@@ -1079,31 +1107,28 @@ var ALTRE_INFO = {
           (Kanma(R) != 1 ? "s" : "") +
           "<BR>";
       }
-      myInnerHtml("A_KakutyouData", r, 0);
+      scrivi("A_KakutyouData", r);
     },
   },
   // Potion Pitcher HP/SP power
   22: {
     controlli: function () {
-      var a;
-      if (n_A_JOB != 19 && n_A_JOB != 33)
-        myInnerHtml("A_KakutyouSel", '<p class="center">Not available for this class.</p>', 0);
+      if (n_A_JOB != 19 && n_A_JOB != 33) nonDisponibile();
       else {
         for (
-          a = '<table style="text-align:right;">',
-            n_A_JOB == 33 &&
-              (a +=
-                '<tr><td>Slim Potion Pitcher:</td><td colspan="3"><select style="float:left" name="SPP" onChange="StAllCalc()"></select></td><td></td></tr>'),
-            a +=
-              '<tr><td>Potion Pitcher:</td><td colspan="2"><select style="float:left" name="PP" onChange="StAllCalc()"></select></td><td>Target\'s VIT:</td><td class=left><select name="E_VIT" onChange="StAllCalc()"></select></td></tr>',
-            a +=
-              '<tr><td>Learning Potion:</td><td class=left><select name="POT_RLevel" onChange="StAllCalc()"></select></td><td></td><td>Target\'s INT:</td><td class=left><select name="E_INT" onChange="StAllCalc()"></select></td></tr>',
-            a +=
-              '<tr><td>Ranked:</td><td class=left><select name="RNK_BNS" onChange="StAllCalc()"></select></td><td colspan=2>Increase SP Recovery: <td class=left><select name="ISP" onChange="StAllCalc()"></select></td></tr>',
-            a +=
-              '<tr><td>Soul Linker Lvl:</td><td class=left><select name="SL_LV" onChange="StAllCalc()"></select></td><td colspan=2>Increase HP Recovery: <td class=left><select name="IRP" onChange="StAllCalc()"></select></td></tr>',
-            a += "</tr></table>",
-            myInnerHtml("A_KakutyouSel", a + "<br>", 0),
+          contenitore(
+            "A_KakutyouSel",
+            (n_A_JOB == 33 ? [campoInfo("SPP", "Slim Potion Pitcher")] : []).concat([
+              campoInfo("PP", "Potion Pitcher"),
+              campoInfo("POT_RLevel", "Learning Potion"),
+              campoInfo("RNK_BNS", "Ranked"),
+              campoInfo("SL_LV", "Soul Linker Lvl"),
+              campoInfo("E_VIT", "Target's VIT"),
+              campoInfo("E_INT", "Target's INT"),
+              campoInfo("ISP", "Increase SP Recovery"),
+              campoInfo("IRP", "Increase HP Recovery"),
+            ]),
+          ),
             i = 0;
           i < Potion_Max_2;
           i++
@@ -1227,28 +1252,23 @@ var ALTRE_INFO = {
           n_A_JOB == 33 &&
             (Heal_POT += "<td><b>Slim Potion Pitch heals: </b>" + potheal3 + " ~ " + potheal4),
           (Heal_POT += "</td></tr></table>"),
-          myInnerHtml("A_KakutyouData", Heal_POT, 0));
-      } else myInnerHtml("A_KakutyouData", "", 0);
+          scrivi("A_KakutyouData", Heal_POT));
+      } else scrivi("A_KakutyouData", NON_DISPONIBILE);
     },
   },
   // Forge/Potion/EDP Creation Success Rate
   24: {
     controlli: function () {
-      var a;
       if (n_A_JOB != 12 && n_A_JOB != 26)
-        if (n_A_JOB != 19 && n_A_JOB != 33)
-          myInnerHtml("A_KakutyouSel", '<p class="center">Not available for this class.</p>', 0);
+        if (n_A_JOB != 19 && n_A_JOB != 33) nonDisponibile();
         else {
           for (
-            potiontext =
-              '<table style="text-align:right;"><tr><td>Potion to Create:</td><td class=left><select name="A_KakutyouSelNum" onChange="StAllCalc()"></select></td></tr>',
-              potiontext +=
-                '<tr><td>Learning Potion:</td><td class=left><select name="A_PotionRLevel" onChange="StAllCalc()"></select></td></tr>',
-              potiontext +=
-                '<tr><td>Change Instruction Level:</td><td class=left><select name="A_Van" onChange="StAllCalc()"></select><td></tr>',
-              potiontext +=
-                '<tr><td>Pharmacy:</td><td class=left><select name="A_PreparePLevel" onChange="StAllCalc()"></select></td></tr></table>',
-              myInnerHtml("A_KakutyouSel", potiontext + "", 0),
+            contenitore("A_KakutyouSel", [
+              campoInfo("A_KakutyouSelNum", "Potion to Create"),
+              campoInfo("A_PotionRLevel", "Learning Potion"),
+              campoInfo("A_Van", "Change Instruction Level"),
+              campoInfo("A_PreparePLevel", "Pharmacy"),
+            ]),
               i = 0;
             i < Potion_Max;
             i++
@@ -1264,19 +1284,17 @@ var ALTRE_INFO = {
         }
       else {
         for (
-          a = '<table style="text-align:right;">',
-            a +=
-              '<tr><td>Oridecon Research: </td><td class="data"><select name="A_OriR" onChange="StAllCalc()"></select></td><td>Anvil:</td><td class=left><select name="A_KakutyouSelNum" onChange="StAllCalc()"></select></td></tr>',
-            a +=
-              '<tr><td>Weapon Research: </td><td class="data"><select name="A_WepR" onChange="StAllCalc()"></select></td><td>Star Crumb:</td><td class=left><select name="A_StarC" onChange="StAllCalc()"></select></td></tr>',
-            a +=
-              '<tr><td>Iron Tempering: </td><td class="data"><select name="A_Iron" onChange="StAllCalc()"></select></td><td>Elemental Stone:</td><td class=left><select name="A_ElemS" onChange="StAllCalc()"></select></td></tr>',
-            a +=
-              '<tr><td>Steel Tempering: </td><td class="data"><select name="A_Steel" onChange="StAllCalc()"></select></td><td>Enchanted Stone Craft:</td><td class=left><select name="A_StoneC" onChange="StAllCalc()"></select></td></tr>',
-            a +=
-              '<tr><td>Smith (weapon) Lvl: </td><td class="data"><select name="A_SmithT" onChange="StAllCalc()"></select></td><td></td></tr>',
-            a += "</table>",
-            myInnerHtml("A_KakutyouSel", a, 0),
+          contenitore("A_KakutyouSel", [
+            campoInfo("A_OriR", "Oridecon Research"),
+            campoInfo("A_WepR", "Weapon Research"),
+            campoInfo("A_Iron", "Iron Tempering"),
+            campoInfo("A_Steel", "Steel Tempering"),
+            campoInfo("A_SmithT", "Smith (weapon) Lvl"),
+            campoInfo("A_KakutyouSelNum", "Anvil"),
+            campoInfo("A_StarC", "Star Crumb"),
+            campoInfo("A_ElemS", "Elemental Stone"),
+            campoInfo("A_StoneC", "Enchanted Stone Craft"),
+          ]),
             i = 0;
           i < Anvil_Max;
           i++
@@ -1381,7 +1399,7 @@ var ALTRE_INFO = {
             (r += "<tr><td><b>Iron: </b>" + srate4 + " %</td>"),
             (r += "<td><b>Steel: </b>" + srate5 + " %</td>"),
             (r += "<td><b>Elemental Stone: </b>" + srate6 + " %</td></tr></table>"),
-            myInnerHtml("A_KakutyouData", r, 0));
+            scrivi("A_KakutyouData", r));
           break;
         case 19:
         case 33:
@@ -1408,82 +1426,51 @@ var ALTRE_INFO = {
             frate1 < 0 && (frate1 = 0),
             (frate2 = Math.floor(100 * (srate + brate)) / 100),
             frate2 < 0 && (frate2 = 0),
-            myInnerHtml(
+            scrivi(
               "A_KakutyouData",
               "<b><br>Sucess rate: </b>" + srate + " % [ " + frate1 + " % ~ " + frate2 + " % ]",
-              0,
             ));
           break;
         case 22:
-          (myInnerHtml(
-            "A_KakutyouSel",
-            'Potion to Create: <select name="A_KakutyouSelNum" onChange="StAllCalc()"></select><BR>',
-            0,
-          ),
+          (contenitore("A_KakutyouSel", [campoInfo("A_KakutyouSelNum", "Potion to Create")]),
             (documento.calcForm.A_KakutyouSelNum.options[0] = new documento.Opzione(
               "Poison Bottle",
               0,
             )),
             (srate = Math.floor(200 + 4 * n_A_DEX + 2 * n_A_LUK) / 10),
-            myInnerHtml("A_KakutyouData", "<b><br>Sucess rate: </b>" + srate + " %", 0));
+            scrivi("A_KakutyouData", "<b><br>Sucess rate: </b>" + srate + " %"));
           break;
         default:
-          myInnerHtml("A_KakutyouData", "", 0);
+          scrivi("A_KakutyouData", NON_DISPONIBILE);
       }
     },
   },
   // Strip chance & duration
   28: {
     controlli: function () {
-      var a;
-      if (
-        ((a = ""),
-        CardNumSearch(157) ||
-        CardNumSearch(413) ||
-        EquipNumSearch(EQUIPID.DRILL_KATAR) ||
-        n_A_JOB == 14 ||
-        n_A_JOB == 28 ||
-        n_A_JOB == 45
-          ? ((a +=
-              '<table><tr><td>Enemy DEX: <select name="E_DEX" onChange="StAllCalc()"></select></td><td class="title">Skill Lvl</td><td class="title">Chance</td><td class="title">Duration Time</td></tr>'),
-            (n_A_JOB != 14 && n_A_JOB != 28) ||
-              (a +=
-                '<tr class="center"><td>' +
-                skillName(538) +
-                ' Helm, Armor, Weapon or Shield</td><td><select name="S_LV" onChange="StAllCalc()"></select></td><td><span id="S_CHANCE"></span></td><td><span id="S_TIME"></span></td></tr>'),
-            n_A_JOB == 28 &&
-              (a +=
-                '<tr class="center"><td>' +
-                skillName(440) +
-                '</td><td><select name="FS_LV" onChange="StAllCalc()"></select></td><td><span id="FS_CHANCE"></span></td><td><span id="FS_TIME"></span></td></tr>'),
-            n_A_JOB == 45 &&
-              (a +=
-                '<tr class="center"><td>Disarm</td><td><select name="S_LV" onChange="StAllCalc()"></select></td><td><span id="S_CHANCE"></span></td><td><span id="S_TIME"></span></td></tr>'),
-            CardNumSearch(157) &&
-              (a +=
-                '<tr class="center"><td>' +
-                skillName(172) +
-                ' (Auto-Casted)</td><td><select name="S2_LV" onChange="StAllCalc()"><option value="1">1</option></select></td><td><span id="S2_CHANCE"></span></td><td><span id="S2_TIME"></span></td></tr>'),
-            CardNumSearch(413) &&
-              (a +=
-                '<tr class="center"><td>' +
-                skillName(174) +
-                ' (Auto-Casted)</td><td><select name="S3_LV" onChange="StAllCalc()"></select></td><td><span id="S3_CHANCE"></span></td><td><span id="S3_TIME"></span></td></tr>'),
-            EquipNumSearch(EQUIPID.DRILL_KATAR) &&
-              (a +=
-                '<tr class="center"><td>' +
-                skillName(440) +
-                ' (Auto-Casted)</td><td><select name="FS2_LV" onChange="StAllCalc()"><option value="1">1</option></select></td><td><span id="FS2_CHANCE"></span></td><td><span id="FS2_TIME"></span></td></tr>'),
-            (a += "</table>"),
-            myInnerHtml("A_KakutyouSel", a, 0))
-          : myInnerHtml("A_KakutyouSel", '<p class="center">Not available for this class.</p>', 0),
-        CardNumSearch(157) ||
-          CardNumSearch(413) ||
-          EquipNumSearch(EQUIPID.DRILL_KATAR) ||
-          n_A_JOB == 14 ||
-          n_A_JOB == 28 ||
-          n_A_JOB == 45)
-      ) {
+      // una voce per skill: livello, poi probabilita' e durata (risultati <id>_CHANCE, <id>_TIME)
+      var voci = [];
+      var skill = function (nome, campo, id, opzioni) {
+        var v = campoInfo(campo, nome);
+        if (opzioni) v.opzioni = opzioni;
+        voci.push(v, {
+          riga: ["Chance", { id: id + "_CHANCE" }, "Duration", { id: id + "_TIME" }],
+        });
+      };
+      var attiva = stripAttivi();
+      if (attiva) {
+        voci.push(campoInfo("E_DEX", "Enemy DEX"));
+        (n_A_JOB == 14 || n_A_JOB == 28) &&
+          skill(skillName(538) + " Helm, Armor, Weapon or Shield", "S_LV", "S");
+        n_A_JOB == 28 && skill(skillName(440), "FS_LV", "FS");
+        n_A_JOB == 45 && skill("Disarm", "S_LV", "S");
+        CardNumSearch(157) && skill(skillName(172) + " (Auto-Casted)", "S2_LV", "S2", [["1", "1"]]);
+        CardNumSearch(413) && skill(skillName(174) + " (Auto-Casted)", "S3_LV", "S3");
+        EquipNumSearch(EQUIPID.DRILL_KATAR) &&
+          skill(skillName(440) + " (Auto-Casted)", "FS2_LV", "FS2", [["1", "1"]]);
+      }
+      attiva ? contenitore("A_KakutyouSel", voci) : nonDisponibile();
+      if (attiva) {
         for (i = 0; i <= 200; i++) c.E_DEX.options[i] = new documento.Opzione(i, i);
         if (((c.E_DEX.value = 0), n_A_JOB == 14 || n_A_JOB == 28 || n_A_JOB == 45)) {
           for (i = 1; i <= 5; i++) c.S_LV.options[i - 1] = new documento.Opzione(i, i);
@@ -1504,12 +1491,8 @@ var ALTRE_INFO = {
       }
     },
     calcolo: function () {
-      ((CardNumSearch(157) ||
-        CardNumSearch(413) ||
-        EquipNumSearch(EQUIPID.DRILL_KATAR) ||
-        n_A_JOB == 14 ||
-        n_A_JOB == 28 ||
-        n_A_JOB == 45) &&
+      var attiva = stripAttivi();
+      (attiva &&
         ((E_DEX1 = 1 * c.E_DEX.value),
         (n_A_JOB != 14 && n_A_JOB != 28 && n_A_JOB != 45) ||
           ((S_LV1 = 1 * c.S_LV.value),
@@ -1517,57 +1500,58 @@ var ALTRE_INFO = {
           (S_Time = 60 + 15 * S_LV1 + (n_A_DEX - E_DEX1) / 2),
           Strip < 5 + 5 * S_LV1 && (Strip = 5 + 5 * S_LV1),
           S_Time < 60 && (S_Time = 60),
-          myInnerHtml("S_CHANCE", Math.floor(10 * Strip) / 10 + " %", 0),
-          myInnerHtml("S_TIME", Math.floor(10 * S_Time) / 10 + " seconds", 0)),
+          scrivi("S_CHANCE", Math.floor(10 * Strip) / 10 + " %"),
+          scrivi("S_TIME", Math.floor(10 * S_Time) / 10 + " seconds")),
         n_A_JOB == 28 &&
           ((FS_LV1 = 1 * c.FS_LV.value),
           (FStrip = 5 + 2 * FS_LV1 + (n_A_DEX - E_DEX1) / 5),
           (FS_Time = 60 + 15 * FS_LV1 + (n_A_DEX - E_DEX1) / 2),
           FStrip < 5 + 2 * FS_LV1 && (FStrip = 5 + 2 * FS_LV1),
           FS_Time < 60 && (FS_Time = 60),
-          myInnerHtml("FS_CHANCE", Math.floor(10 * FStrip) / 10 + " %", 0),
-          myInnerHtml("FS_TIME", Math.floor(10 * FS_Time) / 10 + " seconds", 0)),
+          scrivi("FS_CHANCE", Math.floor(10 * FStrip) / 10 + " %"),
+          scrivi("FS_TIME", Math.floor(10 * FS_Time) / 10 + " seconds")),
         CardNumSearch(157) &&
           ((S_LV1 = 1 * c.S2_LV.value),
           (Strip = 5 + 5 * S_LV1 + (n_A_DEX - E_DEX1) / 5),
           (S_Time = 60 + 15 * S_LV1 + (n_A_DEX - E_DEX1) / 2),
           Strip < 5 + 5 * S_LV1 && (Strip = 5 + 5 * S_LV1),
           S_Time < 60 && (S_Time = 60),
-          myInnerHtml("S2_CHANCE", Math.floor(10 * Strip) / 10 + " %", 0),
-          myInnerHtml("S2_TIME", Math.floor(10 * S_Time) / 10 + " seconds", 0)),
+          scrivi("S2_CHANCE", Math.floor(10 * Strip) / 10 + " %"),
+          scrivi("S2_TIME", Math.floor(10 * S_Time) / 10 + " seconds")),
         CardNumSearch(413) &&
           ((S_LV1 = 1 * c.S3_LV.value),
           (Strip = 5 + 5 * S_LV1 + (n_A_DEX - E_DEX1) / 5),
           (S_Time = 60 + 15 * S_LV1 + (n_A_DEX - E_DEX1) / 2),
           Strip < 5 + 5 * S_LV1 && (Strip = 5 + 5 * S_LV1),
           S_Time < 60 && (S_Time = 60),
-          myInnerHtml("S3_CHANCE", Math.floor(10 * Strip) / 10 + " %", 0),
-          myInnerHtml("S3_TIME", Math.floor(10 * S_Time) / 10 + " seconds", 0)),
+          scrivi("S3_CHANCE", Math.floor(10 * Strip) / 10 + " %"),
+          scrivi("S3_TIME", Math.floor(10 * S_Time) / 10 + " seconds")),
         EquipNumSearch(EQUIPID.DRILL_KATAR) &&
           ((FS_LV1 = 1 * c.FS2_LV.value),
           (FStrip = 5 + 2 * FS_LV1 + (n_A_DEX - E_DEX1) / 5),
           (FS_Time = 60 + 15 * FS_LV1 + (n_A_DEX - E_DEX1) / 2),
           FStrip < 5 + 2 * FS_LV1 && (FStrip = 5 + 2 * FS_LV1),
           FS_Time < 60 && (FS_Time = 60),
-          myInnerHtml("FS2_CHANCE", Math.floor(10 * FStrip) / 10 + " %", 0),
-          myInnerHtml("FS2_TIME", Math.floor(10 * FS_Time) / 10 + " seconds", 0))),
-        myInnerHtml("A_KakutyouData", "", 0));
+          scrivi("FS2_CHANCE", Math.floor(10 * FStrip) / 10 + " %"),
+          scrivi("FS2_TIME", Math.floor(10 * FS_Time) / 10 + " seconds"))),
+        // l'avviso lo decidono i controlli: carte ed equipaggiamento cambiano dopo, senza rifarli
+        scrivi("A_KakutyouData", contenitori.A_KakutyouSel.length ? "" : NON_DISPONIBILE));
     },
   },
   // Cooking Success Rates
   30: {
     controlli: function () {
-      var a;
       for (
-        a =
-          '<table><tr><td>Level of the Food:</td><td><select name="Flv" onChange="StAllCalc()"></select></td><td class="title">Success Rate</td></tr>',
-          a +=
-            '<tr><td>Stat of the Food:</td><td><select name="FStat" onChange="StAllCalc()"></select></td><td class="center"><span id="COOK_MIN"></span></td></tr>',
-          a +=
-            '<tr><td>Cooking Kit Used:</td><td><select name="CKit" onChange="StAllCalc()" style="width:130px;"></select></td><td class="center"><span id="COOK_AVE"></span></td></tr>',
-          a +=
-            '<tr><td>Cooking Experience:</td><td><input type="text" onkeyup="StAllCalc()" name="CExp" value="0" size=2></td><td class="center"><span id="COOK_MAX"></span></td></tr></table>',
-          myInnerHtml("A_KakutyouSel", a, 0),
+        contenitore("A_KakutyouSel", [
+          campoInfo("Flv", "Level of the Food"),
+          campoInfo("FStat", "Stat of the Food"),
+          campoInfo("CKit", "Cooking Kit Used"),
+          campoInfo("CExp", "Cooking Experience", "0"),
+          { nota: "Success Rate" },
+          { nota: { id: "COOK_MIN" } },
+          { nota: { id: "COOK_AVE" } },
+          { nota: { id: "COOK_MAX" } },
+        ]),
           i = 1;
         i <= 10;
         i++
@@ -1644,37 +1628,21 @@ var ALTRE_INFO = {
         FDC1 > 100 && (FDC1 = 100),
         FDC2 > 100 && (FDC2 = 100),
         CKit1 == 4
-          ? (myInnerHtml("COOK_MIN", "100%", 0),
-            myInnerHtml("COOK_AVE", "", 0),
-            myInnerHtml("COOK_MAX", "", 0))
-          : (myInnerHtml(
-              "COOK_MIN",
-              "Minimum: " + Food_MIN + "% [" + FDA1 + "% ~ " + FDA2 + "%]",
-              0,
-            ),
-            myInnerHtml(
-              "COOK_AVE",
-              "Average: " + Food_AVG + "% [" + FDB1 + "% ~ " + FDB2 + "%]",
-              0,
-            ),
-            myInnerHtml(
-              "COOK_MAX",
-              "Maximum: " + Food_MAX + "% [" + FDC1 + "% ~ " + FDC2 + "%]",
-              0,
-            )),
-        myInnerHtml("A_KakutyouData", "", 0));
+          ? (scrivi("COOK_MIN", "100%"), scrivi("COOK_AVE", ""), scrivi("COOK_MAX", ""))
+          : (scrivi("COOK_MIN", "Minimum: " + Food_MIN + "% [" + FDA1 + "% ~ " + FDA2 + "%]"),
+            scrivi("COOK_AVE", "Average: " + Food_AVG + "% [" + FDB1 + "% ~ " + FDB2 + "%]"),
+            scrivi("COOK_MAX", "Maximum: " + Food_MAX + "% [" + FDC1 + "% ~ " + FDC2 + "%]")),
+        scrivi("A_KakutyouData", ""));
     },
   },
   // Capture Pet Success Rate
   32: {
     controlli: function () {
-      var a;
       for (
-        a =
-          '<table style="text-align:right;"><tr><td>Monster to pet:</td><td class=left><select name="Pet" onChange="StAllCalc()"></select></td></tr>',
-          a +=
-            '<tr><td>Monster remaining HP:</td><td class=left><select name="PetHP" onChange="StAllCalc()"></select></td></tr>',
-          myInnerHtml("A_KakutyouSel", a, 0),
+        contenitore("A_KakutyouSel", [
+          campoInfo("Pet", "Monster to pet"),
+          campoInfo("PetHP", "Monster remaining HP"),
+        ]),
           i = 0;
         i <= 55;
         i++
@@ -1696,27 +1664,36 @@ var ALTRE_INFO = {
           ) / 100;
       (x < 0 && (x = 0),
         (r = "<HR><table><tr><td>Chance to pet: " + x + " %</td></tr></table>"),
-        myInnerHtml("A_KakutyouData", r, 0));
+        scrivi("A_KakutyouData", r));
     },
   },
   // NPC Refinement Cost & Success Rate
   34: {
     controlli: function () {
-      var a;
+      var tipo = campoInfo("EquipType", "Equipment type");
+      tipo.opzioni = [
+        ["0", "Weapon Lvl 1"],
+        ["1", "Weapon Lvl 2"],
+        ["2", "Weapon Lvl 3"],
+        ["3", "Weapon Lvl 4"],
+        ["4", "Armor"],
+      ];
+      var minerale = campoInfo("OreType", "Ore type");
+      minerale.opzioni = [
+        ["0", "Normal Ores"],
+        ["1", "Enriched Ores"],
+        ["2", "Normal Ores (F2P server)"],
+        ["3", "Enriched Ores (F2P server)"],
+      ];
       for (
-        a =
-          '<table style="text-align:right;"><tr><td>Equipment zeny value:</td><td class=left><input type="text" name="EquipValue" onkeyup="StAllCalc()" value="0" size="9" class="center"></td></tr>',
-          a +=
-            '<tr><td>Equipment type:</td><td class=left><select name="EquipType" onChange="StAllCalc()"><option value="0">Weapon Lvl 1</option><option value="1">Weapon Lvl 2</option><option value="2">Weapon Lvl 3</option><option value="3">Weapon Lvl 4</option><option value="4">Armor</option></select></td></tr>',
-          a +=
-            '<tr><td>Ore type:</td><td class=left><select name="OreType" onChange="StAllCalc()"><option value="0">Normal Ores</option><option value="1">Enriched Ores</option><option value="2">Normal Ores (F2P server)</option><option value="3">Enriched Ores (F2P server)</option></select></td></tr>',
-          a +=
-            '<tr><td>Ore zeny value:</td><td class=left><input type="text" name="OreValue" onkeyup="StAllCalc()" value="0" size="4" class="center"></td></tr>',
-          a +=
-            '<tr><td>Refining zeny cost:</td><td class=left><input type="text" name="npcCost" onkeyup="StAllCalc()" value="0" size="4" class="center"></td></tr>',
-          a +=
-            '<tr><td>Desired refine:</td><td class=left><select name="DesiredRefine" onChange="StAllCalc()"></select></td></tr></table>',
-          myInnerHtml("A_KakutyouSel", a, 0),
+        contenitore("A_KakutyouSel", [
+          campoInfo("EquipValue", "Equipment zeny value", "0"),
+          tipo,
+          minerale,
+          campoInfo("OreValue", "Ore zeny value", "0"),
+          campoInfo("npcCost", "Refining zeny cost", "0"),
+          campoInfo("DesiredRefine", "Desired refine"),
+        ]),
           i = 1;
         i <= 10;
         i++
@@ -1783,23 +1760,19 @@ var ALTRE_INFO = {
         Math.round(1e6 * z) / 1e4 +
         " %</td></tr>"),
         (r += "<tr><td>Mean investment = " + e_ + " zeny</td></tr></table>"),
-        myInnerHtml("A_KakutyouData", r, 0));
+        scrivi("A_KakutyouData", r));
     },
   },
   // NPC Socket Enchant Cost & Success Rate
   36: {
     controlli: function () {
-      var a;
       for (
-        a =
-          '<table style="text-align:right;"><tr><td>Equipment zeny value:</td><td class=left><input type="text" name="EquipValue" onkeyup="StAllCalc()" value="0" size="9" class="center"></td></tr>',
-          a +=
-            '<tr><td>Used item zeny value:</td><td class=left><input type="text" name="ItemValue" onkeyup="StAllCalc()" value="0" size="6" class="center"></td></tr>',
-          a +=
-            '<tr><td>Enchanting zeny cost:</td><td class=left><input type="text" name="npcCost" onkeyup="StAllCalc()" value="0" size="6" class="center"></td></tr>',
-          a +=
-            '<tr><td>Enchanting success chance:</td><td class=left><select name="SocketChance" onChange="StAllCalc()"></select></td></tr></table>',
-          myInnerHtml("A_KakutyouSel", a, 0),
+        contenitore("A_KakutyouSel", [
+          campoInfo("EquipValue", "Equipment zeny value", "0"),
+          campoInfo("ItemValue", "Used item zeny value", "0"),
+          campoInfo("npcCost", "Enchanting zeny cost", "0"),
+          campoInfo("SocketChance", "Enchanting success chance"),
+        ]),
           i = 1;
         i <= 100;
         i++
@@ -1817,18 +1790,19 @@ var ALTRE_INFO = {
         "<HR><table><tr><td>Mean investment = " +
         Math.round((y + a_ + W) / (n_ / 100)) +
         " zeny</td></tr></table>"),
-        myInnerHtml("A_KakutyouData", r, 0));
+        scrivi("A_KakutyouData", r));
     },
   },
   // Non-Damage Skill Cast Time
   40: {
     controlli: function () {
-      var l =
-        '<table><tr><td class="right">Skill:</td><td><select id="NonDamageCastSkill" name="NonDamageCastSkill" onChange="NonDamageCastSkillChanged(1)"></select></td></tr>';
-      ((l +=
-        '<tr><td class="right">Skill level:</td><td><select id="NonDamageCastSkillLevel" name="NonDamageCastSkillLevel" onChange="StAllCalc()"></select></td></tr></table>'),
-        myInnerHtml("A_KakutyouSel", l, 0));
-      var A = documento.getElementById("NonDamageCastSkill"),
+      contenitore("A_KakutyouSel", [
+        campoInfo("NonDamageCastSkill", "Skill", undefined, function () {
+          NonDamageCastSkillChanged(1);
+        }),
+        campoInfo("NonDamageCastSkillLevel", "Skill level"),
+      ]);
+      var A = c.NonDamageCastSkill,
         n = Object.keys(m_NonDamageSkillCast);
       n.sort(function (E, S) {
         return skillNameInSelect(1 * E).localeCompare(skillNameInSelect(1 * S));
@@ -1840,8 +1814,8 @@ var ALTRE_INFO = {
       ((A.value = SKILLID.ASSUMPTIO), NonDamageCastSkillChanged(0));
     },
     calcolo: function () {
-      var l = documento.getElementById("NonDamageCastSkill"),
-        A = documento.getElementById("NonDamageCastSkillLevel");
+      var l = c.NonDamageCastSkill,
+        A = c.NonDamageCastSkillLevel;
       if (l && A) {
         var n = 1 * l.value,
           s = 1 * A.value,
@@ -1890,12 +1864,23 @@ var ALTRE_INFO = {
             _[1] & 1 && (C += "<small>DEX does not reduce this skill's cast time.</small><br>"),
             _[1] & 2 &&
               (C += "<small>Status effects do not reduce this skill's cast time.</small><br>"),
-            myInnerHtml("A_KakutyouData", C, 0));
-        } else myInnerHtml("A_KakutyouData", "", 0);
+            scrivi("A_KakutyouData", C));
+        } else scrivi("A_KakutyouData", "");
       }
     },
   },
 };
+// Strip: le classi e gli oggetti con una skill che toglie l'equipaggiamento
+function stripAttivi() {
+  return (
+    CardNumSearch(157) ||
+    CardNumSearch(413) ||
+    EquipNumSearch(EQUIPID.DRILL_KATAR) ||
+    n_A_JOB == 14 ||
+    n_A_JOB == 28 ||
+    n_A_JOB == 45
+  );
+}
 // la voce scelta: risultato
 function calcolaAltreInfo() {
   var voce = ALTRE_INFO[1 * c.A_Kakutyou.value];
@@ -1933,8 +1918,8 @@ function NonDamageSkillCastMultiplier(l, A) {
   );
 }
 function NonDamageCastSkillChanged(l) {
-  var A = documento.getElementById("NonDamageCastSkill"),
-    n = documento.getElementById("NonDamageCastSkillLevel");
+  var A = c.NonDamageCastSkill,
+    n = c.NonDamageCastSkillLevel;
   if (A && n) {
     var s = 1 * A.value;
     n.length = 0;

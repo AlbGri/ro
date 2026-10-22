@@ -127,9 +127,6 @@ function copia(n) {
   }
   return el;
 }
-function copiaFigli(n, dentro) {
-  copiaNodi(n.figli, dentro);
-}
 function copiaNodi(nodi, dentro) {
   dentro.replaceChildren();
   for (const f of nodi) {
@@ -448,151 +445,18 @@ function aggiornaUscite() {
   for (const el of righe) el.hidden = !window.testo(el.dataset.riga);
 }
 
-// contenitori del motore che cambiano forma (campi della skill scelta, mano sinistra...): la
-// descrizione del motore (contenitori in motore/campi.js), come le voci di un pannello. Altre
-// informazioni sono ancora HTML del motore
+// contenitori del motore che cambiano forma (campi della skill scelta, mano sinistra, Altre
+// informazioni...): la descrizione del motore (contenitori in motore/campi.js), come le voci
+// di un pannello
 function aggiornaContenitori() {
   for (const el of elementiContenitore) {
-    if (!el.dataset.contenitore.startsWith("A_Kakutyou")) {
-      const voci = window.contenitori[el.dataset.contenitore] || [];
-      const firma = JSON.stringify(firmaVoci(voci));
-      if (el._html !== firma) {
-        el._html = firma;
-        el.replaceChildren(...voci.filter(visibile).map(voceDescritta));
-      }
-      continue;
-    }
-    const v = doc.getElementById(el.dataset.contenitore);
-    const html = v ? v.innerHTML : "";
-    if (el._html !== html) {
-      el._html = html;
-      if (v) disegnaLibero(v, el);
-      else el.replaceChildren();
-    }
+    const voci = window.contenitori[el.dataset.contenitore] || [];
+    const firma = JSON.stringify(firmaVoci(voci));
+    if (el._html === firma) continue;
+    el._html = firma;
+    el.replaceChildren(...voci.filter(visibile).map(voceDescritta));
   }
   manoSinistra.hidden = !window.contenitori.A_w2?.length;
-}
-
-// contenuto libero: coppie di etichetta e controllo dove ci sono controlli, testo altrove
-function disegnaLibero(v, el) {
-  if (!contieneControlli(v)) {
-    copiaFigli(v, el);
-    return;
-  }
-  el.replaceChildren(...coppie(gettoni(v)).map(voce));
-}
-
-function contieneControlli(n) {
-  for (const f of n.figli) {
-    if (!f.tag) continue;
-    if (f.tag === "select" || f.tag === "input") return true;
-    if (contieneControlli(f)) return true;
-  }
-  return false;
-}
-const vuoto = (n) => !n.tag ? !n.testo.trim() : n.tag !== "br" && !n.textContent.trim() && !contieneControlli(n);
-
-// sequenza di testi e controlli di un nodo, in ordine
-function gettoni(n, out = []) {
-  for (const f of n.figli) {
-    if (f.tag === "select" || f.tag === "input") {
-      if (f.type !== "hidden") out.push({ controllo: f });
-    } else if (f.tag && contieneControlli(f)) gettoni(f, out);
-    else if (f.tag === "br") out.push({ a_capo: true });
-    else if (!vuoto(f)) {
-      const ultimo = out[out.length - 1];
-      if (ultimo && ultimo.testo) ultimo.testo.push(f);
-      else out.push({ testo: [f] });
-    }
-  }
-  return out;
-}
-// un testo che finisce con un "+" o un meno da solo: il segno va con il controllo che segue
-function staccaSegno(nodi) {
-  const ultimo = nodi[nodi.length - 1];
-  const t = ultimo && (ultimo.tag ? ultimo.textContent : ultimo.testo).trim();
-  return /^[+\-–]$/.test(t) ? { resto: nodi.slice(0, -1), segno: ultimo } : { resto: nodi, segno: null };
-}
-// coppie: testo prima del controllo, o dopo una casella; un controllo senza testo vicino
-// prende il testo rimasto in attesa (la cella prima). Nelle modifiche manuali le righe sono
-// "+ [casella] AGI": l'etichetta e' il testo dopo; "+ [casella] vs [elemento]" resta intera
-function coppie(g, inAttesa = null) {
-  const out = [];
-  let segno = null;
-  for (let i = 0; i < g.length; i++) {
-    const x = g[i];
-    if (x.a_capo) continue;
-    if (x.testo) {
-      if (inAttesa) out.push({ nota: inAttesa });
-      ({ resto: inAttesa, segno } = staccaSegno(x.testo));
-      if (!inAttesa.length) inAttesa = null;
-      continue;
-    }
-    if (segno) {
-      if (inAttesa) out.push({ nota: inAttesa });
-      inAttesa = null;
-      const s = segno;
-      segno = null;
-      const dopo = g[i + 1]?.testo ? staccaSegno(g[i + 1].testo) : null;
-      if (dopo && !dopo.segno && g[i + 2]?.controllo) {
-        const riga = [s, x.controllo, ...dopo.resto, g[i + 2].controllo];
-        i += 2;
-        const coda = g[i + 1]?.testo ? staccaSegno(g[i + 1].testo) : null;
-        if (coda) {
-          riga.push(...coda.resto);
-          segno = coda.segno;
-          i++;
-        }
-        out.push({ riga });
-      } else if (dopo) {
-        out.push({ etichetta: dopo.resto.length ? dopo.resto : null, segno: s, controllo: x.controllo });
-        segno = dopo.segno;
-        i++;
-      } else out.push({ segno: s, controllo: x.controllo });
-      continue;
-    }
-    if (inAttesa) {
-      out.push({ etichetta: inAttesa, controllo: x.controllo });
-      inAttesa = null;
-    } else if (x.controllo.type === "checkbox" && g[i + 1] && g[i + 1].testo) {
-      out.push({ etichetta: g[i + 1].testo, controllo: x.controllo });
-      i++;
-    } else out.push({ controllo: x.controllo });
-  }
-  if (inAttesa) out.push({ nota: inAttesa });
-  return out;
-}
-function testoDi(nodi) {
-  const s = document.createElement("span");
-  s.className = "etichetta";
-  for (const n of nodi) {
-    const c = copia(n);
-    if (c) s.appendChild(c);
-  }
-  return s;
-}
-function voce(c) {
-  if (c.nota) {
-    const p = testoDi(c.nota);
-    p.className = "nota hint";
-    return p;
-  }
-  if (c.riga) {
-    const d = document.createElement("div");
-    d.className = "voce in-riga";
-    for (const n of c.riga) {
-      if (n.tag === "select" || n.tag === "input") d.appendChild(controllo(n));
-      else d.appendChild(testoDi([n])).className = "testo";
-    }
-    return d;
-  }
-  const l = document.createElement(c.controllo.type === "checkbox" ? "label" : "div");
-  l.className = "voce";
-  const ctrl = controllo(c.controllo);
-  if (c.etichetta) l.appendChild(testoDi(c.etichetta));
-  if (c.segno) l.appendChild(testoDi([c.segno])).className = "segno";
-  l.appendChild(ctrl);
-  return l;
 }
 
 // pannelli dei buff: la descrizione del motore (pannelli[radice] in motore/campi.js), gruppi

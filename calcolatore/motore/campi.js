@@ -72,16 +72,23 @@ function chiudiPannello(radice) {
 }
 
 // Parti che il motore riempie di campi secondo le scelte (skill passive, campo in piu' della
-// skill, seconda arma): contenitori[id] e' la lista delle voci, come in un pannello. contenitore
-// toglie i campi delle voci di prima e crea i nuovi; senza voci svuota la parte. Il gestore di
-// una voce e' il suo o nessuno. Un'etichetta con id si scrive nel risultato e li' resta
+// skill, seconda arma, Altre informazioni): contenitori[id] e' la lista delle voci, come in un
+// pannello. contenitore toglie i campi e i risultati (id) delle voci di prima e crea i campi
+// nuovi; senza voci svuota la parte. Il gestore di un campo e' il suo o nessuno; un'etichetta
+// con id si scrive nel risultato, le altre note e righe con id le scrive il motore
 var contenitori = {};
 function contenitore(id, voci) {
-  (contenitori[id] || []).forEach(function (v) {
+  var prima = contenitori[id] || [];
+  vociDi([{ voci: prima }], function (v) {
     togliCampo(v.campo);
   });
+  prima.forEach(function (v) {
+    [v, v.nota].concat(v.riga || []).forEach(function (x) {
+      if (x && x.id) delete uscite[x.id];
+    });
+  });
   contenitori[id] = voci || [];
-  contenitori[id].forEach(function (v) {
+  vociDi([{ voci: contenitori[id] }], function (v) {
     campo(v.campo, v.tipo || "select", v.gestore || null, v);
     if (v.id) scrivi(v.id, v.etichetta || "");
   });
@@ -102,7 +109,7 @@ function scegli(campo, valore) {
 // pochi tag (grassetto, colori, a capo, spiegazioni in span.name/.nametext, le tabelle di Altre
 // informazioni e la scheda dell'oggetto). All'avvio vale il contenuto che l'id aveva nello
 // scheletro della pagina, che poi non lo contiene piu'
-var USCITE = ["A_STPOINT","A_BodySIZE","A_BodyELEMENT","A_STRp","A_AGIp","A_VITp","A_INTp","A_DEXp","A_LUKp","A_MaxHP","A_totalDEF","A_HIT","A_MaxSP","A_MDEF","A_PefHIT","A_HPR","A_RealMDEF","A_CRI","A_SPR","A_ATK2","A_CRITSHIELD","A_ASPD","A_RealATK","A_FLEE","A_MovSPEED","A_MATK","A_WoeFLEE","A_Weight","A_cTime","A_LUCKY","A_cDelay","A_SobWeaponName","ITEM_TITLE","ITEM1","ITEM_DATA","ITEM2","ITEM_W_LV","ITEM3","ITEM_LV","ITEM4","ITEM_WAIT","B_SETUMEI","B_6","B_16","B_agi","B_12","B_13","B_17","B_vit","B_14","B_AA","B_23","B_2","B_int","B_15","B_AB","B_25","B_3","B_dex","B_21","B_4","B_luk","B_22","B_type","nm053","BattleHIT","nm074","A_WeaponElement","nm076","A_WeaponSize","CRIATKname","CRIATK","CRInum","bSUB3name","bSUB3","bSUBname","bSUB","nm055","strID_0","nm056","strID_1","nm057","strID_2","bREFLECT1name","bREFLECT1","bREFLECT2name","bREFLECT2","bSUB2name","bSUB2","nm058","AveSecondATK","nm059","MinATKnum","nm060","AveATKnum","nm061","MaxATKnum","nm062","BattleTime","nm063","AtkBaseExp","nm064","AtkJobExp","nm054","BattleFLEE","nm075","B_WeaponElement","nm067","B_MinAtk","nm065","B_AveAtk","nm068","B_MaxAtk","aREFLECT1name","aREFLECT1","aREFLECT2name","aREFLECT2","nm066","B_Ave2Atk","B_EffectiveHP","B_ExpectedEffectiveHP","B_SurvivalHits"];
+var USCITE = ["A_STPOINT","A_BodySIZE","A_BodyELEMENT","A_STRp","A_AGIp","A_VITp","A_INTp","A_DEXp","A_LUKp","A_MaxHP","A_totalDEF","A_HIT","A_MaxSP","A_MDEF","A_PefHIT","A_HPR","A_RealMDEF","A_CRI","A_SPR","A_ATK2","A_CRITSHIELD","A_ASPD","A_RealATK","A_FLEE","A_MovSPEED","A_MATK","A_WoeFLEE","A_Weight","A_cTime","A_LUCKY","A_cDelay","A_SobWeaponName","ITEM_TITLE","ITEM1","ITEM_DATA","ITEM2","ITEM_W_LV","ITEM3","ITEM_LV","ITEM4","ITEM_WAIT","B_SETUMEI","B_6","B_16","B_agi","B_12","B_13","B_17","B_vit","B_14","B_AA","B_23","B_2","B_int","B_15","B_AB","B_25","B_3","B_dex","B_21","B_4","B_luk","B_22","B_type","nm053","BattleHIT","nm074","A_WeaponElement","nm076","A_WeaponSize","CRIATKname","CRIATK","CRInum","bSUB3name","bSUB3","bSUBname","bSUB","nm055","strID_0","nm056","strID_1","nm057","strID_2","bREFLECT1name","bREFLECT1","bREFLECT2name","bREFLECT2","bSUB2name","bSUB2","nm058","AveSecondATK","nm059","MinATKnum","nm060","AveATKnum","nm061","MaxATKnum","nm062","BattleTime","nm063","AtkBaseExp","nm064","AtkJobExp","nm054","BattleFLEE","nm075","B_WeaponElement","nm067","B_MinAtk","nm065","B_AveAtk","nm068","B_MaxAtk","aREFLECT1name","aREFLECT1","aREFLECT2name","aREFLECT2","nm066","B_Ave2Atk","B_EffectiveHP","B_ExpectedEffectiveHP","B_SurvivalHits","A_KakutyouData"];
 var uscite = {};
 USCITE.forEach(function (id) {
   var el = documento.getElementById(id);
