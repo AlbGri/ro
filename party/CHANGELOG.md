@@ -2,6 +2,15 @@
 
 Le versioni della pagina `party/`.
 
+## [1.5] - 2026-10-22
+
+- Nuova istanza, l'Endless Cellar: party minimo di 10 (Champion, 2 High Priest, 2 Sniper, Gypsy/Dancer, Clown/Bard, Professor, Paladin, Creator) e fino a 2 posti in più solo per Sniper o High Wizard, al massimo un High Wizard per run
+- Incolla l'elenco della gilda: account e classi come li scrivono i giocatori su Discord, anche il messaggio copiato con l'ora (un nome, poi "1) HP/Devo/Clown/Sniper", "2) Prete"...). La pagina conosce i soprannomi più usati, corregge gli errori di battitura, chiede la classe delle parole che non conosce e se la ricorda. Prima di aggiungere mostra cosa ha capito; chi è già nella pagina viene aggiornato
+- L'elenco di tutti i giocatori e jolly si esporta in un file di testo nello stesso formato, e le run calcolate in un file di testo da girare alla gilda
+- Il calcolo è molto più veloce con tanti giocatori, e a parità di tutto il resto usa davvero meno jolly possibile: prima in qualche caso ne usava uno di troppo
+- Se un giocatore non gioca tutte le run perché i suoi altri personaggi non hanno posto, la pagina lo dice
+- Tolto il nome dei personaggi: basta la classe. Nelle run la terza colonna è la classe
+
 ## [1.4] - 2026-10-21
 
 - I testi occupano tutta la larghezza della pagina e vanno a capo solo dove finisce lo spazio, invece che a metà pagina

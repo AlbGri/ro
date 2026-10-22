@@ -2,7 +2,8 @@
  * Le istanze che la pagina sa comporre.
  *
  * Ogni istanza ha i suoi posti e le classi che contano, ognuna con
- * il ruolo che copre; tutto il resto e' "Altro" e va solo nei posti liberi.
+ * il ruolo che copre; tutto il resto e' "Altro" e va solo nei posti liberi,
+ * se l'istanza li lascia a qualsiasi classe.
  * Nell'elenco delle classi di un personaggio ci sono solo queste piu' "Altro"
  * (Alberto, 18/10/2026: l'elenco completo era "inutilmente lungo").
  */
@@ -46,7 +47,48 @@ export const ISTANZE = [
       { ruolo: "priest", nome: "Priest", perche: "meglio di un personaggio inutile" },
     ],
   },
+  {
+    id: "ec",
+    nome: "Endless Cellar",
+    maxParty: 12,
+    maxRun: 3,
+    // Party minimo di 10; i 2 posti in piu' solo per Sniper o High Wizard, al massimo un High
+    // Wizard per run (Alberto, 22/10/2026). `massimo`: personaggi di quel ruolo per run al piu'.
+    posti: [
+      { ruolo: "champion", nome: "Champion", quanti: 1 },
+      { ruolo: "hp", nome: "High Priest", quanti: 2 },
+      { ruolo: "sniper", nome: "Sniper", quanti: 2 },
+      { ruolo: "dancer", nome: "Gypsy/Dancer", quanti: 1 },
+      { ruolo: "bard", nome: "Clown/Bard", quanti: 1 },
+      { ruolo: "prof", nome: "Professor", quanti: 1 },
+      { ruolo: "paladin", nome: "Paladin", quanti: 1 },
+      { ruolo: "creator", nome: "Creator", quanti: 1 },
+      { ruolo: "hw", nome: "High Wizard", quanti: 0, massimo: 1 },
+    ],
+    // I ruoli ammessi nei posti liberi; senza `liberi` ci va qualsiasi classe.
+    liberi: ["sniper", "hw"],
+    // Bard e Dancer valgono anche qui non rinati, le altre classi no (Alberto, 22/10/2026).
+    classi: [
+      { nome: "Champion", ruolo: "champion" },
+      { nome: "High Priest", ruolo: "hp" },
+      { nome: "Sniper", ruolo: "sniper" },
+      { nome: "Gypsy/Dancer", ruolo: "dancer" },
+      { nome: "Clown/Bard", ruolo: "bard" },
+      { nome: "Professor", ruolo: "prof" },
+      { nome: "Paladin", ruolo: "paladin" },
+      { nome: "Creator", ruolo: "creator" },
+      { nome: "High Wizard", ruolo: "hw" },
+    ],
+    // "2 sniper o 1 sniper e 1 high wizard o 1 solo sniper": prima gli Sniper.
+    preferiti: [
+      { ruolo: "sniper", nome: "Sniper" },
+      { ruolo: "hw", nome: "High Wizard" },
+    ],
+  },
 ];
+
+/** Le classi di tutte le istanze, senza doppioni: quelle che il modulo txt riconosce. */
+export const CLASSI = [...new Set(ISTANZE.flatMap((i) => i.classi.map((c) => c.nome)))];
 
 /** Il ruolo di una classe nell'istanza: "altro" se non e' fra le sue. */
 export function ruoloDi(istanza, classe) {

@@ -51,7 +51,7 @@ body {
   font-family: var(--sans); font-size: 16px; line-height: 1.5;
 }
 a { color: inherit; }
-button, input, select { font: inherit; color: inherit; }
+button, input, select, textarea { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
 
 /* Intestazione, come nella guida */
@@ -100,6 +100,22 @@ main { max-width: 960px; margin: 0 auto; padding: 28px 20px 80px; }
 h2 { font-family: var(--serif); font-size: 1.55rem; line-height: 1.15; margin: 36px 0 12px; font-weight: 700; }
 .hint { font-size: .88rem; color: var(--muted); margin: 0 0 12px; }
 .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.toolbar.azioni { margin: 12px 0; }
+.incolla { margin-bottom: 12px; }
+.incolla[hidden] { display: none; }
+.incolla .hint { margin: 0; }
+.incolla code { font-family: var(--mono); font-size: .92em; }
+.incolla textarea {
+  width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg);
+  font-family: var(--mono); font-size: .92rem; line-height: 1.4; resize: vertical;
+}
+#anteprima { display: grid; gap: 8px; }
+#anteprima .note-line, #anteprima .empty { margin: 0; }
+#anteprima ul { margin: 6px 0 0; padding-left: 1.2em; }
+.dubbio select { height: 2.25em; padding: 4px 8px; margin-left: 4px; }
+.dubbio, .imparati li { line-height: 2.4; }
+.imparati summary { cursor: pointer; color: var(--muted); font-size: .9rem; }
+.btn:disabled { opacity: .5; cursor: default; }
 
 /* Giocatori e jolly */
 .list { display: grid; gap: 12px; margin-bottom: 12px; }
@@ -118,7 +134,7 @@ input[type="text"], select {
 .accounts { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 10px; }
 .account { border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); padding: 8px 10px 10px; display: grid; gap: 6px; align-content: start; }
 .account-head { display: flex; gap: 10px; align-items: center; justify-content: space-between; font-size: .88rem; color: var(--muted); }
-.pg { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) auto; gap: 6px; align-items: center; }
+.pg { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; align-items: center; }
 .pg input, .pg select { height: 2.25em; padding: 4px 8px; }
 .card-foot { display: flex; gap: 8px; flex-wrap: wrap; }
 
@@ -190,8 +206,9 @@ input[type="text"], select {
       <li id="composizione"></li>
       <li>Ogni giocatore entra al massimo una volta per run (un client alla volta). Ogni account, jolly compresi, entra una volta sola.</li>
       <li>Un jolly è un account della gilda: lo gioca chi ne ha bisogno, al posto di un suo account.</li>
-      <li>Nella classe di un personaggio ci sono solo quelle che contano per l'istanza: per tutte le altre scegli Altro, e il personaggio entra solo nei posti liberi.</li>
+      <li>Nella classe di un personaggio ci sono solo quelle che contano per l'istanza: per tutte le altre scegli Altro, e il personaggio entra solo nei posti liberi, se l'istanza li lascia a qualsiasi classe.</li>
       <li id="ordine"></li>
+      <li>Per inserire tanti giocatori insieme: sotto Giocatori, Incolla l'elenco della gilda, con gli account e le classi come li scrivono su Discord.</li>
       <li>I dati restano in questo browser: per conservarli o passarli a un altro usa il menu ⚙ in alto a destra, Backup dei dati.</li>
     </ul>
   </section>
@@ -199,9 +216,23 @@ input[type="text"], select {
   <h2>Run</h2>
   <p class="hint">Si aggiornano da sole quando cambi qualcosa qui sotto.</p>
   <div id="risultato"></div>
+  <div class="toolbar azioni"><button class="btn" type="button" data-azione="esporta-run">Esporta le run (txt)</button></div>
 
   <h2>Giocatori</h2>
   <p class="hint">Metti nello stesso account i personaggi che stanno sullo stesso account: l'account entra una volta sola, con uno dei suoi personaggi. Togli la spunta a chi non c'è.</p>
+  <div class="toolbar azioni">
+    <button class="btn" type="button" data-azione="apri-elenco">Incolla l'elenco della gilda</button>
+    <button class="btn" type="button" data-azione="esporta-elenco">Esporta l'elenco (txt)</button>
+  </div>
+  <div class="card incolla" id="incolla" hidden>
+    <p class="hint">Un giocatore per nome, sotto i suoi account, uno per riga con un numero davanti e le classi separate da /, come li scrivono su Discord. Vanno bene i soprannomi (HP, Devo, Prete, Bragi, Bio…) e i messaggi copiati con l'ora. I jolly: <code>Jolly nome: classi</code>. Chi ha lo stesso nome di un giocatore già nella pagina prende gli account dell'elenco, gli altri si aggiungono.</p>
+    <textarea id="elenco" rows="9" spellcheck="false" aria-label="Elenco della gilda" placeholder="Efreeet&#10;1) HP/Devo/Clown/Sniper&#10;2) Prete&#10;3) Bragi&#10;&#10;Jolly Gilda1: Clown"></textarea>
+    <div id="anteprima"></div>
+    <div class="toolbar">
+      <button class="btn" type="button" id="aggiungi" data-azione="aggiungi-elenco" disabled>Aggiungi alla pagina</button>
+      <button class="btn" type="button" data-azione="chiudi-elenco">Chiudi</button>
+    </div>
+  </div>
   <div class="list" id="giocatori"></div>
   <div class="toolbar"><button class="btn" type="button" data-azione="nuovo-giocatore">Aggiungi giocatore</button></div>
 

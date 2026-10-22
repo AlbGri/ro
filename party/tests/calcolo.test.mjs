@@ -11,7 +11,7 @@ import { ISTANZE, ruoloDi } from "../dati.js";
 
 const ISTANZA = ISTANZE[0];
 
-const account = (...classi) => ({ personaggi: classi.map((classe) => ({ nome: "", classe })) });
+const account = (...classi) => ({ personaggi: classi.map((classe) => ({ classe })) });
 const giocatore = (nome, ...accounts) => ({ nome, account: accounts });
 
 /** Il personaggio di un membro del risultato. */
@@ -20,11 +20,22 @@ function personaggio(giocatori, jolly, m) {
   return a.personaggi[m.personaggio];
 }
 
+/** Una run rispetta persone, posti obbligatori, massimi e posti liberi riservati. */
+function runValida(membri, istanza) {
+  if (membri.length > istanza.maxParty) return false;
+  for (const p of istanza.posti) {
+    const ci = membri.filter((m) => m.ruolo === p.ruolo).length;
+    if (ci < p.quanti || ci > (p.massimo ?? Infinity)) return false;
+    if (istanza.liberi && !istanza.liberi.includes(p.ruolo) && ci > p.quanti) return false;
+  }
+  return !istanza.liberi || membri.every((m) => istanza.posti.some((p) => p.ruolo === m.ruolo));
+}
+
 /** Controlla le regole e rende il punteggio da confrontare con la ricerca esaustiva. */
 function verifica(giocatori, jolly, istanza, esito) {
   const accountUsati = new Set();
   for (const run of esito.run) {
-    assert.ok(run.membri.length <= istanza.maxParty, "run oltre il limite di persone");
+    assert.ok(runValida(run.membri, istanza), "run che non rispetta la composizione");
     const giocatoriRun = new Set();
     for (const m of run.membri) {
       assert.ok(!giocatoriRun.has(m.giocatore), "un giocatore due volte nella stessa run");
@@ -33,9 +44,6 @@ function verifica(giocatori, jolly, istanza, esito) {
       assert.ok(!accountUsati.has(id), "un account in due run");
       accountUsati.add(id);
       assert.equal(ruoloDi(istanza, personaggio(giocatori, jolly, m).classe), m.ruolo);
-    }
-    for (const p of istanza.posti) {
-      assert.ok(run.membri.filter((m) => m.ruolo === p.ruolo).length >= p.quanti, `run senza ${p.nome}`);
     }
   }
   return punteggio(esito.run.map((r) => r.membri.map((m) => ({ ...m }))), istanza);
@@ -80,10 +88,7 @@ function forzaBruta(giocatori, jolly, istanza) {
   };
   const foglia = () => {
     const piene = run.filter((m) => m.length > 0);
-    for (const m of piene) {
-      if (m.length > istanza.maxParty) return;
-      if (!istanza.posti.every((p) => m.filter((x) => x.ruolo === p.ruolo).length >= p.quanti)) return;
-    }
+    if (!piene.every((m) => runValida(m, istanza))) return;
     const p = punteggio(piene, istanza);
     if (!migliore || meglio(p, migliore)) migliore = p;
   };
@@ -214,6 +219,68 @@ describe("casi di Alberto", () => {
   });
 });
 
+describe("Endless Cellar", () => {
+  const EC = ISTANZE.find((i) => i.id === "ec");
+  const MINIMO = ["Champion", "High Priest", "High Priest", "Sniper", "Sniper", "Gypsy/Dancer", "Clown/Bard", "Professor", "Paladin", "Creator"];
+  // Un giocatore per posto del party minimo, ognuno con `n` account della sua classe.
+  const base = (n) => MINIMO.map((c, i) => giocatore(`M${i}`, ...[...Array(n)].map(() => account(c))));
+  const classe = (giocatori, f) => giocatori[f.giocatore].account[0].personaggi[0].classe;
+
+  it("tre run da 12: uno Sniper e un High Wizard in piu' per run, gli High Wizard divisi fra i due giocatori", () => {
+    const giocatori = [
+      ...base(3),
+      giocatore("S", account("Sniper"), account("Sniper"), account("Sniper")),
+      giocatore("W", account("High Wizard"), account("High Wizard"), account("High Wizard")),
+      giocatore("W2", account("High Wizard")),
+    ];
+    const esito = calcolaRun(giocatori, [], EC);
+    verifica(giocatori, [], EC, esito);
+    assert.equal(esito.run.length, 3);
+    assert.deepEqual(esito.run.map((r) => r.membri.length), [12, 12, 12]);
+    assert.deepEqual(esito.preferiti, [9, 3]);
+    // Entrate divise: W gioca due run e W2 una, invece di tre e nessuna.
+    assert.deepEqual(esito.fuori.map((f) => [f.giocatore, f.entrate]), [[11, 2], [12, 1]]);
+  });
+
+  it("due Sniper in piu' battono Sniper e High Wizard", () => {
+    const giocatori = [...base(1), giocatore("S1", account("Sniper")), giocatore("W", account("High Wizard")), giocatore("S2", account("Sniper"))];
+    const esito = calcolaRun(giocatori, [], EC);
+    verifica(giocatori, [], EC, esito);
+    assert.equal(esito.run[0].membri.length, 12);
+    assert.deepEqual(esito.preferiti, [4, 0]);
+    assert.deepEqual(esito.fuori.map((f) => classe(giocatori, f)), ["High Wizard"]);
+  });
+
+  it("un Champion in piu' e un Knight non entrano, neanche con la run non piena", () => {
+    const giocatori = [...base(1), giocatore("C", account("Champion")), giocatore("K", account("Knight"))];
+    const esito = calcolaRun(giocatori, [], EC);
+    verifica(giocatori, [], EC, esito);
+    assert.equal(esito.run[0].membri.length, 10);
+    assert.deepEqual(esito.fuori.map((f) => [classe(giocatori, f), f.motivo]), [["Champion", "posti"], ["Knight", "posti"]]);
+  });
+
+  it("un account con Champion e Sniper gioca lo Sniper se il Champion c'e' gia'", () => {
+    const giocatori = [...base(1), giocatore("X", account("Champion", "Sniper"))];
+    const esito = calcolaRun(giocatori, [], EC);
+    verifica(giocatori, [], EC, esito);
+    assert.equal(esito.run[0].membri.find((m) => m.giocatore === 10).ruolo, "sniper");
+  });
+
+  it("20 giocatori con tre account e piu' classi: risponde in fretta", () => {
+    let seme = 7;
+    const caso = (n) => Math.floor((seme = (seme * 1103515245 + 12345) % 2147483648) / 2147483648 * n);
+    const tutte = [...MINIMO, "High Wizard", "Knight"];
+    const giocatori = [...Array(20)].map((_, g) =>
+      giocatore(`G${g}`, ...[...Array(3)].map(() => account(...[...Array(1 + caso(2))].map(() => tutte[caso(tutte.length)])))),
+    );
+    const jolly = [account("Clown/Bard"), account("Creator", "Paladin")];
+    const inizio = performance.now();
+    const esito = calcolaRun(giocatori, jolly, EC);
+    verifica(giocatori, jolly, EC, esito);
+    assert.ok(performance.now() - inizio < 5000);
+  });
+});
+
 describe("confronto con la ricerca esaustiva", () => {
   let seme = 12345;
   const caso = () => (seme = (seme * 1103515245 + 12345) % 2147483648) / 2147483648;
@@ -252,6 +319,32 @@ describe("confronto con la ricerca esaustiva", () => {
         ),
       );
       const jolly = [...Array(intero(2))].map(() => account(classi[intero(4)]));
+      const esito = calcolaRun(giocatori, jolly, istanza);
+      const atteso = forzaBruta(giocatori, jolly, istanza);
+      assert.deepEqual(verifica(giocatori, jolly, istanza, esito), atteso, JSON.stringify({ giocatori, jolly, istanza }));
+    }
+  });
+
+  it("300 casi casuali con i posti liberi riservati, come l'Endless Cellar", () => {
+    const classiHW = [...classi, "High Wizard"];
+    for (let n = 0; n < 300; n++) {
+      const istanza = {
+        ...piccola,
+        maxParty: 2 + intero(3),
+        maxRun: 1 + intero(3),
+        posti: [...piccola.posti, { ruolo: "hw", nome: "High Wizard", quanti: 0, massimo: 1 }],
+        liberi: [["sniper", "hw"], ["sniper"], ["hw"]][intero(3)],
+        classi: [...piccola.classi, { nome: "High Wizard", ruolo: "hw" }],
+        preferiti: [{ ruolo: "sniper" }, { ruolo: "hw" }],
+      };
+      const nGiocatori = istanza.maxRun === 3 ? 2 + intero(2) : 2 + intero(3);
+      const giocatori = [...Array(nGiocatori)].map((_, g) =>
+        giocatore(
+          `G${g}`,
+          ...[...Array(intero(3))].map(() => account(...[...Array(1 + intero(2))].map(() => classiHW[intero(5)]))),
+        ),
+      );
+      const jolly = [...Array(intero(2))].map(() => account(classiHW[intero(5)]));
       const esito = calcolaRun(giocatori, jolly, istanza);
       const atteso = forzaBruta(giocatori, jolly, istanza);
       assert.deepEqual(verifica(giocatori, jolly, istanza, esito), atteso, JSON.stringify({ giocatori, jolly, istanza }));
