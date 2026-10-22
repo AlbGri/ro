@@ -91,6 +91,7 @@ const ESATTE = {
   "% Critical damage on any target.": "% di danno critico su qualsiasi bersaglio.",
   "% Long-range ATK and MATK based damage resistance.": "% di resistenza al danno fisico a distanza e al danno magico.",
   "skill damage.": "danno della skill.",
+  "critical damage": "danno critico",
   "+% ATK based damage": "Bonus % al danno fisico",
   "+% Resistance": "Bonus % alle resistenze",
   "Other": "Altri bonus",
