@@ -10,10 +10,18 @@ Le versioni della pagina `calcolatore/`.
   alcune voci etichette e risultati si mescolavano ("Success RateStat of the Food"), e nei bonus
   al danno i campi del bersaglio stavano in colonna sotto i risultati: ora sono in cima, su una
   riga
-- Con l'Emperium come mostro e una skill scelta il calcolo non si ferma piu' su un errore
+- Con l'Emperium come mostro e una skill scelta il calcolo si fermava su un errore: ora la skill
+  fa danno 0, perche' l'Emperium prende solo attacchi normali
+- Modifiche manuali al personaggio e al nemico: scrivendo un numero in una casella compare
+  subito il segno "attivo" del pannello
+- Nel pannello del cibo non c'e' piu' la scritta "&nbsp"
+- Dopo il salvataggio automatico e dopo "Copia link" la pagina mostra subito i risultati
+  ricalcolati (prima, per esempio, lo stato dei debuff del nemico poteva comparire solo alla
+  scelta seguente)
+- "danno critico" al posto di "critical di danno" nei bonus al danno di Altre informazioni
 - Il calcolatore si apre, carica una build e ricalcola piu' in fretta (circa un terzo in meno
   per caricare una build): il motore lavora sui suoi campi, senza la copia della pagina
-  originale in memoria. I risultati sono gli stessi di prima
+  originale in memoria. A parte l'Emperium, i risultati sono gli stessi di prima
 
 ## [1.6] - 2026-10-21
 
