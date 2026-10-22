@@ -4,7 +4,10 @@
 // - ogni /navi (e ogni coordinata citata nei testi) punta a una cella calpestabile
 // - i riferimenti "step X.YY" e "fase N" nei testi visibili puntano a step e fasi visibili
 // - le fasi della pagina Altre quest (page: "altre") sono facoltative in ogni step
-const { leggiGuida, mappa, calpestabile, cellaVicina, CAMPI_EN_STEP, CAMPI_EN_FASE } = require("./comune");
+// - i testi inglesi corrispondono agli italiani, nomi del gioco compresi
+const fs = require("fs");
+const path = require("path");
+const { leggiGuida, mappa, calpestabile, cellaVicina, FONTI, CAMPI_EN_STEP, CAMPI_EN_FASE } = require("./comune");
 
 const g = leggiGuida(process.argv[2]);
 new Function(g.script[1]);
@@ -115,6 +118,44 @@ function confronta(dove, it, en) {
 const senzaEn = [];
 fasiVisibili.forEach(p => { if (!confronta("fase " + p.id, testiFase(p), p.en)) senzaEn.push(p.id); });
 visibili.forEach(s => { if (!confronta("step " + s.id, testiStep(s), s.en)) senzaEn.push(s.id); });
+
+// Nomi del gioco uguali nelle due lingue, perche' un nome tradotto non si trova in gioco: un nome delle
+// fonti scritto nell'italiano c'e' anche nell'inglese, e un nome con la maiuscola scritto nell'inglese
+// c'e' nell'italiano o nelle fonti. Il plurale inglese e' ammesso (Tool Dealers per Tool Dealer, scelta
+// di Alberto del 23/10/2026): si confronta tutto senza la "s" finale delle parole.
+const singolare = t => t.toLowerCase().replace(/\^[0-9a-f]{6}/g, "").replace(/['’]s\b/g, "").replace(/_/g, " ").replace(/(?<!s)s\b/g, "");
+const fonti = singolare(fs.readdirSync(FONTI).filter(f => /\.(txt|yml)$/.test(f))
+  .map(f => fs.readFileSync(path.join(FONTI, f), "utf8")).concat(Object.values(g.QUESTS).map(q => q.name)).join("\n"));
+// Parole con la maiuscola che non sono nomi del gioco: inizi di frase, giorni, sigle.
+const PAROLE_EN = new Set(("A All Also An Answer Any Are Ask At Back Before Both Bring Buy Can Check Choose Click Close " +
+  "Come Could Do Don Done Each Either Enter Even Every Exchanges Follow For Fourth From Get Give Go Has Have He Help Here How HP If " +
+  "In Is It Italy Just Keep Kill Leave Look Make Many May Monday Most Must Neither Nest No Not Note Now On Once One Only Open " +
+  "Optional Phase Pick Portals Put Read Rightmost Same Save Select Sell She Shortest Should Skip Sliding SP Step Steps " +
+  "Still Take Talk That The Then There They This Timed To Unlocks Use Wait Walk Warp We What When Where Which Who Whoever " +
+  "Why Will With Without Would Yes You Your").split(" ").map(singolare));
+const NOME = /\b[A-Z][\w'’-]*(?:\s+(?:(?:of|the|de|to|from|in|and|on|for|a)\s+)*[A-Z][\w'’-]*)*/g;
+const NOME_FONTI = /\b[A-Z][\w'’-]*(?:\s+(?:(?:of|the|de|to|from)\s+)*[A-Z][\w'’-]*)+/g;
+function controllaNomi(dove, it, en) {
+  if (typeof it !== "string" || typeof en !== "string") return;
+  const itS = singolare(it), enS = singolare(en);
+  for (const m of it.matchAll(NOME_FONTI)) {
+    const n = singolare(m[0]);
+    if (fonti.includes(n) && !enS.includes(n)) err("nome del gioco assente nell'inglese in " + dove + ": " + m[0]);
+  }
+  const noto = t => PAROLE_EN.has(t) || itS.includes(t) || fonti.includes(t);
+  for (const m of en.matchAll(NOME)) {
+    const parole = m[0].split(/\s+/);
+    while (parole.length > 1 && PAROLE_EN.has(singolare(parole[0]))) parole.shift();
+    const n = singolare(parole.join(" "));
+    if (noto(n)) continue;
+    // "Alliance Manager in Prontera": basta che sia noto ogni pezzo
+    const pezzi = n.split(/\s+(?:and|in|to|from|on|of|for|the)\s+/).map(t => t.replace(/^(?:(?:the|to|on|a)\s+)+/, ""));
+    if (!pezzi.every(noto)) err("nome inglese che non e' nell'italiano ne' nelle fonti in " + dove + ": " + parole.join(" "));
+  }
+}
+const lista = v => Array.isArray(v) ? v.join(" | ") : v;
+fasiVisibili.filter(p => p.en).forEach(p => CAMPI_EN_FASE.forEach(k => controllaNomi("fase " + p.id + " (" + k + ")", p[k], p.en[k])));
+visibili.filter(s => s.en).forEach(s => ["h", "d", "tip", "warn", "verify"].forEach(k => controllaNomi("step " + s.id + " (" + k + ")", lista(s[k]), lista(s.en[k]))));
 
 // Pagina "Altre quest": le sue fasi (page: "altre") non devono entrare nel progresso del percorso
 g.PHASES.forEach(p => {
