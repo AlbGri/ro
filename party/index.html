@@ -193,13 +193,14 @@ input[type="text"], select {
   <div class="topbar-inner">
     <a class="btn" href="../index.html" title="Torna alla scelta dei servizi" data-en-title="Back to the list of services">Home</a>
     <span class="brand">Party</span>
-    <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, lingua, tema. Lo chiude gate.js. -->
+    <!-- Lingua prima del menu ⚙, come in ogni pagina: la bandiera la disegna gate.js. -->
+    <button class="btn" type="button" onclick="toggleLang()" data-lang><span data-en="IT">EN</span></button>
+    <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, tema. Lo chiude gate.js. -->
     <details class="more">
       <summary class="btn gear" title="Menu" aria-label="Menu">&#9881;</summary>
       <div class="more-menu">
         <button class="btn" type="button" data-azione="esporta" data-en="Data backup">Backup dei dati</button>
         <button class="btn" type="button" data-azione="importa" data-en="Restore from backup">Ripristina da backup</button>
-        <button class="btn" type="button" onclick="toggleLang()" data-lang data-en="Italiano">English</button>
         <button class="btn" type="button" onclick="toggleTheme()" data-en="Switch light/dark theme">Cambia tema chiaro/scuro</button>
       </div>
     </details>

@@ -2,6 +2,14 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.10] - 2026-10-23
+
+- Il pulsante della lingua esce dal menu ⚙ e sta in alto, subito prima dell'ingranaggio, con la
+  bandiera della lingua in cui si passa (`EN` in italiano, `IT` in inglese; sul telefono solo
+  la bandiera)
+- Sul telefono il nome della pagina accanto a Home non c'e', perche' i pulsanti stiano su una
+  riga: resta il titolo sotto
+
 ## [1.9] - 2026-10-23
 
 La pagina e' anche in inglese: con `English` nel menu ⚙ si passa all'inglese, e la scelta vale

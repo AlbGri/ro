@@ -273,6 +273,14 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
   .btn { padding: 6px 10px; font-size: .86rem; }
   .brand { font-size: 1rem; }
   .card { padding-left: 12px; padding-right: 12px; }
+}
+/* Sul telefono Home, Copia link, lingua e menu riempiono la riga: il nome della pagina, che e'
+   anche il titolo sotto, si toglie come nei timer. */
+@media (max-width: 399px) {
+  .brand { display: none; }
+  [data-azione="copia-link"] { margin-left: auto; }
+}
+@media (max-width: 640px) {
   details.pannello > .corpo { padding-left: 12px; padding-right: 12px; }
   .slot { grid-template-columns: 1fr 64px; }
   .slot > .slot-nome { grid-column: 1; }
@@ -319,14 +327,15 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
     <a class="btn" href="../index.html" title="Torna alla scelta dei servizi" data-en-title="Back to the list of services">Home</a>
     <span class="brand" data-en="Calculator">Calcolatore</span>
     <button class="btn" type="button" data-azione="copia-link" title="Copia un indirizzo che apre questa build" data-en-title="Copy an address that opens this build" data-en="Copy link">Copia link</button>
-    <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, lingua, tema. Lo chiude gate.js. -->
+    <!-- Lingua prima del menu ⚙, come in ogni pagina: la bandiera la disegna gate.js. -->
+    <button class="btn" type="button" onclick="toggleLang()" data-lang><span data-en="IT">EN</span></button>
+    <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, tema. Lo chiude gate.js. -->
     <details class="more">
       <summary class="btn gear" title="Menu" aria-label="Menu">&#9881;</summary>
       <div class="more-menu">
         <button class="btn" type="button" data-azione="nuova" data-en="Start over">Ricomincia da zero</button>
         <button class="btn" type="button" data-azione="esporta" data-en="Data backup">Backup dei dati</button>
         <button class="btn" type="button" data-azione="importa" data-en="Restore from backup">Ripristina da backup</button>
-        <button class="btn" type="button" onclick="toggleLang()" data-lang data-en="Italiano">English</button>
         <button class="btn" type="button" onclick="toggleTheme()" data-en="Switch light/dark theme">Cambia tema chiaro/scuro</button>
       </div>
     </details>

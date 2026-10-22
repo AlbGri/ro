@@ -247,7 +247,8 @@ body {
   }
 }
 
-/* Sotto i 350px non ci stanno piu' su una riga: l'orologio scende sotto. */
+/* Sotto i 350px non ci stanno piu' su una riga: l'orologio scende sotto. Sotto i 400px
+   succede anche quando ci sono insieme Avvisi e Installa, che con la lingua fanno quattro pulsanti. */
 @media (max-width: 349px) {
   .topbar-inner {
     grid-template-columns: auto 1fr;
@@ -259,6 +260,23 @@ body {
   }
 
   .clock {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: center;
+  }
+}
+
+@media (max-width: 399px) {
+  .topbar-inner:has(#btn-alerts:not([hidden])):has(#btn-install:not([hidden])) {
+    grid-template-columns: auto 1fr;
+  }
+
+  .topbar-inner:has(#btn-alerts:not([hidden])):has(#btn-install:not([hidden])) .topbar-actions {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .topbar-inner:has(#btn-alerts:not([hidden])):has(#btn-install:not([hidden])) .clock {
     grid-column: 1 / -1;
     grid-row: 2;
     justify-self: center;

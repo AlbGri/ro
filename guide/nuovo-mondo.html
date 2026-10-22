@@ -79,6 +79,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .progress-track { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
 .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--common), var(--nest)); transition: width .3s ease; }
 .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.lang-menu { display: flex; gap: 8px; align-items: center; }
 .btn {
   border: 1px solid var(--line); background: var(--surface); border-radius: 8px;
   padding: 7px 12px; cursor: pointer; font-size: .92rem; line-height: 1.2;
@@ -302,6 +303,10 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
   .phase-select { display: block; flex: 1 1 100%; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); }
   .hero-grid { grid-template-columns: 1fr; }
   .flow { grid-template-columns: 1fr; gap: 4px; }
+  /* Lingua e menu nella prima riga, accanto a Home e al nome, come nelle altre pagine */
+  .lang-menu { order: 1; margin-left: auto; }
+  .progress, .actions, .phase-select { order: 2; }
+  .progress { flex-basis: 100%; }
 }
 @media (max-width: 560px) {
   .topbar-inner { gap: 10px; padding: 8px 12px; }
@@ -339,15 +344,19 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
       <button class="btn" id="btnHide" type="button" aria-pressed="false">Nascondi i fatti</button>
       <button class="btn" id="btnExport" type="button" data-en="Export notes for the admin">Esporta note per l'admin</button>
       <button class="btn" id="btnView" type="button" title="Passa dal percorso alle quest che non servono, e ritorno" data-en-title="Switch from the route to the quests that are not needed, and back">Altre quest</button>
+    </div>
+    <!-- Lingua prima del menu ⚙, come in ogni pagina: la bandiera la disegna gate.js, se c'e'.
+         Stanno insieme fuori da .actions perche' sul telefono salgano nella prima riga. -->
+    <div class="lang-menu">
+      <button class="btn" type="button" onclick="window.toggleLang && toggleLang()" data-lang><span data-en="IT">EN</span></button>
       <details class="more">
         <summary class="btn gear" title="Menu" aria-label="Menu">&#9881;</summary>
-        <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, lingua, tema. -->
+        <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, tema. -->
         <div class="more-menu">
           <button class="btn" id="btnClearNotes" type="button" data-en="Delete all notes">Cancella tutte le note</button>
           <button class="btn" id="btnReset" type="button" data-en="Clear everything">Azzera tutto</button>
           <button class="btn" id="btnBackup" type="button" data-en="Data backup">Backup dei dati</button>
           <button class="btn" id="btnRestore" type="button" data-en="Restore from backup">Ripristina da backup</button>
-          <button class="btn" type="button" onclick="window.toggleLang && toggleLang()" data-lang data-en="Italiano">English</button>
           <button class="btn" id="btnTheme" type="button" data-en="Switch light/dark theme">Cambia tema chiaro/scuro</button>
         </div>
       </details>
@@ -436,7 +445,7 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
 </dialog>
 
 <script>
-const GUIDE_VERSION = "10.0";
+const GUIDE_VERSION = "10.1";
 const STORAGE_KEY = "uaro-nw-guide";
 
 const QUESTS = {

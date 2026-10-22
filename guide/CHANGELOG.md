@@ -3,6 +3,11 @@
 Le versioni della guida `nuovo-mondo.html`. Il numero e' quello scritto in
 testa a ogni export delle note.
 
+## [10.1] - 2026-10-23
+
+- Il pulsante della lingua esce dal menu ⚙ e sta in alto, subito prima dell'ingranaggio, con la bandiera della lingua in cui si passa (`EN` in italiano, `IT` in inglese; sul telefono solo la bandiera)
+- Sul telefono e sul tablet lingua e menu ⚙ stanno nella prima riga, accanto a Home e al nome della guida
+
 ## [10.0] - 2026-10-23
 
 - La guida e' anche in inglese: con `English` nel menu ⚙ si passa all'inglese, e la scelta vale per tutto il sito. Spunte, note e backup sono gli stessi nelle due lingue

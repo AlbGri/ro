@@ -126,13 +126,49 @@
     );
   }
 
-  // Il pulsante della lingua c'e' in ogni pagina, anche in quelle solo in
-  // italiano: cosi' sta sempre nello stesso posto, e in inglese la pagina dice
-  // in cima che non e' tradotta (Alberto, 18/10/2026). Porta il nome
-  // dell'altra lingua; lo cerca come `[data-lang]`.
+  // Il pulsante della lingua sta nell'intestazione, subito prima del menu ⚙,
+  // perche' si veda che la pagina c'e' anche in inglese (Alberto, 23/10/2026).
+  // Mostra la lingua in cui si passa: bandiera e sigla, "EN" nell'HTML e "IT"
+  // in `data-en`. La bandiera la disegna questo foglio di stile e non una
+  // emoji, che su Windows compare come due lettere; sta qui per non ripeterla
+  // in ogni pagina, e arriva prima che la pagina venga disegnata. Lo stesso
+  // pulsante c'e' anche nelle pagine solo in italiano, che in inglese dicono in
+  // cima che non sono tradotte (Alberto, 18/10/2026).
+  const FLAG_UK =
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'>" +
+    "<clipPath id='c'><path d='M30 15h30v15zv15H0zH0V0zV0h30z'/></clipPath>" +
+    "<path d='M0 0v30h60V0z' fill='#012169'/>" +
+    "<path d='M0 0l60 30m0-30L0 30' stroke='#fff' stroke-width='6'/>" +
+    "<path d='M0 0l60 30m0-30L0 30' clip-path='url(#c)' stroke='#C8102E' stroke-width='4'/>" +
+    "<path d='M30 0v30M0 15h60' stroke='#fff' stroke-width='10'/>" +
+    "<path d='M30 0v30M0 15h60' stroke='#C8102E' stroke-width='6'/></svg>";
+  const FLAG_IT =
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 2'>" +
+    "<path d='M0 0h1v2H0z' fill='#009246'/><path d='M1 0h1v2H1z' fill='#fff'/>" +
+    "<path d='M2 0h1v2H2z' fill='#CE2B37'/></svg>";
+  const flagStyle = document.createElement("style");
+  flagStyle.textContent = `
+    [data-lang] { white-space: nowrap; }
+    [data-lang]::before {
+      content: ""; display: inline-block; width: 1.4em; height: 0.93em; margin-right: 0.4em; vertical-align: -0.14em;
+      background: url("data:image/svg+xml,${encodeURIComponent(english ? FLAG_IT : FLAG_UK)}") center / cover;
+      border-radius: 2px; box-shadow: 0 0 0 1px rgb(128 128 128 / 0.45);
+    }
+    @media (max-width: 430px) {
+      header [data-lang] > span { display: none; }
+      header [data-lang]::before { margin-right: 0; }
+    }`;
+  document.head.append(flagStyle);
+  document.addEventListener("readystatechange", () => {
+    for (const el of document.querySelectorAll("[data-lang]")) {
+      el.title = tr("English", "Italiano");
+      el.setAttribute("aria-label", el.title);
+    }
+  }, { once: true });
+
   if (english && !root.hasAttribute("data-bilingual")) {
     document.addEventListener("DOMContentLoaded", () => {
-      for (const el of document.querySelectorAll("[data-lang]")) el.textContent = "Italiano";
+      for (const el of document.querySelectorAll("[data-lang] > span")) el.textContent = "IT";
       const notice = document.createElement("p");
       notice.className = "solo-italiano";
       notice.textContent = "This page is available in Italian only for now.";
@@ -308,7 +344,8 @@
             <input id="gate-code" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" />
             <p id="gate-error" hidden>${tr("Codice sbagliato.", "Wrong code.")}</p>
             <button type="submit">${tr("Entra", "Enter")}</button>
-            <button type="button" class="gate-lang">${tr("English", "Italiano")}</button>
+            <button type="button" class="gate-lang" data-lang title="${tr("English", "Italiano")}"
+              aria-label="${tr("English", "Italiano")}">${tr("EN", "IT")}</button>
           </form>`;
         document.body.append(gate);
 

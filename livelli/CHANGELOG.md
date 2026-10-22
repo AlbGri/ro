@@ -2,6 +2,12 @@
 
 Le versioni della pagina `livelli/`.
 
+## [1.15] - 2026-10-23
+
+- Il pulsante della lingua esce dal menu ⚙ e sta in alto, subito prima dell'ingranaggio, con la
+  bandiera della lingua in cui si passa (`EN` in italiano, `IT` in inglese; sul telefono solo
+  la bandiera)
+
 ## [1.14] - 2026-10-23
 
 - La pagina e' anche in inglese: con `English` nel menu ⚙ si passa all'inglese, e la scelta vale

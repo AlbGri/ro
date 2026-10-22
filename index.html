@@ -77,6 +77,12 @@
         margin-bottom: 28px;
       }
 
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
       /* Menu ⚙, come nella guida e in ogni pagina del sito. */
       .more {
         position: relative;
@@ -204,16 +210,19 @@
     <main>
       <header>
         <h1>ro-tools</h1>
-        <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, lingua, tema. Lo chiude gate.js. -->
-        <details class="more">
-          <summary class="gear" title="Menu" aria-label="Menu">&#9881;</summary>
-          <div class="more-menu">
-            <button type="button" onclick="toggleLang()" data-en="Italiano">English</button>
-            <button type="button" onclick="toggleTheme()" data-en="Switch light/dark theme">
-              Cambia tema chiaro/scuro
-            </button>
-          </div>
-        </details>
+        <div class="header-actions">
+          <!-- Lingua prima del menu ⚙, come in ogni pagina: la bandiera la disegna gate.js. -->
+          <button type="button" onclick="toggleLang()" data-lang><span data-en="IT">EN</span></button>
+          <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, tema. Lo chiude gate.js. -->
+          <details class="more">
+            <summary class="gear" title="Menu" aria-label="Menu">&#9881;</summary>
+            <div class="more-menu">
+              <button type="button" onclick="toggleTheme()" data-en="Switch light/dark theme">
+                Cambia tema chiaro/scuro
+              </button>
+            </div>
+          </details>
+        </div>
       </header>
 
       <!-- Un servizio nuovo: una cartella sua, gate.js nel suo <head>, una scheda qui.

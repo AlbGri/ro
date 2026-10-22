@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.3] - 2026-10-23
+
+Il pulsante della lingua esce dal menu ⚙ e sta in alto, subito prima dell'ingranaggio, con la bandiera della lingua in cui si passa.
+L'applicazione desktop pubblicata non cambia.
+
+- In italiano mostra la bandiera inglese e `EN`, in inglese quella italiana e `IT`; sul telefono solo la bandiera
+- Sul telefono, quando ci sono insieme `Avvisi` e `Installa`, l'orologio scende sotto i pulsanti invece di sovrapporsi a `Home`
+
 ## [1.5.2] - 2026-10-22
 
 L'applicazione installata sul telefono o sul computer si chiama `RO Timers`, in entrambe le lingue.
