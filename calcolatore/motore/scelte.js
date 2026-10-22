@@ -435,13 +435,6 @@ function Bskill(e) {
   contenitore("BBSkill");
   if (n_A_Equip[7] == 957 && !e) calc();
 }
-function scheduleMonsterCalculation() {
-  if (monsterCalculationTimer) window.clearTimeout(monsterCalculationTimer);
-  monsterCalculationTimer = window.setTimeout(function () {
-    monsterCalculationTimer = 0;
-    calc();
-  }, MONSTER_CALCULATION_DEBOUNCE_MS);
-}
 function UpdateSpiralPierceWeaponWeight() {
   var e = 1 * c.A_ActiveSkill.value,
     _ = c.SkillSubNum;

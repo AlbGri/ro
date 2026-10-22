@@ -530,7 +530,7 @@ campo("ENEMY_SORT2", "select", function () { riempiMappe(); EnemySort(); calc();
 campo("ENEMY_MAP", "select", function () { EnemySort(); calc(); });
 campo("ENEMY_TYPE", "select", function () { EnemySort(); calc(); }, { opzioni: [["0", "All types"], ["1", "MvP"], ["2", "Boss (not MvP)"], ["3", "Normal monsters"]] });
 campo("ENEMY_SORT", "select", function () { EnemySort(); calc(); }, { opzioni: [["0", "Alphabetical"], ["1", "By attribute"], ["2", "By race"], ["8", "By size"], ["3", "By 100%Hit"], ["4", "By 95%Flee"], ["5", "By BaseExp"], ["6", "By JobExp"], ["7", "By MaxATK"], ["9", "By DEF"], ["10", "By MDEF"], ["11", "By Type"]] });
-campo("B_Enemy", "select", function () { Bskill(true); scheduleMonsterCalculation(); });
+campo("B_Enemy", "select", function () { Bskill(true); });
 campo("all_dmgSkills", "checkbox", function () { Askill(); calc(); });
 campo("ReCalcButton", "pulsante", function () { calc(); }, { valore: "ReCalculate" });
 campo("A_ActiveSkill", "select", function () { ClickActiveSkill(); calc(); });

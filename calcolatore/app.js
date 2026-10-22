@@ -35,9 +35,12 @@ function ripristina() {
     stato = normalizza({});
   }
 }
-// la build nel formato dell'indirizzo (il testo dopo #, vedi motore/build.js)
+// la build nel formato dell'indirizzo (il testo dopo #, vedi motore/build.js). scriviBuild()
+// ricalcola: la pagina si riallinea, anche quando la chiama il salvataggio dopo 400 ms
 function buildCorrente() {
-  return String(window.scriviBuild());
+  const build = String(window.scriviBuild());
+  sincronizza();
+  return build;
 }
 const LINK_ESTRANEO = "Il link non contiene una build di questo calcolatore.";
 let timerSalva;
