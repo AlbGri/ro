@@ -1,20 +1,22 @@
 /**
- * Pagina del party: giocatori, account, personaggi e jolly, e le run calcolate.
+ * Pagina del party: giocatori con i loro account, jolly, e le run calcolate.
  *
  * I dati restano in questo browser, nella chiave `ragnarok-party/stato`, con il
  * prefisso del servizio come chiede il sito; si portano altrove con un file.
- * L'elenco della gilda si incolla in testo libero, letto da `testo.js`; i soprannomi
- * imparati stanno nello stato, in `soprannomi`.
+ * Giocatori e jolly stanno in una tabella compatta, una riga a testa (Alberto,
+ * 22/10/2026): ogni account e' un testo come su Discord, "HP/Devo/Clown", letto
+ * da `testo.js` con i soprannomi imparati (`soprannomi` dello stato).
  */
 
 import { calcolaRun } from "./calcolo.js";
 import { ALTRO, CLASSI, ISTANZE } from "./dati.js";
-import { leggiElenco, scriviElenco } from "./testo.js";
+import { breve, leggiClassi, leggiElenco, pulisci, scriviElenco } from "./testo.js";
 
 const STORAGE_KEY = "ragnarok-party/stato";
 
 const giocatoriEl = document.getElementById("giocatori");
 const jollyEl = document.getElementById("jolly");
+const dubbiEl = document.getElementById("dubbi");
 const risultatoEl = document.getElementById("risultato");
 const istanzaEl = document.getElementById("istanza");
 
@@ -23,35 +25,37 @@ const escape = (s) =>
 
 // ----------------------------------------------------------------- stato ---
 
-const nuovoPersonaggio = () => ({ classe: "" });
-const nuovoAccount = () => ({ personaggi: [nuovoPersonaggio()] });
-
 let stato = { istanza: ISTANZE[0].id, giocatori: [], jolly: [], soprannomi: {} };
 const istanza = () => ISTANZE.find((i) => i.id === stato.istanza);
 
 /**
  * Lo stato da un oggetto letto (localStorage o file), con i campi mancanti a posto.
- * La classe resta com'e' anche se non e' dell'istanza scelta: puo' contare per un'altra.
+ * I dati fino alla 1.5 avevano gli account come elenchi di personaggi: diventano testo.
  */
 function normalizza(dati) {
   if (!dati || !Array.isArray(dati.giocatori) || !Array.isArray(dati.jolly)) throw new Error("formato non valido");
-  const personaggi = (lista) =>
-    (Array.isArray(lista) ? lista : []).map((p) => ({ classe: String(p?.classe ?? "") }));
+  const testo = (a) =>
+    typeof a === "string"
+      ? a
+      : (Array.isArray(a?.personaggi) ? a.personaggi : [])
+          .map((p) => breve(String(p?.classe ?? "")))
+          .filter(Boolean)
+          .join("/");
   return {
     istanza: ISTANZE.some((i) => i.id === dati.istanza) ? dati.istanza : ISTANZE[0].id,
     giocatori: dati.giocatori.map((g) => ({
       nome: String(g?.nome ?? ""),
       presente: g?.presente !== false,
-      account: (Array.isArray(g?.account) ? g.account : []).map((a) => ({ personaggi: personaggi(a?.personaggi) })),
+      account: (Array.isArray(g?.account) ? g.account : []).map(testo),
+    })),
+    jolly: dati.jolly.map((j) => ({
+      nome: String(j?.nome ?? ""),
+      disponibile: j?.disponibile !== false,
+      classi: typeof j?.classi === "string" ? j.classi : testo(j),
     })),
     soprannomi: Object.fromEntries(
       Object.entries(dati.soprannomi ?? {}).filter(([k, c]) => typeof k === "string" && typeof c === "string"),
     ),
-    jolly: dati.jolly.map((j) => ({
-      nome: String(j?.nome ?? ""),
-      disponibile: j?.disponibile !== false,
-      personaggi: personaggi(j?.personaggi),
-    })),
   };
 }
 
@@ -72,20 +76,16 @@ function ripristina() {
   }
 }
 
+/** Riscrive tutti gli account in forma breve, per esempio dopo un soprannome imparato. */
+function pulisciTutto() {
+  for (const g of stato.giocatori) g.account = g.account.map((a) => pulisci(a, stato.soprannomi));
+  for (const j of stato.jolly) j.classi = pulisci(j.classi, stato.soprannomi);
+}
+
 // --------------------------------------------------------------- disegno ---
 
 /** La classe come si mostra: una classe che non conta per l'istanza e' Altro. */
 const classeMostrata = (classe) => (!classe || istanza().classi.some((c) => c.nome === classe) ? classe : ALTRO);
-
-/** Le classi che contano per l'istanza e Altro. */
-function opzioniClasse(scelta) {
-  const nomi = [...istanza().classi.map((c) => c.nome), ALTRO];
-  const mostrata = classeMostrata(scelta);
-  return (
-    `<option value=""${mostrata ? "" : " selected"}>Classe…</option>` +
-    nomi.map((n) => `<option${n === mostrata ? " selected" : ""}>${escape(n)}</option>`).join("")
-  );
-}
 
 /** Le scritte dell'introduzione che dipendono dall'istanza. */
 function disegnaIstanza() {
@@ -117,80 +117,94 @@ function disegnaIstanza() {
     "poi run equilibrate.";
 }
 
-/** Le righe dei personaggi di un account; `percorso` sono i data- che lo individuano. */
-function disegnaPersonaggi(personaggi, percorso) {
-  return personaggi
-    .map(
-      (p, i) => `
-      <div class="pg">
-        <select ${percorso} data-p="${i}" data-campo="classe" aria-label="Classe">${opzioniClasse(p.classe)}</select>
-        <button class="btn small danger" type="button" ${percorso} data-p="${i}" data-azione="togli-pg" title="Togli il personaggio" aria-label="Togli il personaggio">✕</button>
-      </div>`,
-    )
-    .join("");
+// Colonne di account nella tabella: almeno 3, o quante ne ha chi ne ha di piu'; "+" ne aggiunge una.
+let minimoColonne = 3;
+const colonne = () => Math.max(minimoColonne, ...stato.giocatori.map((g) => g.account.length));
+
+/** Il campo di un account: rosso se contiene parole che la pagina non riconosce. */
+function campoClassi(testo, attributi, segnaposto) {
+  const ignoto = leggiClassi(testo, stato.soprannomi).ignote.length > 0;
+  return `<input type="text" class="classi${ignoto ? " ignoto" : ""}" value="${escape(testo)}" placeholder="${segnaposto}"
+    ${attributi} spellcheck="false" autocomplete="off" aria-label="${segnaposto}">`;
 }
 
 function disegnaGiocatori() {
-  giocatoriEl.innerHTML = stato.giocatori.length
-    ? stato.giocatori
-        .map(
-          (g, gi) => `
-      <div class="card${g.presente ? "" : " spento"}">
-        <div class="card-head">
-          <input type="text" placeholder="Giocatore ${gi + 1}" value="${escape(g.nome)}" data-g="${gi}" data-campo="nome" aria-label="Nome del giocatore">
-          <label class="check"><input type="checkbox" data-g="${gi}" data-campo="presente"${g.presente ? " checked" : ""}> Presente</label>
-          <button class="btn small danger" type="button" data-g="${gi}" data-azione="togli-giocatore">Togli</button>
-        </div>
-        <div class="accounts">${g.account
-          .map(
-            (a, ai) => `
-          <div class="account">
-            <div class="account-head">
-              <span>Account ${ai + 1}</span>
-              <button class="btn small danger" type="button" data-g="${gi}" data-a="${ai}" data-azione="togli-account">Togli</button>
-            </div>
-            ${disegnaPersonaggi(a.personaggi, `data-g="${gi}" data-a="${ai}"`)}
-            <div><button class="btn small" type="button" data-g="${gi}" data-a="${ai}" data-azione="nuovo-pg">Aggiungi personaggio</button></div>
-          </div>`,
-          )
-          .join("")}</div>
-        <div class="card-foot"><button class="btn small" type="button" data-g="${gi}" data-azione="nuovo-account">Aggiungi account</button></div>
-      </div>`,
-        )
-        .join("")
-    : `<p class="hint">Nessun giocatore.</p>`;
+  const n = colonne();
+  const stile = `style="--colonne: ${n}"`;
+  const intestazione = `<div class="riga intestazione" ${stile}>
+    <span>Presente</span><span>Giocatore</span>${[...Array(n)].map((_, i) => `<span>Account ${i + 1}</span>`).join("")}
+    <button class="btn small" type="button" data-azione="nuova-colonna" title="Una colonna di account in più" aria-label="Una colonna di account in più">+</button>
+  </div>`;
+  const righe = stato.giocatori.map(
+    (g, gi) => `<div class="riga${g.presente ? "" : " spento"}" ${stile}>
+      <input type="checkbox" data-g="${gi}" data-campo="presente"${g.presente ? " checked" : ""} aria-label="Presente">
+      <input type="text" class="nome" value="${escape(g.nome)}" placeholder="Giocatore ${gi + 1}" data-g="${gi}" data-campo="nome" aria-label="Nome del giocatore">
+      ${[...Array(n)].map((_, ai) => campoClassi(g.account[ai] ?? "", `data-g="${gi}" data-a="${ai}" data-campo="account"`, `Account ${ai + 1}`)).join("")}
+      <button class="btn small danger" type="button" data-g="${gi}" data-azione="togli-giocatore" title="Togli il giocatore" aria-label="Togli il giocatore">✕</button>
+    </div>`,
+  );
+  giocatoriEl.innerHTML = stato.giocatori.length ? intestazione + righe.join("") : `<p class="hint">Nessun giocatore.</p>`;
 }
 
 function disegnaJolly() {
-  jollyEl.innerHTML = stato.jolly.length
-    ? stato.jolly
-        .map(
-          (j, ji) => `
-      <div class="card${j.disponibile ? "" : " spento"}">
-        <div class="card-head">
-          <input type="text" placeholder="Jolly ${ji + 1}" value="${escape(j.nome)}" data-j="${ji}" data-campo="nome" aria-label="Nome del jolly">
-          <label class="check"><input type="checkbox" data-j="${ji}" data-campo="disponibile"${j.disponibile ? " checked" : ""}> Disponibile</label>
-          <button class="btn small danger" type="button" data-j="${ji}" data-azione="togli-jolly">Togli</button>
-        </div>
-        ${disegnaPersonaggi(j.personaggi, `data-j="${ji}"`)}
-        <div class="card-foot"><button class="btn small" type="button" data-j="${ji}" data-azione="nuovo-pg">Aggiungi personaggio</button></div>
-      </div>`,
-        )
-        .join("")
-    : `<p class="hint">Nessun jolly.</p>`;
+  const intestazione = `<div class="riga jolly intestazione"><span>Disponibile</span><span>Jolly</span><span>Classi</span><span></span></div>`;
+  const righe = stato.jolly.map(
+    (j, ji) => `<div class="riga jolly${j.disponibile ? "" : " spento"}">
+      <input type="checkbox" data-j="${ji}" data-campo="disponibile"${j.disponibile ? " checked" : ""} aria-label="Disponibile">
+      <input type="text" class="nome" value="${escape(j.nome)}" placeholder="Jolly ${ji + 1}" data-j="${ji}" data-campo="nome" aria-label="Nome del jolly">
+      ${campoClassi(j.classi, `data-j="${ji}" data-campo="classi"`, "Classi")}
+      <button class="btn small danger" type="button" data-j="${ji}" data-azione="togli-jolly" title="Togli il jolly" aria-label="Togli il jolly">✕</button>
+    </div>`,
+  );
+  jollyEl.innerHTML = stato.jolly.length ? intestazione + righe.join("") : `<p class="hint">Nessun jolly.</p>`;
+}
+
+/** Le parole che la pagina non riconosce, con il menu per sceglierne la classe, e i soprannomi imparati. */
+function disegnaDubbi() {
+  const dubbi = new Map();
+  const raccogli = (testo, chi) => {
+    for (const parola of leggiClassi(testo, stato.soprannomi).ignote) {
+      const k = parola.toLowerCase().trim();
+      if (!dubbi.has(k)) dubbi.set(k, { parola, chi: [] });
+      if (!dubbi.get(k).chi.includes(chi)) dubbi.get(k).chi.push(chi);
+    }
+  };
+  stato.giocatori.forEach((g, i) => g.account.forEach((a) => raccogli(a, g.nome || `Giocatore ${i + 1}`)));
+  stato.jolly.forEach((j, i) => raccogli(j.classi, `jolly ${j.nome || i + 1}`));
+
+  const html = [];
+  if (dubbi.size) {
+    const opzioni = [...CLASSI, ALTRO].map((c) => `<option>${escape(c)}</option>`).join("");
+    const righe = [...dubbi].map(
+      ([k, d]) => `<li><label class="dubbio">"${escape(d.parola)}" (${escape(d.chi.join(", "))}) è
+        <select data-dubbio="${escape(k)}"><option value="">Classe…</option>${opzioni}</select></label></li>`,
+    );
+    html.push(`<div class="note-line"><strong>Parole da riconoscere:</strong> finché non scegli la classe non contano. La pagina se la ricorda.<ul>${righe.join("")}</ul></div>`);
+  }
+  const imparati = Object.entries(stato.soprannomi);
+  if (imparati.length) {
+    const voci = imparati.map(
+      ([k, c]) => `<li>"${escape(k)}" è ${escape(c)} <button class="btn small danger" type="button" data-azione="dimentica" data-chiave="${escape(k)}">Dimentica</button></li>`,
+    );
+    html.push(`<details class="imparati"><summary>Soprannomi imparati (${imparati.length})</summary><ul>${voci.join("")}</ul></details>`);
+  }
+  dubbiEl.innerHTML = html.join("");
 }
 
 // ----------------------------------------------------------------- calcolo ---
 
-/** Giocatori presenti e jolly disponibili, solo con i personaggi di cui e' scelta la classe. */
+/** Giocatori presenti e jolly disponibili, con le classi riconosciute dei loro account. */
 function datiCalcolo() {
-  const conClasse = (lista) => lista.filter((p) => p.classe);
+  const personaggi = (testo) => leggiClassi(testo, stato.soprannomi).classi.map((classe) => ({ classe }));
   const presenti = stato.giocatori
-    .map((g, indice) => ({ indice, nome: g.nome || `Giocatore ${indice + 1}`, presente: g.presente, account: g.account }))
+    .map((g, indice) => ({ nome: g.nome || `Giocatore ${indice + 1}`, presente: g.presente, account: g.account }))
     .filter((g) => g.presente)
-    .map((g) => ({ ...g, account: g.account.map((a) => ({ personaggi: conClasse(a.personaggi) })) }));
+    .map((g) => ({
+      ...g,
+      account: g.account.map(personaggi).filter((p) => p.length > 0).map((p) => ({ personaggi: p })),
+    }));
   const jolly = stato.jolly
-    .map((j, indice) => ({ nome: j.nome || `Jolly ${indice + 1}`, disponibile: j.disponibile, personaggi: conClasse(j.personaggi) }))
+    .map((j, indice) => ({ nome: j.nome || `Jolly ${indice + 1}`, disponibile: j.disponibile, personaggi: personaggi(j.classi) }))
     .filter((j) => j.disponibile);
   return { presenti, jolly };
 }
@@ -307,36 +321,63 @@ function testoRun({ presenti, jolly, esito }) {
 
 // ------------------------------------------------------------- eventi ---
 
-/** L'account o il jolly a cui si riferisce un elemento con data-g/data-a o data-j. */
-function contenitore(el) {
-  const d = el.dataset;
-  if (d.j !== undefined) return stato.jolly[d.j];
-  if (d.a !== undefined) return stato.giocatori[d.g].account[d.a];
-  return stato.giocatori[d.g];
-}
-
 let attesa;
 function cambiato(ridisegna) {
   salva();
   if (ridisegna) {
     disegnaGiocatori();
     disegnaJolly();
+    disegnaDubbi();
   }
   clearTimeout(attesa);
   attesa = setTimeout(aggiorna, 300);
 }
 
+/** Il giocatore o il jolly di un elemento con data-g o data-j. */
+const proprietario = (el) => (el.dataset.j !== undefined ? stato.jolly[el.dataset.j] : stato.giocatori[el.dataset.g]);
+
+// Mentre si scrive si salva il testo com'e'; il campo diventa rosso se ha parole sconosciute.
 document.addEventListener("input", (event) => {
   const el = event.target;
   const campo = el.dataset.campo;
   if (!campo) return;
-  const oggetto = contenitore(el);
-  if (campo === "classe") oggetto.personaggi[el.dataset.p].classe = el.value;
-  else if (campo === "presente" || campo === "disponibile") {
+  const oggetto = proprietario(el);
+  if (campo === "presente" || campo === "disponibile") {
     oggetto[campo] = el.checked;
-    el.closest(".card").classList.toggle("spento", !el.checked);
+    el.closest(".riga").classList.toggle("spento", !el.checked);
+  } else if (campo === "account") {
+    while (oggetto.account.length <= el.dataset.a) oggetto.account.push("");
+    oggetto.account[el.dataset.a] = el.value;
   } else oggetto[campo] = el.value;
+  if (campo === "account" || campo === "classi") {
+    el.classList.toggle("ignoto", leggiClassi(el.value, stato.soprannomi).ignote.length > 0);
+  }
   cambiato(false);
+});
+
+// Uscendo dal campo il testo si riscrive in forma breve: si vede cosa ha capito la pagina.
+document.addEventListener("change", (event) => {
+  const el = event.target;
+  const campo = el.dataset.campo;
+  if (campo !== "account" && campo !== "classi") return;
+  const oggetto = proprietario(el);
+  const pulito = pulisci(el.value, stato.soprannomi);
+  el.value = pulito;
+  if (campo === "classi") oggetto.classi = pulito;
+  else {
+    oggetto.account[el.dataset.a] = pulito;
+    while (oggetto.account.length && !oggetto.account.at(-1)) oggetto.account.pop();
+  }
+  salva();
+  disegnaDubbi();
+});
+
+dubbiEl.addEventListener("change", (event) => {
+  const k = event.target.dataset.dubbio;
+  if (k === undefined || !event.target.value) return;
+  stato.soprannomi[k] = event.target.value;
+  pulisciTutto();
+  cambiato(true);
 });
 
 const file = document.getElementById("file");
@@ -353,30 +394,29 @@ document.addEventListener("click", (event) => {
   const d = el.dataset;
   switch (d.azione) {
     case "nuovo-giocatore":
-      stato.giocatori.push({ nome: "", presente: true, account: [nuovoAccount()] });
-      break;
+      stato.giocatori.push({ nome: "", presente: true, account: [] });
+      cambiato(true);
+      giocatoriEl.querySelector(".riga:last-child .nome").focus();
+      return;
     case "togli-giocatore":
       if (!confirm(`Togliere ${stato.giocatori[d.g].nome || "il giocatore"}?`)) return;
       stato.giocatori.splice(d.g, 1);
       break;
-    case "nuovo-account":
-      stato.giocatori[d.g].account.push(nuovoAccount());
-      break;
-    case "togli-account":
-      stato.giocatori[d.g].account.splice(d.a, 1);
-      break;
-    case "nuovo-pg":
-      contenitore(el).personaggi.push(nuovoPersonaggio());
-      break;
-    case "togli-pg":
-      contenitore(el).personaggi.splice(d.p, 1);
-      break;
+    case "nuova-colonna":
+      minimoColonne = colonne() + 1;
+      disegnaGiocatori();
+      return;
     case "nuovo-jolly":
-      stato.jolly.push({ nome: "", disponibile: true, personaggi: [nuovoPersonaggio()] });
-      break;
+      stato.jolly.push({ nome: "", disponibile: true, classi: "" });
+      cambiato(true);
+      jollyEl.querySelector(".riga:last-child .nome").focus();
+      return;
     case "togli-jolly":
       if (!confirm(`Togliere ${stato.jolly[d.j].nome || "il jolly"}?`)) return;
       stato.jolly.splice(d.j, 1);
+      break;
+    case "dimentica":
+      delete stato.soprannomi[d.chiave];
       break;
     case "esporta":
       esporta();
@@ -394,11 +434,6 @@ document.addEventListener("click", (event) => {
       return;
     case "aggiungi-elenco":
       aggiungiElenco();
-      return;
-    case "dimentica":
-      delete stato.soprannomi[d.chiave];
-      salva();
-      disegnaAnteprima();
       return;
     case "esporta-elenco":
       scarica(`party-elenco-${oggi()}.txt`, scriviElenco(stato));
@@ -457,50 +492,27 @@ const stessoNome = (a, b) => a.trim().toLowerCase() === b.trim().toLowerCase();
 /** L'elenco letto con i soprannomi imparati; null se il campo e' vuoto. */
 const elencoLetto = () => (elencoEl.value.trim() ? leggiElenco(elencoEl.value, stato.soprannomi) : null);
 
-/** Cosa ha capito la pagina dell'elenco incollato, e le parole da riconoscere. */
+/** Chi ha trovato la pagina nel testo incollato, o cosa va corretto. */
 function disegnaAnteprima() {
   const letto = elencoLetto();
-  const html = [];
-  const lista = (righe) => `<ul>${righe.join("")}</ul>`;
-  if (letto) {
-    if (letto.errori.length) {
-      html.push(`<div class="empty"><strong>Da correggere nel testo:</strong>${lista(letto.errori.map((e) => `<li>${escape(e)}</li>`))}</div>`);
-    }
-    if (letto.dubbi.length) {
-      const opzioni = [...CLASSI, ALTRO].map((c) => `<option>${escape(c)}</option>`).join("");
-      const righe = letto.dubbi.map(
-        (d) => `<li><label class="dubbio">"${escape(d.parola)}" (${escape(d.chi)}, riga ${d.riga}) è
-          <select data-dubbio="${escape(d.chiave)}"><option value="">Classe…</option>${opzioni}</select></label></li>`,
-      );
-      html.push(`<div class="note-line"><strong>Parole da riconoscere:</strong> scegli la classe, la pagina se la ricorda.${lista(righe)}</div>`);
-    }
-    if (letto.corretti.length) {
-      const righe = letto.corretti.map((c) => `<li>"${escape(c.parola)}" è ${escape(c.classe)} (${escape(c.chi)}, riga ${c.riga})</li>`);
-      html.push(`<div class="note-line"><strong>Corretti:</strong>${lista(righe)}</div>`);
-    }
-    const classi = (personaggi) => personaggi.map((p) => escape(p.classe)).join(", ");
-    const novita = (lista, nome) => (lista.some((x) => stessoNome(x.nome, nome)) ? "aggiornato" : "nuovo");
-    const righe = [
-      ...letto.giocatori.map(
-        (g) => `<li><strong>${escape(g.nome)}</strong> (${novita(stato.giocatori, g.nome)}): ${g.account.map((a, i) => `${i + 1}) ${classi(a.personaggi)}`).join("; ")}</li>`,
-      ),
-      ...letto.jolly.map((j) => `<li><strong>Jolly ${escape(j.nome)}</strong> (${novita(stato.jolly, j.nome)}): ${classi(j.personaggi)}</li>`),
+  aggiungiEl.disabled = !letto || letto.errori.length > 0 || letto.giocatori.length + letto.jolly.length === 0;
+  if (!letto) {
+    anteprimaEl.innerHTML = "";
+  } else if (letto.errori.length) {
+    anteprimaEl.innerHTML = `<div class="empty"><strong>Da correggere nel testo:</strong><ul>${letto.errori.map((e) => `<li>${escape(e)}</li>`).join("")}</ul></div>`;
+  } else {
+    const gia = letto.giocatori.filter((g) => stato.giocatori.some((x) => stessoNome(x.nome, g.nome))).length;
+    const parti = [
+      plurale(letto.giocatori.length - gia, "giocatore nuovo", "giocatori nuovi"),
+      ...(gia ? [`${gia} da aggiornare`] : []),
+      ...(letto.jolly.length ? [plurale(letto.jolly.length, "jolly", "jolly")] : []),
     ];
-    if (righe.length) html.push(`<div class="anteprima-lista"><strong>La pagina ha capito:</strong>${lista(righe)}</div>`);
+    anteprimaEl.innerHTML = `<p class="hint">Trovati: ${escape(parti.join(", "))}.</p>`;
   }
-  const imparati = Object.entries(stato.soprannomi);
-  if (imparati.length) {
-    const voci = imparati.map(
-      ([k, c]) => `<li>"${escape(k)}" è ${escape(c)} <button class="btn small danger" type="button" data-azione="dimentica" data-chiave="${escape(k)}">Dimentica</button></li>`,
-    );
-    html.push(`<details class="imparati"><summary>Soprannomi imparati (${imparati.length})</summary>${lista(voci)}</details>`);
-  }
-  anteprimaEl.innerHTML = html.join("");
-  aggiungiEl.disabled = !letto || letto.errori.length > 0 || letto.dubbi.length > 0 || letto.giocatori.length + letto.jolly.length === 0;
 }
 
 /**
- * Aggiunge l'elenco alla pagina: chi ha lo stesso nome di un giocatore o di un jolly
+ * Aggiunge l'elenco alla tabella: chi ha lo stesso nome di un giocatore o di un jolly
  * gia' presente prende gli account dell'elenco, gli altri si aggiungono.
  */
 function aggiungiElenco() {
@@ -510,7 +522,7 @@ function aggiungiElenco() {
     ...letto.giocatori.filter((g) => stato.giocatori.some((x) => stessoNome(x.nome, g.nome))),
     ...letto.jolly.filter((j) => stato.jolly.some((x) => stessoNome(x.nome, j.nome))),
   ].map((x) => x.nome);
-  if (aggiornati.length && !confirm(`Sono già nella pagina: ${aggiornati.join(", ")}. Sostituire i loro account con quelli dell'elenco?`)) return;
+  if (aggiornati.length && !confirm(`Sono già nella tabella: ${aggiornati.join(", ")}. Sostituire i loro account con quelli dell'elenco?`)) return;
   for (const g of letto.giocatori) {
     const esistente = stato.giocatori.find((x) => stessoNome(x.nome, g.nome));
     if (esistente) esistente.account = g.account;
@@ -518,8 +530,8 @@ function aggiungiElenco() {
   }
   for (const j of letto.jolly) {
     const esistente = stato.jolly.find((x) => stessoNome(x.nome, j.nome));
-    if (esistente) esistente.personaggi = j.personaggi;
-    else stato.jolly.push({ nome: j.nome, disponibile: true, personaggi: j.personaggi });
+    if (esistente) esistente.classi = j.classi;
+    else stato.jolly.push({ nome: j.nome, disponibile: true, classi: j.classi });
   }
   cambiato(true);
   elencoEl.value = "";
@@ -529,13 +541,6 @@ function aggiungiElenco() {
 }
 
 elencoEl.addEventListener("input", disegnaAnteprima);
-anteprimaEl.addEventListener("change", (event) => {
-  const k = event.target.dataset.dubbio;
-  if (k === undefined || !event.target.value) return;
-  stato.soprannomi[k] = event.target.value;
-  salva();
-  disegnaAnteprima();
-});
 
 const toast = document.getElementById("toast");
 let toastTimer;
@@ -550,4 +555,5 @@ ripristina();
 disegnaIstanza();
 disegnaGiocatori();
 disegnaJolly();
+disegnaDubbi();
 aggiorna();

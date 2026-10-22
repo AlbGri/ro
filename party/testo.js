@@ -101,42 +101,72 @@ export function riconosci(parola, imparati = {}) {
   return migliore && !pari ? { classe: migliore.classe, corretta: true } : null;
 }
 
+// Come la pagina riscrive una classe riconosciuta: corta, come la si scrive su Discord.
+const BREVE = {
+  "High Priest": "HP",
+  "Clown/Bard": "Clown",
+  "Gypsy/Dancer": "Gypsy",
+  Professor: "Prof",
+  Champion: "Champ",
+  "High Wizard": "HW",
+};
+/** La forma breve di una classe ("HP" per High Priest); le altre restano come sono. */
+export const breve = (classe) => BREVE[classe] ?? classe;
+
 const ORA = /^\[\d{1,2}:\d{2}(?::\d{2})?\]\s*/;
 const ACCOUNT = /^(?:\d+\s*[).:-]|[-*•])\s*(.*)$/;
 const JOLLY = /^jolly\b([^:]*):(.*)$/i;
 const SEPARATORI = /\s*(?:[/,+;&]|\s+e\s+)\s*/i;
+
+const parole = (testo) => testo.split(SEPARATORI).filter((p) => chiave(p));
+
+/**
+ * Le classi scritte in un account, come "HP/Devo/Clown".
+ *
+ * @param {string} testo
+ * @param {Object<string, string>} imparati i soprannomi imparati, chiave -> classe
+ * @returns {{classi: string[], ignote: string[]}} le classi senza doppioni e le parole non riconosciute
+ */
+export function leggiClassi(testo, imparati = {}) {
+  const classi = [];
+  const ignote = [];
+  for (const parola of parole(testo)) {
+    const classe = riconosci(parola, imparati)?.classe;
+    if (!classe) ignote.push(parola);
+    else if (!classi.includes(classe)) classi.push(classe);
+  }
+  return { classi, ignote };
+}
+
+/**
+ * Il testo di un account riscritto: le classi riconosciute nella forma breve, le
+ * parole sconosciute come sono, tutto separato da "/". Una parola imparata come
+ * Altro resta com'e' scritta: "Stalker" dice piu' di "Altro".
+ */
+export function pulisci(testo, imparati = {}) {
+  const fatte = [];
+  for (const parola of parole(testo)) {
+    const classe = riconosci(parola, imparati)?.classe;
+    const scritta = !classe || classe === ALTRO ? parola.trim() : breve(classe);
+    if (!fatte.some((f) => chiave(f) === chiave(scritta))) fatte.push(scritta);
+  }
+  return fatte.join("/");
+}
 
 /**
  * Legge l'elenco incollato.
  *
  * @param {string} testo
  * @param {Object<string, string>} imparati i soprannomi imparati, chiave -> classe
- * @returns {{giocatori: Array<{nome: string, account: Array<{personaggi: Array<{classe: string}>}>}>,
- *   jolly: Array<{nome: string, personaggi: Array<{classe: string}>}>,
- *   dubbi: Array<{parola: string, chiave: string, chi: string, riga: number}>,
- *   corretti: Array<{parola: string, classe: string, chi: string, riga: number}>, errori: string[]}}
- *   `dubbi`: parole non riconosciute, una per chiave; `corretti`: errori di battitura corretti
+ * @returns {{giocatori: Array<{nome: string, account: string[]}>, jolly: Array<{nome: string, classi: string}>,
+ *   errori: string[]}} gli account e le classi dei jolly gia' riscritti con `pulisci`
  */
 export function leggiElenco(testo, imparati = {}) {
-  const esito = { giocatori: [], jolly: [], dubbi: [], corretti: [], errori: [] };
+  const esito = { giocatori: [], jolly: [], errori: [] };
   let giocatore = null;
-
-  const personaggi = (scritte, chi, riga) => {
-    const classi = [];
-    for (const parola of scritte.split(SEPARATORI).filter((p) => chiave(p))) {
-      const trovata = riconosci(parola, imparati);
-      if (!trovata) {
-        if (!esito.dubbi.some((d) => d.chiave === chiave(parola))) esito.dubbi.push({ parola: parola.trim(), chiave: chiave(parola), chi, riga });
-        continue;
-      }
-      if (trovata.corretta) esito.corretti.push({ parola: parola.trim(), classe: trovata.classe, chi, riga });
-      if (!classi.includes(trovata.classe)) classi.push(trovata.classe);
-    }
-    return classi.map((classe) => ({ classe }));
-  };
-  const aggiungiAccount = (scritte, riga) => {
-    const p = personaggi(scritte, giocatore.nome, riga);
-    if (p.length > 0) giocatore.account.push({ personaggi: p });
+  const aggiungiAccount = (scritte) => {
+    const pulito = pulisci(scritte, imparati);
+    if (pulito) giocatore.account.push(pulito);
   };
 
   testo.split(/\r?\n/).forEach((grezza, i) => {
@@ -146,51 +176,43 @@ export function leggiElenco(testo, imparati = {}) {
 
     const jolly = testoRiga.match(JOLLY);
     if (jolly) {
-      const nome = jolly[1].trim() || `Jolly ${esito.jolly.length + 1}`;
-      esito.jolly.push({ nome, personaggi: personaggi(jolly[2], nome, riga) });
+      esito.jolly.push({ nome: jolly[1].trim() || `Jolly ${esito.jolly.length + 1}`, classi: pulisci(jolly[2], imparati) });
       return;
     }
     const account = testoRiga.match(ACCOUNT);
     if (account) {
       if (!giocatore) esito.errori.push(`riga ${riga}: un account prima del nome del giocatore`);
-      else aggiungiAccount(account[1], riga);
+      else aggiungiAccount(account[1]);
       return;
     }
     const dueP = testoRiga.indexOf(":");
     const nome = (dueP < 0 ? testoRiga : testoRiga.slice(0, dueP)).trim();
     const resto = dueP < 0 ? "" : testoRiga.slice(dueP + 1).trim();
     // "HP/Sniper" senza numero davanti sembrerebbe un giocatore che si chiama cosi'.
-    const parole = nome.split(SEPARATORI).filter((p) => chiave(p));
-    if (parole.length > 0 && parole.every((p) => riconosci(p, imparati)?.corretta === false)) {
+    const scritte = parole(nome);
+    if (scritte.length > 0 && scritte.every((p) => riconosci(p, imparati)?.corretta === false)) {
       esito.errori.push(`riga ${riga}: "${nome}" sembra un account, non un giocatore: scrivi un numero davanti, come 1) ${nome}`);
       return;
     }
     giocatore = { nome, account: [] };
     esito.giocatori.push(giocatore);
-    if (resto) aggiungiAccount(resto.match(ACCOUNT)?.[1] ?? resto, riga);
+    if (resto) aggiungiAccount(resto.match(ACCOUNT)?.[1] ?? resto);
   });
 
-  for (const g of esito.giocatori) {
-    if (g.account.length === 0 && !esito.dubbi.some((d) => d.chi === g.nome)) esito.errori.push(`${g.nome} non ha account`);
-  }
+  for (const g of esito.giocatori) if (g.account.length === 0) esito.errori.push(`${g.nome} non ha account`);
   return esito;
 }
 
-/** Come si scrive una classe nell'elenco: "Clown" per Clown/Bard, Altro per le classi che non contano. */
-const scritta = (classe) => (CLASSI.includes(classe) ? classe.split("/")[0] : ALTRO);
-
 /** Tutti i giocatori e i jolly in un testo che `leggiElenco` rilegge. */
 export function scriviElenco(stato) {
-  const classi = (personaggi) => [...new Set(personaggi.filter((p) => p.classe).map((p) => scritta(p.classe)))].join("/");
   const blocchi = [];
   stato.giocatori.forEach((g, i) => {
-    const account = g.account.map((a) => classi(a.personaggi)).filter(Boolean);
-    if (account.length > 0) blocchi.push([g.nome || `Giocatore ${i + 1}`, ...account.map((c, k) => `${k + 1}) ${c}`)].join("\n"));
+    const account = g.account.filter((a) => a.trim());
+    if (account.length > 0) blocchi.push([g.nome || `Giocatore ${i + 1}`, ...account.map((a, k) => `${k + 1}) ${a}`)].join("\n"));
   });
   const jolly = stato.jolly
-    .map((j, i) => [j.nome || `Jolly ${i + 1}`, classi(j.personaggi)])
-    .filter(([, c]) => c)
-    .map(([nome, c]) => `Jolly ${nome}: ${c}`);
+    .filter((j) => j.classi.trim())
+    .map((j, i) => `Jolly ${j.nome || `Jolly ${i + 1}`}: ${j.classi}`);
   if (jolly.length > 0) blocchi.push(jolly.join("\n"));
   return `# Elenco della gilda per la pagina Party: si incolla in "Incolla l'elenco della gilda".\n\n${blocchi.join("\n\n")}\n`;
 }

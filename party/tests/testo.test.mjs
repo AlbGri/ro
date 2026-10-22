@@ -1,58 +1,53 @@
 /**
- * Test dell'elenco della gilda incollato, `node --test tests/*.mjs` da `party/`.
+ * Test dell'elenco della gilda e delle caselle degli account, `node --test tests/*.mjs` da `party/`.
  */
 
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { leggiElenco, riconosci, scriviElenco } from "../testo.js";
+import { leggiClassi, leggiElenco, pulisci, riconosci, scriviElenco } from "../testo.js";
 
-const pg = (...classi) => ({ personaggi: classi.map((classe) => ({ classe })) });
-
-describe("elenco della gilda", () => {
-  it("il messaggio di Efreeet copiato da Discord, con l'ora e il primo account sulla riga del nome", () => {
-    const letto = leggiElenco("[19:40]Efreeet: 1) HP/Devo/Clown/Sniper\n2) Prete\n3) Bragi\n");
-    assert.deepEqual(letto.errori, []);
-    assert.deepEqual(letto.dubbi, []);
-    assert.deepEqual(letto.giocatori, [
-      { nome: "Efreeet", account: [pg("High Priest", "Paladin", "Clown/Bard", "Sniper"), pg("Priest"), pg("Clown/Bard")] },
-    ]);
+describe("caselle degli account", () => {
+  it("soprannomi, canzoni, sigle ed errori di battitura", () => {
+    assert.deepEqual(leggiClassi("HP/Devo/Clown/Sniper"), { classi: ["High Priest", "Paladin", "Clown/Bard", "Sniper"], ignote: [] });
+    assert.deepEqual(leggiClassi("Bragi, SP Song + bio e Wiz").classi, ["Clown/Bard", "Gypsy/Dancer", "Creator", "High Wizard"]);
+    assert.deepEqual(leggiClassi("Processor/Snipper/Hight Priest").classi, ["Professor", "Sniper", "High Priest"]);
+    assert.deepEqual(leggiClassi("Stalker/HP"), { classi: ["High Priest"], ignote: ["Stalker"] });
+    assert.deepEqual(leggiClassi("Stalker/HP", { stalker: "Altro" }).classi, ["Altro", "High Priest"]);
   });
 
-  it("piu' giocatori, separatori diversi, trattini, jolly e commenti", () => {
-    const letto = leggiElenco(
-      "# gilda\nMario\n1. Bio, Champ\n- HW + gypsy\n\nAnna:\n1 - Prof e Wiz\nJolly Gilda1: Clown/Sniper\nJolly: HP\n",
-    );
-    assert.deepEqual(letto.errori, []);
-    assert.deepEqual(letto.giocatori, [
-      { nome: "Mario", account: [pg("Creator", "Champion"), pg("High Wizard", "Gypsy/Dancer")] },
-      { nome: "Anna", account: [pg("Professor", "High Wizard")] },
-    ]);
-    assert.deepEqual(letto.jolly, [
-      { nome: "Gilda1", personaggi: pg("Clown/Bard", "Sniper").personaggi },
-      { nome: "Jolly 2", personaggi: pg("High Priest").personaggi },
-    ]);
+  it("riscritte in forma breve, le sconosciute e quelle imparate come Altro restano come sono", () => {
+    assert.equal(pulisci("high priest / devo, Processor/bragi/bard"), "HP/Paladin/Prof/Clown");
+    assert.equal(pulisci("Stalker/hw"), "Stalker/HW");
+    assert.equal(pulisci("Stalker/hw", { stalker: "Altro" }), "Stalker/HW");
+    assert.equal(pulisci(""), "");
   });
 
-  it("errori di battitura corretti, parole sconosciute chieste una volta sola", () => {
-    const testo = "Mario\n1) Processor/Snipper\n2) Stalker\nLuca\n1) stalker/Hight Priest/SP Song\n";
-    const letto = leggiElenco(testo);
-    assert.deepEqual(
-      letto.corretti.map((c) => [c.parola, c.classe, c.chi]),
-      [["Processor", "Professor", "Mario"], ["Snipper", "Sniper", "Mario"], ["Hight Priest", "High Priest", "Luca"]],
-    );
-    assert.deepEqual(letto.dubbi, [{ parola: "Stalker", chiave: "stalker", chi: "Mario", riga: 3 }]);
-    // Imparato il soprannome, l'elenco si legge tutto.
-    const imparato = leggiElenco(testo, { stalker: "Altro" });
-    assert.deepEqual(imparato.dubbi, []);
-    assert.deepEqual(imparato.giocatori[1].account, [pg("Altro", "High Priest", "Gypsy/Dancer")]);
-  });
-
-  it("le sigle corte non si correggono: HW non diventa HP", () => {
+  it("le sigle corte non si correggono: HQ non diventa HP", () => {
     assert.equal(riconosci("HQ"), null);
     assert.equal(riconosci("Wizard"), null);
     assert.equal(riconosci("Monk"), null);
     assert.deepEqual(riconosci("hw"), { classe: "High Wizard", corretta: false });
+  });
+});
+
+describe("elenco della gilda", () => {
+  it("il messaggio di Efreeet copiato da Discord, con l'ora e il primo account sulla riga del nome", () => {
+    const letto = leggiElenco("[19:40]Efreeet: 1) HP/Devo/Clown/Sniper\n2) Prete\n3) Bragi\n");
+    assert.deepEqual(letto, { giocatori: [{ nome: "Efreeet", account: ["HP/Paladin/Clown/Sniper", "Priest", "Clown"] }], jolly: [], errori: [] });
+  });
+
+  it("piu' giocatori, separatori diversi, trattini, jolly, commenti e parole sconosciute", () => {
+    const letto = leggiElenco("# gilda\nMario\n1. Bio, Champ\n- HW + gypsy\n\nAnna:\n1 - Prof e Stalker\nJolly Gilda1: Clown/Sniper\nJolly: HP\n");
+    assert.deepEqual(letto.errori, []);
+    assert.deepEqual(letto.giocatori, [
+      { nome: "Mario", account: ["Creator/Champ", "HW/Gypsy"] },
+      { nome: "Anna", account: ["Prof/Stalker"] },
+    ]);
+    assert.deepEqual(letto.jolly, [
+      { nome: "Gilda1", classi: "Clown/Sniper" },
+      { nome: "Jolly 2", classi: "HP" },
+    ]);
   });
 
   it("account senza giocatore, classi al posto del nome, giocatore senza account", () => {
@@ -67,17 +62,21 @@ describe("elenco della gilda", () => {
   it("l'elenco esportato si rilegge uguale", () => {
     const stato = {
       giocatori: [
-        { nome: "Efreeet", account: [pg("High Priest", "Paladin", "Clown/Bard", "Sniper"), pg("Priest"), pg("Clown/Bard")] },
-        { nome: "", account: [pg("Lord Knight"), pg("")] },
-        { nome: "Senza", account: [pg("")] },
+        { nome: "Efreeet", account: ["HP/Paladin/Clown/Sniper", "", "Clown"] },
+        { nome: "", account: ["Stalker"] },
+        { nome: "Senza", account: [""] },
       ],
-      jolly: [{ nome: "Gilda 1", personaggi: pg("Gypsy/Dancer", "Altro").personaggi }],
+      jolly: [{ nome: "Gilda 1", classi: "Gypsy/Altro" }, { nome: "Vuoto", classi: "" }],
     };
     const testo = scriviElenco(stato);
-    assert.match(testo, /Efreeet\n1\) High Priest\/Paladin\/Clown\/Sniper\n2\) Priest\n3\) Clown/);
-    const letto = leggiElenco(testo);
-    assert.deepEqual(letto.errori, []);
-    assert.deepEqual(letto.giocatori, [stato.giocatori[0], { nome: "Giocatore 2", account: [pg("Altro")] }]);
-    assert.deepEqual(letto.jolly, [{ nome: "Gilda 1", personaggi: pg("Gypsy/Dancer", "Altro").personaggi }]);
+    assert.match(testo, /Efreeet\n1\) HP\/Paladin\/Clown\/Sniper\n2\) Clown/);
+    assert.deepEqual(leggiElenco(testo), {
+      giocatori: [
+        { nome: "Efreeet", account: ["HP/Paladin/Clown/Sniper", "Clown"] },
+        { nome: "Giocatore 2", account: ["Stalker"] },
+      ],
+      jolly: [{ nome: "Gilda 1", classi: "Gypsy/Altro" }],
+      errori: [],
+    });
   });
 });

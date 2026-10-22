@@ -2,6 +2,12 @@
 
 Le versioni della pagina `party/`.
 
+## [1.6] - 2026-10-22
+
+- Giocatori e jolly in una tabella compatta, una riga a testa: in ogni casella le classi di un account come le scrivete su Discord, per esempio HP/Devo/Clown/Sniper. Uscendo dalla casella la pagina le riscrive come le ha capite; le parole che non conosce restano in rosso
+- Sotto la tabella le parole da riconoscere, con il nome di chi le ha scritte: scelta la classe, la pagina se la ricorda e corregge tutte le caselle
+- L'elenco incollato riempie la tabella, e i pulsanti di export non dicono più "(txt)"
+
 ## [1.5] - 2026-10-22
 
 - Nuova istanza, l'Endless Cellar: party minimo di 10 (Champion, 2 High Priest, 2 Sniper, Gypsy/Dancer, Clown/Bard, Professor, Paladin, Creator) e fino a 2 posti in più solo per Sniper o High Wizard, al massimo un High Wizard per run
