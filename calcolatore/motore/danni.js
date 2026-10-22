@@ -1767,12 +1767,16 @@ function BattleCalc998() {
   scrivi("bSUBname", str_bSUBname);
   scrivi("bSUB", str_bSUB);
   scrivi("BattleHIT", w_HIT_HYOUJI);
+  // l'Emperium (mostro 44) prende solo attacchi normali (e Gravity Field): ogni altra skill fa 0
   if (
     targetData[0] == 44 &&
     SKILLID.BASIC_ATTACK != n_A_ActiveSkill &&
     SKILLID.GRAVITY_FIELD != n_A_ActiveSkill
   )
-    for (i = 0; i <= 2; i++) w_DMG[i] = 0;
+    for (i = 0; i <= 2; i++) {
+      w_DMG[i] = 0;
+      InnStr[i] = 0;
+    }
   tPlusAG();
   // Double Bolt: un colpo in piu' su dieci (campo della skill); i bolt di Hindsight valgono 1/4
   var doubleBolt = 1;
