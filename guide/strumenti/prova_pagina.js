@@ -1,6 +1,7 @@
 // Prova la pagina vera in Edge senza finestra, su una copia che non tocca i dati dell'utente.
 //   node strumenti/prova_pagina.js prova.js
 //   node strumenti/prova_pagina.js prova.js --foto foto.png --finestra 1280,1500 --query "tema=scuro"
+//   node strumenti/prova_pagina.js prova.js --lingua en      (la pagina in inglese, senza gate.js come dal disco)
 // prova.js è codice che gira dentro la pagina, dopo il suo script. Per avere un risultato chiama esito("testo")
 // una o più volte: le righe vengono stampate qui. Con --foto salva invece uno screenshot (senza scroll: per
 // inquadrare una fase nascondi le altre da prova.js, perché lo scroll negli screenshot senza finestra non funziona;
@@ -20,7 +21,7 @@ const { GUIDA } = require("./comune");
 const EDGE = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe";
 const args = process.argv.slice(2);
 const opz = nome => { const i = args.indexOf("--" + nome); return i < 0 ? null : args.splice(i, 2)[1]; };
-const foto = opz("foto"), finestra = opz("finestra") || "1280,1500", query = opz("query"), semina = opz("semina");
+const foto = opz("foto"), finestra = opz("finestra") || "1280,1500", query = opz("query"), semina = opz("semina"), lingua = opz("lingua");
 if (!args[0]) { console.log("Uso: node strumenti/prova_pagina.js prova.js [--foto foto.png] [--finestra 1280,1500] [--query a=b]"); process.exit(1); }
 
 const prima = [
@@ -31,7 +32,7 @@ const prima = [
   'window.esito = function (t) { document.getElementById("esito").textContent += String(t) + String.fromCharCode(10); };',
   'window.addEventListener("error", function (e) { window.esito("ERRORE: " + e.message); });',
   // Ogni prova parte da zero, oppure dai dati salvati di --semina (per provare la conversione di dati vecchi).
-  'try { ["", "-ids1", "-ids2", "-ids3", "-ids4"].forEach(function (x) { localStorage.removeItem("uaro-nw-guide-PROVA" + x); }); localStorage.removeItem("ragnarok/theme-PROVA"); } catch (e) {}',
+  'try { ["", "-ids1", "-ids2", "-ids3", "-ids4"].forEach(function (x) { localStorage.removeItem("uaro-nw-guide-PROVA" + x); }); localStorage.removeItem("ragnarok/theme-PROVA"); localStorage.setItem("ragnarok/lang-PROVA", ' + JSON.stringify(lingua || "it") + '); } catch (e) {}',
   semina ? 'try { localStorage.setItem("uaro-nw-guide-PROVA", ' + JSON.stringify(fs.readFileSync(semina, "utf8").trim()) + '); } catch (e) {}' : ''
 ].join("\n");
 let html = fs.readFileSync(GUIDA, "utf8");
@@ -40,6 +41,9 @@ html = html.replace('const STORAGE_KEY = "uaro-nw-guide";', 'const STORAGE_KEY =
 // Anche il tema ha la sua chiave di prova: quella vera vale per tutto il sito.
 if (!html.includes('const THEME_KEY = "ragnarok/theme";')) throw new Error("THEME_KEY non trovato nella guida");
 html = html.replace('const THEME_KEY = "ragnarok/theme";', 'const THEME_KEY = "ragnarok/theme-PROVA";');
+// E la lingua (--lingua en), per la stessa ragione.
+if (!html.includes('const LANG_KEY = "ragnarok/lang";')) throw new Error("LANG_KEY non trovato nella guida");
+html = html.replace('const LANG_KEY = "ragnarok/lang";', 'const LANG_KEY = "ragnarok/lang-PROVA";');
 // Le sostituzioni vanno prima del codice della pagina, la prova dopo.
 html = html.replace("<body>", function () { return "<body><script>" + prima + "</script>"; });
 const prova = fs.readFileSync(args[0], "utf8");

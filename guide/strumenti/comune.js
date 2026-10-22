@@ -15,12 +15,18 @@ function leggiGuida(file) {
   return Object.assign({ src, script }, dati);
 }
 
-const ORDINE_CAMPI = ["d", "navi", "copy", "tip", "warn", "verify"];
+const ORDINE_CAMPI = ["d", "navi", "copy", "tip", "warn", "verify", "en"];
+// Testi inglesi (campo en): le stesse chiavi dell'italiano, in quest'ordine. In uno step "copy" e'
+// l'elenco delle etichette dei gruppi da copiare; i comandi restano quelli dell'italiano.
+const CAMPI_EN_STEP = ["h", "d", "copy", "tip", "warn", "verify"];
+const CAMPI_EN_FASE = ["title", "where", "sum", "when", "intro"];
 const J = JSON.stringify;
+const enSrc = (en, campi) => "{ " + campi.filter(k => en[k] !== undefined).map(k => k + ": " + J(en[k])).join(", ") + " }";
 function stepSrc(s) {
   const testa = "{ id: " + J(s.id) + ", q: " + J(s.q) + (s.opt ? ", opt: true" : "") + (s.hidden ? ", hidden: true" : "") + (s.group ? ", group: " + J(s.group) : "") + ", h: " + J(s.h);
   const resto = ORDINE_CAMPI.filter(k => s[k] !== undefined).map(k => {
     if (k === "copy") return "copy: [" + s.copy.map(g => "{ label: " + J(g.label) + ", items: " + J(g.items) + " }").join(", ") + "]";
+    if (k === "en") return "en: " + enSrc(s.en, CAMPI_EN_STEP);
     return k + ": " + J(s[k]);
   });
   if (!resto.length) return "      " + testa + " }";
@@ -34,7 +40,9 @@ function scriviGuida(src, PHASES, versione, file) {
   const corpo = PHASES.map(p => "  {\n    id: " + J(p.id) + ", branch: " + J(p.branch) + (p.hidden ? ", hidden: true" : "") + (p.opt ? ", opt: true" : "") + (p.page ? ", page: " + J(p.page) : "") + ", title: " + J(p.title) + ", where: " + J(p.where) + ",\n" +
     (p.sum ? "    sum: " + J(p.sum) + ",\n" : "") +
     (p.when ? "    when: " + J(p.when) + ",\n" : "") +
-    "    intro: " + J(p.intro) + ",\n    steps: [\n" + p.steps.map(stepSrc).join(",\n") + "\n    ]\n  }").join(",\n");
+    "    intro: " + J(p.intro) + ",\n" +
+    (p.en ? "    en: " + enSrc(p.en, CAMPI_EN_FASE) + ",\n" : "") +
+    "    steps: [\n" + p.steps.map(stepSrc).join(",\n") + "\n    ]\n  }").join(",\n");
   let out = src.slice(0, inizio) + "const PHASES = [\n" + corpo + "\n" + src.slice(fine);
   if (versione) out = out.replace(/const GUIDE_VERSION = "[^"]+";/, 'const GUIDE_VERSION = "' + versione + '";');
   fs.writeFileSync(file || GUIDA, out);
@@ -103,4 +111,4 @@ function distanze(m, sx, sy) {
   return d;
 }
 
-module.exports = { RADICE, GUIDA, FONTI, leggiGuida, scriviGuida, mappa, calpestabile, cellaVicina, distanze };
+module.exports = { RADICE, GUIDA, FONTI, leggiGuida, scriviGuida, mappa, calpestabile, cellaVicina, distanze, CAMPI_EN_STEP, CAMPI_EN_FASE };

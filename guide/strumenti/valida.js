@@ -4,7 +4,7 @@
 // - ogni /navi (e ogni coordinata citata nei testi) punta a una cella calpestabile
 // - i riferimenti "step X.YY" e "fase N" nei testi visibili puntano a step e fasi visibili
 // - le fasi della pagina Altre quest (page: "altre") sono facoltative in ogni step
-const { leggiGuida, mappa, calpestabile, cellaVicina } = require("./comune");
+const { leggiGuida, mappa, calpestabile, cellaVicina, CAMPI_EN_STEP, CAMPI_EN_FASE } = require("./comune");
 
 const g = leggiGuida(process.argv[2]);
 new Function(g.script[1]);
@@ -45,7 +45,7 @@ tutti.forEach(s => {
 
 // Riferimenti interni
 // Stessa espressione della pagina (XREF_RE): step "9.03" e "Q4.07", fasi "fase 10", quest "Q3".
-const RIF = /(?<![\dA-Za-z.\/])((?:Q\d{1,2}|\d{1,2})\.\d{2}(?:[a-z](?![a-zà-ÿ]))?)(?!\d|\.\d)|\bfase (\d{1,2}[a-z]?)\b|\b(Q\d{1,2})\b(?!\.\d)/g;
+const RIF = /(?<![\dA-Za-z.\/])((?:Q\d{1,2}|\d{1,2})\.\d{2}(?:[a-z](?![a-zà-ÿ]))?)(?!\d|\.\d)|\b(?:fase|phase) (\d{1,2}[a-z]?)\b|\b(Q\d{1,2})\b(?!\.\d)/g;
 function controllaTesto(dove, testo) {
   for (const m of String(testo || "").matchAll(RIF)) {
     if (m[1] && !idVisibili.has(m[1])) err("riferimento a step non visibile o inesistente " + m[1] + " in " + dove);
@@ -53,6 +53,7 @@ function controllaTesto(dove, testo) {
     if (m[3] && !fasiId.has(m[3])) err("riferimento a quest non visibile o inesistente " + m[3] + " in " + dove);
   }
   if (/\bfasi \d/.test(String(testo || ""))) err("elenco di fasi non controllabile in " + dove + ": scrivi \"fase N\" per ognuna");
+  if (/\bphases \d/.test(String(testo || ""))) err("elenco di fasi non controllabile in " + dove + ": scrivi \"phase N\" per ognuna");
 }
 fasiVisibili.forEach(p => { controllaTesto("intro fase " + p.id, p.intro); controllaTesto("quando fase " + p.id, p.when); });
 
@@ -74,6 +75,45 @@ g.PHASES.forEach(p => {
 }
 visibili.forEach(s => ["h", "d", "tip", "warn", "verify"].forEach(k => controllaTesto("step " + s.id + " (" + k + ")", s[k])));
 
+// Testi inglesi (campo en, dal 23/10/2026): per ogni testo italiano c'e' quello inglese, e i due hanno
+// le stesse opzioni tra «», gli stessi rimandi, le stesse coordinate e gli stessi numeri.
+// Uno step o una fase senza en si mostra in italiano anche in inglese: si contano, non sono errori.
+const testiStep = s => Object.assign({}, ...CAMPI_EN_STEP.map(k => ({ [k]: k === "copy" ? (s.copy && s.copy.map(c => c.label)) : s[k] })));
+const testiFase = p => Object.assign({}, ...CAMPI_EN_FASE.map(k => ({ [k]: p[k] })));
+const multinsieme = a => a.slice().sort().join(" | ");
+function pezzi(testo, inglese) {
+  let t = String(testo);
+  const opzioni = [...t.matchAll(/«[^»]*»/g)].map(m => m[0]);
+  t = t.replace(/«[^»]*»/g, " ");
+  const rimandi = [...t.matchAll(RIF)].map(m => m[1] || (m[2] ? "fase " + m[2] : m[3]));
+  t = t.replace(RIF, " ");
+  const coord = [...t.matchAll(/\b[a-z_0-9]+ \d+\/\d+/g)].map(m => m[0]);
+  t = t.replace(/\b[a-z_0-9]+ \d+\/\d+/g, " ");
+  // 1.200 e 0,5 in italiano, 1,200 e 0.5 in inglese
+  const numeri = [...t.matchAll(inglese ? /\d+(?:,\d{3})*(?:\.\d+)?/g : /\d+(?:\.\d{3})*(?:,\d+)?/g)]
+    .map(m => String(Number(inglese ? m[0].replace(/,/g, "") : m[0].replace(/\./g, "").replace(",", "."))));
+  return { opzioni: opzioni.join(" | "), rimandi: multinsieme(rimandi), coordinate: multinsieme(coord), numeri: multinsieme(numeri) };
+}
+function confronta(dove, it, en) {
+  if (!en) return false;
+  Object.keys(it).forEach(k => {
+    const a = it[k], b = en[k];
+    if (a === undefined) { if (b !== undefined) err("testo inglese senza italiano in " + dove + " (" + k + ")"); return; }
+    if (b === undefined) return err("manca il testo inglese in " + dove + " (" + k + ")");
+    const coppie = k === "copy" ? a.map((x, i) => [x, b[i]]) : [[a, b]];
+    if (k === "copy" && (!Array.isArray(b) || b.length !== a.length)) return err("etichette copy inglesi in numero diverso in " + dove);
+    coppie.forEach(([x, y]) => {
+      controllaTesto(dove + " (en " + k + ")", y);
+      const pi = pezzi(x, false), pe = pezzi(y, true);
+      Object.keys(pi).forEach(c => { if (pi[c] !== pe[c]) err(c + " diversi fra italiano e inglese in " + dove + " (" + k + "): «" + pi[c] + "» / «" + pe[c] + "»"); });
+    });
+  });
+  return true;
+}
+const senzaEn = [];
+fasiVisibili.forEach(p => { if (!confronta("fase " + p.id, testiFase(p), p.en)) senzaEn.push(p.id); });
+visibili.forEach(s => { if (!confronta("step " + s.id, testiStep(s), s.en)) senzaEn.push(s.id); });
+
 // Pagina "Altre quest": le sue fasi (page: "altre") non devono entrare nel progresso del percorso
 g.PHASES.forEach(p => {
   if (p.page !== undefined && p.page !== "altre") err("valore di page non previsto nella fase " + p.id + ": " + p.page);
@@ -89,5 +129,6 @@ console.log("Versione " + g.GUIDE_VERSION + ": " + tutti.length + " step nel fil
   visibili.filter(s => s.verify).length + " con dubbio aperto, " + coordinate + " coordinate controllate.");
 console.log("Percorso: " + (fasiVisibili.length - fasiAltre.length) + " fasi. Altre quest: " + fasiAltre.length + " (" + fasiAltre.map(p => p.id).join(", ") + "), " +
   fasiAltre.reduce((n, p) => n + p.steps.filter(s => !s.hidden).length, 0) + " step.");
+console.log(senzaEn.length ? "Senza testo inglese: " + senzaEn.length + " fra fasi e step (" + senzaEn.slice(0, 12).join(", ") + (senzaEn.length > 12 ? "..." : "") + ")." : "Testo inglese completo.");
 console.log(errori ? errori + " errori." : "Nessun errore.");
 process.exit(errori ? 1 : 0);

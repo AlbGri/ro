@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" data-bilingual>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>uaRO – Nuovo Mondo passo per passo</title>
+<title data-en="uaRO – New World step by step">uaRO – Nuovo Mondo passo per passo</title>
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F5F7F1">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1B2420">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -328,97 +328,97 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
 <body>
 <header class="topbar">
   <div class="topbar-inner">
-    <a class="btn" href="../index.html" title="Torna alla scelta dei servizi">Home</a>
-    <span class="brand">Nuovo Mondo</span>
+    <a class="btn" href="../index.html" title="Torna alla scelta dei servizi" data-en-title="Back to the list of services">Home</a>
+    <span class="brand" data-en="New World">Nuovo Mondo</span>
     <div class="progress" aria-live="polite">
       <span class="progress-text" id="progressText">Caricamento…</span>
       <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
     </div>
     <div class="actions">
-      <button class="btn primary" id="btnNext" type="button" title="Clicca di nuovo per passare al successivo non fatto">Vai al prossimo passo</button>
+      <button class="btn primary" id="btnNext" type="button" title="Clicca di nuovo per passare al successivo non fatto" data-en-title="Click again to go to the next one not done" data-en="Go to the next step">Vai al prossimo passo</button>
       <button class="btn" id="btnHide" type="button" aria-pressed="false">Nascondi i fatti</button>
-      <button class="btn" id="btnExport" type="button">Esporta note per l'admin</button>
-      <button class="btn" id="btnView" type="button" title="Passa dal percorso alle quest che non servono, e ritorno">Altre quest</button>
+      <button class="btn" id="btnExport" type="button" data-en="Export notes for the admin">Esporta note per l'admin</button>
+      <button class="btn" id="btnView" type="button" title="Passa dal percorso alle quest che non servono, e ritorno" data-en-title="Switch from the route to the quests that are not needed, and back">Altre quest</button>
       <details class="more">
         <summary class="btn gear" title="Menu" aria-label="Menu">&#9881;</summary>
         <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, lingua, tema. -->
         <div class="more-menu">
-          <button class="btn" id="btnClearNotes" type="button">Cancella tutte le note</button>
-          <button class="btn" id="btnReset" type="button">Azzera tutto</button>
-          <button class="btn" id="btnBackup" type="button">Backup dei dati</button>
-          <button class="btn" id="btnRestore" type="button">Ripristina da backup</button>
-          <button class="btn" type="button" onclick="window.toggleLang && toggleLang()" data-lang>English</button>
-          <button class="btn" id="btnTheme" type="button">Cambia tema chiaro/scuro</button>
+          <button class="btn" id="btnClearNotes" type="button" data-en="Delete all notes">Cancella tutte le note</button>
+          <button class="btn" id="btnReset" type="button" data-en="Clear everything">Azzera tutto</button>
+          <button class="btn" id="btnBackup" type="button" data-en="Data backup">Backup dei dati</button>
+          <button class="btn" id="btnRestore" type="button" data-en="Restore from backup">Ripristina da backup</button>
+          <button class="btn" type="button" onclick="window.toggleLang && toggleLang()" data-lang data-en="Italiano">English</button>
+          <button class="btn" id="btnTheme" type="button" data-en="Switch light/dark theme">Cambia tema chiaro/scuro</button>
         </div>
       </details>
     </div>
-    <select class="phase-select" id="phaseSelect" aria-label="Vai alla fase"></select>
+    <select class="phase-select" id="phaseSelect" aria-label="Vai alla fase" data-en-aria-label="Go to phase"></select>
   </div>
 </header>
 
 <div class="layout">
-  <nav class="route" aria-label="Fasi del percorso">
+  <nav class="route" aria-label="Fasi del percorso" data-en-aria-label="Phases of the route">
     <h2 id="routeTitle">Percorso</h2>
     <ol id="routeList"></ol>
   </nav>
 
   <main>
     <section class="hero" data-page="altre">
-      <h1>Altre quest</h1>
-      <p class="lead">Il Nidhoggur's Nest da fare in party e le quest che non servono per arrivarci né per El Dicastes. Ognuna è indipendente dalle altre: apri quella che vuoi fare.</p>
-      <p class="only-dic">Spunte e note finiscono nello stesso export e nello stesso backup del percorso. Vai al prossimo passo riporta sempre al percorso.</p>
-      <div class="legend" id="legendAltre" aria-label="Quest e link alle guide"></div>
+      <h1 data-en="Other quests">Altre quest</h1>
+      <p class="lead" data-en="The Nidhoggur's Nest to do in a party and the quests that are not needed to get there or for El Dicastes. Each one is independent of the others: open the one you want to do.">Il Nidhoggur's Nest da fare in party e le quest che non servono per arrivarci né per El Dicastes. Ognuna è indipendente dalle altre: apri quella che vuoi fare.</p>
+      <p class="only-dic" data-en="Checks and notes end up in the same export and the same backup as the route. Go to the next step always takes you back to the route.">Spunte e note finiscono nello stesso export e nello stesso backup del percorso. Vai al prossimo passo riporta sempre al percorso.</p>
+      <div class="legend" id="legendAltre" aria-label="Quest e link alle guide" data-en-aria-label="Quests and links to the guides"></div>
     </section>
 
     <section class="hero" data-page="percorso">
-      <h1>Nuovo Mondo, passo per passo</h1>
-      <p class="lead">Da Onward to the New World fino a El Dicastes e all'accesso al Nidhoggur's Nest, in un solo percorso ordinato per risparmiare viaggi. Pensato per uaRO.</p>
+      <h1 data-en="New World, step by step">Nuovo Mondo, passo per passo</h1>
+      <p class="lead" data-en="From Onward to the New World up to El Dicastes and the access to the Nidhoggur's Nest, in a single route ordered to save travel. Made for uaRO.">Da Onward to the New World fino a El Dicastes e all'accesso al Nidhoggur's Nest, in un solo percorso ordinato per risparmiare viaggi. Pensato per uaRO.</p>
 
       <div class="flows">
         <div class="flow" style="--b: var(--common)">
-          <span class="flow-name">Tratto comune</span>
-          <div class="stations"><span class="station">Onward to the New World</span><span class="station">New Surroundings</span><span class="station">Avvio del Report</span><span class="station">Ring of the Wise King</span></div>
+          <span class="flow-name" data-en="Common path">Tratto comune</span>
+          <div class="stations"><span class="station">Onward to the New World</span><span class="station">New Surroundings</span><span class="station" data-en="Start of the Report">Avvio del Report</span><span class="station">Ring of the Wise King</span></div>
         </div>
         <div class="flow" style="--b: var(--dic)">
-          <span class="flow-name">Ramo El Dicastes</span>
-          <div class="stations"><span class="station">Ring of the Ancient Wise King indossato</span><span class="station">Sapha's Visit</span><span class="station">El Dicastes</span></div>
+          <span class="flow-name" data-en="El Dicastes branch">Ramo El Dicastes</span>
+          <div class="stations"><span class="station" data-en="Ring of the Ancient Wise King worn">Ring of the Ancient Wise King indossato</span><span class="station">Sapha's Visit</span><span class="station">El Dicastes</span></div>
         </div>
         <div class="flow" style="--b: var(--nest)">
-          <span class="flow-name">Ramo Nidhoggur</span>
-          <div class="stations"><span class="station">Report from the New World completato</span><span class="station">Two Tribes fino al dungeon</span><span class="station">Guardian of Yggdrasil</span><span class="station">Accesso al Nidhoggur's Nest</span></div>
+          <span class="flow-name" data-en="Nidhoggur branch">Ramo Nidhoggur</span>
+          <div class="stations"><span class="station" data-en="Report from the New World completed">Report from the New World completato</span><span class="station" data-en="Two Tribes up to the dungeon">Two Tribes fino al dungeon</span><span class="station">Guardian of Yggdrasil</span><span class="station" data-en="Access to the Nidhoggur's Nest">Accesso al Nidhoggur's Nest</span></div>
         </div>
       </div>
 
-      <p class="only-dic">Ti interessa solo El Dicastes? Bastano le fasi dalla 1 alla 8: il Ring of the Ancient Wise King (fase 7) richiede di aver avviato il Report, non di finirlo.</p>
+      <p class="only-dic" data-en="Only interested in El Dicastes? Phases 1 to 8 are enough: the Ring of the Ancient Wise King (phase 7) requires having started the Report, not finishing it.">Ti interessa solo El Dicastes? Bastano le fasi dalla 1 alla 8: il Ring of the Ancient Wise King (fase 7) richiede di aver avviato il Report, non di finirlo.</p>
 
       <div class="hero-grid">
         <div>
-          <h2>Come si usa</h2>
+          <h2 data-en="How to use it">Come si usa</h2>
           <ul>
-            <li>Clicca un /navi o un comando: viene copiato, e lo incolli nella chat del gioco.</li>
-            <li>Spunta gli step fatti. Vai al prossimo passo ti porta al primo non fatto; cliccalo di nuovo per saltare quelli lasciati indietro.</li>
-            <li>Nei dialoghi scegli l'opzione sottolineata, come «Yes.»; quelle tra virgolette alte, come “No.”, sono da evitare.</li>
-            <li>Uno step con l'etichetta facoltativo non conta nel progresso. Se qualcosa non torna, scrivilo nella nota dello step e usa Esporta note per l'admin.</li>
-            <li>Spunte e note restano in questo browser. Se cancelli i dati del browser si perdono: prima fai un backup dal menu ⚙ in alto a destra.</li>
+            <li data-en="Click a /navi or a command: it is copied, and you paste it in the game chat.">Clicca un /navi o un comando: viene copiato, e lo incolli nella chat del gioco.</li>
+            <li data-en="Check the steps you have done. Go to the next step takes you to the first one not done; click it again to skip the ones left behind.">Spunta gli step fatti. Vai al prossimo passo ti porta al primo non fatto; cliccalo di nuovo per saltare quelli lasciati indietro.</li>
+            <li data-en="In dialogues choose the underlined option, like «Yes.»; the ones in high quotes, like “No.”, are to be avoided.">Nei dialoghi scegli l'opzione sottolineata, come «Yes.»; quelle tra virgolette alte, come “No.”, sono da evitare.</li>
+            <li data-en="A step with the optional label does not count in the progress. If something does not add up, write it in the step's note and use Export notes for the admin.">Uno step con l'etichetta facoltativo non conta nel progresso. Se qualcosa non torna, scrivilo nella nota dello step e usa Esporta note per l'admin.</li>
+            <li data-en="Checks and notes stay in this browser. If you clear the browser data they are lost: make a backup first from the ⚙ menu at the top right.">Spunte e note restano in questo browser. Se cancelli i dati del browser si perdono: prima fai un backup dal menu ⚙ in alto a destra.</li>
           </ul>
         </div>
         <div>
-          <h2>Consigli</h2>
+          <h2 data-en="Tips">Consigli</h2>
           <ul>
-            <li>Attiva il Navigator con una scorciatoia (Esc, Shortcut Settings, Interface, seconda pagina, Navigator on/off): dopo un /navi ti mostra la strada.</li>
-            <li>Il /navi non attraversa i Camp Guard del campo: negli step che partono da lì, il primo /navi è il Camp Guard giusto.</li>
-            <li>Usa un personaggio con il Warp Portal, o fatti aiutare da uno: risparmi molti viaggi. Dove fare i /memo è allo step 0.06; nel Nuovo Mondo, a Lighthalzen e a Juno il /memo non funziona.</li>
-            <li>I Warpra delle città portano al campo e al Nidhogg's Dungeon per 5.000 zeny, dopo che hai parlato con il Warpra Helper del posto (step 1.15 e 10.08). Dal campo riparti con il Warp Portal o con i teletrasporti Cat Hand.</li>
-            <li>Nel test di Onward il credito va solo al party leader. Per il Nest porta amici; sui campi di El Dicastes tieni pronte le Fly Wing.</li>
+            <li data-en="Turn on the Navigator with a shortcut (Esc, Shortcut Settings, Interface, second page, Navigator on/off): after a /navi it shows you the way.">Attiva il Navigator con una scorciatoia (Esc, Shortcut Settings, Interface, seconda pagina, Navigator on/off): dopo un /navi ti mostra la strada.</li>
+            <li data-en="The /navi does not go through the Camp Guards of the camp: in the steps that start from there, the first /navi is the right Camp Guard.">Il /navi non attraversa i Camp Guard del campo: negli step che partono da lì, il primo /navi è il Camp Guard giusto.</li>
+            <li data-en="Use a character with Warp Portal, or get help from one: you save a lot of travel. Where to make the /memo is in step 0.06; in the New World, in Lighthalzen and in Juno the /memo does not work.">Usa un personaggio con il Warp Portal, o fatti aiutare da uno: risparmi molti viaggi. Dove fare i /memo è allo step 0.06; nel Nuovo Mondo, a Lighthalzen e a Juno il /memo non funziona.</li>
+            <li data-en="The Warpra in the towns take you to the camp and to the Nidhogg's Dungeon for 5,000 zeny, after you have talked to the Warpra Helper of that place (steps 1.15 and 10.08). From the camp you leave with Warp Portal or with the Cat Hand teleports.">I Warpra delle città portano al campo e al Nidhogg's Dungeon per 5.000 zeny, dopo che hai parlato con il Warpra Helper del posto (step 1.15 e 10.08). Dal campo riparti con il Warp Portal o con i teletrasporti Cat Hand.</li>
+            <li data-en="In the Onward test the credit goes only to the party leader. For the Nest bring friends; on the El Dicastes fields keep Fly Wings ready.">Nel test di Onward il credito va solo al party leader. Per il Nest porta amici; sui campi di El Dicastes tieni pronte le Fly Wing.</li>
           </ul>
         </div>
       </div>
-      <div class="legend" id="legend" aria-label="Quest e link alle guide"></div>
+      <div class="legend" id="legend" aria-label="Quest e link alle guide" data-en-aria-label="Quests and links to the guides"></div>
     </section>
 
     <div id="phases"></div>
 
-    <p class="footer">Fonti: iRO Wiki per i passaggi delle quest, script ufficiali di rAthena (il software su cui girano i server privati come uaRO) per coordinate, mappe senza /memo e meccaniche, wiki di uaRO per El Dicastes, Cat Hand, Warpra e le modifiche di uaRO. Le coordinate dell'iRO Wiki possono essere sfalsate di qualche cella su uaRO: gli step dubbi hanno l'etichetta da verificare.</p>
+    <p class="footer" data-en="Sources: iRO Wiki for the quest steps, official rAthena scripts (the software private servers like uaRO run on) for coordinates, maps without /memo and mechanics, uaRO wiki for El Dicastes, Cat Hand, Warpra and the uaRO changes. The iRO Wiki coordinates can be off by a few cells on uaRO: the doubtful steps have the to be verified label.">Fonti: iRO Wiki per i passaggi delle quest, script ufficiali di rAthena (il software su cui girano i server privati come uaRO) per coordinate, mappe senza /memo e meccaniche, wiki di uaRO per El Dicastes, Cat Hand, Warpra e le modifiche di uaRO. Le coordinate dell'iRO Wiki possono essere sfalsate di qualche cella su uaRO: gli step dubbi hanno l'etichetta da verificare.</p>
   </main>
 </div>
 
@@ -430,7 +430,7 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
   <textarea id="dialogArea" spellcheck="false"></textarea>
   <div class="dialog-actions">
     <label class="dialog-check" id="dialogCheckWrap" hidden><input type="checkbox" id="dialogCheck"> <span id="dialogCheckLabel"></span></label>
-    <button class="btn" type="button" id="dialogClose">Chiudi</button>
+    <button class="btn" type="button" id="dialogClose" data-en="Close">Chiudi</button>
     <button class="btn primary" type="button" id="dialogAction"></button>
   </div>
 </dialog>
@@ -440,8 +440,8 @@ const GUIDE_VERSION = "9.4";
 const STORAGE_KEY = "uaro-nw-guide";
 
 const QUESTS = {
-  PREP:  { name: "Preparativi", color: "#6B756E" },
-  GO:    { name: "Spostamento", color: "#6B756E" },
+  PREP:  { name: "Preparativi", en: "Preparation", color: "#6B756E" },
+  GO:    { name: "Spostamento", en: "Travel", color: "#6B756E" },
   ONW:   { name: "Onward to the New World", color: "#4E6B3A", url: "https://irowiki.org/wiki/Onward_to_the_New_World_Quest" },
   CAT:   { name: "Cat Hand Services", color: "#7A6A55", url: "https://wiki.uaro.net/El_Dicastes/#new-world-travel" },
   RING:  { name: "Ring of the Wise King", color: "#8A6D1F", url: "https://irowiki.org/wiki/Ring_of_the_Wise_King" },
@@ -1883,6 +1883,31 @@ const PHASES = [
 (function () {
   "use strict";
 
+  // Lingua: la stessa chiave del sito (ragnarok/lang), letta qui perche' la guida deve funzionare anche
+  // senza gate.js. In inglese i testi vengono dal campo en di fasi e step, se c'e'; le scritte del
+  // codice da T(italiano, inglese).
+  const LANG_KEY = "ragnarok/lang";
+  let EN = false;
+  try { EN = localStorage.getItem(LANG_KEY) === "en"; } catch (e) {}
+  function T(it, en) { return EN ? en : it; }
+  function txt(o, k) { return EN && o.en && o.en[k] !== undefined ? o.en[k] : o[k]; }
+  if (!window.toggleLang) {
+    window.toggleLang = function () {
+      try { localStorage.setItem(LANG_KEY, EN ? "it" : "en"); } catch (e) { return; }
+      location.reload();
+    };
+  }
+  // Le scritte fisse della pagina (data-en, come nelle altre pagine del sito) si sostituiscono qui,
+  // prima di disegnare, e gli attributi si tolgono: gate.js le applicherebbe dopo e cancellerebbe
+  // i link e le opzioni sottolineate dei testi.
+  if (EN) {
+    document.documentElement.lang = "en";
+    document.querySelectorAll("[data-en]").forEach(function (e) { e.innerHTML = e.getAttribute("data-en"); e.removeAttribute("data-en"); });
+    ["title", "aria-label", "placeholder"].forEach(function (a) {
+      document.querySelectorAll("[data-en-" + a + "]").forEach(function (e) { e.setAttribute(a, e.getAttribute("data-en-" + a)); e.removeAttribute("data-en-" + a); });
+    });
+  }
+
   const BRANCH_VAR = { common: "var(--common)", nest: "var(--nest)", dic: "var(--dic)", backup: "var(--backup)" };
   // Fasi e step con hidden: true restano nei dati ma non vengono mostrati né contati.
   const SHOWN = PHASES.filter(function (p) { return !p.hidden; }).map(function (p) {
@@ -1963,7 +1988,7 @@ const PHASES = [
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ guide: "uaro-nw", v: GUIDE_VERSION, ids: IDS_VERSION, done: state.done, notes: state.notes, hide: state.hide, open: state.open }));
     } catch (e) {
-      if (storageOk) { storageOk = false; toast("Questo browser non salva i progressi: usa ⚙, Backup dei dati"); }
+      if (storageOk) { storageOk = false; toast(T("Questo browser non salva i progressi: usa ⚙, Backup dei dati", "This browser does not save progress: use ⚙, Data backup")); }
     }
   }
 
@@ -1991,7 +2016,8 @@ const PHASES = [
   function safeId(id) { return id.replace(/[^A-Za-z0-9]/g, "-"); }
   // Un "\n" nel testo manda a capo: ogni riga diventa un paragrafo.
   function paras(cls, text) { return String(text).split("\n").map(function (t) { return el("p", { class: cls }, t); }); }
-  function questNames(s) { return s.q.map(function (k) { return QUESTS[k] ? QUESTS[k].name : k; }).join(" + "); }
+  function questName(q) { return EN && q.en ? q.en : q.name; }
+  function questNames(s) { return s.q.map(function (k) { return QUESTS[k] ? questName(QUESTS[k]) : k; }).join(" + "); }
 
   let toastTimer = null;
   function toast(msg) {
@@ -2021,15 +2047,15 @@ const PHASES = [
   }
 
   function chip(text) {
-    const b = el("button", { class: "chip", type: "button", title: "Clicca per copiare" }, text);
+    const b = el("button", { class: "chip", type: "button", title: T("Clicca per copiare", "Click to copy") }, text);
     b.addEventListener("click", function () {
       copyText(text).then(function (ok) {
         if (ok) {
           b.classList.add("copied");
           setTimeout(function () { b.classList.remove("copied"); }, 1200);
-          toast("Copiato: " + text);
+          toast(T("Copiato: ", "Copied: ") + text);
         } else {
-          openDialog({ title: "Copia manuale", text: "Il browser ha bloccato la copia automatica: seleziona il testo e premi Ctrl+C.", value: text, action: null });
+          openDialog({ title: T("Copia manuale", "Manual copy"), text: T("Il browser ha bloccato la copia automatica: seleziona il testo e premi Ctrl+C.", "The browser blocked the automatic copy: select the text and press Ctrl+C."), value: text, action: null });
         }
       });
     });
@@ -2038,8 +2064,8 @@ const PHASES = [
 
   function qTag(key) {
     const q = QUESTS[key] || { name: key, color: "#777" };
-    if (q.url) return el("a", { class: "qtag", href: q.url, target: "_blank", rel: "noopener", style: "--q:" + q.color, title: "Apri la guida della quest" }, q.name);
-    return el("span", { class: "qtag", style: "--q:" + q.color }, q.name);
+    if (q.url) return el("a", { class: "qtag", href: q.url, target: "_blank", rel: "noopener", style: "--q:" + q.color, title: T("Apri la guida della quest", "Open the quest guide") }, questName(q));
+    return el("span", { class: "qtag", style: "--q:" + q.color }, questName(q));
   }
 
   function buildLegend() {
@@ -2094,13 +2120,13 @@ const PHASES = [
     });
 
     const body = el("div", { class: "body" });
-    const head = el("div", { class: "head" }, el("label", { for: cbId }, el("span", { class: "sid" }, s.id), el("span", { class: "hl" }, s.h)));
+    const head = el("div", { class: "head" }, el("label", { for: cbId }, el("span", { class: "sid" }, s.id), el("span", { class: "hl" }, txt(s, "h"))));
     // Tutto il resto dello step: in uno step facoltativo isolato compare solo quando lo si apre.
     const more = el("div", { class: "step-more" });
     body.append(head, more);
     if (s.foldable) {
       const key = "s:" + s.id;
-      const toggle = el("button", { class: "step-toggle", type: "button", "aria-expanded": "false", title: "Mostra o nascondi i dettagli di questo step facoltativo" }, "facoltativo");
+      const toggle = el("button", { class: "step-toggle", type: "button", "aria-expanded": "false", title: T("Mostra o nascondi i dettagli di questo step facoltativo", "Show or hide the details of this optional step") }, T("facoltativo", "optional"));
       toggle.addEventListener("click", function () { setFold(key, li.classList.contains("collapsed"), true); });
       head.append(toggle);
       s.folds.push(key);
@@ -2111,23 +2137,24 @@ const PHASES = [
     }
     more.append(el("div", { class: "meta" },
       s.q.map(qTag),
-      (s.opt && !s.foldable && pageOf(s.phase) !== "altre") ? el("span", { class: "badge opt" }, "facoltativo") : null,
-      s.verify ? el("span", { class: "badge ver" }, "da verificare") : null,
-      el("span", { class: "now-label" }, "Prossimo passo")
+      (s.opt && !s.foldable && pageOf(s.phase) !== "altre") ? el("span", { class: "badge opt" }, T("facoltativo", "optional")) : null,
+      s.verify ? el("span", { class: "badge ver" }, T("da verificare", "to be verified")) : null,
+      el("span", { class: "now-label" }, T("Prossimo passo", "Next step"))
     ));
-    if (s.d) paras("d", s.d).forEach(function (x) { more.append(x); });
+    if (s.d) paras("d", txt(s, "d")).forEach(function (x) { more.append(x); });
     if (s.navi && s.navi.length) more.append(el("div", { class: "chips" }, s.navi.map(function (n) { return chip("/navi " + n); })));
-    if (s.copy) s.copy.forEach(function (g) {
-      more.append(el("div", { class: "copygroup" }, el("span", { class: "copygroup-label" }, g.label), el("div", { class: "chips" }, g.items.map(chip))));
+    if (s.copy) s.copy.forEach(function (g, i) {
+      const label = EN && s.en && s.en.copy ? s.en.copy[i] : g.label;
+      more.append(el("div", { class: "copygroup" }, el("span", { class: "copygroup-label" }, label), el("div", { class: "chips" }, g.items.map(chip))));
     });
-    if (s.tip) more.append(el("p", { class: "note-line tip" }, el("strong", null, "Consiglio: "), s.tip));
-    if (s.warn) more.append(el("p", { class: "note-line warn" }, el("strong", null, "Attenzione: "), s.warn));
-    if (s.verify) more.append(el("p", { class: "note-line verify" }, el("strong", null, "Da verificare: "), s.verify));
+    if (s.tip) more.append(el("p", { class: "note-line tip" }, el("strong", null, T("Consiglio: ", "Tip: ")), txt(s, "tip")));
+    if (s.warn) more.append(el("p", { class: "note-line warn" }, el("strong", null, T("Attenzione: ", "Warning: ")), txt(s, "warn")));
+    if (s.verify) more.append(el("p", { class: "note-line verify" }, el("strong", null, T("Da verificare: ", "To be verified: ")), txt(s, "verify")));
 
     const noteId = "note-" + safeId(s.id);
     const hasNote = !!(state.notes[s.id] && state.notes[s.id].trim());
-    const btn = el("button", { class: "note-btn", type: "button", "aria-expanded": hasNote ? "true" : "false", "aria-controls": noteId }, hasNote ? "Nota" : "Aggiungi una nota");
-    const ta = el("textarea", { class: "note", id: noteId, placeholder: "Cosa è successo? Coordinate diverse, NPC che non risponde, passaggio in più…", "aria-label": "Nota per lo step " + s.id });
+    const btn = el("button", { class: "note-btn", type: "button", "aria-expanded": hasNote ? "true" : "false", "aria-controls": noteId }, hasNote ? T("Nota", "Note") : T("Aggiungi una nota", "Add a note"));
+    const ta = el("textarea", { class: "note", id: noteId, placeholder: T("Cosa è successo? Coordinate diverse, NPC che non risponde, passaggio in più…", "What happened? Different coordinates, an NPC that does not answer, an extra step…"), "aria-label": T("Nota per lo step ", "Note for step ") + s.id });
     ta.value = state.notes[s.id] || "";
     ta.hidden = !hasNote;
     btn.addEventListener("click", function () {
@@ -2140,34 +2167,34 @@ const PHASES = [
       const v = ta.value;
       if (v.trim()) state.notes[s.id] = v; else delete state.notes[s.id];
       li.classList.toggle("has-note", !!v.trim());
-      btn.textContent = v.trim() ? "Nota" : "Aggiungi una nota";
+      btn.textContent = v.trim() ? T("Nota", "Note") : T("Aggiungi una nota", "Add a note");
       clearTimeout(saveTimer);
       saveTimer = setTimeout(save, 300);
     });
-    const clearBtn = el("button", { class: "note-btn note-clear", type: "button", "aria-label": "Cancella la nota dello step " + s.id }, "Cancella nota");
+    const clearBtn = el("button", { class: "note-btn note-clear", type: "button", "aria-label": T("Cancella la nota dello step ", "Delete the note of step ") + s.id }, T("Cancella nota", "Delete note"));
     clearBtn.addEventListener("click", function () {
       clearTimeout(saveTimer);
       delete state.notes[s.id];
       ta.value = "";
       ta.hidden = true;
-      btn.textContent = "Aggiungi una nota";
+      btn.textContent = T("Aggiungi una nota", "Add a note");
       btn.setAttribute("aria-expanded", "false");
       li.classList.remove("has-note");
       save();
-      toast("Nota cancellata");
+      toast(T("Nota cancellata", "Note deleted"));
       btn.focus();
     });
     // Visibile solo se prima di questo step ci sono step obbligatori non spuntati (vedi update).
-    const markBtn = el("button", { class: "note-btn mark-prev", type: "button", hidden: true, title: "Spunta tutti gli step obbligatori prima di questo" }, "Segna fatti i precedenti");
+    const markBtn = el("button", { class: "note-btn mark-prev", type: "button", hidden: true, title: T("Spunta tutti gli step obbligatori prima di questo", "Check all the required steps before this one") }, T("Segna fatti i precedenti", "Mark the previous ones done"));
     markBtn.addEventListener("click", function () {
       const idx = ALL.findIndex(function (x) { return x.id === s.id; });
       const prev = ALL.slice(0, idx).filter(function (x) { return !x.opt && !state.done[x.id]; });
       if (!prev.length) return;
-      if (!confirm("Step obbligatori da segnare come fatti prima del " + s.id + ": " + prev.length + ". Gli step facoltativi restano come sono. Procedo?")) return;
+      if (!confirm(T("Step obbligatori da segnare come fatti prima del " + s.id + ": " + prev.length + ". Gli step facoltativi restano come sono. Procedo?", "Required steps to mark as done before " + s.id + ": " + prev.length + ". Optional steps stay as they are. Go ahead?"))) return;
       const now = Date.now();
       prev.forEach(function (x) { state.done[x.id] = now; });
       save(); update();
-      toast("Step segnati come fatti: " + prev.length);
+      toast(T("Step segnati come fatti: ", "Steps marked as done: ") + prev.length);
     });
     more.append(el("div", { class: "notebox" }, btn, clearBtn, markBtn, ta));
 
@@ -2176,19 +2203,19 @@ const PHASES = [
     return li;
   }
 
-  // Rende cliccabili i riferimenti scritti nei testi: step ("9.03", "3.02a", "Q4.07"), fasi ("fase 10") e quest ("Q3").
-  const XREF_RE = /(?<![\dA-Za-z.\/])((?:Q\d{1,2}|\d{1,2})\.\d{2}(?:[a-z](?![a-zà-ÿ]))?)(?!\d|\.\d)|\bfase (\d{1,2}[a-z]?)\b|\b(Q\d{1,2})\b(?!\.\d)/g;
+  // Rende cliccabili i riferimenti scritti nei testi: step ("9.03", "3.02a", "Q4.07"), fasi ("fase 10", "phase 10") e quest ("Q3").
+  const XREF_RE = /(?<![\dA-Za-z.\/])((?:Q\d{1,2}|\d{1,2})\.\d{2}(?:[a-z](?![a-zà-ÿ]))?)(?!\d|\.\d)|\b(?:fase|phase) (\d{1,2}[a-z]?)\b|\b(Q\d{1,2})\b(?!\.\d)/g;
   // Mostra una delle due pagine. La pagina resta scritta nell'indirizzo (#altre), così un ricaricamento non la cambia.
   function setView(v) {
     view = v === "altre" ? "altre" : "percorso";
     document.body.setAttribute("data-view", view);
-    document.getElementById("btnView").textContent = view === "altre" ? "Torna al percorso" : "Altre quest";
-    document.getElementById("routeTitle").textContent = view === "altre" ? "Altre quest" : "Percorso";
+    document.getElementById("btnView").textContent = view === "altre" ? T("Torna al percorso", "Back to the route") : T("Altre quest", "Other quests");
+    document.getElementById("routeTitle").textContent = view === "altre" ? T("Altre quest", "Other quests") : T("Percorso", "Route");
     const select = document.getElementById("phaseSelect");
     select.textContent = "";
-    select.append(el("option", { value: "" }, view === "altre" ? "Vai alla quest…" : "Vai alla fase…"));
+    select.append(el("option", { value: "" }, view === "altre" ? T("Vai alla quest…", "Go to quest…") : T("Vai alla fase…", "Go to phase…")));
     SHOWN.forEach(function (p) {
-      if (pageOf(p) === view) select.append(el("option", { value: p.id }, p.id + ". " + p.title + (p.opt && view !== "altre" ? " (facoltativa)" : "")));
+      if (pageOf(p) === view) select.append(el("option", { value: p.id }, p.id + ". " + txt(p, "title") + (p.opt && view !== "altre" ? T(" (facoltativa)", " (optional)") : "")));
     });
   }
   function rememberView() {
@@ -2233,11 +2260,11 @@ const PHASES = [
       let a = null;
       if (m[1] && stepEls[m[1]]) {
         const id = m[1];
-        a = el("a", { class: "xref", href: "#step-" + safeId(id), title: "Vai allo step " + id }, id);
+        a = el("a", { class: "xref", href: "#step-" + safeId(id), title: T("Vai allo step ", "Go to step ") + id }, id);
         a.addEventListener("click", function (e) { e.preventDefault(); goToStep(id); });
       } else if ((m[2] || m[3]) && document.getElementById("phase-" + (m[2] || m[3]))) {
         const pid = m[2] || m[3];
-        a = el("a", { class: "xref", href: "#phase-" + pid, title: (m[3] ? "Vai alla quest " : "Vai alla fase ") + pid }, m[0]);
+        a = el("a", { class: "xref", href: "#phase-" + pid, title: (m[3] ? T("Vai alla quest ", "Go to quest ") : T("Vai alla fase ", "Go to phase ")) + pid }, m[0]);
         a.addEventListener("click", function (e) { e.preventDefault(); goToPhase(pid); });
       }
       if (!a) continue;
@@ -2300,7 +2327,7 @@ const PHASES = [
             el("summary", { class: "fold-bar" },
               el("span", { class: "fold-arrow", "aria-hidden": "true" }),
               el("span", { class: "fold-title" }, s.group),
-              el("span", { class: "fold-tag" }, "Facoltativi"),
+              el("span", { class: "fold-tag" }, T("Facoltativi", "Optional")),
               count),
             el("div", { class: "fold-body" }, inner));
           const gli = el("li", { class: "step-group" }, det);
@@ -2318,27 +2345,27 @@ const PHASES = [
           el("summary", { class: "fold-bar" },
             el("span", { class: "fold-arrow", "aria-hidden": "true" }),
             el("span", { class: "phase-num", "aria-hidden": "true" }, p.id),
-            el("h2", { class: "phase-title", id: "ph-title-" + p.id }, p.title),
-            el("span", { class: "phase-where" }, [p.where, p.sum].filter(Boolean).join(" · ")),
-            altre ? null : el("span", { class: "fold-tag" }, "Facoltativa"),
+            el("h2", { class: "phase-title", id: "ph-title-" + p.id }, txt(p, "title")),
+            el("span", { class: "phase-where" }, [txt(p, "where"), txt(p, "sum")].filter(Boolean).join(" · ")),
+            altre ? null : el("span", { class: "fold-tag" }, T("Facoltativa", "Optional")),
             el("span", { class: "phase-count", id: "pc-" + p.id })),
           el("div", { class: "fold-body" },
-            p.when ? el("p", { class: "phase-intro" }, el("strong", null, "Quando farla: "), p.when) : null,
-            p.intro ? paras("phase-intro", p.intro) : null, ol));
+            p.when ? el("p", { class: "phase-intro" }, el("strong", null, T("Quando farla: ", "When to do it: ")), txt(p, "when")) : null,
+            p.intro ? paras("phase-intro", txt(p, "intro")) : null, ol));
         sec.append(det);
         foldDetails("p:" + p.id, det, p.steps);
       } else {
         sec.append(el("div", { class: "phase-head" },
           el("span", { class: "phase-num", "aria-hidden": "true" }, p.id),
-          el("div", null, el("h2", { class: "phase-title", id: "ph-title-" + p.id }, p.title), el("div", { class: "phase-where" }, p.where)),
+          el("div", null, el("h2", { class: "phase-title", id: "ph-title-" + p.id }, txt(p, "title")), el("div", { class: "phase-where" }, txt(p, "where"))),
           el("span", { class: "phase-count", id: "pc-" + p.id })
         ));
-        if (p.intro) paras("phase-intro", p.intro).forEach(function (x) { sec.append(x); });
+        if (p.intro) paras("phase-intro", txt(p, "intro")).forEach(function (x) { sec.append(x); });
         sec.append(ol);
       }
       wrap.append(sec);
 
-      const link = el("a", { href: "#phase-" + p.id }, el("span", null, p.id + ". " + p.title), el("span", { class: "count", id: "rc-" + p.id }));
+      const link = el("a", { href: "#phase-" + p.id }, el("span", null, p.id + ". " + txt(p, "title")), el("span", { class: "count", id: "rc-" + p.id }));
       if (p.opt) link.addEventListener("click", function () { setFold("p:" + p.id, true, false); });
       route.append(el("li", { id: "rt-" + p.id, "data-page": pageOf(p), class: (p.opt && !altre) ? "optional" : null, style: "--b:" + b }, link));
     });
@@ -2405,11 +2432,13 @@ const PHASES = [
       g.count.textContent = d + "/" + g.steps.length;
       g.li.classList.toggle("hidden", state.hide && d === g.steps.length);
     });
-    document.getElementById("progressText").textContent = reqDone + " di " + reqTotal + " step obbligatori" + (cur ? ", prossimo: " + cur.id : ", tutto fatto!");
+    document.getElementById("progressText").textContent = T(
+      reqDone + " di " + reqTotal + " step obbligatori" + (cur ? ", prossimo: " + cur.id : ", tutto fatto!"),
+      reqDone + " of " + reqTotal + " required steps" + (cur ? ", next: " + cur.id : ", all done!"));
     document.getElementById("progressFill").style.width = (reqTotal ? (reqDone / reqTotal * 100) : 0) + "%";
     const hideBtn = document.getElementById("btnHide");
     hideBtn.setAttribute("aria-pressed", state.hide ? "true" : "false");
-    hideBtn.textContent = state.hide ? "Mostra i fatti" : "Nascondi i fatti";
+    hideBtn.textContent = state.hide ? T("Mostra i fatti", "Show done") : T("Nascondi i fatti", "Hide done");
     document.getElementById("btnNext").disabled = !cur;
   }
 
@@ -2419,7 +2448,7 @@ const PHASES = [
       r.ta.value = state.notes[s.id] || "";
       const has = !!r.ta.value.trim();
       r.ta.hidden = !has;
-      r.btn.textContent = has ? "Nota" : "Aggiungi una nota";
+      r.btn.textContent = has ? T("Nota", "Note") : T("Aggiungi una nota", "Add a note");
       r.btn.setAttribute("aria-expanded", has ? "true" : "false");
     });
     applyTheme();
@@ -2432,33 +2461,34 @@ const PHASES = [
     else document.documentElement.removeAttribute("data-theme");
   }
 
+  // L'export segue la lingua della pagina (Alberto, 22/10/2026): titoli e testi degli step inglesi in inglese.
   function buildExport(withBackup) {
     const lines = [];
     const now = new Date();
     const req = ALL.filter(function (s) { return !s.opt; });
     const reqDone = req.filter(function (s) { return state.done[s.id]; }).length;
     const cur = currentStep();
-    lines.push("Export guida uaRO Nuovo Mondo, versione " + GUIDE_VERSION + ", " + now.toLocaleString("it-IT"));
-    lines.push("Progresso: " + reqDone + " di " + req.length + " step obbligatori");
-    lines.push(cur ? "Prossimo step: " + cur.id + " [" + questNames(cur) + "] " + cur.h : "Tutti gli step obbligatori completati");
+    lines.push(T("Export guida uaRO Nuovo Mondo, versione ", "uaRO New World guide export, version ") + GUIDE_VERSION + ", " + now.toLocaleString(T("it-IT", "en-GB")) + T("", ", in English"));
+    lines.push(T("Progresso: " + reqDone + " di " + req.length + " step obbligatori", "Progress: " + reqDone + " of " + req.length + " required steps"));
+    lines.push(cur ? T("Prossimo step: ", "Next step: ") + cur.id + " [" + questNames(cur) + "] " + txt(cur, "h") : T("Tutti gli step obbligatori completati", "All required steps completed"));
     const optDone = ALL.filter(function (s) { return s.opt && state.done[s.id]; }).map(function (s) { return s.id; });
-    if (optDone.length) lines.push("Facoltativi fatti: " + optDone.join(", "));
+    if (optDone.length) lines.push(T("Facoltativi fatti: ", "Optional steps done: ") + optDone.join(", "));
     lines.push("");
-    lines.push("NOTE SUGLI STEP");
+    lines.push(T("NOTE SUGLI STEP", "NOTES ON THE STEPS"));
     const noted = ALL.filter(function (s) { return state.notes[s.id] && state.notes[s.id].trim(); });
-    if (!noted.length) lines.push("(nessuna nota)");
+    if (!noted.length) lines.push(T("(nessuna nota)", "(no notes)"));
     noted.forEach(function (s) {
-      lines.push(s.id + " [" + questNames(s) + "] " + s.h + (state.done[s.id] ? " (fatto)" : " (non ancora fatto)"));
-      if (s.verify) lines.push("  Da verificare: " + s.verify);
-      state.notes[s.id].trim().split(/\r?\n/).forEach(function (l, i) { lines.push((i ? "        " : "  Nota: ") + l); });
+      lines.push(s.id + " [" + questNames(s) + "] " + txt(s, "h") + (state.done[s.id] ? T(" (fatto)", " (done)") : T(" (non ancora fatto)", " (not done yet)")));
+      if (s.verify) lines.push(T("  Da verificare: ", "  To be verified: ") + txt(s, "verify"));
+      state.notes[s.id].trim().split(/\r?\n/).forEach(function (l, i) { lines.push((i ? "        " : T("  Nota: ", "  Note: ")) + l); });
     });
     lines.push("");
-    lines.push("STEP DA VERIFICARE FATTI SENZA NOTE (quindi andati come scritto)");
+    lines.push(T("STEP DA VERIFICARE FATTI SENZA NOTE (quindi andati come scritto)", "STEPS TO BE VERIFIED DONE WITHOUT NOTES (so they went as written)"));
     const okVer = ALL.filter(function (s) { return s.verify && state.done[s.id] && !(state.notes[s.id] || "").trim(); }).map(function (s) { return s.id; });
-    lines.push(okVer.length ? okVer.join(", ") : "(nessuno)");
+    lines.push(okVer.length ? okVer.join(", ") : T("(nessuno)", "(none)"));
     if (withBackup) {
       lines.push("");
-      lines.push("BACKUP DEI PROGRESSI (per recuperare spunte e note: ⚙, Ripristina da backup, e incolla questo export)");
+      lines.push(T("BACKUP DEI PROGRESSI (per recuperare spunte e note: ⚙, Ripristina da backup, e incolla questo export)", "PROGRESS BACKUP (to recover checks and notes: ⚙, Restore from backup, and paste this export)"));
       lines.push(backupText());
     }
     return lines.join("\n");
@@ -2522,7 +2552,7 @@ const PHASES = [
       const target = nextTarget();
       if (!target) return;
       const idx = function (id) { return MAIN.findIndex(function (s) { return s.id === id; }); };
-      if (nextCursor && idx(target.id) <= idx(nextCursor)) toast("Dopo non c'è altro da fare: torno al primo passo non fatto");
+      if (nextCursor && idx(target.id) <= idx(nextCursor)) toast(T("Dopo non c'è altro da fare: torno al primo passo non fatto", "There is nothing else to do after this: back to the first step not done"));
       nextCursor = target.id;
       goToStep(target.id);
       stepEls[target.id].cb.focus({ preventScroll: true });
@@ -2543,14 +2573,14 @@ const PHASES = [
     });
     document.getElementById("btnExport").addEventListener("click", function () {
       let text = buildExport(false);
-      const copyAgain = function () { copyText(text).then(function (k) { toast(k ? "Copiato" : "Copia non riuscita: seleziona il testo"); }); };
+      const copyAgain = function () { copyText(text).then(function (k) { toast(k ? T("Copiato", "Copied") : T("Copia non riuscita: seleziona il testo", "Copy failed: select the text")); }); };
       copyText(text).then(function (ok) {
         openDialog({
-          title: "Note per l'admin",
-          text: ok ? "Testo copiato negli appunti: mandalo all'admin." : "Seleziona il testo, copialo e mandalo all'admin.",
-          value: text, action: copyAgain, actionLabel: "Copia di nuovo",
+          title: T("Note per l'admin", "Notes for the admin"),
+          text: ok ? T("Testo copiato negli appunti: mandalo all'admin.", "Text copied to the clipboard: send it to the admin.") : T("Seleziona il testo, copialo e mandalo all'admin.", "Select the text, copy it and send it to the admin."),
+          value: text, action: copyAgain, actionLabel: T("Copia di nuovo", "Copy again"),
           check: {
-            label: "Aggiungi il backup di spunte e note", checked: false,
+            label: T("Aggiungi il backup di spunte e note", "Add the backup of checks and notes"), checked: false,
             onChange: function (on) {
               text = buildExport(on);
               document.getElementById("dialogArea").value = text;
@@ -2568,40 +2598,42 @@ const PHASES = [
       const saved = downloadText(name, text);
       copyText(text).then(function (ok) {
         openDialog({
-          title: "Backup dei dati",
-          text: (saved ? "Il browser scarica il file " + name + ": conservalo. " : "Salva questo testo in un file. ") + (ok ? "Il testo è anche copiato negli appunti. " : "") + "Con Ripristina da backup recuperi spunte e note, anche su un altro browser o dopo aver cancellato i dati del browser.",
-          value: text, action: function () { copyText(text).then(function (k) { toast(k ? "Copiato" : "Copia non riuscita: seleziona il testo"); }); }, actionLabel: "Copia di nuovo"
+          title: T("Backup dei dati", "Data backup"),
+          text: T(
+            (saved ? "Il browser scarica il file " + name + ": conservalo. " : "Salva questo testo in un file. ") + (ok ? "Il testo è anche copiato negli appunti. " : "") + "Con Ripristina da backup recuperi spunte e note, anche su un altro browser o dopo aver cancellato i dati del browser.",
+            (saved ? "The browser downloads the file " + name + ": keep it. " : "Save this text in a file. ") + (ok ? "The text is also copied to the clipboard. " : "") + "With Restore from backup you recover checks and notes, also on another browser or after clearing the browser data."),
+          value: text, action: function () { copyText(text).then(function (k) { toast(k ? T("Copiato", "Copied") : T("Copia non riuscita: seleziona il testo", "Copy failed: select the text")); }); }, actionLabel: T("Copia di nuovo", "Copy again")
         });
       });
     });
     document.getElementById("btnRestore").addEventListener("click", function () {
       closeMore();
       openDialog({
-        title: "Ripristina da backup",
-        text: "Incolla qui il contenuto di un file di backup, oppure un export delle note fatto con la casella del backup spuntata. Le spunte e le note attuali verranno sostituite.",
-        value: "", editable: true, actionLabel: "Ripristina",
+        title: T("Ripristina da backup", "Restore from backup"),
+        text: T("Incolla qui il contenuto di un file di backup, oppure un export delle note fatto con la casella del backup spuntata. Le spunte e le note attuali verranno sostituite.", "Paste here the content of a backup file, or a notes export made with the backup box checked. The current checks and notes will be replaced."),
+        value: "", editable: true, actionLabel: T("Ripristina", "Restore"),
         action: function () {
           const parsed = parseBackup(document.getElementById("dialogArea").value.trim());
           if (!parsed) {
-            toast("Testo non valido: incolla il backup completo, dalla prima all'ultima graffa");
+            toast(T("Testo non valido: incolla il backup completo, dalla prima all'ultima graffa", "Invalid text: paste the whole backup, from the first to the last curly bracket"));
             return;
           }
           const idsVersion = Number(parsed.ids) || 1;
           state.done = migrateIds(parsed.done || {}, idsVersion);
           state.notes = migrateIds(parsed.notes || {}, idsVersion);
           save(); syncInputs(); closeDialog();
-          toast("Progressi ripristinati");
+          toast(T("Progressi ripristinati", "Progress restored"));
         }
       });
     });
     document.getElementById("btnClearNotes").addEventListener("click", function () {
       closeMore();
       const n = Object.keys(state.notes).filter(function (k) { return (state.notes[k] || "").trim(); }).length;
-      if (!n) { toast("Non ci sono note da cancellare"); return; }
-      if (!confirm("Cancellare tutte le " + n + " note? Le spunte restano. Esporta prima le note se non le hai ancora mandate all'admin.")) return;
+      if (!n) { toast(T("Non ci sono note da cancellare", "There are no notes to delete")); return; }
+      if (!confirm(T("Cancellare tutte le " + n + " note? Le spunte restano. Esporta prima le note se non le hai ancora mandate all'admin.", "Delete all " + n + " notes? The checks stay. Export the notes first if you have not sent them to the admin yet."))) return;
       state.notes = {};
       save(); syncInputs();
-      toast("Note cancellate");
+      toast(T("Note cancellate", "Notes deleted"));
     });
     document.getElementById("btnTheme").addEventListener("click", function () {
       closeMore();
@@ -2612,10 +2644,10 @@ const PHASES = [
     });
     document.getElementById("btnReset").addEventListener("click", function () {
       closeMore();
-      if (!confirm("Azzerare tutte le spunte e le note? Consiglio: fai prima un backup.")) return;
+      if (!confirm(T("Azzerare tutte le spunte e le note? Consiglio: fai prima un backup.", "Clear all checks and notes? Tip: make a backup first."))) return;
       state.done = {}; state.notes = {};
       save(); syncInputs();
-      toast("Guida azzerata");
+      toast(T("Guida azzerata", "Guide cleared"));
     });
     document.getElementById("dialogClose").addEventListener("click", closeDialog);
     document.getElementById("dialogAction").addEventListener("click", function () { if (dialogAction) dialogAction(); });
