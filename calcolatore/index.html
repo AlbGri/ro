@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" data-bilingual>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>uaRO – Calcolatore</title>
+<title data-en="uaRO – Calculator">uaRO – Calcolatore</title>
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F5F7F1">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1B2420">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -281,7 +281,7 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
   .slot > #mano-sinistra { grid-template-columns: minmax(0, 1fr); }
   #mano-sinistra > h3, #mano-sinistra > .riga { grid-column: 1; }
   .voci, .risultati { grid-template-columns: minmax(0, 1fr); }
-  .affiancati .voce > .etichetta, .arma .voce > .etichetta { white-space: normal; }
+  .affiancati .voce > .etichetta, .arma .voce > .etichetta { white-space: normal; flex-shrink: 1; }
   /* confronto: il nome della voce su una riga, sotto A, B e la differenza */
   table.confronto, table.confronto thead, table.confronto tbody { display: block; }
   table.confronto tr { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid var(--line); }
@@ -316,18 +316,18 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
 <body>
 <header class="topbar">
   <div class="topbar-inner">
-    <a class="btn" href="../index.html" title="Torna alla scelta dei servizi">Home</a>
-    <span class="brand">Calcolatore</span>
-    <button class="btn" type="button" data-azione="copia-link" title="Copia un indirizzo che apre questa build">Copia link</button>
+    <a class="btn" href="../index.html" title="Torna alla scelta dei servizi" data-en-title="Back to the list of services">Home</a>
+    <span class="brand" data-en="Calculator">Calcolatore</span>
+    <button class="btn" type="button" data-azione="copia-link" title="Copia un indirizzo che apre questa build" data-en-title="Copy an address that opens this build" data-en="Copy link">Copia link</button>
     <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, lingua, tema. Lo chiude gate.js. -->
     <details class="more">
       <summary class="btn gear" title="Menu" aria-label="Menu">&#9881;</summary>
       <div class="more-menu">
-        <button class="btn" type="button" data-azione="nuova">Ricomincia da zero</button>
-        <button class="btn" type="button" data-azione="esporta">Backup dei dati</button>
-        <button class="btn" type="button" data-azione="importa">Ripristina da backup</button>
-        <button class="btn" type="button" onclick="toggleLang()" data-lang>English</button>
-        <button class="btn" type="button" onclick="toggleTheme()">Cambia tema chiaro/scuro</button>
+        <button class="btn" type="button" data-azione="nuova" data-en="Start over">Ricomincia da zero</button>
+        <button class="btn" type="button" data-azione="esporta" data-en="Data backup">Backup dei dati</button>
+        <button class="btn" type="button" data-azione="importa" data-en="Restore from backup">Ripristina da backup</button>
+        <button class="btn" type="button" onclick="toggleLang()" data-lang data-en="Italiano">English</button>
+        <button class="btn" type="button" onclick="toggleTheme()" data-en="Switch light/dark theme">Cambia tema chiaro/scuro</button>
       </div>
     </details>
     <input type="file" id="file" accept=".json,application/json" hidden>
@@ -336,46 +336,46 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
 
 <main>
   <section class="hero">
-    <h1>Calcolatore</h1>
-    <p class="lead">Statistiche, danni fatti e subiti di un personaggio di uaRO (pre-renewal). Scegli classe, livelli, statistiche ed equipaggiamento, poi il mostro e la skill: i risultati si aggiornano da soli.</p>
-    <p class="hint">Nomi di classi, skill, oggetti, carte e mostri sono quelli del gioco, in inglese. Se un nome ha la sottolineatura a puntini, passaci sopra (o toccalo) per la spiegazione.</p>
+    <h1 data-en="Calculator">Calcolatore</h1>
+    <p class="lead" data-en="Stats, damage dealt and taken of a uaRO character (pre-renewal). Choose class, levels, stats and equipment, then the monster and the skill: the results update by themselves.">Statistiche, danni fatti e subiti di un personaggio di uaRO (pre-renewal). Scegli classe, livelli, statistiche ed equipaggiamento, poi il mostro e la skill: i risultati si aggiornano da soli.</p>
+    <p class="hint" data-en="Names of classes, skills, items, cards and monsters are those of the game. If a name has a dotted underline, hover over it (or tap it) for the explanation.">Nomi di classi, skill, oggetti, carte e mostri sono quelli del gioco, in inglese. Se un nome ha la sottolineatura a puntini, passaci sopra (o toccalo) per la spiegazione.</p>
   </section>
 
-  <div id="caricamento">Caricamento del calcolatore…</div>
+  <div id="caricamento" data-en="Loading the calculator…">Caricamento del calcolatore…</div>
   <div id="app" hidden>
 
-  <h2>Build salvate</h2>
+  <h2 data-en="Save &amp; Load">Build salvate</h2>
   <div class="card">
     <div class="toolbar">
-      <select id="salvate" aria-label="Build salvate"></select>
-      <button class="btn" type="button" data-azione="carica">Carica</button>
-      <button class="btn" type="button" data-azione="copia-link-salvata" title="Copia un indirizzo che apre la build salvata scelta">Copia link</button>
-      <button class="btn danger" type="button" data-azione="elimina">Elimina</button>
+      <select id="salvate" aria-label="Build salvate" data-en-aria-label="Saved builds"></select>
+      <button class="btn" type="button" data-azione="carica" data-en="Load">Carica</button>
+      <button class="btn" type="button" data-azione="copia-link-salvata" title="Copia un indirizzo che apre la build salvata scelta" data-en-title="Copy an address that opens the chosen saved build" data-en="Copy link">Copia link</button>
+      <button class="btn danger" type="button" data-azione="elimina" data-en="Delete">Elimina</button>
     </div>
     <div class="toolbar" style="margin-top:8px">
-      <input type="text" id="nome-build" placeholder="Nome della build" aria-label="Nome della build">
-      <button class="btn" type="button" data-azione="salva">Salva</button>
+      <input type="text" id="nome-build" placeholder="Nome della build" aria-label="Nome della build" data-en-placeholder="Build name" data-en-aria-label="Build name">
+      <button class="btn" type="button" data-azione="salva" data-en="Save">Salva</button>
     </div>
-    <p class="hint" style="margin:10px 0 0">La build che stai modificando resta in questo browser anche senza salvarla.</p>
+    <p class="hint" style="margin:10px 0 0" data-en="The build you are editing stays in this browser even without saving it.">La build che stai modificando resta in questo browser anche senza salvarla.</p>
   </div>
 
-  <h2>Personaggio</h2>
+  <h2 data-en="Character">Personaggio</h2>
   <div class="colonne">
     <div class="card">
       <div class="voci" style="grid-template-columns: minmax(0,1fr)">
-        <span class="voce" data-campo="A_JOB" data-cerca data-etichetta="Classe"></span>
-        <label class="voce"><span class="etichetta">Livello base</span><select data-campo="A_BaseLV"></select></label>
-        <label class="voce"><span class="etichetta">Livello base automatico <span class="name" tabindex="0">?<span class="nametext">Con la spunta, cambiando le statistiche il livello base sale da solo quanto serve per i punti spesi.</span></span></span><input type="checkbox" data-campo="BLVauto"></label>
-        <label class="voce"><span class="etichetta">Livello job</span><select data-campo="A_JobLV"></select></label>
-        <label class="voce"><span class="etichetta">Adottato (Baby)</span><input type="checkbox" data-campo="A_adopted"></label>
+        <span class="voce" data-campo="A_JOB" data-cerca data-etichetta="Classe" data-en-etichetta="Class"></span>
+        <label class="voce"><span class="etichetta" data-en="Base Lvl">Livello base</span><select data-campo="A_BaseLV"></select></label>
+        <label class="voce"><span class="etichetta" data-en="Base Lvl (auto-adjust) &lt;span class=&quot;name&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;nametext&quot;&gt;When checked, changing the stats raises the base level by itself as much as the spent points need.&lt;/span&gt;&lt;/span&gt;">Livello base automatico <span class="name" tabindex="0">?<span class="nametext">Con la spunta, cambiando le statistiche il livello base sale da solo quanto serve per i punti spesi.</span></span></span><input type="checkbox" data-campo="BLVauto"></label>
+        <label class="voce"><span class="etichetta" data-en="Job Lvl">Livello job</span><select data-campo="A_JobLV"></select></label>
+        <label class="voce"><span class="etichetta" data-en="Adopted">Adottato (Baby)</span><input type="checkbox" data-campo="A_adopted"></label>
       </div>
       <dl class="risultati uno" style="margin-top:10px">
-        <div><dt>Razza e taglia</dt><dd data-uscita="A_BodySIZE"></dd></div>
-        <div><dt>Elemento del corpo</dt><dd data-uscita="A_BodyELEMENT"></dd></div>
+        <div><dt data-en="Race &amp; Size">Razza e taglia</dt><dd data-uscita="A_BodySIZE"></dd></div>
+        <div><dt data-en="Body Element">Elemento del corpo</dt><dd data-uscita="A_BodyELEMENT"></dd></div>
       </dl>
     </div>
     <div class="card">
-      <h3>Statistiche</h3>
+      <h3 data-en="Stats">Statistiche</h3>
       <div class="stat">
         <span class="nome">STR</span><select data-campo="A_STR"></select><span class="bonus" data-uscita="A_STRp"></span>
         <span class="nome">AGI</span><select data-campo="A_AGI"></select><span class="bonus" data-uscita="A_AGIp"></span>
@@ -384,72 +384,72 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
         <span class="nome">DEX</span><select data-campo="A_DEX"></select><span class="bonus" data-uscita="A_DEXp"></span>
         <span class="nome">LUK</span><select data-campo="A_LUK"></select><span class="bonus" data-uscita="A_LUKp"></span>
       </div>
-      <p class="punti">Punti statistica rimasti: <strong data-uscita="A_STPOINT"></strong></p>
+      <p class="punti"><span data-en="Remaining Status Points:">Punti statistica rimasti:</span> <strong data-uscita="A_STPOINT"></strong></p>
     </div>
   </div>
   <div class="card" style="margin-top:14px">
     <dl class="risultati">
       <div><dt>Max HP</dt><dd data-uscita="A_MaxHP"></dd></div>
       <div><dt>Max SP</dt><dd data-uscita="A_MaxSP"></dd></div>
-      <div><dt>Rigenerazione HP</dt><dd data-uscita="A_HPR"></dd></div>
-      <div><dt>Rigenerazione SP</dt><dd data-uscita="A_SPR"></dd></div>
+      <div><dt data-en="HP Regen">Rigenerazione HP</dt><dd data-uscita="A_HPR"></dd></div>
+      <div><dt data-en="SP Regen">Rigenerazione SP</dt><dd data-uscita="A_SPR"></dd></div>
       <div><dt>ASPD</dt><dd data-uscita="A_ASPD"></dd></div>
-      <div><dt>Velocità di movimento</dt><dd data-uscita="A_MovSPEED"></dd></div>
-      <div><dt>Peso</dt><dd data-uscita="A_Weight"></dd></div>
+      <div><dt data-en="Mov. Speed">Velocità di movimento</dt><dd data-uscita="A_MovSPEED"></dd></div>
+      <div><dt data-en="Weight">Peso</dt><dd data-uscita="A_Weight"></dd></div>
       <div><dt>ATK</dt><dd data-uscita="A_ATK2"></dd></div>
-      <div><dt>ATK reale</dt><dd data-uscita="A_RealATK"></dd></div>
+      <div><dt data-en="Real ATK">ATK reale</dt><dd data-uscita="A_RealATK"></dd></div>
       <div><dt>MATK</dt><dd data-uscita="A_MATK"></dd></div>
       <div><dt>DEF</dt><dd data-uscita="A_totalDEF"></dd></div>
       <div><dt>MDEF</dt><dd data-uscita="A_MDEF"></dd></div>
-      <div><dt>MDEF reale</dt><dd data-uscita="A_RealMDEF"></dd></div>
+      <div><dt data-en="Real MDEF">MDEF reale</dt><dd data-uscita="A_RealMDEF"></dd></div>
       <div><dt>HIT</dt><dd data-uscita="A_HIT"></dd></div>
       <div><dt>Perfect Hit</dt><dd data-uscita="A_PefHIT"></dd></div>
       <div><dt>Critical</dt><dd data-uscita="A_CRI"></dd></div>
       <div><dt>Critical Shield</dt><dd data-uscita="A_CRITSHIELD"></dd></div>
       <div><dt>Flee</dt><dd data-uscita="A_FLEE"></dd></div>
-      <div><dt>Flee in WoE</dt><dd data-uscita="A_WoeFLEE"></dd></div>
+      <div><dt data-en="WOE Flee">Flee in WoE</dt><dd data-uscita="A_WoeFLEE"></dd></div>
       <div><dt>Perfect Dodge</dt><dd data-uscita="A_LUCKY"></dd></div>
-      <div><dt>Tempo di lancio</dt><dd data-uscita="A_cTime"></dd></div>
-      <div><dt>Ritardo dopo il lancio</dt><dd data-uscita="A_cDelay"></dd></div>
+      <div><dt data-en="Cast Time">Tempo di lancio</dt><dd data-uscita="A_cTime"></dd></div>
+      <div><dt data-en="Cast Delay">Ritardo dopo il lancio</dt><dd data-uscita="A_cDelay"></dd></div>
     </dl>
   </div>
 
-  <h2>Equipaggiamento</h2>
+  <h2 data-en="Equipment &amp; Cards">Equipaggiamento</h2>
   <div class="card">
     <div class="voci affiancati">
-      <label class="voce"><span class="etichetta">Oggetti fino all'episodio</span><select data-campo="episode"></select></label>
-      <label class="voce"><span class="etichetta">Frecce, proiettili</span><select data-campo="A_Arrow"></select></label>
+      <label class="voce"><span class="etichetta" data-en="Items until episode">Oggetti fino all'episodio</span><select data-campo="episode"></select></label>
+      <label class="voce"><span class="etichetta" data-en="Arrows, bullets">Frecce, proiettili</span><select data-campo="A_Arrow"></select></label>
     </div>
   </div>
   <!-- slot nell'ordine in cui la griglia a due colonne li dispone come nel gioco: a sinistra
        testa alto, testa basso, arma, mantello, accessorio; a destra il resto -->
   <div class="card equip">
     <div class="slot">
-      <span class="slot-nome">Testa, alto</span><select class="raff" data-campo="A_HEAD_REFINE" aria-label="Raffinamento"></select>
+      <span class="slot-nome" data-en="Head: top">Testa, alto</span><select class="raff" data-campo="A_HEAD_REFINE" aria-label="Raffinamento" data-en-aria-label="Refine"></select>
       <span class="principale" data-campo="A_head1" data-cerca></span>
       <div class="extra"><span data-campo="A_head1_card" data-cerca></span></div>
     </div>
     <div class="slot">
-      <span class="slot-nome">Testa, centro</span><span class="raff"></span>
+      <span class="slot-nome" data-en="Head: mid">Testa, centro</span><span class="raff"></span>
       <span class="principale" data-campo="A_head2" data-cerca></span>
-      <div class="extra"><span data-campo="A_head2_card" data-cerca></span><select data-campo="A_BASTION_HEAD" aria-label="Incantamento Bastion"></select></div>
+      <div class="extra"><span data-campo="A_head2_card" data-cerca></span><select data-campo="A_BASTION_HEAD" aria-label="Incantamento Bastion" data-en-aria-label="Bastion enchant"></select></div>
     </div>
     <div class="slot">
-      <span class="slot-nome">Testa, basso</span><span class="raff"></span>
+      <span class="slot-nome" data-en="Head: low">Testa, basso</span><span class="raff"></span>
       <span class="principale" data-campo="A_head3" data-cerca></span>
-      <div class="extra"><select data-campo="A_HSE_HEAD1" aria-label="Incantamento"></select></div>
+      <div class="extra"><select data-campo="A_HSE_HEAD1" aria-label="Incantamento" data-en-aria-label="Enchant"></select></div>
     </div>
     <div class="slot">
-      <span class="slot-nome">Armatura</span><select class="raff" data-campo="A_BODY_REFINE" aria-label="Raffinamento"></select>
+      <span class="slot-nome" data-en="Armor">Armatura</span><select class="raff" data-campo="A_BODY_REFINE" aria-label="Raffinamento" data-en-aria-label="Refine"></select>
       <span class="principale" data-campo="A_body" data-cerca></span>
-      <div class="extra"><span data-campo="A_body_card" data-cerca></span><select data-campo="A_HSE" aria-label="Incantamento"></select></div>
+      <div class="extra"><span data-campo="A_body_card" data-cerca></span><select data-campo="A_HSE" aria-label="Incantamento" data-en-aria-label="Enchant"></select></div>
     </div>
     <div class="slot">
-      <span class="slot-nome">Arma</span><select class="raff" data-campo="A_Weapon_refine" aria-label="Raffinamento"></select>
+      <span class="slot-nome" data-en="Weapon">Arma</span><select class="raff" data-campo="A_Weapon_refine" aria-label="Raffinamento" data-en-aria-label="Refine"></select>
       <span class="principale" data-campo="A_weapon1" data-cerca></span>
       <div class="extra">
-        <label class="voce"><span class="etichetta">Elemento</span><select data-campo="A_Weapon_element"></select></label>
-        <select data-campo="A_cardshort" aria-label="Combinazione di carte"></select>
+        <label class="voce"><span class="etichetta" data-en="Element">Elemento</span><select data-campo="A_Weapon_element"></select></label>
+        <select data-campo="A_cardshort" aria-label="Combinazione di carte" data-en-aria-label="Card shortcuts"></select>
         <div class="carte">
           <span data-campo="A_weapon1_card1" data-cerca></span>
           <span data-campo="A_weapon1_card2" data-cerca></span>
@@ -473,33 +473,33 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
       </div>
     </div>
     <div class="slot">
-      <span class="slot-nome">Scudo</span><select class="raff" data-campo="A_LEFT_REFINE" aria-label="Raffinamento"></select>
+      <span class="slot-nome" data-en="Shield">Scudo</span><select class="raff" data-campo="A_LEFT_REFINE" aria-label="Raffinamento" data-en-aria-label="Refine"></select>
       <span class="principale" data-campo="A_left" data-cerca></span>
       <div class="extra"><span data-campo="A_left_card" data-cerca></span></div>
     </div>
     <div class="slot">
-      <span class="slot-nome">Mantello</span><select class="raff" data-campo="A_SHOULDER_REFINE" aria-label="Raffinamento"></select>
+      <span class="slot-nome" data-en="Garment">Mantello</span><select class="raff" data-campo="A_SHOULDER_REFINE" aria-label="Raffinamento" data-en-aria-label="Refine"></select>
       <span class="principale" data-campo="A_shoulder" data-cerca></span>
-      <div class="extra"><span data-campo="A_shoulder_card" data-cerca></span><select data-campo="A_DICASTES_SHOULDER_PRIMARY" aria-label="Dicastes livello 1"></select><select data-campo="A_DICASTES_SHOULDER_STATS" aria-label="Dicastes livello 2"></select><select data-campo="A_DICASTES_SHOULDER_STATS2" aria-label="Dicastes livello 3"></select></div>
+      <div class="extra"><span data-campo="A_shoulder_card" data-cerca></span><select data-campo="A_DICASTES_SHOULDER_PRIMARY" aria-label="Dicastes livello 1" data-en-aria-label="Dicastes layer 1"></select><select data-campo="A_DICASTES_SHOULDER_STATS" aria-label="Dicastes livello 2" data-en-aria-label="Dicastes layer 2"></select><select data-campo="A_DICASTES_SHOULDER_STATS2" aria-label="Dicastes livello 3" data-en-aria-label="Dicastes layer 3"></select></div>
     </div>
     <div class="slot">
-      <span class="slot-nome">Calzature</span><select class="raff" data-campo="A_SHOES_REFINE" aria-label="Raffinamento"></select>
+      <span class="slot-nome" data-en="Footgear">Calzature</span><select class="raff" data-campo="A_SHOES_REFINE" aria-label="Raffinamento" data-en-aria-label="Refine"></select>
       <span class="principale" data-campo="A_shoes" data-cerca></span>
-      <div class="extra"><span data-campo="A_shoes_card" data-cerca></span><select data-campo="A_BASTION_SHOES" aria-label="Incantamento Bastion"></select><select data-campo="A_DICASTES_SHOES_PRIMARY" aria-label="Dicastes livello 1"></select><select data-campo="A_DICASTES_SHOES_STATS" aria-label="Dicastes livello 2"></select><select data-campo="A_DICASTES_SHOES_STATS2" aria-label="Dicastes livello 3"></select></div>
+      <div class="extra"><span data-campo="A_shoes_card" data-cerca></span><select data-campo="A_BASTION_SHOES" aria-label="Incantamento Bastion" data-en-aria-label="Bastion enchant"></select><select data-campo="A_DICASTES_SHOES_PRIMARY" aria-label="Dicastes livello 1" data-en-aria-label="Dicastes layer 1"></select><select data-campo="A_DICASTES_SHOES_STATS" aria-label="Dicastes livello 2" data-en-aria-label="Dicastes layer 2"></select><select data-campo="A_DICASTES_SHOES_STATS2" aria-label="Dicastes livello 3" data-en-aria-label="Dicastes layer 3"></select></div>
     </div>
     <div class="slot">
-      <span class="slot-nome">Accessorio 1</span><span class="raff"></span>
+      <span class="slot-nome" data-en="Acc. 1">Accessorio 1</span><span class="raff"></span>
       <span class="principale" data-campo="A_acces1" data-cerca></span>
-      <div class="extra"><span data-campo="A_acces1_card" data-cerca></span><select data-campo="A_DICASTES_ACCESSORY1_PRIMARY" aria-label="Dicastes livello 1"></select><select data-campo="A_DICASTES_ACCESSORY1_STATS" aria-label="Dicastes livello 2"></select><select data-campo="A_DICASTES_ACCESSORY1_STATS2" aria-label="Dicastes livello 3"></select></div>
+      <div class="extra"><span data-campo="A_acces1_card" data-cerca></span><select data-campo="A_DICASTES_ACCESSORY1_PRIMARY" aria-label="Dicastes livello 1" data-en-aria-label="Dicastes layer 1"></select><select data-campo="A_DICASTES_ACCESSORY1_STATS" aria-label="Dicastes livello 2" data-en-aria-label="Dicastes layer 2"></select><select data-campo="A_DICASTES_ACCESSORY1_STATS2" aria-label="Dicastes livello 3" data-en-aria-label="Dicastes layer 3"></select></div>
     </div>
     <div class="slot">
-      <span class="slot-nome">Accessorio 2</span><span class="raff"></span>
+      <span class="slot-nome" data-en="Acc. 2">Accessorio 2</span><span class="raff"></span>
       <span class="principale" data-campo="A_acces2" data-cerca></span>
-      <div class="extra"><span data-campo="A_acces2_card" data-cerca></span><select data-campo="A_DICASTES_ACCESSORY2_PRIMARY" aria-label="Dicastes livello 1"></select><select data-campo="A_DICASTES_ACCESSORY2_STATS" aria-label="Dicastes livello 2"></select><select data-campo="A_DICASTES_ACCESSORY2_STATS2" aria-label="Dicastes livello 3"></select></div>
+      <div class="extra"><span data-campo="A_acces2_card" data-cerca></span><select data-campo="A_DICASTES_ACCESSORY2_PRIMARY" aria-label="Dicastes livello 1" data-en-aria-label="Dicastes layer 1"></select><select data-campo="A_DICASTES_ACCESSORY2_STATS" aria-label="Dicastes livello 2" data-en-aria-label="Dicastes layer 2"></select><select data-campo="A_DICASTES_ACCESSORY2_STATS2" aria-label="Dicastes livello 3" data-en-aria-label="Dicastes layer 3"></select></div>
     </div>
   </div>
   <div class="card scheda-oggetto">
-    <h3>Ultimo oggetto o carta scelto</h3>
+    <h3 data-en="Last item or card chosen">Ultimo oggetto o carta scelto</h3>
     <div class="titolo" data-uscita="ITEM_TITLE"></div>
     <div class="dati">
       <span><span data-uscita="ITEM1"></span> <strong data-uscita="ITEM_DATA"></strong></span>
@@ -509,42 +509,42 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
     </div>
     <div class="descrizione" data-uscita="B_SETUMEI"></div>
   </div>
-  <details class="pannello" data-pannello="ID_ARG" data-apri="Buf9SW" data-attivo="A9used"><summary>Incantamenti aggiuntivi e modifiche manuali al personaggio</summary><div class="corpo"></div></details>
+  <details class="pannello" data-pannello="ID_ARG" data-apri="Buf9SW" data-attivo="A9used"><summary><span data-en="Additional Enchants &amp; Manual Edits on Player">Incantamenti aggiuntivi e modifiche manuali al personaggio</span></summary><div class="corpo"></div></details>
 
-  <h2>Skill e buff</h2>
+  <h2 data-en="Skills and buffs">Skill e buff</h2>
   <div class="card">
-    <h3>Skill passive e su di sé</h3>
+    <h3 data-en="Passive &amp; Self-casted Skills">Skill passive e su di sé</h3>
     <div class="voci" id="passive"></div>
   </div>
-  <details class="pannello" data-pannello="SIENSKILL" data-apri="BufSW" data-attivo="A2used"><summary>Skill di supporto e del party</summary><div class="corpo"></div></details>
-  <details class="pannello" data-pannello="SP_SIEN01" data-apri="Buf3SW" data-attivo="A3used"><summary>Canti e danze</summary><div class="corpo"></div></details>
-  <details class="pannello" data-pannello="SP_SIEN02" data-apri="Buf4SW" data-attivo="A4used"><summary>Skill di gilda</summary><div class="corpo"></div></details>
-  <details class="pannello" data-pannello="SP_SIEN05" data-apri="Buf7SW" data-attivo="A7used"><summary>Cibo, pozioni di velocità e altri oggetti</summary><div class="corpo"></div></details>
-  <details class="pannello" data-pannello="SP_SIEN04" data-apri="Buf6SW" data-attivo="A6used"><summary>Altri effetti sul personaggio</summary><div class="corpo"></div></details>
+  <details class="pannello" data-pannello="SIENSKILL" data-apri="BufSW" data-attivo="A2used"><summary><span data-en="Supportive / Party Skills">Skill di supporto e del party</span></summary><div class="corpo"></div></details>
+  <details class="pannello" data-pannello="SP_SIEN01" data-apri="Buf3SW" data-attivo="A3used"><summary><span data-en="Music and Dance Skills">Canti e danze</span></summary><div class="corpo"></div></details>
+  <details class="pannello" data-pannello="SP_SIEN02" data-apri="Buf4SW" data-attivo="A4used"><summary><span data-en="Guild Skills">Skill di gilda</span></summary><div class="corpo"></div></details>
+  <details class="pannello" data-pannello="SP_SIEN05" data-apri="Buf7SW" data-attivo="A7used"><summary><span data-en="Food, Speed Potions &amp; other Items">Cibo, pozioni di velocità e altri oggetti</span></summary><div class="corpo"></div></details>
+  <details class="pannello" data-pannello="SP_SIEN04" data-apri="Buf6SW" data-attivo="A6used"><summary><span data-en="Miscellaneous Effects on Player">Altri effetti sul personaggio</span></summary><div class="corpo"></div></details>
 
-  <h2>Combattimento</h2>
+  <h2 data-en="Combat">Combattimento</h2>
   <div class="card">
-    <h3>Nemico</h3>
+    <h3 data-en="Enemy">Nemico</h3>
     <div class="voci affiancati">
-      <label class="voce"><span class="etichetta">Luogo</span><select data-campo="ENEMY_SORT2"></select></label>
-      <label class="voce" data-nascondi><span class="etichetta">Mappa</span><select data-campo="ENEMY_MAP"></select></label>
-      <label class="voce"><span class="etichetta">Categoria</span><select data-campo="ENEMY_TYPE"></select></label>
-      <label class="voce"><span class="etichetta">Ordine</span><select data-campo="ENEMY_SORT"></select></label>
-      <span class="voce lunga" data-campo="B_Enemy" data-cerca data-etichetta="Mostro"></span>
+      <label class="voce"><span class="etichetta" data-en="Place">Luogo</span><select data-campo="ENEMY_SORT2"></select></label>
+      <label class="voce" data-nascondi><span class="etichetta" data-en="Map">Mappa</span><select data-campo="ENEMY_MAP"></select></label>
+      <label class="voce"><span class="etichetta" data-en="Category">Categoria</span><select data-campo="ENEMY_TYPE"></select></label>
+      <label class="voce"><span class="etichetta" data-en="Sort">Ordine</span><select data-campo="ENEMY_SORT"></select></label>
+      <span class="voce lunga" data-campo="B_Enemy" data-cerca data-etichetta="Mostro" data-en-etichetta="Monster"></span>
     </div>
     <dl class="risultati" style="margin-top:10px">
       <div><dt>Max HP</dt><dd data-uscita="B_6"></dd></div>
       <div><dt>ATK</dt><dd><span data-uscita="B_12"></span>~<span data-uscita="B_13"></span></dd></div>
       <div><dt>DEF</dt><dd><span data-uscita="B_14"></span> + <span data-uscita="B_23"></span></dd></div>
       <div><dt>MDEF</dt><dd><span data-uscita="B_15"></span> + <span data-uscita="B_25"></span></dd></div>
-      <div><dt>HIT per colpire sempre</dt><dd data-uscita="B_21"></dd></div>
-      <div><dt>Flee per il 95% di schivate</dt><dd data-uscita="B_22"></dd></div>
-      <div><dt>Razza</dt><dd data-uscita="B_2"></dd></div>
-      <div><dt>Elemento</dt><dd data-uscita="B_3"></dd></div>
-      <div><dt>Taglia</dt><dd data-uscita="B_4"></dd></div>
-      <div><dt>Tipo</dt><dd data-uscita="B_type"></dd></div>
-      <div><dt>Exp base</dt><dd data-uscita="B_16"></dd></div>
-      <div><dt>Exp job</dt><dd data-uscita="B_17"></dd></div>
+      <div><dt data-en="100% Hit">HIT per colpire sempre</dt><dd data-uscita="B_21"></dd></div>
+      <div><dt data-en="95% Dodge">Flee per il 95% di schivate</dt><dd data-uscita="B_22"></dd></div>
+      <div><dt data-en="Race">Razza</dt><dd data-uscita="B_2"></dd></div>
+      <div><dt data-en="Element">Elemento</dt><dd data-uscita="B_3"></dd></div>
+      <div><dt data-en="Size">Taglia</dt><dd data-uscita="B_4"></dd></div>
+      <div><dt data-en="Type">Tipo</dt><dd data-uscita="B_type"></dd></div>
+      <div><dt data-en="BaseExp">Exp base</dt><dd data-uscita="B_16"></dd></div>
+      <div><dt data-en="JobExp">Exp job</dt><dd data-uscita="B_17"></dd></div>
       <div><dt>AGI</dt><dd data-uscita="B_agi"></dd></div>
       <div><dt>VIT</dt><dd data-uscita="B_vit"></dd></div>
       <div><dt>INT</dt><dd data-uscita="B_int"></dd></div>
@@ -552,125 +552,125 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
       <div><dt>LUK</dt><dd data-uscita="B_luk"></dd></div>
     </dl>
   </div>
-  <details class="pannello" data-pannello="EnemyDebuf" data-apri="debufSW" data-attivo="AIused"><summary>Debuff sul nemico</summary><div class="corpo"></div></details>
-  <details class="pannello" data-pannello="EnemyBuf" data-apri="EnemyBufSW" data-attivo="AKused"><summary>Buff del nemico</summary><div class="corpo"></div></details>
-  <details class="pannello" data-pannello="B_MANUAL" data-apri="Buf10SW" data-attivo="A10used"><summary>Modifiche manuali al nemico</summary><div class="corpo"></div></details>
+  <details class="pannello" data-pannello="EnemyDebuf" data-apri="debufSW" data-attivo="AIused"><summary><span data-en="Debuffs on Enemy">Debuff sul nemico</span></summary><div class="corpo"></div></details>
+  <details class="pannello" data-pannello="EnemyBuf" data-apri="EnemyBufSW" data-attivo="AKused"><summary><span data-en="Buffs on Enemy">Buff del nemico</span></summary><div class="corpo"></div></details>
+  <details class="pannello" data-pannello="B_MANUAL" data-apri="Buf10SW" data-attivo="A10used"><summary><span data-en="Manual Edits on Enemy">Modifiche manuali al nemico</span></summary><div class="corpo"></div></details>
 
   <div class="colonne" style="margin-top:14px">
     <div class="card">
-      <h3>Il tuo attacco</h3>
+      <h3 data-en="Your attack">Il tuo attacco</h3>
       <div class="voci" style="grid-template-columns: minmax(0,1fr)">
         <span class="voce lunga" data-campo="A_ActiveSkill" data-cerca data-etichetta="Skill"></span>
-        <label class="voce"><span class="etichetta">Livello</span><select data-campo="A_ActiveSkillLV"></select></label>
-        <label class="voce"><span class="etichetta">Tutte le skill che fanno danno, di ogni classe</span><input type="checkbox" data-campo="all_dmgSkills"></label>
+        <label class="voce"><span class="etichetta" data-en="Lvl">Livello</span><select data-campo="A_ActiveSkillLV"></select></label>
+        <label class="voce"><span class="etichetta" data-en="All Damage Skills">Tutte le skill che fanno danno, di ogni classe</span><input type="checkbox" data-campo="all_dmgSkills"></label>
         <span class="contenitore" data-contenitore="AASkill"></span>
       </div>
       <dl class="risultati uno" style="margin-top:10px">
-        <div data-riga="nm053"><dt>Probabilità di colpire</dt><dd><span data-uscita="BattleHIT"></span>%</dd></div>
-        <div data-riga="nm074"><dt>Elemento dell'attacco</dt><dd data-uscita="A_WeaponElement"></dd></div>
+        <div data-riga="nm053"><dt data-en="Player's Hit Ratio">Probabilità di colpire</dt><dd><span data-uscita="BattleHIT"></span>%</dd></div>
+        <div data-riga="nm074"><dt data-en="Attack Element">Elemento dell'attacco</dt><dd data-uscita="A_WeaponElement"></dd></div>
         <div data-riga="nm076"><dt data-uscita="nm076"></dt><dd data-uscita="A_WeaponSize"></dd></div>
         <div data-riga="CRIATKname"><dt data-uscita="CRIATKname"></dt><dd><span data-uscita="CRIATK"></span><span data-uscita="CRInum"></span></dd></div>
         <div data-riga="bSUB3name"><dt data-uscita="bSUB3name"></dt><dd data-uscita="bSUB3"></dd></div>
         <div data-riga="bSUBname"><dt data-uscita="bSUBname"></dt><dd data-uscita="bSUB"></dd></div>
-        <div data-riga="nm055"><dt>Danno minimo</dt><dd data-uscita="strID_0"></dd></div>
-        <div data-riga="nm056"><dt>Danno medio</dt><dd data-uscita="strID_1"></dd></div>
-        <div data-riga="nm057"><dt>Danno massimo</dt><dd data-uscita="strID_2"></dd></div>
+        <div data-riga="nm055"><dt data-en="Minimum Damage">Danno minimo</dt><dd data-uscita="strID_0"></dd></div>
+        <div data-riga="nm056"><dt data-en="Average Damage">Danno medio</dt><dd data-uscita="strID_1"></dd></div>
+        <div data-riga="nm057"><dt data-en="Maximum Damage">Danno massimo</dt><dd data-uscita="strID_2"></dd></div>
         <div data-riga="bREFLECT1name"><dt data-uscita="bREFLECT1name"></dt><dd data-uscita="bREFLECT1"></dd></div>
         <div data-riga="bREFLECT2name"><dt data-uscita="bREFLECT2name"></dt><dd data-uscita="bREFLECT2"></dd></div>
         <div data-riga="bSUB2name"><dt data-uscita="bSUB2name"></dt><dd data-uscita="bSUB2"></dd></div>
         <div data-riga="nm058"><dt data-uscita="nm058"></dt><dd data-uscita="AveSecondATK"></dd></div>
-        <div data-riga="nm059"><dt>Colpi per ucciderlo, minimo</dt><dd data-uscita="MinATKnum"></dd></div>
-        <div data-riga="nm060"><dt>Colpi per ucciderlo, in media</dt><dd data-uscita="AveATKnum"></dd></div>
-        <div data-riga="nm061"><dt>Colpi per ucciderlo, massimo</dt><dd data-uscita="MaxATKnum"></dd></div>
-        <div data-riga="nm062"><dt>Durata media del combattimento</dt><dd data-uscita="BattleTime"></dd></div>
+        <div data-riga="nm059"><dt data-en="Minimum Number of Hits">Colpi per ucciderlo, minimo</dt><dd data-uscita="MinATKnum"></dd></div>
+        <div data-riga="nm060"><dt data-en="Average Number of Hits">Colpi per ucciderlo, in media</dt><dd data-uscita="AveATKnum"></dd></div>
+        <div data-riga="nm061"><dt data-en="Maximum Number of Hits">Colpi per ucciderlo, massimo</dt><dd data-uscita="MaxATKnum"></dd></div>
+        <div data-riga="nm062"><dt data-en="Average Battle Duration">Durata media del combattimento</dt><dd data-uscita="BattleTime"></dd></div>
         <div data-riga="nm063"><dt data-uscita="nm063"></dt><dd data-uscita="AtkBaseExp"></dd></div>
         <div data-riga="nm064"><dt data-uscita="nm064"></dt><dd data-uscita="AtkJobExp"></dd></div>
       </dl>
     </div>
     <div class="card">
-      <h3>L'attacco del nemico</h3>
+      <h3 data-en="Enemy's attack">L'attacco del nemico</h3>
       <div class="voci" style="grid-template-columns: minmax(0,1fr)">
-        <label class="voce"><span class="etichetta">Skill del nemico</span><select data-campo="B_AtkSkill"></select></label>
-        <label class="voce"><span class="etichetta">Distanza</span><select data-campo="B_AtkRange"></select></label>
-        <label class="voce"><span class="etichetta">Elemento</span><select data-campo="B_AtkElem"></select></label>
-        <label class="voce"><span class="etichetta">Nemici che ti attaccano</span><select data-campo="B_num"></select></label>
+        <label class="voce"><span class="etichetta" data-en="Enemy Attack Skill">Skill del nemico</span><select data-campo="B_AtkSkill"></select></label>
+        <label class="voce"><span class="etichetta" data-en="Enemy Attack Range">Distanza</span><select data-campo="B_AtkRange"></select></label>
+        <label class="voce"><span class="etichetta" data-en="Enemy Attack Element">Elemento</span><select data-campo="B_AtkElem"></select></label>
+        <label class="voce"><span class="etichetta" data-en="Number of Enemies attacking you">Nemici che ti attaccano</span><select data-campo="B_num"></select></label>
         <span class="contenitore" data-contenitore="BBSkill"></span>
       </div>
       <dl class="risultati uno" style="margin-top:10px">
-        <div data-riga="nm054"><dt>Probabilità di schivare</dt><dd><span data-uscita="BattleFLEE"></span>%</dd></div>
-        <div data-riga="nm075"><dt>Elemento dell'attacco</dt><dd data-uscita="B_WeaponElement"></dd></div>
-        <div data-riga="nm067"><dt>Danno subito, minimo</dt><dd data-uscita="B_MinAtk"></dd></div>
-        <div data-riga="nm065"><dt>Danno subito, in media</dt><dd data-uscita="B_AveAtk"></dd></div>
-        <div data-riga="nm068"><dt>Danno subito, massimo</dt><dd data-uscita="B_MaxAtk"></dd></div>
+        <div data-riga="nm054"><dt data-en="Player's Dodge Ratio">Probabilità di schivare</dt><dd><span data-uscita="BattleFLEE"></span>%</dd></div>
+        <div data-riga="nm075"><dt data-en="Enemy Attack Element">Elemento dell'attacco</dt><dd data-uscita="B_WeaponElement"></dd></div>
+        <div data-riga="nm067"><dt data-en="Minimum Damage Received">Danno subito, minimo</dt><dd data-uscita="B_MinAtk"></dd></div>
+        <div data-riga="nm065"><dt data-en="Average Damage Received">Danno subito, in media</dt><dd data-uscita="B_AveAtk"></dd></div>
+        <div data-riga="nm068"><dt data-en="Maximum Damage Received">Danno subito, massimo</dt><dd data-uscita="B_MaxAtk"></dd></div>
         <div data-riga="aREFLECT1name"><dt data-uscita="aREFLECT1name"></dt><dd data-uscita="aREFLECT1"></dd></div>
         <div data-riga="aREFLECT2name"><dt data-uscita="aREFLECT2name"></dt><dd data-uscita="aREFLECT2"></dd></div>
-        <div data-riga="nm066"><dt>Danno subito in media, con le schivate</dt><dd data-uscita="B_Ave2Atk"></dd></div>
-        <div><dt>HP effettivi contro questo attacco</dt><dd data-uscita="B_EffectiveHP"></dd></div>
-        <div><dt>HP effettivi, con le schivate</dt><dd data-uscita="B_ExpectedEffectiveHP"></dd></div>
-        <div><dt>Resisti circa</dt><dd data-uscita="B_SurvivalHits"></dd></div>
+        <div data-riga="nm066"><dt data-en="Average Dmg Received (w/dodge)">Danno subito in media, con le schivate</dt><dd data-uscita="B_Ave2Atk"></dd></div>
+        <div><dt data-en="Effective HP vs this attack">HP effettivi contro questo attacco</dt><dd data-uscita="B_EffectiveHP"></dd></div>
+        <div><dt data-en="Expected EHP incl. avoidance">HP effettivi, con le schivate</dt><dd data-uscita="B_ExpectedEffectiveHP"></dd></div>
+        <div><dt data-en="Survives approximately">Resisti circa</dt><dd data-uscita="B_SurvivalHits"></dd></div>
       </dl>
     </div>
   </div>
 
-  <h2>Confronto fra due build</h2>
+  <h2 data-en="Build A / B Comparison">Confronto fra due build</h2>
   <div class="card" id="confronto">
-    <p class="hint">B è la build che stai modificando. Fissa quella attuale come A, poi cambia equipaggiamento, statistiche o buff: la tabella mette a confronto le due build contro lo stesso mostro, quello scelto qui sopra.</p>
+    <p class="hint" data-en="B is the build you are editing. Pin the current one as A, then change equipment, stats or buffs: the table compares the two builds against the same monster, the one chosen above.">B è la build che stai modificando. Fissa quella attuale come A, poi cambia equipaggiamento, statistiche o buff: la tabella mette a confronto le due build contro lo stesso mostro, quello scelto qui sopra.</p>
     <div class="toolbar">
       <button class="btn" type="button" data-azione="fissa-a">Fissa questa build come A</button>
-      <button class="btn" type="button" data-azione="scambia-ab" hidden>Scambia A e B</button>
-      <button class="btn danger" type="button" data-azione="togli-a" hidden>Togli A</button>
+      <button class="btn" type="button" data-azione="scambia-ab" hidden data-en="Swap A and B">Scambia A e B</button>
+      <button class="btn danger" type="button" data-azione="togli-a" hidden data-en="Clear pinned build">Togli A</button>
       <span class="hint" id="confronto-stato" style="margin:0"></span>
     </div>
     <div id="confronto-risultati" hidden>
       <p class="errore" id="confronto-avviso" style="margin-top:12px" hidden></p>
-      <label class="voce" style="margin:12px 0 6px"><input type="checkbox" id="solo-differenze"><span class="etichetta">Solo le differenze</span></label>
+      <label class="voce" style="margin:12px 0 6px"><input type="checkbox" id="solo-differenze"><span class="etichetta" data-en="Only show differences">Solo le differenze</span></label>
       <table class="confronto">
-        <thead><tr><th></th><th>A</th><th>B</th><th>Differenza</th></tr></thead>
+        <thead><tr><th></th><th>A</th><th>B</th><th data-en="Difference">Differenza</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
   </div>
 
   <div class="card" style="margin-top:14px">
-    <h3>Condizioni</h3>
+    <h3 data-en="Conditions">Condizioni</h3>
     <div class="voci affiancati">
-      <label class="voce"><span class="etichetta">Ambiente</span><select data-campo="A8_Skill14"></select></label>
-      <label class="voce"><span class="etichetta">Investimento in difesa (solo WoE)</span><select data-campo="A8_Skill15"></select></label>
-      <label class="voce"><span class="etichetta">Ritardo minimo fra due skill <span class="name" tabindex="0">?<span class="nametext">Il client non manda più skill di così al secondo, anche con ASPD e ritardi più bassi.</span></span></span><select data-campo="Conf01"></select></label>
-      <label class="voce"><span class="etichetta">ASPD massima del server</span><select data-campo="maxASPD"></select></label>
+      <label class="voce"><span class="etichetta" data-en="Environment">Ambiente</span><select data-campo="A8_Skill14"></select></label>
+      <label class="voce"><span class="etichetta" data-en="Defense Investment [WoE Zone only]">Investimento in difesa (solo WoE)</span><select data-campo="A8_Skill15"></select></label>
+      <label class="voce"><span class="etichetta" data-en="Minimum delay between active skills &lt;span class=&quot;name&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;nametext&quot;&gt;The client does not send more skills than this per second, even with lower ASPD and delays.&lt;/span&gt;&lt;/span&gt;">Ritardo minimo fra due skill <span class="name" tabindex="0">?<span class="nametext">Il client non manda più skill di così al secondo, anche con ASPD e ritardi più bassi.</span></span></span><select data-campo="Conf01"></select></label>
+      <label class="voce"><span class="etichetta" data-en="Server's max ASPD">ASPD massima del server</span><select data-campo="maxASPD"></select></label>
     </div>
   </div>
 
   <div class="card">
-    <h3>Altre informazioni</h3>
+    <h3 data-en="Other Info">Altre informazioni</h3>
     <div class="voci" style="grid-template-columns: minmax(0,1fr)">
-      <label class="voce"><span class="etichetta">Mostra</span><select data-campo="A_Kakutyou"></select></label>
+      <label class="voce"><span class="etichetta" data-en="Show">Mostra</span><select data-campo="A_Kakutyou"></select></label>
       <span class="contenitore" data-contenitore="A_KakutyouSel"></span>
     </div>
     <div class="descrizione" data-uscita="A_KakutyouData" style="margin-top:8px"></div>
   </div>
 
   <div class="card">
-    <h3>Opzioni</h3>
+    <h3 data-en="Calculator options">Opzioni</h3>
     <div class="voci" style="grid-template-columns: minmax(0,1fr)">
-      <label class="voce"><span class="etichetta">Limitare gli slot dell'equipaggiamento <span class="name" tabindex="0">?<span class="nametext">Con un'arma a due mani niente scudo, e con un copricapo che occupa più posti niente copricapo negli altri.</span></span></span><input type="checkbox" data-campo="restrict_equipslot"></label>
-      <label class="voce"><span class="etichetta">Limitare le carte agli slot dell'oggetto</span><input type="checkbox" data-campo="restrict_cardslot"></label>
-      <label class="voce"><span class="etichetta">Tutte le carte in ogni posto (può dare risultati sbagliati)</span><input type="checkbox" data-campo="all_card"></label>
+      <label class="voce"><span class="etichetta" data-en="Equipment slot restrictions &lt;span class=&quot;name&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;nametext&quot;&gt;This disables shield / left hand when using a two-handed weapon, and mid/lower headgear when equipping a headgear that uses more than 1 headgear slot.&lt;/span&gt;&lt;/span&gt;">Limitare gli slot dell'equipaggiamento <span class="name" tabindex="0">?<span class="nametext">Con un'arma a due mani niente scudo, e con un copricapo che occupa più posti niente copricapo negli altri.</span></span></span><input type="checkbox" data-campo="restrict_equipslot"></label>
+      <label class="voce"><span class="etichetta" data-en="Equipment Card slot restrictions">Limitare le carte agli slot dell'oggetto</span><input type="checkbox" data-campo="restrict_cardslot"></label>
+      <label class="voce"><span class="etichetta" data-en="All Cards everywhere (with bugs)">Tutte le carte in ogni posto (può dare risultati sbagliati)</span><input type="checkbox" data-campo="all_card"></label>
     </div>
   </div>
 
   <footer class="crediti">
-    <p>I calcoli sono quelli del calcolatore di uaRO di Thrice e Arlix (<a href="https://uaro-calc.xdthrice.workers.dev/" rel="noopener">uaro-calc.xdthrice.workers.dev</a>), che discende dal simulatore originale di ROratorio, tradotto e adattato da Doddler e aggiornato da Gandi, Triper e kurimet; altri aggiornamenti per uaRO vengono dalle versioni di Arlix e di Bish. Il merito dei calcoli e dei dati è loro. Le mappe in cui compaiono i mostri vengono dagli spawn di <a href="https://github.com/rathena/rathena" rel="noopener">rAthena</a>.</p>
-    <p>Questa pagina li riprende con un'interfaccia in italiano. Per errori, dati mancanti o richieste degli autori, scrivi all'admin del sito.</p>
+    <p data-en="The calculations are those of the uaRO calculator by Thrice and Arlix (&lt;a href=&quot;https://uaro-calc.xdthrice.workers.dev/&quot; rel=&quot;noopener&quot;&gt;uaro-calc.xdthrice.workers.dev&lt;/a&gt;), which descends from the original ROratorio simulator, translated and adapted by Doddler and updated by Gandi, Triper and kurimet; more uaRO updates come from the versions by Arlix and Bish. The credit for the calculations and the data is theirs. The maps where the monsters appear come from the spawns of &lt;a href=&quot;https://github.com/rathena/rathena&quot; rel=&quot;noopener&quot;&gt;rAthena&lt;/a&gt;.">I calcoli sono quelli del calcolatore di uaRO di Thrice e Arlix (<a href="https://uaro-calc.xdthrice.workers.dev/" rel="noopener">uaro-calc.xdthrice.workers.dev</a>), che discende dal simulatore originale di ROratorio, tradotto e adattato da Doddler e aggiornato da Gandi, Triper e kurimet; altri aggiornamenti per uaRO vengono dalle versioni di Arlix e di Bish. Il merito dei calcoli e dei dati è loro. Le mappe in cui compaiono i mostri vengono dagli spawn di <a href="https://github.com/rathena/rathena" rel="noopener">rAthena</a>.</p>
+    <p data-en="This page takes them up with an interface of its own. For errors, missing data or requests from the authors, write to the site admin.">Questa pagina li riprende con un'interfaccia in italiano. Per errori, dati mancanti o richieste degli autori, scrivi all'admin del sito.</p>
   </footer>
   </div>
 </main>
 
 <dialog class="ricerca" id="ricerca">
   <div class="testa">
-    <input type="search" id="ricerca-testo" placeholder="Cerca" aria-label="Cerca">
-    <button class="btn" type="button" id="ricerca-effetti" aria-pressed="false" title="Cerca anche negli effetti (per esempio ASPD, AGI, Reflect)">Effetti</button>
-    <button class="btn" type="button" data-azione="chiudi-ricerca">Chiudi</button>
+    <input type="search" id="ricerca-testo" placeholder="Cerca" aria-label="Cerca" data-en-placeholder="Search" data-en-aria-label="Search">
+    <button class="btn" type="button" id="ricerca-effetti" aria-pressed="false" title="Cerca anche negli effetti (per esempio ASPD, AGI, Reflect)" data-en-title="Also search the effects (for example ASPD, AGI, Reflect)" data-en="Effects">Effetti</button>
+    <button class="btn" type="button" data-azione="chiudi-ricerca" data-en="Close">Chiudi</button>
   </div>
   <ul id="ricerca-lista"></ul>
 </dialog>

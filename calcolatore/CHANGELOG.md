@@ -2,6 +2,16 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.9] - 2026-10-23
+
+La pagina e' anche in inglese: con `English` nel menu ⚙ si passa all'inglese, e la scelta vale
+per tutto il sito.
+
+- In inglese etichette e risultati usano i termini del calcolatore originale di Thrice (Base Lvl,
+  Head: top, Garment, Cast Delay, Pin current build as A...), e le frasi del calcolo si leggono
+  come le scrive lui
+- Sul telefono le etichette lunghe delle Condizioni vanno a capo invece di allargare la pagina
+
 ## [1.8] - 2026-10-22
 
 Oggetti dagli screen del gioco:

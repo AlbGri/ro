@@ -1,6 +1,17 @@
 // Frasi del motore in inglese, tradotte quando la pagina le mostra. Il motore resta quello
 // originale: le sue scritte cambiano solo qui. Nomi di classi, skill, oggetti, carte, mostri,
-// elementi, razze e taglie restano in inglese, come nel gioco.
+// elementi, razze e taglie restano in inglese, come nel gioco. Con la pagina in inglese il
+// motore si mostra com'e', salvo gli adattamenti all'impaginazione (INGLESE).
+
+// il menu degli episodi ha gia' l'etichetta "fino all'episodio": le voci la tolgono
+const EPISODI = {
+  "Until episode 13.3: El Dicastes": "13.3: El Dicastes",
+  "Until episode 12: Nightmare of Midgard, Destruction of Morocc": "12: Nightmare of Midgard, Destruction of Morocc",
+  "Until episode 11: The Religious Nation, Arunafeltz": "11: The Religious Nation, Arunafeltz",
+  "Until episode 10: The Republic of Schwarzwald": "10: The Republic of Schwarzwald",
+  "Until episode 9: Rebirth Job System": "9: Rebirth Job System",
+  "Until episode 8: Niflheim ~ City of the Dead": "8: Niflheim, City of the Dead",
+};
 
 // testo intero di un nodo (spazi esterni esclusi)
 const ESATTE = {
@@ -185,12 +196,7 @@ const ESATTE = {
   "0.15s": "0,15 s",
   "0.3s": "0,3 s",
   "0.4s": "0,4 s",
-  "Until episode 13.3: El Dicastes": "13.3: El Dicastes",
-  "Until episode 12: Nightmare of Midgard, Destruction of Morocc": "12: Nightmare of Midgard, Destruction of Morocc",
-  "Until episode 11: The Religious Nation, Arunafeltz": "11: The Religious Nation, Arunafeltz",
-  "Until episode 10: The Republic of Schwarzwald": "10: The Republic of Schwarzwald",
-  "Until episode 9: Rebirth Job System": "9: Rebirth Job System",
-  "Until episode 8: Niflheim ~ City of the Dead": "8: Niflheim, City of the Dead",
+  ...EPISODI,
 };
 
 // pezzi di frase, nell'ordine
@@ -227,9 +233,17 @@ const PEZZI = [
   [/ \[active\]$/, ""],
 ];
 
+// pagina in inglese: le etichette della seconda arma senza i due punti, come le altre
+const INGLESE = document.documentElement.lang === "en" && {
+  "Refine (Left):": "Refine",
+  "Left Hand:": "Left Hand",
+  ...EPISODI,
+};
+
 export function traduci(testo) {
   const t = testo.trim();
   if (!t) return testo;
+  if (INGLESE) return Object.hasOwn(INGLESE, t) ? testo.replace(t, INGLESE[t]) : testo.replace(/ \[active\]$/, "");
   if (Object.hasOwn(ESATTE, t)) return testo.replace(t, ESATTE[t]);
   let r = testo;
   for (const [re, con] of PEZZI) r = r.replace(re, con);

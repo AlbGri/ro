@@ -20,7 +20,7 @@ Qui ci sono:
   di [rAthena](https://github.com/rathena/rathena) (pre-renewal); i luoghi di uaRO non ci sono
 - `motore/uaro.js` e i commenti `uaRO:` nel motore: correzioni per uaRO prese dalla
   [wiki del server](https://wiki.uaro.net/), ognuna con la sua fonte
-- `index.html`, `app.js`, `traduzioni.js`: la pagina in italiano
+- `index.html`, `app.js`, `traduzioni.js`: la pagina, in italiano e in inglese
 - `tests/`: il motore deve dare i risultati attesi su 360 build registrate con l'originale,
   salvo le correzioni per uaRO; `strumenti/aggiorna-riferimento.mjs` aggiorna i risultati attesi
   dopo una correzione voluta
