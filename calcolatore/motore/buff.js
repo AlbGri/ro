@@ -1210,9 +1210,6 @@ function Buf7SW(e) {
               campo: "A7_Skill3",
             },
             {
-              nota: "&amp;nbsp",
-            },
-            {
               campo: "A7_Skill41",
               tipo: "checkbox",
               etichetta:
