@@ -2,6 +2,12 @@
 
 Le versioni della pagina `party/`.
 
+## [1.9] - 2026-10-23
+
+- Quando le run sono meno di tre, `Per la run N` dice cosa manca anche se ogni posto basta da
+  solo ma non insieme agli altri, perche' gli stessi account servono per piu' posti: per esempio
+  "High Priest e Professor insieme: per 3 run ne servono 9, ci sono 8 account che li coprono"
+
 ## [1.8] - 2026-10-23
 
 - Il pulsante della lingua esce dal menu ⚙ e sta in alto, subito prima dell'ingranaggio, con la

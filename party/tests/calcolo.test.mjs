@@ -217,6 +217,27 @@ describe("casi di Alberto", () => {
     assert.equal(esito.run.length, 0);
     assert.deepEqual(esito.mancano, ["Professor: per 1 run ne servono 1, ce ne sono 0"]);
   });
+
+  it("dice cosa manca anche quando i posti bastano uno per uno ma non insieme", () => {
+    // L'elenco di Alberto del 23/10/2026: gli HP sono 6, ma due stanno su account che servono anche
+    // come Professor o Clown/Bard, quindi la terza run non c'e'.
+    const giocatori = [
+      giocatore("Alberto", account("High Priest", "Professor", "Gypsy/Dancer", "Clown/Bard"), account("High Priest"), account("Priest")),
+      giocatore("Efreeet", account("High Priest", "Clown/Bard", "Sniper"), account("Priest"), account("Clown/Bard")),
+      giocatore("Pastafarian", account("Sniper", "High Priest"), account("Sniper"), account("Sniper")),
+      giocatore("Johnny", account("Sniper", "Professor"), account("Sniper"), account("Sniper")),
+      giocatore("Negaz", account("High Priest")),
+      giocatore("Mario", account("High Priest")),
+    ];
+    const jolly = [account("Gypsy/Dancer"), account("Clown/Bard"), account("Professor")];
+    const esito = calcolaRun(giocatori, jolly);
+    verifica(giocatori, jolly, ISTANZA, esito);
+    assert.equal(esito.run.length, 2);
+    assert.deepEqual(esito.mancano, [
+      "High Priest e Clown/Bard insieme: per 3 run ne servono 9, ci sono 8 account che li coprono",
+      "High Priest e Professor insieme: per 3 run ne servono 9, ci sono 8 account che li coprono",
+    ]);
+  });
 });
 
 describe("Endless Cellar", () => {

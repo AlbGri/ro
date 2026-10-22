@@ -417,19 +417,43 @@ function assegnaPosti(membri, istanza) {
 }
 
 /**
- * Perche' non si arriva a `run` run: i posti per cui mancano account, contando
- * che un giocatore copre al massimo un posto per run.
+ * Perche' non si arriva a `run` run: i posti obbligatori per cui mancano account.
+ * Si guarda anche ogni gruppo di posti insieme, perche' un account con piu' classi
+ * conta per ognuna ma entra una volta sola: con HP/Prof/Clown in un account, HP,
+ * Professor e Clown/Bard possono bastare uno per uno e non insieme (Alberto,
+ * 23/10/2026: due run e nessuna spiegazione). Un giocatore copre al massimo un
+ * posto per run, e un jolly lo gioca chi ha ancora un'entrata libera. Si
+ * elencano solo i gruppi senza un gruppo piu' piccolo che gia' non basta.
  */
 function cosaManca(giocatori, jolly, istanza, run) {
   const mancano = [];
   const minimo = istanza.posti.reduce((n, p) => n + p.quanti, 0);
   if (giocatori.length < minimo) mancano.push(tr(`servono almeno ${minimo} giocatori presenti, ce ne sono ${giocatori.length}`, `at least ${minimo} players present are needed, there are ${giocatori.length}`));
-  const haRuolo = (account, ruolo) => account.personaggi.some((p) => ruoloDi(istanza, p.classe) === ruolo);
-  for (const posto of istanza.posti) {
-    const servono = posto.quanti * run;
-    let ci = jolly.filter((a) => haRuolo(a, posto.ruolo)).length;
-    for (const g of giocatori) ci += Math.min(run, g.account.filter((a) => haRuolo(a, posto.ruolo)).length);
-    if (ci < servono) mancano.push(tr(`${posto.nome}: per ${run} run ne servono ${servono}, ce ne sono ${ci}`, `${posto.nome}: ${run} ${run === 1 ? "run needs" : "runs need"} ${servono}, there are ${ci}`));
+  const posti = istanza.posti.filter((p) => p.quanti > 0);
+  const copre = (account, gruppo) => account.personaggi.some((p) => gruppo.some((posto) => ruoloDi(istanza, p.classe) === posto.ruolo));
+  const scarsi = [];
+  for (let maschera = 1; maschera < 1 << posti.length; maschera++) {
+    if (scarsi.some((s) => (s & maschera) === s)) continue;
+    const gruppo = posti.filter((_, i) => maschera & (1 << i));
+    const servono = run * gruppo.reduce((n, p) => n + p.quanti, 0);
+    // Piu' posti per run che giocatori presenti: lo dice gia' la riga dei giocatori.
+    if (servono > run * giocatori.length) continue;
+    let propri = 0;
+    let liberi = 0;
+    for (const g of giocatori) {
+      const usati = Math.min(run, g.account.filter((a) => copre(a, gruppo)).length);
+      propri += usati;
+      liberi += run - usati;
+    }
+    const ci = propri + Math.min(liberi, jolly.filter((a) => copre(a, gruppo)).length);
+    if (ci >= servono) continue;
+    scarsi.push(maschera);
+    const nomi = gruppo.map((p) => p.nome);
+    mancano.push(nomi.length === 1
+      ? tr(`${nomi[0]}: per ${run} run ne servono ${servono}, ce ne sono ${ci}`, `${nomi[0]}: ${run} ${run === 1 ? "run needs" : "runs need"} ${servono}, there are ${ci}`)
+      : tr(`${nomi.slice(0, -1).join(", ")} e ${nomi.at(-1)} insieme: per ${run} run ne servono ${servono}, ci sono ${ci} account che li coprono`,
+        `${nomi.slice(0, -1).join(", ")} and ${nomi.at(-1)} together: ${run} ${run === 1 ? "run needs" : "runs need"} ${servono}, there are ${ci} accounts that cover them`));
   }
+  if (mancano.length === 0) mancano.push(tr("i posti obbligatori basterebbero, ma gli account non si riescono a dividere fra le run con una entrata per run a giocatore", "the required slots would be enough, but the accounts cannot be split among the runs with one entry per run per player"));
   return mancano;
 }
