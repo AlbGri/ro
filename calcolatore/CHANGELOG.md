@@ -2,6 +2,19 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.7] - 2026-10-22
+
+- Altre informazioni: le voci con dei campi (bonus al danno, esperienza, Potion Pitcher,
+  creazione di pozioni e armi, Strip, cucina, raffinamento) sono ridisegnate. Ogni campo ha la
+  sua etichetta a sinistra e il controllo a destra, e i risultati stanno su righe loro. Prima in
+  alcune voci etichette e risultati si mescolavano ("Success RateStat of the Food"), e nei bonus
+  al danno i campi del bersaglio stavano in colonna sotto i risultati: ora sono in cima, su una
+  riga
+- Con l'Emperium come mostro e una skill scelta il calcolo non si ferma piu' su un errore
+- Il calcolatore si apre, carica una build e ricalcola piu' in fretta (circa un terzo in meno
+  per caricare una build): il motore lavora sui suoi campi, senza la copia della pagina
+  originale in memoria. I risultati sono gli stessi di prima
+
 ## [1.6] - 2026-10-21
 
 - Modifiche manuali al personaggio e al nemico: tradotte le intestazioni ("Bonus % al danno

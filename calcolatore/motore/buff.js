@@ -1143,7 +1143,7 @@ function SetSpeedPotionOptions() {
   );
   if (n_A_JOB == 22) opzioni(c.A_SpeedPOT, [[4, "Poison Bottle"]], 4);
   else {
-    c.A_SpeedPOT.options.length = 4;
+    c.A_SpeedPOT.length = 4;
     if (n_A_Buf7[35] == 4) n_A_Buf7[35] = 0;
   }
   c.A_SpeedPOT.value = n_A_Buf7[35];

@@ -3,8 +3,9 @@
 
 // Il motore viene da un calcolatore che leggeva un form HTML: un campo ha ancora la semantica
 // delle <select> del browser, su cui il motore conta (una sola opzione scelta, la prima non
-// disabilitata se nessuna lo e'; options[i] = ..., options.length = n, gruppi di opzioni). c e'
-// l'insieme dei campi per nome, come era document.calcForm
+// disabilitata se nessuna lo e'; gruppi di opzioni). Le opzioni si leggono da options e si
+// scrivono con opzioni() e togliOpzione(). c e' l'insieme dei campi per nome, come era
+// document.calcForm
 var c = {};
 
 // un'opzione: testo con gli spazi compressi, come quello di un'<option>; senza valore vale il testo
@@ -44,7 +45,6 @@ function Campo(nome, tipo, gestore) {
   this.figli = [];
   this._elenco = null;
   this._sporco = false;
-  this._collezione = null;
 }
 var CP = Campo.prototype;
 // come nel browser, sempre vero o falso qualunque valore si assegni
@@ -103,7 +103,7 @@ Object.defineProperty(CP, "value", {
     });
   },
 });
-// options[i] = opzione (null la toglie; oltre la fine aggiunge opzioni vuote), options.length
+// accorcia l'elenco, o lo allunga con opzioni vuote
 Object.defineProperty(CP, "length", {
   get: function () { return this.elenco().length; },
   set: function (n) {
@@ -113,6 +113,7 @@ Object.defineProperty(CP, "length", {
     else while (this.elenco().length < n) attacca(this, new Opzione());
   },
 });
+// l'opzione in posizione i (null la toglie; oltre la fine prima aggiunge opzioni vuote)
 CP._imposta = function (i, o) {
   var l = this.elenco();
   if (o === null || o === undefined) {
@@ -123,26 +124,10 @@ CP._imposta = function (i, o) {
   while (this.elenco().length < i) attacca(this, new Opzione());
   attacca(this, o);
 };
+// le opzioni in fila, solo da leggere (options[i], options.length, for...of)
 Object.defineProperty(CP, "options", {
   get: function () {
-    if (this._collezione) return this._collezione;
-    var campo = this;
-    var base = {
-      get length() { return campo.length; },
-      set length(n) { campo.length = n; },
-      [Symbol.iterator]: function () { return campo.elenco().slice()[Symbol.iterator](); },
-    };
-    return (this._collezione = new Proxy(base, {
-      get: function (t, p) {
-        if (typeof p === "string" && /^\d+$/.test(p)) return campo.elenco()[Number(p)];
-        return t[p];
-      },
-      set: function (t, p, v) {
-        if (typeof p === "string" && /^\d+$/.test(p)) campo._imposta(Number(p), v);
-        else t[p] = v;
-        return true;
-      },
-    }));
+    return this.elenco();
   },
 });
 
