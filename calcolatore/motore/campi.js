@@ -204,6 +204,10 @@ function opzioni(campo, lista, da) {
     campo._imposta(da + k, new Opzione(o[1], o[0]));
   });
 }
+// toglie l'opzione in posizione i, se c'e' (era options[i] = null)
+function togliOpzione(campo, i) {
+  campo._imposta(i, null);
+}
 // un gruppo di opzioni (optgroup) in fondo al campo, da una lista di [valore, testo]
 function gruppo(campo, etichetta, lista) {
   var g = campo.appendChild(new Gruppo());
