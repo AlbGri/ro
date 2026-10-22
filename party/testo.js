@@ -32,6 +32,7 @@ export const SOPRANNOMI = {
   champ: "Champion",
   devo: "Paladin",
   pala: "Paladin",
+  pally: "Paladin",
   creo: "Creator",
   bio: "Creator",
   biochem: "Creator",
