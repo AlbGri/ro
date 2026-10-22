@@ -87,8 +87,10 @@ function pezzi(testo, inglese) {
   t = t.replace(/«[^»]*»/g, " ");
   const rimandi = [...t.matchAll(RIF)].map(m => m[1] || (m[2] ? "fase " + m[2] : m[3]));
   t = t.replace(RIF, " ");
-  const coord = [...t.matchAll(/\b[a-z_0-9]+ \d+\/\d+/g)].map(m => m[0]);
-  t = t.replace(/\b[a-z_0-9]+ \d+\/\d+/g, " ");
+  // "mappa x/y", oppure solo "x/y" quando la parola prima non e' una mappa ("a 213/277", "at 213/277")
+  const COORD = /(?:\b([a-z_0-9]+) )?(\d+\/\d+)/g;
+  const coord = [...t.matchAll(COORD)].map(m => (m[1] && mappa(m[1]) ? m[1] + " " : "") + m[2]);
+  t = t.replace(COORD, " ");
   // 1.200 e 0,5 in italiano, 1,200 e 0.5 in inglese
   const numeri = [...t.matchAll(inglese ? /\d+(?:,\d{3})*(?:\.\d+)?/g : /\d+(?:\.\d{3})*(?:,\d+)?/g)]
     .map(m => String(Number(inglese ? m[0].replace(/,/g, "") : m[0].replace(/\./g, "").replace(",", "."))));

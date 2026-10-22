@@ -69,10 +69,8 @@ pagina con l'attributo `data-theme`; senza una scelta decide il sistema.
 
 ### Lingua
 
-Il sito e' in italiano; home, schermata del codice, timer, calcolatore, livelli
-e party hanno anche l'inglese, che si sceglie con il pulsante `English` e vale
-per tutto il sito. La lingua del browser non conta. La guida Nuovo Mondo e' per
-ora solo in italiano.
+Il sito e' in italiano e in inglese: l'inglese si sceglie con il pulsante
+`English` e vale per tutto il sito. La lingua del browser non conta.
 
 Le due lingue stanno una accanto all'altra, senza un file di traduzioni:
 
@@ -82,6 +80,9 @@ Le due lingue stanno una accanto all'altra, senza un file di traduzioni:
   `data-en-content` per gli attributi. Li applica `gate.js`
 - nel JavaScript una scritta si sceglie con `tr("Chiudi", "Close")`, anche lei
   di `gate.js`
+- la guida fa da se' (deve funzionare anche senza `gate.js`): legge la stessa
+  scelta, applica i suoi `data-en` e prende i testi di fasi e step dal campo `en`
+  dei dati (vedi `guide/CLAUDE.md`)
 
 Cambiare lingua ricarica la pagina.
 

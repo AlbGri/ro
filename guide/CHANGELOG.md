@@ -3,6 +3,12 @@
 Le versioni della guida `nuovo-mondo.html`. Il numero e' quello scritto in
 testa a ogni export delle note.
 
+## [10.0] - 2026-10-23
+
+- La guida e' anche in inglese: con `English` nel menu ⚙ si passa all'inglese, e la scelta vale per tutto il sito. Spunte, note e backup sono gli stessi nelle due lingue
+- In inglese l'export delle note e' in inglese, con i titoli degli step inglesi; le note restano come le hai scritte
+- I nomi di NPC, oggetti e opzioni di dialogo sono quelli del gioco in tutte e due le lingue
+
 ## [9.4] - 2026-10-21
 
 - I testi occupano tutta la larghezza della pagina e vanno a capo solo dove finisce lo spazio, invece che a meta' pagina
