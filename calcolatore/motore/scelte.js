@@ -19,12 +19,12 @@ var NOMI_CLASSE_MENU = {
 function servers() {
   if (firstLoad == 0) {
     for (var [sezione, classi] of SEZIONI_CLASSI) {
-      var gruppo = documento.createElement("OPTGROUP");
+      var gruppo = new Gruppo();
       gruppo.label = sezione;
       c.A_JOB.appendChild(gruppo);
       for (var classe of classi)
         gruppo.appendChild(
-          new documento.Opzione(NOMI_CLASSE_MENU[classe] || JobName[classe], classe),
+          new Opzione(NOMI_CLASSE_MENU[classe] || JobName[classe], classe),
         );
     }
     for (
@@ -39,13 +39,13 @@ function servers() {
       i <= 10;
       i++
     )
-      ((c.A_Weapon_refine.options[i] = new documento.Opzione("+" + i, i)),
-        n_Nitou && (c.A_Weapon2_refine.options[i] = new documento.Opzione("+" + i, i)),
-        (c.A_HEAD_REFINE.options[i] = new documento.Opzione("+" + i, i)),
-        (c.A_LEFT_REFINE.options[i] = new documento.Opzione("+" + i, i)),
-        (c.A_BODY_REFINE.options[i] = new documento.Opzione("+" + i, i)),
-        (c.A_SHOULDER_REFINE.options[i] = new documento.Opzione("+" + i, i)),
-        (c.A_SHOES_REFINE.options[i] = new documento.Opzione("+" + i, i)));
+      ((c.A_Weapon_refine.options[i] = new Opzione("+" + i, i)),
+        n_Nitou && (c.A_Weapon2_refine.options[i] = new Opzione("+" + i, i)),
+        (c.A_HEAD_REFINE.options[i] = new Opzione("+" + i, i)),
+        (c.A_LEFT_REFINE.options[i] = new Opzione("+" + i, i)),
+        (c.A_BODY_REFINE.options[i] = new Opzione("+" + i, i)),
+        (c.A_SHOULDER_REFINE.options[i] = new Opzione("+" + i, i)),
+        (c.A_SHOES_REFINE.options[i] = new Opzione("+" + i, i)));
   }
   firstLoad = 1;
   for (var e of c.A_ActiveSkill.options)
@@ -208,13 +208,6 @@ function campoSkill(dove, nome, etichetta, valore) {
       : { campo: nome, tipo: "testo", etichetta: etichetta, valore: valore },
   ]);
 }
-function myInnerHtml(e, _, n) {
-  if (n == 0) {
-    for (wIHOB = documento.getElementById(e); wIHOB.hasChildNodes();)
-      wIHOB.removeChild(wIHOB.firstChild);
-    wIHOB.innerHTML = _;
-  } else ((wIHOB = documento.getElementById(e)), wIHOB.insertAdjacentHTML("BeforeEnd", _));
-}
 function ClickJob(e) {
   if (
     (contenitore("A_KakutyouSel"),
@@ -224,23 +217,23 @@ function ClickJob(e) {
     (e = n_A_JOB) < 46)
   )
     for (var _ = 1; _ <= 99; _++)
-      ((c.A_BaseLV.options[_ - 1] = new documento.Opzione(_, _)),
-        (c.A_STR.options[_ - 1] = new documento.Opzione(_, _)),
-        (c.A_AGI.options[_ - 1] = new documento.Opzione(_, _)),
-        (c.A_VIT.options[_ - 1] = new documento.Opzione(_, _)),
-        (c.A_INT.options[_ - 1] = new documento.Opzione(_, _)),
-        (c.A_DEX.options[_ - 1] = new documento.Opzione(_, _)),
-        (c.A_LUK.options[_ - 1] = new documento.Opzione(_, _)));
+      ((c.A_BaseLV.options[_ - 1] = new Opzione(_, _)),
+        (c.A_STR.options[_ - 1] = new Opzione(_, _)),
+        (c.A_AGI.options[_ - 1] = new Opzione(_, _)),
+        (c.A_VIT.options[_ - 1] = new Opzione(_, _)),
+        (c.A_INT.options[_ - 1] = new Opzione(_, _)),
+        (c.A_DEX.options[_ - 1] = new Opzione(_, _)),
+        (c.A_LUK.options[_ - 1] = new Opzione(_, _)));
   else {
     for (thirdClass = 1, _ = 1; _ <= 175; _++)
-      c.A_BaseLV.options[_ - 1] = new documento.Opzione(_, _);
+      c.A_BaseLV.options[_ - 1] = new Opzione(_, _);
     for (_ = 1; _ <= 130; _++)
-      ((c.A_STR.options[_ - 1] = new documento.Opzione(_, _)),
-        (c.A_AGI.options[_ - 1] = new documento.Opzione(_, _)),
-        (c.A_VIT.options[_ - 1] = new documento.Opzione(_, _)),
-        (c.A_INT.options[_ - 1] = new documento.Opzione(_, _)),
-        (c.A_DEX.options[_ - 1] = new documento.Opzione(_, _)),
-        (c.A_LUK.options[_ - 1] = new documento.Opzione(_, _)));
+      ((c.A_STR.options[_ - 1] = new Opzione(_, _)),
+        (c.A_AGI.options[_ - 1] = new Opzione(_, _)),
+        (c.A_VIT.options[_ - 1] = new Opzione(_, _)),
+        (c.A_INT.options[_ - 1] = new Opzione(_, _)),
+        (c.A_DEX.options[_ - 1] = new Opzione(_, _)),
+        (c.A_LUK.options[_ - 1] = new Opzione(_, _)));
   }
   var n = c.A_JobLV.length;
   for (_ = 0; _ < n; _++) c.A_JobLV.options[0] = null;
@@ -250,7 +243,7 @@ function ClickJob(e) {
     _ <= a;
     _++
   )
-    c.A_JobLV.options[_ - 1] = new documento.Opzione(_, _);
+    c.A_JobLV.options[_ - 1] = new Opzione(_, _);
   for (
     n_SkillSW &&
       (n_A_JOB == 45
@@ -313,15 +306,15 @@ function ClickJob(e) {
         ],
       ))
     )
-      (((t = c["A_skill" + o]).options[0] = new documento.Opzione("off", 0)),
-        (t.options[1] = new documento.Opzione("on", 1)));
+      (((t = c["A_skill" + o]).options[0] = new Opzione("off", 0)),
+        (t.options[1] = new Opzione("on", 1)));
     else if (a != 999) {
       var t = c["A_skill" + o];
       for (_ = 10; _ >= 0; _--) t.options[_] = null;
-      for (_ = 0; _ <= m_Skill[m_JobBuff[e][o]][1]; _++) t.options[_] = new documento.Opzione(_, _);
+      for (_ = 0; _ <= m_Skill[m_JobBuff[e][o]][1]; _++) t.options[_] = new Opzione(_, _);
       if (m_Skill[m_JobBuff[e][o]][0] == 392) {
         for (n_ECname = ["off", "eAthena (max stats)", "iRO", "Original"], _ = 0; _ <= 3; _++)
-          t.options[_] = new documento.Opzione(n_ECname[_], _);
+          t.options[_] = new Opzione(n_ECname[_], _);
         n_Reborn == 0 && (t.style.visibility = "hidden");
       }
     }
@@ -340,22 +333,22 @@ function ClickJob(e) {
       _ <= 5;
       _++
     )
-      c.A_skill2.options[_] = new documento.Opzione(n_ECname[_], _);
+      c.A_skill2.options[_] = new Opzione(n_ECname[_], _);
   }
   if (m_JobBuff[e][7] == 78) {
     for (_ = 10; _ >= 0; _--) c.A_skill7.options[_] = null;
     for (n_ECname = ["(no Peco)", "0", "1", "2", "3", "4", "5"], _ = 0; _ <= 6; _++)
-      c.A_skill7.options[_] = new documento.Opzione(n_ECname[_], _);
+      c.A_skill7.options[_] = new Opzione(n_ECname[_], _);
   }
   if (m_JobBuff[e][10] == 78) {
     for (_ = 10; _ >= 0; _--) c.A_skill10.options[_] = null;
     for (n_ECname = ["(no Peco)", "0", "1", "2", "3", "4", "5"], _ = 0; _ <= 6; _++)
-      c.A_skill10.options[_] = new documento.Opzione(n_ECname[_], _);
+      c.A_skill10.options[_] = new Opzione(n_ECname[_], _);
   }
   if (m_JobBuff[e][15] == 367) {
     for (_ = 10; _ >= 0; _--) c.A_skill15.options[_] = null;
     for (n_ECname = [0, 1, 2, 3, 4, 5, 6, 8, 10], _ = 0; _ <= 8; _++)
-      c.A_skill15.options[_] = new documento.Opzione(10 * n_ECname[_] + "%", n_ECname[_]);
+      c.A_skill15.options[_] = new Opzione(10 * n_ECname[_] + "%", n_ECname[_]);
   }
   (Askill(), WeaponSet2());
 }
@@ -363,13 +356,13 @@ function Askill() {
   for (var e = c.A_ActiveSkill.length, _ = 0; _ < e; _++) c.A_ActiveSkill.options[0] = null;
   if (c.all_dmgSkills.checked)
     for (_ = 0; _ < All_DMGskill.length; _++)
-      c.A_ActiveSkill.options[_] = new documento.Opzione(
+      c.A_ActiveSkill.options[_] = new Opzione(
         skillNameInSelect(m_Skill[All_DMGskill[_]][0]),
         All_DMGskill[_],
       );
   else
     for (_ = 0; m_JobAtkSkill[n_A_JOB][_] != 999; _++)
-      c.A_ActiveSkill.options[_] = new documento.Opzione(
+      c.A_ActiveSkill.options[_] = new Opzione(
         skillNameInSelect(m_Skill[m_JobAtkSkill[n_A_JOB][_]][0]),
         m_JobAtkSkill[n_A_JOB][_],
       );
@@ -380,13 +373,13 @@ function Bskill(e) {
   var _ = 0;
   for (
     c.B_AtkSkill.options.length = 0,
-      c.B_AtkSkill.options[0] = new documento.Opzione("Basic Attack", 0),
+      c.B_AtkSkill.options[0] = new Opzione("Basic Attack", 0),
       i = 23;
     m_Monster[c.B_Enemy.value][i] != 0;
     i += 2
   )
     (_++,
-      (c.B_AtkSkill.options[_] = new documento.Opzione(
+      (c.B_AtkSkill.options[_] = new Opzione(
         m_Skill[m_Monster[c.B_Enemy.value][i]][2] + " Lvl " + m_Monster[c.B_Enemy.value][i + 1],
         m_Monster[c.B_Enemy.value][i],
       )));
@@ -420,7 +413,7 @@ function ClickWeaponType(e) {
       (m_Arrow[0] = [0, 0, "(no arrow)"]),
       (c.A_Arrow.value = 0),
       (c.A_Arrow.disabled = !0));
-  for (n = 0; n <= j; n++) c.A_Arrow.options[n] = new documento.Opzione(m_Arrow[n][2], n);
+  for (n = 0; n <= j; n++) c.A_Arrow.options[n] = new Opzione(m_Arrow[n][2], n);
   for (n = 0; n < c.A_Arrow.options.length; n++)
     if (c.A_Arrow.options[n].text == _) {
       c.A_Arrow.selectedIndex = n;
@@ -457,7 +450,7 @@ function ClickWeaponType2(e) {
         i <= 10;
         i++
       )
-        c.A_Weapon2_refine.options[i] = new documento.Opzione("+" + i, i);
+        c.A_Weapon2_refine.options[i] = new Opzione("+" + i, i);
       for (
         contenitore("A_weapon2_cardshort", [
           {
@@ -469,12 +462,12 @@ function ClickWeaponType2(e) {
             },
           },
         ]),
-          c.A_cardshortLeft.options[0] = new documento.Opzione("(card shortcuts)", 0),
+          c.A_cardshortLeft.options[0] = new Opzione("(card shortcuts)", 0),
           i = 1;
         i <= 50;
         i++
       )
-        c.A_cardshortLeft.options[i] = new documento.Opzione(m_CardShort[i + 1][0], i + 1);
+        c.A_cardshortLeft.options[i] = new Opzione(m_CardShort[i + 1][0], i + 1);
       for (var k = 1; k <= 4; k++)
         contenitore("nA_weapon2_c" + k, [
           {
@@ -485,24 +478,24 @@ function ClickWeaponType2(e) {
           },
         ]);
       for (i = 0; m_CardSort[0][i] != "NULL"; i++)
-        c.A_weapon2_card1.options[i] = new documento.Opzione(
+        c.A_weapon2_card1.options[i] = new Opzione(
           m_Card[m_CardSort[0][i]][2],
           m_Card[m_CardSort[0][i]][0],
         );
       for (i = 0; m_CardSort[1][i] != "NULL"; i++)
-        ((c.A_weapon2_card2.options[i] = new documento.Opzione(
+        ((c.A_weapon2_card2.options[i] = new Opzione(
           m_Card[m_CardSort[1][i]][2],
           m_Card[m_CardSort[1][i]][0],
         )),
-          (c.A_weapon2_card3.options[i] = new documento.Opzione(
+          (c.A_weapon2_card3.options[i] = new Opzione(
             m_Card[m_CardSort[1][i]][2],
             m_Card[m_CardSort[1][i]][0],
           )),
-          (c.A_weapon2_card4.options[i] = new documento.Opzione(
+          (c.A_weapon2_card4.options[i] = new Opzione(
             m_Card[m_CardSort[1][i]][2],
             m_Card[m_CardSort[1][i]][0],
           )));
-      c.A_weapon2_card4.options[1] = new documento.Opzione("* Top10 ranked", 106);
+      c.A_weapon2_card4.options[1] = new Opzione("* Top10 ranked", 106);
     }
     n_Nitou = 1;
   } else ((c.A_weapon2.value = 0), svuotaSinistra(), (n_Nitou = 0));
@@ -528,7 +521,7 @@ function ClickActiveSkill() {
   for (i = 0; i < e; i++) c.A_ActiveSkillLV.options[0] = null;
   if (n_A_ActiveSkill >= SKILLID.BASIC_ATTACK)
     for (i = 1; i <= n_A_ActiveSkillLV; i++)
-      c.A_ActiveSkillLV.options[i - 1] = new documento.Opzione("Lvl " + i, i);
+      c.A_ActiveSkillLV.options[i - 1] = new Opzione("Lvl " + i, i);
   (m_Skill[n_A_ActiveSkill][1] == 1
     ? (c.A_ActiveSkillLV.style.visibility = "hidden")
     : ((c.A_ActiveSkillLV.style.visibility = "visible"),
@@ -538,7 +531,7 @@ function ClickActiveSkill() {
 function BClickAtkSkill() {
   if ((n_B_AtkSkill = 1 * c.B_AtkSkill.value) == 444 || n_B_AtkSkill == 445)
     for (campoSkill("BBSkill", "BSkillSubNum", "Players in Range: "), i = 1; i <= 99; i++)
-      c.BSkillSubNum.options[i - 1] = new documento.Opzione(i, i);
+      c.BSkillSubNum.options[i - 1] = new Opzione(i, i);
   else if (n_B_AtkSkill == 489)
     campoSkill("BBSkill", "BSkillSubNum", "Enemy Remaining HP: ", targetData[6]);
   else if (n_B_AtkSkill == 125) {
@@ -546,11 +539,11 @@ function BClickAtkSkill() {
     var e;
     e = m_Monster[targetData[0]][2 * c.B_AtkSkill.selectedIndex + 22];
     var _ = 2 + Math.floor(e / 2);
-    for (i = 1; i <= _; i++) c.BSkillSubNum.options[i - 1] = new documento.Opzione(i, i);
+    for (i = 1; i <= _; i++) c.BSkillSubNum.options[i - 1] = new Opzione(i, i);
     c.BSkillSubNum.value = 2;
   } else if (n_B_AtkSkill == 131) {
     for (campoSkill("BBSkill", "BSkillSubNum", "Hits: "), i = 1; i <= 15; i++)
-      c.BSkillSubNum.options[i - 1] = new documento.Opzione(i, i);
+      c.BSkillSubNum.options[i - 1] = new Opzione(i, i);
     c.BSkillSubNum.value = 3;
   } else contenitore("BBSkill");
   (calc(), n_A_Equip[7] == 957 && calc());
@@ -560,22 +553,22 @@ function ClickActiveSkill2() {
     campoSkill("AASkill", "SkillSubNum", "Cart weight: ", "8000");
   else if (SKILLID.STORM_GUST == n_A_ActiveSkill) {
     for (campoSkill("AASkill", "SkillSubNum", "Hits: "), i = 1; i <= 15; i++)
-      c.SkillSubNum.options[i - 1] = new documento.Opzione(i, i);
+      c.SkillSubNum.options[i - 1] = new Opzione(i, i);
     c.SkillSubNum.value = 3;
   } else if (SKILLID.VENOM_SPLASHER == n_A_ActiveSkill) {
     for (campoSkill("AASkill", "SkillSubNum", "Poison React Lvl: "), i = 0; i <= 10; i++)
-      c.SkillSubNum.options[i] = new documento.Opzione(i, i);
+      c.SkillSubNum.options[i] = new Opzione(i, i);
     ((c.SkillSubNum.value = 0), n_A_JobClass2() == 14 && (c.SkillSubNum.value = 0));
   } else if (SKILLID.GUILLOTINE_FIST == n_A_ActiveSkill)
     (campoSkill("AASkill", "SkillSubNum", "Remaining SP: ", ""),
       (c.SkillSubNum.value = n_A_MaxSP - 1));
   else if (SKILLID.THROW_SHURIKEN == n_A_ActiveSkill) {
     for (campoSkill("AASkill", "SkillSubNum", ""), i = 0; i <= 4; i++)
-      c.SkillSubNum.options[i] = new documento.Opzione(m_Syuriken[i][2], i);
+      c.SkillSubNum.options[i] = new Opzione(m_Syuriken[i][2], i);
     c.SkillSubNum.value = 0;
   } else if (SKILLID.THROW_KUNAI == n_A_ActiveSkill) {
     for (campoSkill("AASkill", "SkillSubNum", ""), i = 0; i <= 4; i++)
-      c.SkillSubNum.options[i] = new documento.Opzione(m_Kunai[i][2], i);
+      c.SkillSubNum.options[i] = new Opzione(m_Kunai[i][2], i);
     c.SkillSubNum.value = 0;
   } else if (SKILLID.KILLING_STROKE == n_A_ActiveSkill)
     (campoSkill("AASkill", "SkillSubNum", "Remaining HP: ", ""),
@@ -587,7 +580,7 @@ function ClickActiveSkill2() {
       i <= 13;
       i++
     )
-      c.SkillSubNum.options[i] = new documento.Opzione(e[i] + " hits", i);
+      c.SkillSubNum.options[i] = new Opzione(e[i] + " hits", i);
     c.SkillSubNum.value = 6;
   } else if (
     !SkillSearch(SKILLID.DOUBLE_BOLT) ||
@@ -601,7 +594,7 @@ function ClickActiveSkill2() {
     if (SKILLID.CHARGE_ATTACK == n_A_ActiveSkill) {
       campoSkill("AASkill", "SkillSubNum", "Enemy distance: ");
       var _ = ["0~3 Cells", "4~6 Cells", "7~9 Cells", "10~12 Cells", "13+ Cells"];
-      for (i = 0; i <= 4; i++) c.SkillSubNum.options[i] = new documento.Opzione(_[i], i);
+      for (i = 0; i <= 4; i++) c.SkillSubNum.options[i] = new Opzione(_[i], i);
       c.SkillSubNum.value = 4;
     } else
       switch (n_A_ActiveSkill) {
@@ -621,9 +614,9 @@ function ClickActiveSkill2() {
   else {
     var n = SkillSearch(SKILLID.DOUBLE_BOLT) + 3;
     (campoSkill("AASkill", "SkillSubNum", "Double Bolt chance: "),
-      (c.SkillSubNum.options[0] = new documento.Opzione("Bad luck (0%)", 0)),
-      (c.SkillSubNum.options[1] = new documento.Opzione("Average chance (" + 10 * n + "%)", n)),
-      (c.SkillSubNum.options[2] = new documento.Opzione("Good luck (100%)", 10)),
+      (c.SkillSubNum.options[0] = new Opzione("Bad luck (0%)", 0)),
+      (c.SkillSubNum.options[1] = new Opzione("Average chance (" + 10 * n + "%)", n)),
+      (c.SkillSubNum.options[2] = new Opzione("Good luck (100%)", 10)),
       (c.SkillSubNum.value = n));
   }
 }
@@ -958,7 +951,7 @@ function WeaponSet(l) {
     n = 0;
   for (k = 1; k <= 21; k++)
     if (m_JobASPD[l][k] != 0) {
-      var s = documento.createElement("OPTGROUP");
+      var s = new Gruppo();
       for (
         s.label = WeaponName[k],
           c.A_weapon1.appendChild(s),
@@ -982,7 +975,7 @@ function WeaponSet(l) {
         for (work[j] = "EOF", work = sort(work), i = 1; i < j + 1; i++) {
           var _ = "";
           (itemData[work[i - 1]].slots && (_ = " [" + itemData[work[i - 1]].slots + "]"),
-            (c.A_weapon1.options[i + n] = new documento.Opzione(
+            (c.A_weapon1.options[i + n] = new Opzione(
               itemData[work[i - 1]].name + _,
               itemData[work[i - 1]].id,
             )),
@@ -990,7 +983,7 @@ function WeaponSet(l) {
         }
         n += j;
       } else
-        ((c.A_weapon1.options[n] = new documento.Opzione("(Restricted by Base Lvl)", 0)),
+        ((c.A_weapon1.options[n] = new Opzione("(Restricted by Base Lvl)", 0)),
           s.appendChild(c.A_weapon1.options[n]),
           n++);
     }
@@ -1016,7 +1009,7 @@ function WeaponSetLeft(l) {
   var n = 0;
   for (k = 1; k <= 6; k++)
     if (m_JobASPD[l][k] != 0) {
-      var s = documento.createElement("OPTGROUP");
+      var s = new Gruppo();
       for (
         s.label = WeaponName[k],
           c.A_weapon2.appendChild(s),
@@ -1036,7 +1029,7 @@ function WeaponSetLeft(l) {
         for (work[j] = "EOF", work = sort(work), i = 1; i < j + 1; i++) {
           var _ = "";
           (itemData[work[i - 1]].slots && (_ = " [" + itemData[work[i - 1]].slots + "]"),
-            (c.A_weapon2.options[i + n] = new documento.Opzione(
+            (c.A_weapon2.options[i + n] = new Opzione(
               itemData[work[i - 1]].name + _,
               itemData[work[i - 1]].id,
             )),
@@ -1044,7 +1037,7 @@ function WeaponSetLeft(l) {
         }
         n += j;
       } else
-        ((c.A_weapon1.options[n] = new documento.Opzione("(restricted by Base Lvl)", 0)),
+        ((c.A_weapon1.options[n] = new Opzione("(restricted by Base Lvl)", 0)),
           s.appendChild(c.A_weapon1.options[n]),
           n++);
     }
@@ -1122,72 +1115,72 @@ function WeaponSet2(l) {
     for (n = 0; n < a[0]; n++)
       ((S = s[0][n]),
         itemData[S].slots
-          ? (c.A_head1.options[n] = new documento.Opzione(
+          ? (c.A_head1.options[n] = new Opzione(
               itemData[S].name + " [" + itemData[S].slots + "]",
               itemData[S].id,
             ))
-          : (c.A_head1.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id)));
+          : (c.A_head1.options[n] = new Opzione(itemData[S].name, itemData[S].id)));
     for (n = 0; n < a[1]; n++)
       ((S = s[1][n]),
         itemData[S].slots
-          ? (c.A_head2.options[n] = new documento.Opzione(
+          ? (c.A_head2.options[n] = new Opzione(
               itemData[S].name + " [" + itemData[S].slots + "]",
               itemData[S].id,
             ))
-          : (c.A_head2.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id)));
+          : (c.A_head2.options[n] = new Opzione(itemData[S].name, itemData[S].id)));
     for (n = 0; n < a[2]; n++)
       ((S = s[2][n]),
         itemData[S].slots
-          ? (c.A_head3.options[n] = new documento.Opzione(
+          ? (c.A_head3.options[n] = new Opzione(
               itemData[S].name + " [" + itemData[S].slots + "]",
               itemData[S].id,
             ))
-          : (c.A_head3.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id)));
+          : (c.A_head3.options[n] = new Opzione(itemData[S].name, itemData[S].id)));
     for (n = 0; n < a[3]; n++)
       ((S = s[3][n]),
         itemData[S].slots
-          ? (c.A_left.options[n] = new documento.Opzione(
+          ? (c.A_left.options[n] = new Opzione(
               itemData[S].name + " [" + itemData[S].slots + "]",
               itemData[S].id,
             ))
-          : (c.A_left.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id)));
+          : (c.A_left.options[n] = new Opzione(itemData[S].name, itemData[S].id)));
     for (n = 0; n < a[4]; n++)
       ((S = s[4][n]),
         itemData[S].slots
-          ? (c.A_body.options[n] = new documento.Opzione(
+          ? (c.A_body.options[n] = new Opzione(
               itemData[S].name + " [" + itemData[S].slots + "]",
               itemData[S].id,
             ))
-          : (c.A_body.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id)));
+          : (c.A_body.options[n] = new Opzione(itemData[S].name, itemData[S].id)));
     for (n = 0; n < a[5]; n++)
       ((S = s[5][n]),
         itemData[S].slots
-          ? (c.A_shoulder.options[n] = new documento.Opzione(
+          ? (c.A_shoulder.options[n] = new Opzione(
               itemData[S].name + " [" + itemData[S].slots + "]",
               itemData[S].id,
             ))
-          : (c.A_shoulder.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id)));
+          : (c.A_shoulder.options[n] = new Opzione(itemData[S].name, itemData[S].id)));
     for (n = 0; n < a[6]; n++)
       ((S = s[6][n]),
         itemData[S].slots
-          ? (c.A_shoes.options[n] = new documento.Opzione(
+          ? (c.A_shoes.options[n] = new Opzione(
               itemData[S].name + " [" + itemData[S].slots + "]",
               itemData[S].id,
             ))
-          : (c.A_shoes.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id)));
+          : (c.A_shoes.options[n] = new Opzione(itemData[S].name, itemData[S].id)));
     for (n = 0; n < a[7]; n++)
       ((S = s[7][n]),
         itemData[S].slots
-          ? ((c.A_acces1.options[n] = new documento.Opzione(
+          ? ((c.A_acces1.options[n] = new Opzione(
               itemData[S].name + " [" + itemData[S].slots + "]",
               itemData[S].id,
             )),
-            (c.A_acces2.options[n] = new documento.Opzione(
+            (c.A_acces2.options[n] = new Opzione(
               itemData[S].name + " [" + itemData[S].slots + "]",
               itemData[S].id,
             )))
-          : ((c.A_acces1.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id)),
-            (c.A_acces2.options[n] = new documento.Opzione(itemData[S].name, itemData[S].id))));
+          : ((c.A_acces1.options[n] = new Opzione(itemData[S].name, itemData[S].id)),
+            (c.A_acces2.options[n] = new Opzione(itemData[S].name, itemData[S].id))));
   }
 }
 function ActiveSkillSetPlus() {
@@ -1235,22 +1228,22 @@ function ActiveSkillSetPlus() {
     for (n = k + 20; n >= k; n--) c.A_ActiveSkill.options[n] = null;
     for (j = 0, n = k; w_ASSP0[j] != 999; n++, j++)
       w_ASSP9[j] >= 3e3
-        ? (c.A_ActiveSkill.options[n] = new documento.Opzione(
+        ? (c.A_ActiveSkill.options[n] = new Opzione(
             m_Skill[w_ASSP0[j]][2] + " (adquired skill)",
             w_ASSP9[j],
           ))
         : w_ASSP9[j] >= 2e3
-          ? (c.A_ActiveSkill.options[n] = new documento.Opzione(
+          ? (c.A_ActiveSkill.options[n] = new Opzione(
               m_Skill[w_ASSP0[j]][2] + " (auto-casted skill)",
               w_ASSP9[j],
             ))
           : w_ASSP9[j] == 1540
-            ? (c.A_ActiveSkill.options[n] = new documento.Opzione(
+            ? (c.A_ActiveSkill.options[n] = new Opzione(
                 m_Skill[w_ASSP0[j]][2] + " (Yggdrasil Leaf)",
                 w_ASSP9[j],
               ))
             : w_ASSP9[j] >= 1500 &&
-              (c.A_ActiveSkill.options[n] = new documento.Opzione(
+              (c.A_ActiveSkill.options[n] = new Opzione(
                 m_Skill[w_ASSP0[j]][2] + " (scroll)",
                 w_ASSP9[j],
               ));
@@ -1380,14 +1373,14 @@ function EnemySort() {
     else for (A = 0; A <= EnemyNum; A++) ESwork2[A] = "";
     for (s = 0, A = 0; A <= EnemyNum; A++)
       n[A] != -1 &&
-        ((c.B_Enemy.options[s] = new documento.Opzione(ESwork2[n[A]] + m_Monster[n[A]][1], n[A])),
+        ((c.B_Enemy.options[s] = new Opzione(ESwork2[n[A]] + m_Monster[n[A]][1], n[A])),
         s++);
   } else {
     for (var n = new Array(), A = 0; A <= EnemyNum; A++) n[A] = v_MonsterSort[A];
     n = SZ(n);
     var s = 0;
     for (A = 0; A <= EnemyNum; A++)
-      n[A] != -1 && ((c.B_Enemy.options[s] = new documento.Opzione(m_Monster[n[A]][1], n[A])), s++);
+      n[A] != -1 && ((c.B_Enemy.options[s] = new Opzione(m_Monster[n[A]][1], n[A])), s++);
   }
 }
 // toglie dall'elenco dei mostri (id, -1 = tolto) quelli fuori dai filtri: luogo (ENEMY_SORT2),
@@ -1432,10 +1425,10 @@ function riempiMappe() {
   var campo = c.ENEMY_MAP,
     mappe = MAPPE_LUOGO[1 * c.ENEMY_SORT2.value] || [];
   for (var i = campo.length; i > 0; i--) campo.options[0] = null;
-  campo.options[0] = new documento.Opzione("All maps", "");
+  campo.options[0] = new Opzione("All maps", "");
   mappe.forEach((x, i) => {
     var ripetuto = mappe.some((y) => y != x && y[1] == x[1]);
-    campo.options[i + 1] = new documento.Opzione(ripetuto ? x[1] + " (" + x[0] + ")" : x[1], x[0]);
+    campo.options[i + 1] = new Opzione(ripetuto ? x[1] + " (" + x[0] + ")" : x[1], x[0]);
   });
   campo.value = "";
   campo.hidden = !mappe.length;

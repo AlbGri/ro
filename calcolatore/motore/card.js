@@ -2955,7 +2955,7 @@
     ],
   ]));
 function allCard() {
-  var a = documento.calcForm;
+  var a = c;
   ((a.A_weapon1_card1.length = 0),
     (a.A_weapon1_card2.length = 0),
     (a.A_weapon1_card3.length = 0),
@@ -2976,174 +2976,174 @@ function allCard() {
   var r = a.all_card.checked,
     e = 0;
   if (r) {
-    ((a.A_weapon1_card1.options[0] = new documento.Opzione(m_Card[0][2], m_Card[0][0])),
-      (a.A_weapon1_card2.options[0] = new documento.Opzione(m_Card[0][2], m_Card[0][0])),
-      (a.A_weapon1_card3.options[0] = new documento.Opzione(m_Card[0][2], m_Card[0][0])),
-      (a.A_weapon1_card4.options[0] = new documento.Opzione(m_Card[0][2], m_Card[0][0])),
+    ((a.A_weapon1_card1.options[0] = new Opzione(m_Card[0][2], m_Card[0][0])),
+      (a.A_weapon1_card2.options[0] = new Opzione(m_Card[0][2], m_Card[0][0])),
+      (a.A_weapon1_card3.options[0] = new Opzione(m_Card[0][2], m_Card[0][0])),
+      (a.A_weapon1_card4.options[0] = new Opzione(m_Card[0][2], m_Card[0][0])),
       n_Nitou &&
-        ((a.A_weapon2_card1.options[0] = new documento.Opzione(m_Card[0][2], m_Card[0][0])),
-        (a.A_weapon2_card2.options[0] = new documento.Opzione(m_Card[0][2], m_Card[0][0])),
-        (a.A_weapon2_card3.options[0] = new documento.Opzione(m_Card[0][2], m_Card[0][0])),
-        (a.A_weapon2_card4.options[0] = new documento.Opzione(m_Card[0][2], m_Card[0][0]))),
-      (a.A_head1_card.options[0] = new documento.Opzione(m_Card[0][2], m_Card[0][0])),
-      (a.A_head2_card.options[0] = new documento.Opzione(m_Card[0][2], m_Card[0][0])),
-      (a.A_left_card.options[0] = new documento.Opzione(m_Card[0][2], m_Card[0][0])),
-      (a.A_body_card.options[0] = new documento.Opzione(m_Card[0][2], m_Card[0][0])),
-      (a.A_shoulder_card.options[0] = new documento.Opzione(m_Card[0][2], m_Card[0][0])),
-      (a.A_shoes_card.options[0] = new documento.Opzione(m_Card[0][2], m_Card[0][0])),
-      (a.A_acces1_card.options[0] = new documento.Opzione(m_Card[0][2], m_Card[0][0])),
-      (a.A_acces2_card.options[0] = new documento.Opzione(m_Card[0][2], m_Card[0][0])));
+        ((a.A_weapon2_card1.options[0] = new Opzione(m_Card[0][2], m_Card[0][0])),
+        (a.A_weapon2_card2.options[0] = new Opzione(m_Card[0][2], m_Card[0][0])),
+        (a.A_weapon2_card3.options[0] = new Opzione(m_Card[0][2], m_Card[0][0])),
+        (a.A_weapon2_card4.options[0] = new Opzione(m_Card[0][2], m_Card[0][0]))),
+      (a.A_head1_card.options[0] = new Opzione(m_Card[0][2], m_Card[0][0])),
+      (a.A_head2_card.options[0] = new Opzione(m_Card[0][2], m_Card[0][0])),
+      (a.A_left_card.options[0] = new Opzione(m_Card[0][2], m_Card[0][0])),
+      (a.A_body_card.options[0] = new Opzione(m_Card[0][2], m_Card[0][0])),
+      (a.A_shoulder_card.options[0] = new Opzione(m_Card[0][2], m_Card[0][0])),
+      (a.A_shoes_card.options[0] = new Opzione(m_Card[0][2], m_Card[0][0])),
+      (a.A_acces1_card.options[0] = new Opzione(m_Card[0][2], m_Card[0][0])),
+      (a.A_acces2_card.options[0] = new Opzione(m_Card[0][2], m_Card[0][0])));
     var n = 0;
     for (j = 0; j < 8; j++)
       for (e = 1; m_CardSort[j][e] != "NULL"; e++)
         j != 1 &&
           (n++,
-          (a.A_weapon1_card1.options[n] = new documento.Opzione(
+          (a.A_weapon1_card1.options[n] = new Opzione(
             m_Card[m_CardSort[j][e]][2],
             m_Card[m_CardSort[j][e]][0],
           )),
           n_Nitou &&
-            (a.A_weapon2_card1.options[n] = new documento.Opzione(
+            (a.A_weapon2_card1.options[n] = new Opzione(
               m_Card[m_CardSort[j][e]][2],
               m_Card[m_CardSort[j][e]][0],
             )));
     for (n = 0, j = 1; j < 8; j++)
       for (e = 1; m_CardSort[j][e] != "NULL"; e++)
         (n++,
-          (a.A_weapon1_card2.options[n] = new documento.Opzione(
+          (a.A_weapon1_card2.options[n] = new Opzione(
             m_Card[m_CardSort[j][e]][2],
             m_Card[m_CardSort[j][e]][0],
           )),
-          (a.A_weapon1_card3.options[n] = new documento.Opzione(
+          (a.A_weapon1_card3.options[n] = new Opzione(
             m_Card[m_CardSort[j][e]][2],
             m_Card[m_CardSort[j][e]][0],
           )),
-          (a.A_weapon1_card4.options[n] = new documento.Opzione(
+          (a.A_weapon1_card4.options[n] = new Opzione(
             m_Card[m_CardSort[j][e]][2],
             m_Card[m_CardSort[j][e]][0],
           )),
           n_Nitou &&
-            ((a.A_weapon2_card2.options[n] = new documento.Opzione(
+            ((a.A_weapon2_card2.options[n] = new Opzione(
               m_Card[m_CardSort[j][e]][2],
               m_Card[m_CardSort[j][e]][0],
             )),
-            (a.A_weapon2_card3.options[n] = new documento.Opzione(
+            (a.A_weapon2_card3.options[n] = new Opzione(
               m_Card[m_CardSort[j][e]][2],
               m_Card[m_CardSort[j][e]][0],
             )),
-            (a.A_weapon2_card4.options[n] = new documento.Opzione(
+            (a.A_weapon2_card4.options[n] = new Opzione(
               m_Card[m_CardSort[j][e]][2],
               m_Card[m_CardSort[j][e]][0],
             ))),
-          (a.A_head1_card.options[n] = new documento.Opzione(
+          (a.A_head1_card.options[n] = new Opzione(
             m_Card[m_CardSort[j][e]][2],
             m_Card[m_CardSort[j][e]][0],
           )),
-          (a.A_head2_card.options[n] = new documento.Opzione(
+          (a.A_head2_card.options[n] = new Opzione(
             m_Card[m_CardSort[j][e]][2],
             m_Card[m_CardSort[j][e]][0],
           )),
-          (a.A_left_card.options[n] = new documento.Opzione(
+          (a.A_left_card.options[n] = new Opzione(
             m_Card[m_CardSort[j][e]][2],
             m_Card[m_CardSort[j][e]][0],
           )),
-          (a.A_body_card.options[n] = new documento.Opzione(
+          (a.A_body_card.options[n] = new Opzione(
             m_Card[m_CardSort[j][e]][2],
             m_Card[m_CardSort[j][e]][0],
           )),
-          (a.A_shoulder_card.options[n] = new documento.Opzione(
+          (a.A_shoulder_card.options[n] = new Opzione(
             m_Card[m_CardSort[j][e]][2],
             m_Card[m_CardSort[j][e]][0],
           )),
-          (a.A_shoes_card.options[n] = new documento.Opzione(
+          (a.A_shoes_card.options[n] = new Opzione(
             m_Card[m_CardSort[j][e]][2],
             m_Card[m_CardSort[j][e]][0],
           )),
-          (a.A_acces1_card.options[n] = new documento.Opzione(
+          (a.A_acces1_card.options[n] = new Opzione(
             m_Card[m_CardSort[j][e]][2],
             m_Card[m_CardSort[j][e]][0],
           )),
-          (a.A_acces2_card.options[n] = new documento.Opzione(
+          (a.A_acces2_card.options[n] = new Opzione(
             m_Card[m_CardSort[j][e]][2],
             m_Card[m_CardSort[j][e]][0],
           )));
-    ((a.A_weapon1_card4.options[1] = new documento.Opzione("* Top10 ranked", 106)),
-      n_Nitou && (a.A_weapon2_card4.options[1] = new documento.Opzione("* Top10 ranked", 106)));
+    ((a.A_weapon1_card4.options[1] = new Opzione("* Top10 ranked", 106)),
+      n_Nitou && (a.A_weapon2_card4.options[1] = new Opzione("* Top10 ranked", 106)));
   } else {
     for (e = 0; m_CardSort[0][e] != "NULL"; e++)
-      a.A_weapon1_card1.options[e] = new documento.Opzione(
+      a.A_weapon1_card1.options[e] = new Opzione(
         m_Card[m_CardSort[0][e]][2],
         m_Card[m_CardSort[0][e]][0],
       );
     for (e = 0; m_CardSort[1][e] != "NULL"; e++)
-      ((a.A_weapon1_card2.options[e] = new documento.Opzione(
+      ((a.A_weapon1_card2.options[e] = new Opzione(
         m_Card[m_CardSort[1][e]][2],
         m_Card[m_CardSort[1][e]][0],
       )),
-        (a.A_weapon1_card3.options[e] = new documento.Opzione(
+        (a.A_weapon1_card3.options[e] = new Opzione(
           m_Card[m_CardSort[1][e]][2],
           m_Card[m_CardSort[1][e]][0],
         )),
-        (a.A_weapon1_card4.options[e] = new documento.Opzione(
+        (a.A_weapon1_card4.options[e] = new Opzione(
           m_Card[m_CardSort[1][e]][2],
           m_Card[m_CardSort[1][e]][0],
         )));
-    if (((a.A_weapon1_card4.options[1] = new documento.Opzione("* Top10 ranked", 106)), n_Nitou)) {
+    if (((a.A_weapon1_card4.options[1] = new Opzione("* Top10 ranked", 106)), n_Nitou)) {
       for (e = 0; m_CardSort[0][e] != "NULL"; e++)
-        a.A_weapon2_card1.options[e] = new documento.Opzione(
+        a.A_weapon2_card1.options[e] = new Opzione(
           m_Card[m_CardSort[0][e]][2],
           m_Card[m_CardSort[0][e]][0],
         );
       for (e = 0; m_CardSort[1][e] != "NULL"; e++)
-        ((a.A_weapon2_card2.options[e] = new documento.Opzione(
+        ((a.A_weapon2_card2.options[e] = new Opzione(
           m_Card[m_CardSort[1][e]][2],
           m_Card[m_CardSort[1][e]][0],
         )),
-          (a.A_weapon2_card3.options[e] = new documento.Opzione(
+          (a.A_weapon2_card3.options[e] = new Opzione(
             m_Card[m_CardSort[1][e]][2],
             m_Card[m_CardSort[1][e]][0],
           )),
-          (a.A_weapon2_card4.options[e] = new documento.Opzione(
+          (a.A_weapon2_card4.options[e] = new Opzione(
             m_Card[m_CardSort[1][e]][2],
             m_Card[m_CardSort[1][e]][0],
           )));
-      a.A_weapon2_card4.options[1] = new documento.Opzione("* Top10 ranked", 106);
+      a.A_weapon2_card4.options[1] = new Opzione("* Top10 ranked", 106);
     }
     for (e = 0; m_CardSort[2][e] != "NULL"; e++)
-      ((a.A_head1_card.options[e] = new documento.Opzione(
+      ((a.A_head1_card.options[e] = new Opzione(
         m_Card[m_CardSort[2][e]][2],
         m_Card[m_CardSort[2][e]][0],
       )),
-        (a.A_head2_card.options[e] = new documento.Opzione(
+        (a.A_head2_card.options[e] = new Opzione(
           m_Card[m_CardSort[2][e]][2],
           m_Card[m_CardSort[2][e]][0],
         )));
     for (e = 0; m_CardSort[3][e] != "NULL"; e++)
-      a.A_left_card.options[e] = new documento.Opzione(
+      a.A_left_card.options[e] = new Opzione(
         m_Card[m_CardSort[3][e]][2],
         m_Card[m_CardSort[3][e]][0],
       );
     for (e = 0; m_CardSort[4][e] != "NULL"; e++)
-      a.A_body_card.options[e] = new documento.Opzione(
+      a.A_body_card.options[e] = new Opzione(
         m_Card[m_CardSort[4][e]][2],
         m_Card[m_CardSort[4][e]][0],
       );
     for (e = 0; m_CardSort[5][e] != "NULL"; e++)
-      a.A_shoulder_card.options[e] = new documento.Opzione(
+      a.A_shoulder_card.options[e] = new Opzione(
         m_Card[m_CardSort[5][e]][2],
         m_Card[m_CardSort[5][e]][0],
       );
     for (e = 0; m_CardSort[6][e] != "NULL"; e++)
-      a.A_shoes_card.options[e] = new documento.Opzione(
+      a.A_shoes_card.options[e] = new Opzione(
         m_Card[m_CardSort[6][e]][2],
         m_Card[m_CardSort[6][e]][0],
       );
     for (e = 0; m_CardSort[7][e] != "NULL"; e++)
-      ((a.A_acces1_card.options[e] = new documento.Opzione(
+      ((a.A_acces1_card.options[e] = new Opzione(
         m_Card[m_CardSort[7][e]][2],
         m_Card[m_CardSort[7][e]][0],
       )),
-        (a.A_acces2_card.options[e] = new documento.Opzione(
+        (a.A_acces2_card.options[e] = new Opzione(
           m_Card[m_CardSort[7][e]][2],
           m_Card[m_CardSort[7][e]][0],
         )));

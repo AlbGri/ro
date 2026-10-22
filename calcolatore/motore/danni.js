@@ -1772,10 +1772,7 @@ function BattleCalc998() {
     SKILLID.BASIC_ATTACK != n_A_ActiveSkill &&
     SKILLID.GRAVITY_FIELD != n_A_ActiveSkill
   )
-    for (i = 0; i <= 2; i++) {
-      w_DMG[i] = 0;
-      myInnerHtml("ATK_0" + i, 0, 0);
-    }
+    for (i = 0; i <= 2; i++) w_DMG[i] = 0;
   tPlusAG();
   // Double Bolt: un colpo in piu' su dieci (campo della skill); i bolt di Hindsight valgono 1/4
   var doubleBolt = 1;
@@ -3128,12 +3125,12 @@ function BattleCalc2(danno) {
   else for (i = 0; i <= 2; i++) if (m_Card[n_A_card[i]][0] == 106) danno += 5;
   if (n_A_card[3] == 106) danno += 10;
   if (n_A_ActiveSkill == SKILLID.THROW_SHURIKEN) {
-    danno += m_Syuriken[1 * documento.calcForm.SkillSubNum.value][0];
+    danno += m_Syuriken[1 * c.SkillSubNum.value][0];
     danno += 3 * SkillSearch(SKILLID.DAGGER_THROWING_PRACTICE);
     danno += 4 * n_A_ActiveSkillLV;
   }
   if (n_A_ActiveSkill == SKILLID.THROW_KUNAI)
-    danno += 3 * m_Kunai[1 * documento.calcForm.SkillSubNum.value][0];
+    danno += 3 * m_Kunai[1 * c.SkillSubNum.value][0];
   danno = ApplyModifiers(danno);
   if (n_A_ActiveSkill == SKILLID.BACK_STAB && n_A_WeaponType == 10) danno = Math.floor(danno / 2);
   if (n_Nitou && SKILLID.BASIC_ATTACK == n_A_ActiveSkill && n_A_WeaponType != 0)
@@ -3480,7 +3477,7 @@ function CastAndDelay() {
     SKILLID.COLD_BOLT_HINDSIGHT != n_A_ActiveSkill &&
     SKILLID.LIGHTNING_BOLT_HINDSIGHT != n_A_ActiveSkill
   )
-    n_Delay[4] = (1 * documento.calcForm.Conf01.value) / 100;
+    n_Delay[4] = (1 * c.Conf01.value) / 100;
   if (n_Delay[4] > wDelay + wCast) {
     wDelay = n_Delay[4] - wCast;
     origine = 4;

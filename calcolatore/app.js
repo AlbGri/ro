@@ -1,11 +1,10 @@
-// Interfaccia del calcolatore. Il motore (file in motore/) lavora su un documento finto
-// (motore/forma.js): qui la pagina ne rispecchia campi e risultati, in italiano, e gli
-// riporta ogni scelta con scegli() del motore (valore e gestore del campo).
+// Interfaccia del calcolatore. Il motore (file in motore/) ha i suoi campi (motore/campi.js):
+// qui la pagina ne rispecchia campi e risultati, in italiano, e gli riporta ogni scelta con
+// scegli() del motore (valore e gestore del campo).
 import { traduci } from "./traduzioni.js";
 
 const STORAGE_KEY = "ragnarok-calcolatore/stato";
-const doc = window.documento;
-const virtuale = (nome) => doc.calcForm[nome];
+const virtuale = (nome) => window.c[nome];
 // elenchi oltre questa lunghezza si scelgono con la ricerca
 const LUNGO = 40;
 
@@ -95,20 +94,21 @@ function nascondiErrore() {
   erroreBox.hidden = true;
 }
 
-// ---------- dal documento finto alla pagina ----------
+// ---------- dal motore alla pagina ----------
 
 const TAG_TESTO = new Set(["b", "strong", "i", "em", "u", "s", "strike", "del", "small", "sup", "sub", "br", "span", "div", "p", "font", "ul", "ol", "li", "hr", "table", "tbody", "thead", "tr", "td", "th", "label", "center", "big", "a"]);
 const STILI = /^(color|text-decoration|font-weight|font-style|background-color)$/;
 
-// copia un nodo del documento finto; i campi diventano controlli collegati al motore
+// copia un nodo dell'HTML di un risultato, con i soli tag e stili del testo
 function copia(n) {
-  if (!n.tag) return document.createTextNode(traduci(n.testo));
-  if (n.tag === "select" || n.tag === "input") return controllo(n);
-  if (n.tag === "option" || n.tag === "optgroup" || n.tag === "script" || n.tag === "style") return null;
-  const tag = n.tag === "font" ? "span" : n.tag === "center" ? "div" : n.tag === "a" ? "span" : TAG_TESTO.has(n.tag) ? n.tag : "span";
+  if (n.nodeType === Node.TEXT_NODE) return document.createTextNode(traduci(n.data));
+  if (n.nodeType !== Node.ELEMENT_NODE) return null;
+  const nome = n.localName;
+  if (/^(select|input|option|optgroup|script|style)$/.test(nome)) return null;
+  const tag = nome === "font" ? "span" : nome === "center" ? "div" : nome === "a" ? "span" : TAG_TESTO.has(nome) ? nome : "span";
   const el = document.createElement(tag);
   const stile = [];
-  for (const [k, val] of Object.entries(n.attributi)) {
+  for (const { name: k, value: val } of n.attributes) {
     if (k === "class") el.className = val;
     else if (k === "colspan" || k === "rowspan") el.setAttribute(k, val);
     else if (k === "title") el.title = traduci(val);
@@ -117,11 +117,11 @@ function copia(n) {
         const [p, ...resto] = parte.split(":");
         if (p && STILI.test(p.trim().toLowerCase())) stile.push(p.trim() + ":" + resto.join(":"));
       }
-    } else if (k === "color" && n.tag === "font") stile.push("color:" + val);
+    } else if (k === "color" && nome === "font") stile.push("color:" + val);
   }
   if (stile.length) el.setAttribute("style", stile.join(";"));
   if (el.classList.contains("name")) el.tabIndex = 0;
-  for (const f of n.figli) {
+  for (const f of n.childNodes) {
     const c = copia(f);
     if (c) el.appendChild(c);
   }
@@ -135,24 +135,28 @@ function copiaNodi(nodi, dentro) {
   }
 }
 // un risultato del motore (uscite in motore/campi.js): HTML con pochi tag
-const copiaHtml = (html, dentro) => copiaNodi(doc._analizza(html), dentro);
+const modello = document.createElement("template");
+function copiaHtml(html, dentro) {
+  modello.innerHTML = html;
+  copiaNodi(modello.content.childNodes, dentro);
+}
 
 // controlli collegati: ogni controllo della pagina sa a quale campo del motore corrisponde
 const collegati = new Set();
 
 function controllo(v) {
   let el;
-  if (v.tag === "select") {
-    el = v._lista().length > LUNGO ? sceltaConRicerca(v) : selectSemplice(v);
-  } else if (v.type === "checkbox" || v.type === "radio") {
+  if (v.tipo === "select") {
+    el = v.elenco().length > LUNGO ? sceltaConRicerca(v) : selectSemplice(v);
+  } else if (v.tipo === "checkbox") {
     el = document.createElement("input");
     el.type = "checkbox";
     el.addEventListener("change", () => scegli(el._v, el.checked));
-  } else if (v.type === "button" || v.type === "submit") {
+  } else if (v.tipo === "pulsante") {
     el = document.createElement("button");
     el.type = "button";
     el.className = "btn small";
-    el.textContent = traduci(v.value || v.textContent);
+    el.textContent = traduci(v.value);
     el.addEventListener("click", () => { try { window.scegli(el._v); } catch (e) { mostraErrore(e); } calcola(); sincronizza(); });
   } else {
     el = document.createElement("input");
@@ -175,7 +179,7 @@ function selectSemplice(v) {
 
 // opzioni della <select> della pagina rifatte solo quando cambiano nel motore
 function firma(v) {
-  const l = v._lista();
+  const l = v.elenco();
   let s = l.length + ":";
   for (const o of l) s += o.value + "\u0001" + o.text + "\u0002";
   return s;
@@ -186,11 +190,11 @@ function riempi(el, v) {
   el._firma = f;
   const frammento = document.createDocumentFragment();
   for (const n of v.figli) {
-    if (n.tag === "option") frammento.appendChild(new Option(traduci(n.text), n.value));
-    else if (n.tag === "optgroup") {
+    if (!n.figli) frammento.appendChild(new Option(traduci(n.text), n.value));
+    else {
       const g = document.createElement("optgroup");
       g.label = traduci(n.label);
-      for (const o of n.figli) if (o.tag === "option") g.appendChild(new Option(traduci(o.text), o.value));
+      for (const o of n.figli) g.appendChild(new Option(traduci(o.text), o.value));
       frammento.appendChild(g);
     }
   }
@@ -201,7 +205,7 @@ function aggiornaControllo(el) {
   const v = el._v;
   if (!v) return;
   if (el.classList.contains("scelta")) {
-    const o = v._lista()[v.selectedIndex];
+    const o = v.elenco()[v.selectedIndex];
     el.firstChild.textContent = o ? traduci(o.text) : "";
     el.disabled = v.disabled;
   } else if (el.tagName === "SELECT") {
@@ -237,7 +241,7 @@ function sceltaConRicerca(v) {
   el.addEventListener("keydown", (e) => {
     if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
     e.preventDefault();
-    const v = el._v, lista = v._lista(), passo = e.key === "ArrowDown" ? 1 : -1;
+    const v = el._v, lista = v.elenco(), passo = e.key === "ArrowDown" ? 1 : -1;
     let i = v.selectedIndex + passo;
     while (lista[i] && lista[i].disabled) i += passo;
     if (lista[i]) scegli(v, lista[i].value);
@@ -268,7 +272,7 @@ effettiBtn.addEventListener("click", () => {
 });
 // "o" per gli oggetti (valore = posto in itemData), "c" per le carte (posto in m_Card)
 function tipoEffetti(v) {
-  const nome = v.getAttribute("name") || "";
+  const nome = v.name;
   if (/^A_(weapon[12]|head[123]|left|body|shoulder|shoes|acces[12])$/.test(nome)) return "o";
   if (/_card\d?$/.test(nome)) return "c";
   return null;
@@ -310,7 +314,7 @@ function disegnaRicerca() {
   const scelta = v.selectedIndex;
   const tipo = cercaEffetti && parole.length ? tipoEffetti(v) : null;
   let gruppo = null, mostrate = 0;
-  v._lista().forEach((o, i) => {
+  v.elenco().forEach((o, i) => {
     const testo = traduci(o.text);
     let trovate = [];
     if (tipo) {
@@ -319,7 +323,7 @@ function disegnaRicerca() {
       if (!parole.every((p) => tutto.includes(p))) return;
       trovate = righe.filter((r) => parole.some((p) => normale(r).includes(p)));
     } else if (parole.length && !parole.every((p) => normale(testo).includes(p))) return;
-    const g = o.padre && o.padre.tag === "optgroup" ? o.padre : null;
+    const g = o.padre !== v ? o.padre : null;
     if (g && g !== gruppo) {
       const li = document.createElement("li");
       li.className = "gruppo";
@@ -360,7 +364,7 @@ ricercaLista.addEventListener("click", (e) => {
   const b = e.target.closest("button.opz");
   if (!b || !ricercaPer) return;
   const v = ricercaPer._v;
-  const o = v._lista()[Number(b.dataset.indice)];
+  const o = v.elenco()[Number(b.dataset.indice)];
   ricerca.close();
   ricercaPer.focus();
   if (o) scegli(v, o.value);
@@ -420,11 +424,8 @@ function ricollega() {
       collegati.delete(el);
       continue;
     }
-    const nome = el._v && (el._v.name || el._v.id);
-    if (nome && !el._v.isConnected) {
-      const nuovo = virtuale(nome);
-      if (nuovo) el._v = nuovo;
-    }
+    const nuovo = el._v && virtuale(el._v.name);
+    if (nuovo) el._v = nuovo;
   }
 }
 
@@ -481,7 +482,7 @@ function voceDescritta(v) {
     return d;
   }
   const campo = virtuale(v.campo);
-  const l = document.createElement(campo.type === "checkbox" ? "label" : "div");
+  const l = document.createElement(campo.tipo === "checkbox" ? "label" : "div");
   l.className = "voce";
   const ctrl = controllo(campo);
   // un'etichetta vuota (solo spazi) non c'e', come la cella vuota nell'HTML di prima
@@ -493,7 +494,7 @@ function voceDescritta(v) {
 }
 // cio' che cambia il disegno: voci visibili, etichette, tipo dei campi, scelte con ricerca o tendine
 const firmaVoci = (voci) => voci.map((v) => visibile(v) && [
-  etichettaDi(v), htmlDi(v.nota), (v.riga || []).map(htmlDi), campiDi(v).map((n) => virtuale(n).type + (virtuale(n)._lista().length > LUNGO)),
+  etichettaDi(v), htmlDi(v.nota), (v.riga || []).map(htmlDi), campiDi(v).map((n) => virtuale(n).tipo + (virtuale(n).elenco().length > LUNGO)),
 ]);
 function firmaPannello(gruppi) {
   return JSON.stringify(gruppi.map((g) => [htmlDi(g.titolo), firmaVoci(g.voci)]));
@@ -682,11 +683,11 @@ function differenza(m, a, b) {
   return { testo, diversa: true, classe: (m.meno ? d < 0 : d > 0) ? "meglio" : "peggio" };
 }
 
-function sceltaDi(d, nome) {
-  const v = d.calcForm[nome];
+function sceltaDi(w, nome) {
+  const v = w.c[nome];
   if (!v) return "";
-  if (v.tag !== "select") return String(v.value);
-  return v._lista()[v.selectedIndex]?.text ?? "";
+  if (v.tipo !== "select") return String(v.value);
+  return v.elenco()[v.selectedIndex]?.text ?? "";
 }
 
 // il mostro di A segue quello di B; restituisce false se A non lo trova nel suo elenco
@@ -694,7 +695,7 @@ function allineaMostro() {
   const nemico = String(virtuale("B_Enemy").value);
   if (motoreA.nemico === nemico) return true;
   const w = motoreA.finestra;
-  const campo = w.documento.calcForm.B_Enemy;
+  const campo = w.c.B_Enemy;
   campo.value = nemico;
   if (String(campo.value) !== nemico) {
     w.EnemySort();
@@ -743,8 +744,7 @@ function aggiornaConfronto() {
     mostraErrore(e);
     return;
   }
-  const dA = motoreA.finestra.documento;
-  const diversi = CONTESTO.filter(([nome]) => sceltaDi(dA, nome) !== sceltaDi(doc, nome)).map(([, d]) => d);
+  const diversi = CONTESTO.filter(([nome]) => sceltaDi(motoreA.finestra, nome) !== sceltaDi(window, nome)).map(([, d]) => d);
   if (!stessoMostro) diversi.unshift("il mostro");
   avviso.hidden = !diversi.length;
   avviso.textContent = diversi.length

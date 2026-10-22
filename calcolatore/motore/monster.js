@@ -19584,7 +19584,7 @@ var v_Place = [
   "Horror Toy Factory [HTF] (UARO)",
 ];
 for (var i = 0; i < v_Place.length; i++)
-    documento.calcForm.ENEMY_SORT2.options[i] = new documento.Opzione(v_Place[i], String(i));
+    c.ENEMY_SORT2.options[i] = new Opzione(v_Place[i], String(i));
 m_MonsterMap = [
   [0],
   [265, 298, 400, 401, 404, 405, 406, 407, 408, 409, 410, 411, "N"],

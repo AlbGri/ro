@@ -598,15 +598,15 @@ var ALTRE_INFO = {
         i < v_Race_.length;
         i++
       )
-        c.R_OBJ.options[i] = new documento.Opzione(v_Race_[i], i);
+        c.R_OBJ.options[i] = new Opzione(v_Race_[i], i);
       for (c.R_OBJ.value = 0, i = 0; i < v_Size.length; i++)
-        c.S_OBJ.options[i] = new documento.Opzione(v_Size[i], i);
+        c.S_OBJ.options[i] = new Opzione(v_Size[i], i);
       for (c.S_OBJ.value = 0, i = 0; i < v_Element_.length; i++)
-        c.E_OBJ.options[i] = new documento.Opzione(v_Element_[i], i);
+        c.E_OBJ.options[i] = new Opzione(v_Element_[i], i);
       for (c.E_OBJ.value = 0, i = 0; i < v_Type.length; i++)
-        c.B_OBJ.options[i] = new documento.Opzione(v_Type[i], i);
+        c.B_OBJ.options[i] = new Opzione(v_Type[i], i);
       for (c.B_OBJ.value = 0, i = 0; i < v_Race2.length; i++)
-        c.SP_OBJ.options[i] = new documento.Opzione(v_Race2[i], i);
+        c.SP_OBJ.options[i] = new Opzione(v_Race2[i], i);
       c.SP_OBJ.value = 0;
     },
     calcolo: function () {
@@ -1133,23 +1133,23 @@ var ALTRE_INFO = {
           i < Potion_Max_2;
           i++
         )
-          c.PP.options[i] = new documento.Opzione(m_Potion2[i][3], i);
+          c.PP.options[i] = new Opzione(m_Potion2[i][3], i);
         if (((c.PP.value = 0), n_A_JOB == 33)) {
           for (i = 0; i < Potion_Max_3; i++)
-            c.SPP.options[i] = new documento.Opzione(m_Potion3[i][3], i);
+            c.SPP.options[i] = new Opzione(m_Potion3[i][3], i);
           c.SPP.value = 0;
         }
-        for (i = 0; i <= 10; i++) c.POT_RLevel.options[i] = new documento.Opzione(i, i);
+        for (i = 0; i <= 10; i++) c.POT_RLevel.options[i] = new Opzione(i, i);
         for (c.POT_RLevel.value = 0, i = 0; i <= 1; i++)
-          c.RNK_BNS.options[i] = new documento.Opzione(Pot_Rank[i][1], i);
+          c.RNK_BNS.options[i] = new Opzione(Pot_Rank[i][1], i);
         for (c.RNK_BNS.value = 0, i = 0; i <= 200; i++)
-          c.E_VIT.options[i] = new documento.Opzione(i, i);
+          c.E_VIT.options[i] = new Opzione(i, i);
         for (c.E_VIT.value = 0, i = 0; i <= 200; i++)
-          c.E_INT.options[i] = new documento.Opzione(i, i);
+          c.E_INT.options[i] = new Opzione(i, i);
         for (c.E_INT.value = 0, i = 0; i <= 99; i++)
-          c.SL_LV.options[i] = new documento.Opzione(i, i);
-        for (c.SL_LV.value = 0, i = 0; i <= 10; i++) c.ISP.options[i] = new documento.Opzione(i, i);
-        for (c.ISP.value = 0, i = 0; i <= 10; i++) c.IRP.options[i] = new documento.Opzione(i, i);
+          c.SL_LV.options[i] = new Opzione(i, i);
+        for (c.SL_LV.value = 0, i = 0; i <= 10; i++) c.ISP.options[i] = new Opzione(i, i);
+        for (c.ISP.value = 0, i = 0; i <= 10; i++) c.IRP.options[i] = new Opzione(i, i);
         c.IRP.value = 0;
       }
     },
@@ -1273,13 +1273,13 @@ var ALTRE_INFO = {
             i < Potion_Max;
             i++
           )
-            c.A_KakutyouSelNum.options[i] = new documento.Opzione(m_Potion[i][2], i);
+            c.A_KakutyouSelNum.options[i] = new Opzione(m_Potion[i][2], i);
           for (c.A_KakutyouSelNum.value = 0, i = 0; i <= 10; i++)
-            c.A_PotionRLevel.options[i] = new documento.Opzione(i, i);
+            c.A_PotionRLevel.options[i] = new Opzione(i, i);
           for (c.A_PotionRLevel.value = 0, i = 0; i <= 5; i++)
-            c.A_Van.options[i] = new documento.Opzione(i, i);
+            c.A_Van.options[i] = new Opzione(i, i);
           for (c.A_Van.value = 0, i = 0; i <= 10; i++)
-            c.A_PreparePLevel.options[i] = new documento.Opzione(i, i);
+            c.A_PreparePLevel.options[i] = new Opzione(i, i);
           c.A_PreparePLevel.value = 0;
         }
       else {
@@ -1299,23 +1299,23 @@ var ALTRE_INFO = {
           i < Anvil_Max;
           i++
         )
-          c.A_KakutyouSelNum.options[i] = new documento.Opzione(m_Anvil[i][2], i);
+          c.A_KakutyouSelNum.options[i] = new Opzione(m_Anvil[i][2], i);
         for (c.A_KakutyouSelNum.value = 0, i = 0; i <= 5; i++)
-          c.A_OriR.options[i] = new documento.Opzione(i, i);
+          c.A_OriR.options[i] = new Opzione(i, i);
         for (c.A_OriR.value = 0, i = 0; i <= 10; i++)
-          c.A_WepR.options[i] = new documento.Opzione(i, i);
+          c.A_WepR.options[i] = new Opzione(i, i);
         for (c.A_WepR.value = 0, i = 0; i <= 3; i++)
-          c.A_StarC.options[i] = new documento.Opzione(i, i);
+          c.A_StarC.options[i] = new Opzione(i, i);
         for (c.A_StarC.value = 0, i = 0; i <= 1; i++)
-          c.A_ElemS.options[i] = new documento.Opzione(i, i);
+          c.A_ElemS.options[i] = new Opzione(i, i);
         for (c.A_ElemS.value = 0, i = 0; i <= 3; i++)
-          c.A_SmithT.options[i] = new documento.Opzione(i, i);
+          c.A_SmithT.options[i] = new Opzione(i, i);
         for (c.A_SmithT.value = 0, i = 0; i <= 5; i++)
-          c.A_Iron.options[i] = new documento.Opzione(i, i);
+          c.A_Iron.options[i] = new Opzione(i, i);
         for (c.A_Iron.value = 0, i = 0; i <= 5; i++)
-          c.A_Steel.options[i] = new documento.Opzione(i, i);
+          c.A_Steel.options[i] = new Opzione(i, i);
         for (c.A_Steel.value = 0, i = 0; i <= 5; i++)
-          c.A_StoneC.options[i] = new documento.Opzione(i, i);
+          c.A_StoneC.options[i] = new Opzione(i, i);
         c.A_StoneC.value = 0;
       }
     },
@@ -1433,7 +1433,7 @@ var ALTRE_INFO = {
           break;
         case 22:
           (contenitore("A_KakutyouSel", [campoInfo("A_KakutyouSelNum", "Potion to Create")]),
-            (documento.calcForm.A_KakutyouSelNum.options[0] = new documento.Opzione(
+            (c.A_KakutyouSelNum.options[0] = new Opzione(
               "Poison Bottle",
               0,
             )),
@@ -1471,13 +1471,13 @@ var ALTRE_INFO = {
       }
       attiva ? contenitore("A_KakutyouSel", voci) : nonDisponibile();
       if (attiva) {
-        for (i = 0; i <= 200; i++) c.E_DEX.options[i] = new documento.Opzione(i, i);
+        for (i = 0; i <= 200; i++) c.E_DEX.options[i] = new Opzione(i, i);
         if (((c.E_DEX.value = 0), n_A_JOB == 14 || n_A_JOB == 28 || n_A_JOB == 45)) {
-          for (i = 1; i <= 5; i++) c.S_LV.options[i - 1] = new documento.Opzione(i, i);
+          for (i = 1; i <= 5; i++) c.S_LV.options[i - 1] = new Opzione(i, i);
           c.S_LV.value = 1;
         }
         if (n_A_JOB == 28) {
-          for (i = 1; i <= 5; i++) c.FS_LV.options[i - 1] = new documento.Opzione(i, i);
+          for (i = 1; i <= 5; i++) c.FS_LV.options[i - 1] = new Opzione(i, i);
           c.FS_LV.value = 1;
         }
         CardNumSearch(413) &&
@@ -1486,8 +1486,8 @@ var ALTRE_INFO = {
           CardNumSearch(391) &&
           CardNumSearch(260) &&
           (n_A_JOB == 14 || n_A_JOB == 28)
-            ? (c.S3_LV.options[0] = new documento.Opzione("5", 5))
-            : (c.S3_LV.options[0] = new documento.Opzione("1", 1)));
+            ? (c.S3_LV.options[0] = new Opzione("5", 5))
+            : (c.S3_LV.options[0] = new Opzione("1", 1)));
       }
     },
     calcolo: function () {
@@ -1556,11 +1556,11 @@ var ALTRE_INFO = {
         i <= 10;
         i++
       )
-        c.Flv.options[i - 1] = new documento.Opzione(i, i);
+        c.Flv.options[i - 1] = new Opzione(i, i);
       for (c.Flv.value = 10, i = 0; i <= 5; i++)
-        c.FStat.options[i] = new documento.Opzione(m_Stat_Food[i][1], i);
+        c.FStat.options[i] = new Opzione(m_Stat_Food[i][1], i);
       for (c.FStat.value = 0, i = 0; i < Cook_Kit_Max; i++)
-        c.CKit.options[i] = new documento.Opzione(m_Cook_Kit[i][1], i);
+        c.CKit.options[i] = new Opzione(m_Cook_Kit[i][1], i);
       c.CKit.value = 0;
     },
     calcolo: function () {
@@ -1647,9 +1647,9 @@ var ALTRE_INFO = {
         i <= 55;
         i++
       )
-        c.Pet.options[i] = new documento.Opzione(m_Monster[m_Pets[1][i]][1], i);
+        c.Pet.options[i] = new Opzione(m_Monster[m_Pets[1][i]][1], i);
       for (c.Pet.value = 0, i = 0; i <= 100; i++)
-        c.PetHP.options[i] = new documento.Opzione(i + " %", i);
+        c.PetHP.options[i] = new Opzione(i + " %", i);
       c.PetHP.value = 100;
     },
     calcolo: function () {
@@ -1698,7 +1698,7 @@ var ALTRE_INFO = {
         i <= 10;
         i++
       )
-        c.DesiredRefine.options[i - 1] = new documento.Opzione("+" + i, i);
+        c.DesiredRefine.options[i - 1] = new Opzione("+" + i, i);
       c.DesiredRefine.value = 1;
     },
     calcolo: function () {
@@ -1777,7 +1777,7 @@ var ALTRE_INFO = {
         i <= 100;
         i++
       )
-        c.SocketChance.options[i - 1] = new documento.Opzione(i + " %", i);
+        c.SocketChance.options[i - 1] = new Opzione(i + " %", i);
       c.SocketChance.value = 1;
     },
     calcolo: function () {
@@ -1809,7 +1809,7 @@ var ALTRE_INFO = {
       });
       for (var s = 0; s < n.length; s++) {
         var _ = 1 * n[s];
-        A.options[s] = new documento.Opzione(skillNameInSelect(_), _);
+        A.options[s] = new Opzione(skillNameInSelect(_), _);
       }
       ((A.value = SKILLID.ASSUMPTIO), NonDamageCastSkillChanged(0));
     },
@@ -1923,7 +1923,7 @@ function NonDamageCastSkillChanged(l) {
   if (A && n) {
     var s = 1 * A.value;
     n.length = 0;
-    for (var _ = 1; _ <= m_Skill[s][1]; _++) n.options[_ - 1] = new documento.Opzione(_, _);
+    for (var _ = 1; _ <= m_Skill[s][1]; _++) n.options[_ - 1] = new Opzione(_, _);
     ((n.value = m_Skill[s][1]), l && StAllCalc());
   }
 }

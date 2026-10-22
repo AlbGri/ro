@@ -250,7 +250,7 @@ function leggiCarte() {
 // valore di un campo del form come numero; una spunta vale 1 o 0
 function valoreCampo(nome) {
   var campo = c[nome];
-  return 1 * (campo.type == "checkbox" ? campo.checked : campo.value);
+  return 1 * (campo.tipo == "checkbox" ? campo.checked : campo.value);
 }
 function serieCampi(prefisso, da, a) {
   for (var out = [], i = da; i <= a; i++) out.push(prefisso + i);
@@ -2508,7 +2508,7 @@ function JobEquipItemSearch(l, A) {
   return 0;
 }
 function n_A_JobSet() {
-  ((n_A_JOB = 1 * documento.calcForm.A_JOB.value),
+  ((n_A_JOB = 1 * c.A_JOB.value),
     21 <= n_A_JOB && n_A_JOB <= 40
       ? ((n_Reborn = 1), 34 <= n_A_JOB && n_A_JOB <= 40 && (n_A_JOB -= 34))
       : (n_Reborn = 0));

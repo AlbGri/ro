@@ -7,10 +7,10 @@ import { creaMotore } from "./motore.mjs";
 
 // imposta un campo ed esegue il suo gestore (scegli del motore), poi ricalcola
 function scegli(m, nome, valore) {
-  const v = m.documento.calcForm[nome];
+  const v = m.c[nome];
   assert.ok(v, "campo " + nome);
   m.scegli(v, v.type === "checkbox" ? valore : String(valore));
-  if (v.tag === "select") assert.equal(v.value, String(valore), `${nome}: opzione ${valore} assente`);
+  if (v.tipo === "select") assert.equal(v.value, String(valore), `${nome}: opzione ${valore} assente`);
   m.calc();
 }
 const testo = (m, id) => m.testo(id);
@@ -55,7 +55,7 @@ test("Mitra: MATK +10 con INT base 90", () => {
   const a89 = m.bonusValues[88];
   scegli(m, "A_INT", 90);
   assert.equal(m.bonusValues[88] - a89, 10);
-  scegli(m, "A_head1", m.documento.calcForm.A_head1.options[0].value);
+  scegli(m, "A_head1", m.c.A_head1.options[0].value);
   assert.equal(m.bonusValues[88], a89);
 });
 
@@ -75,7 +75,7 @@ test("Old Mitra: ogni 2 raffinamenti MaxHP +1%", () => {
 test("oggetti aggiunti per uaRO negli elenchi", () => {
   const m = creaMotore();
   scegli(m, "A_JOB", 23);
-  const elenco = (campo) => [...m.documento.calcForm[campo].options].map((o) => o.text);
+  const elenco = (campo) => [...m.c[campo].options].map((o) => o.text);
   for (const n of ["Love Guard", "Glaris Doll Hat", "Santa Poring Hat", "Old Mitra (UARO)"]) {
     assert.ok(elenco("A_head1").some((t) => t.startsWith(n)), n);
   }
@@ -87,7 +87,7 @@ test("oggetti aggiunti per uaRO negli elenchi", () => {
 test("Bastion: sette incantamenti, uno uguale su copricapo e calzature conta una volta", () => {
   const m = creaMotore();
   const B = costante(m, "BASTIONENCHANTID");
-  const testi = [...m.documento.calcForm.A_BASTION_HEAD.options].map((o) => o.text);
+  const testi = [...m.c.A_BASTION_HEAD.options].map((o) => o.text);
   for (const n of ["All Stats", "Movement Speed", "Race Resist", "MATK", "ATK", "SP Consumption", "Healing"]) {
     assert.ok(testi.some((t) => t.startsWith(n)), n);
   }
@@ -122,13 +122,13 @@ test("formato della build: i Bastion nuovi tornano uguali, le build di Thrice no
   };
   const [ok, n] = carica(build);
   assert.equal(ok, true);
-  const c = n.documento.calcForm;
+  const c = n.c;
   assert.deepEqual([c.A_JOB.value, c.A_BASTION_HEAD.value, c.A_BASTION_SHOES.value].map(Number),
     [23, costante(m, "BASTIONENCHANTID").SP_CONSUMPTION, costante(m, "BASTIONENCHANTID").MOVEMENT_SPEED]);
   // la stessa build con la versione 18 del calcolatore di Thrice nel primo carattere
   const [okThrice, t] = carica("q" + build.slice(1));
   assert.equal(okThrice, false);
-  assert.equal(Number(t.documento.calcForm.A_JOB.value), 0);
+  assert.equal(Number(t.c.A_JOB.value), 0);
 });
 
 test("Back Stab: ricarica fissa di 0,333 secondi", () => {
@@ -142,7 +142,7 @@ test("Back Stab: ricarica fissa di 0,333 secondi", () => {
 
 test("El Dicastes: livelli 2 e 3 da +1/+2 (+3 sui Feral), sommabili sulla stessa statistica", () => {
   const m = creaMotore();
-  const c = m.documento.calcForm;
+  const c = m.c;
   const testi = (nome) => [...c[nome].options].slice(1).map((o) => o.text);
   assert.deepEqual(testi("A_DICASTES_ACCESSORY1_STATS"), ["AGI +1", "AGI +2", "DEX +1", "DEX +2", "INT +1", "INT +2"]);
   assert.deepEqual(testi("A_DICASTES_ACCESSORY1_STATS2"), testi("A_DICASTES_ACCESSORY1_STATS"));
@@ -159,8 +159,8 @@ test("El Dicastes: livelli 2 e 3 da +1/+2 (+3 sui Feral), sommabili sulla stessa
 
 test("oggetti dagli screen del gioco: Gigantic Majestic Goat, Meteor Plate, Blood Sucker", () => {
   const m = creaMotore();
-  const c = m.documento.calcForm;
-  const valori = (campo) => c[campo]._lista().map((o) => Number(o.value));
+  const c = m.c;
+  const valori = (campo) => c[campo].elenco().map((o) => Number(o.value));
   scegli(m, "A_JOB", 7); // Knight
   assert.ok(!valori("A_body").includes(id(m, "Meteor Plate")), "Meteor Plate solo ai rinati");
   scegli(m, "A_JOB", 21); // Lord Knight
@@ -181,11 +181,11 @@ test("oggetti dagli screen del gioco: Gigantic Majestic Goat, Meteor Plate, Bloo
 
 test("menu Classe: 6 sezioni, ogni classe una volta, scelta per valore", () => {
   const m = creaMotore();
-  const v = m.documento.calcForm.A_JOB;
-  assert.equal(v.figli.filter((f) => f.tag === "optgroup").length, 6);
-  const valori = v._lista().map((o) => Number(o.value));
+  const v = m.c.A_JOB;
+  assert.equal(v.figli.filter((f) => f.figli).length, 6);
+  const valori = v.elenco().map((o) => Number(o.value));
   assert.deepEqual([...valori].sort((a, b) => a - b), [...Array(46).keys()]);
   scegli(m, "A_JOB", 20); // Super Novice, fra le espanse: posizione diversa dal valore
   assert.equal(m.n_A_JOB, 20);
-  assert.equal(v._lista()[v.selectedIndex].text, "Super Novice");
+  assert.equal(v.elenco()[v.selectedIndex].text, "Super Novice");
 });

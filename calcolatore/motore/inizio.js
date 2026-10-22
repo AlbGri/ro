@@ -1,7 +1,7 @@
 // Avvio del motore: elenchi delle opzioni, stato iniziale e build nell'indirizzo
-for (var c = documento.calcForm, i = 1; i <= 22; i++)
-  c.B_num.options[i - 1] = new documento.Opzione(i, i - 1);
-for (i = 1; i <= 20; i++) c.A8_Skill15.options[i] = new documento.Opzione(5 * i, i);
+for (var i = 1; i <= 22; i++)
+  c.B_num.options[i - 1] = new Opzione(i, i - 1);
+for (i = 1; i <= 20; i++) c.A8_Skill15.options[i] = new Opzione(5 * i, i);
 for (w_ASSP0bk = new Array(), i = 0; i < 20; i++) w_ASSP0bk[i] = 999;
 for (wESx = new Array(), i = 0; i <= EnemyNum; i++) wESx[i] = new Array();
 var nMANUKU = [523, 526, 527, 529, 530, 533, 540, 562, 563];
@@ -23,12 +23,12 @@ for (
   i <= 9;
   i++
 )
-  ((documento.calcForm.A_Weapon_element.options[i] = new documento.Opzione(v_Element_[i], i)),
-    (documento.calcForm.B_AtkElem.options[i] = new documento.Opzione(v_Element_[i], i)));
+  ((c.A_Weapon_element.options[i] = new Opzione(v_Element_[i], i)),
+    (c.B_AtkElem.options[i] = new Opzione(v_Element_[i], i)));
 for (
-  documento.calcForm.A_Weapon_element.options[0] = new documento.Opzione("(unchanged)", 0),
-    documento.calcForm.A_Weapon_element.value = 0,
-    documento.calcForm.B_AtkElem.options[i] = new documento.Opzione("(unchanged)", 10),
+  c.A_Weapon_element.options[0] = new Opzione("(unchanged)", 0),
+    c.A_Weapon_element.value = 0,
+    c.B_AtkElem.options[i] = new Opzione("(unchanged)", 10),
     m_CardShort = [
       ["(card shortcuts)", 0, 0, 0, 0],
       ["Remove All Cards", 1e4, 0],
@@ -100,19 +100,19 @@ for (
   i <= 63;
   i++
 )
-  documento.calcForm.A_cardshort.options[i] = new documento.Opzione(m_CardShort[i][0], i);
+  c.A_cardshort.options[i] = new Opzione(m_CardShort[i][0], i);
 var HSEname = ["STR", "AGI", "VIT", "INT", "DEX", "LUK"];
-documento.calcForm.A_HSE.options[0] = new documento.Opzione("(enchant)", 0);
+c.A_HSE.options[0] = new Opzione("(enchant)", 0);
 var iHSE = 1;
 for (i = 0; i <= 5; i++)
   for (var j = 1; j <= 3; j++)
-    ((documento.calcForm.A_HSE.options[iHSE] = new documento.Opzione(
+    ((c.A_HSE.options[iHSE] = new Opzione(
       HSEname[i] + "+" + j,
       10 * i + j,
     )),
       iHSE++);
 for (
-  documento.calcForm.A_HSE_HEAD1.options[0] = new documento.Opzione(
+  c.A_HSE_HEAD1.options[0] = new Opzione(
     "(headgear Hidden Slot Enchant)",
     0,
   ),
@@ -122,7 +122,7 @@ for (
   i++
 )
   for (j = 1; j <= 3; j++)
-    ((documento.calcForm.A_HSE_HEAD1.options[iHSE] = new documento.Opzione(
+    ((c.A_HSE_HEAD1.options[iHSE] = new Opzione(
       HSEname[i] + "+" + j,
       10 * i + j,
     )),
@@ -145,13 +145,13 @@ for (
   for (
     var bastionControl =
         bastionControlIndex == 0
-          ? documento.calcForm.A_BASTION_HEAD
-          : documento.calcForm.A_BASTION_SHOES,
+          ? c.A_BASTION_HEAD
+          : c.A_BASTION_SHOES,
       bastionOptionIndex = 0;
     bastionOptionIndex < BastionEnchantOptions.length;
     bastionOptionIndex++
   )
-    bastionControl.options[bastionOptionIndex] = new documento.Opzione(
+    bastionControl.options[bastionOptionIndex] = new Opzione(
       BastionEnchantOptions[bastionOptionIndex][0],
       BastionEnchantOptions[bastionOptionIndex][1],
     );
@@ -171,10 +171,10 @@ var DicastesPrimaryEnchantOptions = [
   ["Critical: CRIT +7", DICASTESENCHANTID.CRITICAL_7],
 ];
 function opzioniDicastesStatistiche(sel, nome, massimo) {
-  sel.options[0] = new documento.Opzione(nome, 0);
+  sel.options[0] = new Opzione(nome, 0);
   ["AGI", "DEX", "INT"].forEach((stat, s) => {
     for (var punti = 1; punti <= massimo; punti++)
-      sel.options[sel.options.length] = new documento.Opzione(stat + " +" + punti, 5 * s + punti);
+      sel.options[sel.options.length] = new Opzione(stat + " +" + punti, 5 * s + punti);
   });
 }
 // [posto, punti massimi al livello 3]
@@ -185,7 +185,7 @@ for (const [posto, massimo3] of [
   ["ACCESSORY2", 2],
 ]) {
   DicastesPrimaryEnchantOptions.forEach(
-    (o, i) => (c["A_DICASTES_" + posto + "_PRIMARY"].options[i] = new documento.Opzione(o[0], o[1])),
+    (o, i) => (c["A_DICASTES_" + posto + "_PRIMARY"].options[i] = new Opzione(o[0], o[1])),
   );
   opzioniDicastesStatistiche(c["A_DICASTES_" + posto + "_STATS"], "(layer 2: stat)", 2);
   opzioniDicastesStatistiche(c["A_DICASTES_" + posto + "_STATS2"], "(layer 3: stat)", massimo3);
@@ -233,16 +233,16 @@ for (i = 0; i < m_TempEffect.length; i++)
     m_Card[m_TempEffect[i][4]][3] == 0
       ? (m_Card[m_TempEffect[i][4]][3] = str)
       : (m_Card[m_TempEffect[i][4]][3] += "<BR>" + str));
-((documento.calcForm.B_AtkRange.value = 0),
-  (documento.calcForm.B_AtkElem.value = 10),
+((c.B_AtkRange.value = 0),
+  (c.B_AtkElem.value = 10),
   (c.maxASPD.value = 0),
-  (documento.calcForm.all_dmgSkills.checked = !1),
-  (documento.calcForm.restrict_jobequip.checked = !0),
-  (documento.calcForm.restrict_lvlequip.checked = !1),
-  (documento.calcForm.restrict_equipslot.checked = !1),
-  (documento.calcForm.restrict_cardslot.checked = !1),
-  (documento.calcForm.all_card.checked = !1),
-  (documento.calcForm.A_JOB.value = 0),
+  (c.all_dmgSkills.checked = !1),
+  (c.restrict_jobequip.checked = !0),
+  (c.restrict_lvlequip.checked = !1),
+  (c.restrict_equipslot.checked = !1),
+  (c.restrict_cardslot.checked = !1),
+  (c.all_card.checked = !1),
+  (c.A_JOB.value = 0),
   ClickJob(0),
   allCard(),
   riempiMappe(),

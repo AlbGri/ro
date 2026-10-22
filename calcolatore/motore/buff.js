@@ -47,17 +47,17 @@ function BufSW(e) {
       ],
     );
     for (i = 0; i <= 10; i++)
-      ((c.A2_Skill0.options[i] = new documento.Opzione(i, i)),
-        (c.A2_Skill1.options[i] = new documento.Opzione(i, i)),
-        (c.A2_Skill4.options[i] = new documento.Opzione(i, i)),
-        (c.A2_Skill9.options[i] = new documento.Opzione(i, i)),
-        (c.A2_Skill13.options[i] = new documento.Opzione(i, i)),
-        (c.A2_Skill14.options[i] = new documento.Opzione(i, i)));
+      ((c.A2_Skill0.options[i] = new Opzione(i, i)),
+        (c.A2_Skill1.options[i] = new Opzione(i, i)),
+        (c.A2_Skill4.options[i] = new Opzione(i, i)),
+        (c.A2_Skill9.options[i] = new Opzione(i, i)),
+        (c.A2_Skill13.options[i] = new Opzione(i, i)),
+        (c.A2_Skill14.options[i] = new Opzione(i, i)));
     for (i = 0; i <= 5; i++)
-      ((c.A2_Skill2.options[i] = new documento.Opzione(i, i)),
-        (c.A2_Skill11.options[i] = new documento.Opzione(i, i)),
-        (c.A2_Skill12.options[i] = new documento.Opzione(i, i)),
-        (c.A2_Skill15.options[i] = new documento.Opzione(i, i)));
+      ((c.A2_Skill2.options[i] = new Opzione(i, i)),
+        (c.A2_Skill11.options[i] = new Opzione(i, i)),
+        (c.A2_Skill12.options[i] = new Opzione(i, i)),
+        (c.A2_Skill15.options[i] = new Opzione(i, i)));
     for (
       n_A_JOB == 45
         ? (scrivi("AS12_1", "<S># of Spirit Spheres</S>"),
@@ -75,11 +75,11 @@ function BufSW(e) {
       i <= 3;
       i++
     )
-      c.A2_Skill10.options[i] = new documento.Opzione(i, i);
-    ((c.A2_Skill6.options[0] = new documento.Opzione("OFF", 0)),
-      (c.A2_Skill6.options[1] = new documento.Opzione("Regular AR", 1)),
-      (c.A2_Skill6.options[2] = new documento.Opzione("Full AR", 2)),
-      (c.A2_Skill6.options[3] = new documento.Opzione("AR Scroll", 3)),
+      c.A2_Skill10.options[i] = new Opzione(i, i);
+    ((c.A2_Skill6.options[0] = new Opzione("OFF", 0)),
+      (c.A2_Skill6.options[1] = new Opzione("Regular AR", 1)),
+      (c.A2_Skill6.options[2] = new Opzione("Full AR", 2)),
+      (c.A2_Skill6.options[3] = new Opzione("AR Scroll", 3)),
       (c.A2_Skill0.value = n_A_Buf2[0]),
       (c.A2_Skill1.value = n_A_Buf2[1]),
       (c.A2_Skill2.value = n_A_Buf2[2]),
@@ -191,19 +191,19 @@ function Buf3SW(e) {
     // EN11_1 e' la riga di Marionette Control, senza nome di skill
     for (i = 0; i <= 12; i++) if (i != 11) scrivi("EN" + i + "_1", skillName(_[i]));
     for (i = 0; i <= 10; i++)
-      ((c.A3_Skill0_1.options[i] = new documento.Opzione(i, i)),
-        (c.A3_Skill1_1.options[i] = new documento.Opzione(i, i)),
-        (c.A3_Skill2_1.options[i] = new documento.Opzione(i, i)),
-        (c.A3_Skill3_1.options[i] = new documento.Opzione(i, i)),
-        (c.A3_Skill4_1.options[i] = new documento.Opzione(i, i)),
-        (c.A3_Skill5_1.options[i] = new documento.Opzione(i, i)),
-        (c.A3_Skill6_1.options[i] = new documento.Opzione(i, i)),
-        (c.A3_Skill12_1.options[i] = new documento.Opzione(i, i)));
+      ((c.A3_Skill0_1.options[i] = new Opzione(i, i)),
+        (c.A3_Skill1_1.options[i] = new Opzione(i, i)),
+        (c.A3_Skill2_1.options[i] = new Opzione(i, i)),
+        (c.A3_Skill3_1.options[i] = new Opzione(i, i)),
+        (c.A3_Skill4_1.options[i] = new Opzione(i, i)),
+        (c.A3_Skill5_1.options[i] = new Opzione(i, i)),
+        (c.A3_Skill6_1.options[i] = new Opzione(i, i)),
+        (c.A3_Skill12_1.options[i] = new Opzione(i, i)));
     for (i = 0; i <= 5; i++)
-      ((c.A3_Skill7.options[i] = new documento.Opzione(i, i)),
-        (c.A3_Skill8.options[i] = new documento.Opzione(i, i)),
-        (c.A3_Skill9.options[i] = new documento.Opzione(i, i)),
-        (c.A3_Skill10.options[i] = new documento.Opzione(i, i)));
+      ((c.A3_Skill7.options[i] = new Opzione(i, i)),
+        (c.A3_Skill8.options[i] = new Opzione(i, i)),
+        (c.A3_Skill9.options[i] = new Opzione(i, i)),
+        (c.A3_Skill10.options[i] = new Opzione(i, i)));
     ((c.A3_Skill0_1.value = n_A_Buf3[0]),
       (c.A3_Skill1_1.value = n_A_Buf3[1]),
       (c.A3_Skill2_1.value = n_A_Buf3[2]),
@@ -250,9 +250,9 @@ function Skill3SW_2() {
         i <= 200;
         i++
       )
-        ((c.A3_Skill0_2.options[i - 1] = new documento.Opzione(i, i)),
-          (c.A3_Skill0_4.options[i - 1] = new documento.Opzione(i, i)));
-      for (i = 0; i <= 10; i++) c.A3_Skill0_3.options[i] = new documento.Opzione(i, i);
+        ((c.A3_Skill0_2.options[i - 1] = new Opzione(i, i)),
+          (c.A3_Skill0_4.options[i - 1] = new Opzione(i, i)));
+      for (i = 0; i <= 10; i++) c.A3_Skill0_3.options[i] = new Opzione(i, i);
       ((SWs3sw[0] = 1),
         (c.A3_Skill0_2.value = n_A_Buf3[20]),
         (c.A3_Skill0_4.value = n_A_Buf3[19]),
@@ -276,8 +276,8 @@ function Skill3SW_2() {
         i <= 200;
         i++
       )
-        c.A3_Skill1_2.options[i - 1] = new documento.Opzione(i, i);
-      for (i = 0; i <= 10; i++) c.A3_Skill1_3.options[i] = new documento.Opzione(i, i);
+        c.A3_Skill1_2.options[i - 1] = new Opzione(i, i);
+      for (i = 0; i <= 10; i++) c.A3_Skill1_3.options[i] = new Opzione(i, i);
       ((SWs3sw[1] = 1), (c.A3_Skill1_2.value = n_A_Buf3[21]), (c.A3_Skill1_3.value = n_A_Buf3[31]));
     }
   } else
@@ -298,10 +298,10 @@ function Skill3SW_2() {
         i <= 150;
         i++
       )
-        ((c.A3_Skill2_2.options[i - 1] = new documento.Opzione(i, i)),
-          (c.A3_Skill2_3.options[i - 1] = new documento.Opzione(i, i)));
-      for (i = 151; i <= 200; i++) c.A3_Skill2_2.options[i - 1] = new documento.Opzione(i, i);
-      for (i = 0; i <= 10; i++) c.A3_Skill2_4.options[i] = new documento.Opzione(i, i);
+        ((c.A3_Skill2_2.options[i - 1] = new Opzione(i, i)),
+          (c.A3_Skill2_3.options[i - 1] = new Opzione(i, i)));
+      for (i = 151; i <= 200; i++) c.A3_Skill2_2.options[i - 1] = new Opzione(i, i);
+      for (i = 0; i <= 10; i++) c.A3_Skill2_4.options[i] = new Opzione(i, i);
       ((SWs3sw[2] = 1),
         (c.A3_Skill2_2.value = n_A_Buf3[22]),
         (c.A3_Skill2_3.value = n_A_Buf3[29]),
@@ -325,8 +325,8 @@ function Skill3SW_2() {
         i <= 200;
         i++
       )
-        c.A3_Skill3_2.options[i - 1] = new documento.Opzione(i, i);
-      for (i = 0; i <= 10; i++) c.A3_Skill3_3.options[i] = new documento.Opzione(i, i);
+        c.A3_Skill3_2.options[i - 1] = new Opzione(i, i);
+      for (i = 0; i <= 10; i++) c.A3_Skill3_3.options[i] = new Opzione(i, i);
       ((SWs3sw[3] = 1), (c.A3_Skill3_2.value = n_A_Buf3[23]), (c.A3_Skill3_3.value = n_A_Buf3[33]));
     }
   } else
@@ -347,8 +347,8 @@ function Skill3SW_2() {
         i <= 200;
         i++
       )
-        c.A3_Skill4_2.options[i - 1] = new documento.Opzione(i, i);
-      for (i = 0; i <= 10; i++) c.A3_Skill4_3.options[i] = new documento.Opzione(i, i);
+        c.A3_Skill4_2.options[i - 1] = new Opzione(i, i);
+      for (i = 0; i <= 10; i++) c.A3_Skill4_3.options[i] = new Opzione(i, i);
       ((SWs3sw[4] = 1), (c.A3_Skill4_2.value = n_A_Buf3[24]), (c.A3_Skill4_3.value = n_A_Buf3[34]));
     }
   } else
@@ -369,8 +369,8 @@ function Skill3SW_2() {
         i <= 200;
         i++
       )
-        c.A3_Skill5_2.options[i - 1] = new documento.Opzione(i, i);
-      for (i = 0; i <= 10; i++) c.A3_Skill5_3.options[i] = new documento.Opzione(i, i);
+        c.A3_Skill5_2.options[i - 1] = new Opzione(i, i);
+      for (i = 0; i <= 10; i++) c.A3_Skill5_3.options[i] = new Opzione(i, i);
       ((SWs3sw[5] = 1), (c.A3_Skill5_2.value = n_A_Buf3[25]), (c.A3_Skill5_3.value = n_A_Buf3[35]));
     }
   } else
@@ -391,8 +391,8 @@ function Skill3SW_2() {
         i <= 200;
         i++
       )
-        c.A3_Skill6_2.options[i - 1] = new documento.Opzione(i, i);
-      for (i = 0; i <= 10; i++) c.A3_Skill6_3.options[i] = new documento.Opzione(i, i);
+        c.A3_Skill6_2.options[i - 1] = new Opzione(i, i);
+      for (i = 0; i <= 10; i++) c.A3_Skill6_3.options[i] = new Opzione(i, i);
       ((SWs3sw[6] = 1), (c.A3_Skill6_2.value = n_A_Buf3[26]), (c.A3_Skill6_3.value = n_A_Buf3[36]));
     }
   } else
@@ -413,9 +413,9 @@ function Skill3SW_2() {
         i <= 200;
         i++
       )
-        ((c.A3_Skill12_2.options[i - 1] = new documento.Opzione(i, i)),
-          (c.A3_Skill12_3.options[i - 1] = new documento.Opzione(i, i)));
-      for (i = 0; i <= 10; i++) c.A3_Skill12_4.options[i] = new documento.Opzione(i, i);
+        ((c.A3_Skill12_2.options[i - 1] = new Opzione(i, i)),
+          (c.A3_Skill12_3.options[i - 1] = new Opzione(i, i)));
+      for (i = 0; i <= 10; i++) c.A3_Skill12_4.options[i] = new Opzione(i, i);
       ((SWs3sw[7] = 1),
         (c.A3_Skill12_2.value = n_A_Buf3[38]),
         (c.A3_Skill12_3.value = n_A_Buf3[39]),
@@ -431,22 +431,22 @@ function Skill3SW_2() {
     if (SWs3sw[11] == 0) {
       for (
         (campo("A3_Skill11_STR", "select", function () { A3(1); }), campo("A3_Skill11_AGI", "select", function () { A3(1); }), campo("A3_Skill11_VIT", "select", function () { A3(1); }), campo("A3_Skill11_INT", "select", function () { A3(1); }), campo("A3_Skill11_DEX", "select", function () { A3(1); }), campo("A3_Skill11_LUK", "select", function () { A3(1); }), campo("A3_Skill11a", "checkbox", function () { A3(1); })),
-          c.A3_Skill11_STR.options[0] = new documento.Opzione("STR", 0),
-          c.A3_Skill11_AGI.options[0] = new documento.Opzione("AGI", 0),
-          c.A3_Skill11_VIT.options[0] = new documento.Opzione("VIT", 0),
-          c.A3_Skill11_INT.options[0] = new documento.Opzione("INT", 0),
-          c.A3_Skill11_DEX.options[0] = new documento.Opzione("DEX", 0),
-          c.A3_Skill11_LUK.options[0] = new documento.Opzione("LUK", 0),
+          c.A3_Skill11_STR.options[0] = new Opzione("STR", 0),
+          c.A3_Skill11_AGI.options[0] = new Opzione("AGI", 0),
+          c.A3_Skill11_VIT.options[0] = new Opzione("VIT", 0),
+          c.A3_Skill11_INT.options[0] = new Opzione("INT", 0),
+          c.A3_Skill11_DEX.options[0] = new Opzione("DEX", 0),
+          c.A3_Skill11_LUK.options[0] = new Opzione("LUK", 0),
           i = 1;
         i <= 99;
         i++
       )
-        ((c.A3_Skill11_STR.options[i] = new documento.Opzione(i, i)),
-          (c.A3_Skill11_AGI.options[i] = new documento.Opzione(i, i)),
-          (c.A3_Skill11_VIT.options[i] = new documento.Opzione(i, i)),
-          (c.A3_Skill11_INT.options[i] = new documento.Opzione(i, i)),
-          (c.A3_Skill11_DEX.options[i] = new documento.Opzione(i, i)),
-          (c.A3_Skill11_LUK.options[i] = new documento.Opzione(i, i)));
+        ((c.A3_Skill11_STR.options[i] = new Opzione(i, i)),
+          (c.A3_Skill11_AGI.options[i] = new Opzione(i, i)),
+          (c.A3_Skill11_VIT.options[i] = new Opzione(i, i)),
+          (c.A3_Skill11_INT.options[i] = new Opzione(i, i)),
+          (c.A3_Skill11_DEX.options[i] = new Opzione(i, i)),
+          (c.A3_Skill11_LUK.options[i] = new Opzione(i, i)));
       ((SWs3sw[11] = 1),
         (c.A3_Skill11_STR.value = n_A_Buf3[12]),
         (c.A3_Skill11_AGI.value = n_A_Buf3[13]),
@@ -503,10 +503,10 @@ function Buf4SW(e) {
     )
       scrivi("EN4" + i + "_1", name_CS4SW_SKILL[i]);
     for (i = 0; i <= 5; i++)
-      ((c.A3_Skill41.options[i] = new documento.Opzione(i, i)),
-        (c.A3_Skill42.options[i] = new documento.Opzione(i, i)),
-        (c.A3_Skill43.options[i] = new documento.Opzione(i, i)),
-        (c.A3_Skill44.options[i] = new documento.Opzione(i, i)));
+      ((c.A3_Skill41.options[i] = new Opzione(i, i)),
+        (c.A3_Skill42.options[i] = new Opzione(i, i)),
+        (c.A3_Skill43.options[i] = new Opzione(i, i)),
+        (c.A3_Skill44.options[i] = new Opzione(i, i)));
     ((c.A3_Skill40.checked = n_A_Buf3[40]),
       (c.A3_Skill41.value = n_A_Buf3[41]),
       (c.A3_Skill42.value = n_A_Buf3[42]),
@@ -591,59 +591,59 @@ function Buf6SW(e) {
     );
 
     ((o += '<span class="disclosure-chevron" aria-hidden="true"></span></TD></TR>'),
-      (c.A8_Skill0.options[0] = new documento.Opzione(
+      (c.A8_Skill0.options[0] = new Opzione(
         m_PET[m_PET_SORT[0]][1],
         m_PET[m_PET_SORT[0]][0],
       )));
-    var _ = documento.createElement("OPTGROUP");
+    var _ = new Gruppo();
     for (_.label = "CLASSIC PETS", c.A8_Skill0.appendChild(_), i = 1; i < 61; i++) {
       var n = m_PET_SORT[i];
-      ((c.A8_Skill0.options[i] = new documento.Opzione(m_PET[n][1], m_PET[n][0])),
+      ((c.A8_Skill0.options[i] = new Opzione(m_PET[n][1], m_PET[n][0])),
         _.appendChild(c.A8_Skill0.options[i]));
     }
-    var a = documento.createElement("OPTGROUP");
+    var a = new Gruppo();
     for (
       a.label = "EVOLVED PETS & OTHER NEW PETS", c.A8_Skill0.appendChild(a), j = i;
       j < m_PET_SORT.length;
       j++
     )
       ((n = m_PET_SORT[j]),
-        (c.A8_Skill0.options[j] = new documento.Opzione(m_PET[n][1], m_PET[n][0])),
+        (c.A8_Skill0.options[j] = new Opzione(m_PET[n][1], m_PET[n][0])),
         a.appendChild(c.A8_Skill0.options[j]));
     for (i = 0; i < m_TempEffect_SORT.length; i++)
       ((n = m_TempEffect_SORT[i]),
-        (c.A8_Skill8.options[i] = new documento.Opzione(
+        (c.A8_Skill8.options[i] = new Opzione(
           m_TempEffect[n][1] + " [" + m_TempEffect[n][2] + "]",
           n,
         )),
-        (c.A8_Skill9.options[i] = new documento.Opzione(
+        (c.A8_Skill9.options[i] = new Opzione(
           m_TempEffect[n][1] + " [" + m_TempEffect[n][2] + "]",
           n,
         )),
-        (c.A8_Skill10.options[i] = new documento.Opzione(
+        (c.A8_Skill10.options[i] = new Opzione(
           m_TempEffect[n][1] + " [" + m_TempEffect[n][2] + "]",
           n,
         )),
-        (c.A8_Skill11.options[i] = new documento.Opzione(
+        (c.A8_Skill11.options[i] = new Opzione(
           m_TempEffect[n][1] + " [" + m_TempEffect[n][2] + "]",
           n,
         )));
     for (
-      c.A8_Skill1.options[0] = new documento.Opzione("None", 0),
-        c.A8_Skill1.options[1] = new documento.Opzione("25", 1),
-        c.A8_Skill1.options[2] = new documento.Opzione("50", 2),
-        c.A8_Skill1.options[3] = new documento.Opzione("100", 4),
-        c.A8_Skill3.options[0] = new documento.Opzione("1x", 0),
+      c.A8_Skill1.options[0] = new Opzione("None", 0),
+        c.A8_Skill1.options[1] = new Opzione("25", 1),
+        c.A8_Skill1.options[2] = new Opzione("50", 2),
+        c.A8_Skill1.options[3] = new Opzione("100", 4),
+        c.A8_Skill3.options[0] = new Opzione("1x", 0),
         i = 1;
       i <= 199;
       i++
     )
-      c.A8_Skill3.options[i] = new documento.Opzione(1 + 1 * i + "x", i);
-    for (c.A8_Skill7.options[0] = new documento.Opzione("1x", 0), i = 1; i <= 199; i++)
-      c.A8_Skill7.options[i] = new documento.Opzione(1 + 1 * i + "x", i);
-    for (i = 1; i <= 12; i++) c.A8_Skill5.options[i - 1] = new documento.Opzione(i, i - 1);
-    for (c.A8_Skill6.options[0] = new documento.Opzione("-", 0), i = 1; i <= 20; i++)
-      c.A8_Skill6.options[i] = new documento.Opzione("+" + 25 * i + "%", i);
+      c.A8_Skill3.options[i] = new Opzione(1 + 1 * i + "x", i);
+    for (c.A8_Skill7.options[0] = new Opzione("1x", 0), i = 1; i <= 199; i++)
+      c.A8_Skill7.options[i] = new Opzione(1 + 1 * i + "x", i);
+    for (i = 1; i <= 12; i++) c.A8_Skill5.options[i - 1] = new Opzione(i, i - 1);
+    for (c.A8_Skill6.options[0] = new Opzione("-", 0), i = 1; i <= 20; i++)
+      c.A8_Skill6.options[i] = new Opzione("+" + 25 * i + "%", i);
     for (
       c.A8_Skill0.value = n_A_Buf8[0],
         c.A8_Skill1.value = n_A_Buf8[1],
@@ -656,23 +656,23 @@ function Buf6SW(e) {
         c.A8_Skill9.value = n_A_Buf8[9],
         c.A8_Skill10.value = n_A_Buf8[10],
         c.A8_Skill11.value = n_A_Buf8[11],
-        c.A6_Skill0.options[0] = new documento.Opzione("Volcano", 0),
-        c.A6_Skill0.options[1] = new documento.Opzione("Deluge", 1),
-        c.A6_Skill0.options[2] = new documento.Opzione("Violent Gale", 2),
+        c.A6_Skill0.options[0] = new Opzione("Volcano", 0),
+        c.A6_Skill0.options[1] = new Opzione("Deluge", 1),
+        c.A6_Skill0.options[2] = new Opzione("Violent Gale", 2),
         i = 0;
       i <= 5;
       i++
     )
-      c.A6_Skill1.options[i] = new documento.Opzione(i, i);
+      c.A6_Skill1.options[i] = new Opzione(i, i);
     for (i = 0; i <= 5; i++)
-      ((c.A6_Skill4.options[i] = new documento.Opzione(i, i)),
-        (c.A6_Skill18.options[i] = new documento.Opzione(i, i)));
-    for (i = 0; i <= 10; i++) c.A6_Skill5.options[i] = new documento.Opzione(i, i);
-    for (c.A_debuf0.options[0] = new documento.Opzione("-", 0), i = 1; i <= 5; i++)
-      c.A_debuf0.options[i] = new documento.Opzione(i, i);
-    for (c.A_debuf1.options[0] = new documento.Opzione("-", 0), i = 1; i <= 10; i++)
-      c.A_debuf1.options[i] = new documento.Opzione("Lvl " + i, i);
-    ((c.A_debuf1.options[11] = new documento.Opzione("Lvl 46", 46)),
+      ((c.A6_Skill4.options[i] = new Opzione(i, i)),
+        (c.A6_Skill18.options[i] = new Opzione(i, i)));
+    for (i = 0; i <= 10; i++) c.A6_Skill5.options[i] = new Opzione(i, i);
+    for (c.A_debuf0.options[0] = new Opzione("-", 0), i = 1; i <= 5; i++)
+      c.A_debuf0.options[i] = new Opzione(i, i);
+    for (c.A_debuf1.options[0] = new Opzione("-", 0), i = 1; i <= 10; i++)
+      c.A_debuf1.options[i] = new Opzione("Lvl " + i, i);
+    ((c.A_debuf1.options[11] = new Opzione("Lvl 46", 46)),
       (c.A6_Skill0.value = n_A_Buf6[0]),
       (c.A6_Skill1.value = n_A_Buf6[1]),
       (c.A6_Skill3.checked = n_A_Buf6[3]),
@@ -719,8 +719,8 @@ function A6(e) {
 function SetSpeedPotionOptions() {
   ((c.A_SpeedPOT.options[2] =
     n_A_JOB != 3 && n_A_JobClass2() != 9 && n_A_JobClass2() != 16
-      ? new documento.Opzione(SpeedPotName[2], 2)
-      : new documento.Opzione("-", 0)),
+      ? new Opzione(SpeedPotName[2], 2)
+      : new Opzione("-", 0)),
     (c.A_SpeedPOT.options[3] =
       n_A_JobClass() == 1 ||
       n_A_JobClass() == 6 ||
@@ -729,10 +729,10 @@ function SetSpeedPotionOptions() {
       n_A_JobClass2() == 11 ||
       n_A_JOB == 5 ||
       n_A_JOB == 45
-        ? new documento.Opzione(SpeedPotName[3] + " (Lvl 85)", 3)
-        : new documento.Opzione("* (" + m_Skill[304][2] + ", Lvl 85)", 3)),
+        ? new Opzione(SpeedPotName[3] + " (Lvl 85)", 3)
+        : new Opzione("* (" + m_Skill[304][2] + ", Lvl 85)", 3)),
     n_A_JOB == 22
-      ? (c.A_SpeedPOT.options[4] = new documento.Opzione("Poison Bottle", 4))
+      ? (c.A_SpeedPOT.options[4] = new Opzione("Poison Bottle", 4))
       : ((c.A_SpeedPOT.options.length = 4), n_A_Buf7[35] == 4 && (n_A_Buf7[35] = 0)),
     (c.A_SpeedPOT.value = n_A_Buf7[35]));
 }
@@ -992,36 +992,36 @@ function Buf7SW(e) {
 
     for (
       _ += '<span class="disclosure-chevron" aria-hidden="true"></span></TD></TR>',
-        c.A7_Skill3.options[0] = new documento.Opzione("STR+", 0),
-        c.A7_Skill4.options[0] = new documento.Opzione("AGI+", 0),
-        c.A7_Skill5.options[0] = new documento.Opzione("VIT+", 0),
-        c.A7_Skill6.options[0] = new documento.Opzione("INT+", 0),
-        c.A7_Skill7.options[0] = new documento.Opzione("DEX+", 0),
-        c.A7_Skill8.options[0] = new documento.Opzione("LUK+", 0),
+        c.A7_Skill3.options[0] = new Opzione("STR+", 0),
+        c.A7_Skill4.options[0] = new Opzione("AGI+", 0),
+        c.A7_Skill5.options[0] = new Opzione("VIT+", 0),
+        c.A7_Skill6.options[0] = new Opzione("INT+", 0),
+        c.A7_Skill7.options[0] = new Opzione("DEX+", 0),
+        c.A7_Skill8.options[0] = new Opzione("LUK+", 0),
         i = 1;
       i <= 10;
       i++
     )
-      ((c.A7_Skill3.options[i] = new documento.Opzione("+" + i, i)),
-        (c.A7_Skill4.options[i] = new documento.Opzione("+" + i, i)),
-        (c.A7_Skill5.options[i] = new documento.Opzione("+" + i, i)),
-        (c.A7_Skill6.options[i] = new documento.Opzione("+" + i, i)),
-        (c.A7_Skill7.options[i] = new documento.Opzione("+" + i, i)),
-        (c.A7_Skill8.options[i] = new documento.Opzione("+" + i, i)));
-    ((c.A7_Skill39.options[0] = new documento.Opzione("(no HP Increase Potion)", 0)),
-      (c.A7_Skill39.options[1] = new documento.Opzione("Small HP Increase Potion", 1)),
-      (c.A7_Skill39.options[2] = new documento.Opzione("Medium HP Increase Potion", 2)),
-      (c.A7_Skill39.options[3] = new documento.Opzione("Large HP Increase Potion", 3)),
-      (c.A7_Skill40.options[0] = new documento.Opzione("(no SP Increase Potion)", 0)),
-      (c.A7_Skill40.options[1] = new documento.Opzione("Small SP Increase Potion", 1)),
-      (c.A7_Skill40.options[2] = new documento.Opzione("Medium SP Increase Potion", 2)),
-      (c.A7_Skill40.options[3] = new documento.Opzione("Large SP Increase Potion", 3)),
-      (c.A7_Skill42.options[0] = new documento.Opzione("(no Mega Resist Potion)", 0)),
-      (c.A7_Skill42.options[1] = new documento.Opzione(
+      ((c.A7_Skill3.options[i] = new Opzione("+" + i, i)),
+        (c.A7_Skill4.options[i] = new Opzione("+" + i, i)),
+        (c.A7_Skill5.options[i] = new Opzione("+" + i, i)),
+        (c.A7_Skill6.options[i] = new Opzione("+" + i, i)),
+        (c.A7_Skill7.options[i] = new Opzione("+" + i, i)),
+        (c.A7_Skill8.options[i] = new Opzione("+" + i, i)));
+    ((c.A7_Skill39.options[0] = new Opzione("(no HP Increase Potion)", 0)),
+      (c.A7_Skill39.options[1] = new Opzione("Small HP Increase Potion", 1)),
+      (c.A7_Skill39.options[2] = new Opzione("Medium HP Increase Potion", 2)),
+      (c.A7_Skill39.options[3] = new Opzione("Large HP Increase Potion", 3)),
+      (c.A7_Skill40.options[0] = new Opzione("(no SP Increase Potion)", 0)),
+      (c.A7_Skill40.options[1] = new Opzione("Small SP Increase Potion", 1)),
+      (c.A7_Skill40.options[2] = new Opzione("Medium SP Increase Potion", 2)),
+      (c.A7_Skill40.options[3] = new Opzione("Large SP Increase Potion", 3)),
+      (c.A7_Skill42.options[0] = new Opzione("(no Mega Resist Potion)", 0)),
+      (c.A7_Skill42.options[1] = new Opzione(
         "Mega Resist Potion [+10% resistance to Blind, Bleeding, Confusion, Curse, Frozen, Poison, Silence, Sleep, Stun and Stone Curse status effects]",
         1,
       )),
-      (c.A7_Skill42.options[2] = new documento.Opzione(
+      (c.A7_Skill42.options[2] = new Opzione(
         "Mega Resist Potion (iRO) [+20% resistance to Blind, Bleeding, Confusion, Curse, Frozen, Poison, Silence, Sleep, Stun and Stone Curse status effects]",
         2,
       )),
@@ -1031,8 +1031,8 @@ function Buf7SW(e) {
         "Awakening Potion (Lvl 40)",
         "Berserk Potion",
       ]),
-      (c.A_SpeedPOT.options[0] = new documento.Opzione(SpeedPotName[0], 0)),
-      (c.A_SpeedPOT.options[1] = new documento.Opzione(SpeedPotName[1], 1)),
+      (c.A_SpeedPOT.options[0] = new Opzione(SpeedPotName[0], 0)),
+      (c.A_SpeedPOT.options[1] = new Opzione(SpeedPotName[1], 1)),
       SetSpeedPotionOptions(),
       (c.A7_Skill0.checked = n_A_Buf7[0]),
       (c.A7_Skill1.checked = n_A_Buf7[1]),
@@ -1269,20 +1269,20 @@ function Buf9SW(e) {
       (n += "</table></TD></TR>"));
 
     for (
-      c.A9_Skill8.options[0] = new documento.Opzione("(no skill selected)", 0), i = 1;
+      c.A9_Skill8.options[0] = new Opzione("(no skill selected)", 0), i = 1;
       i < All_DMGskill.length;
       i++
     )
-      c.A9_Skill8.options[i] = new documento.Opzione(
+      c.A9_Skill8.options[i] = new Opzione(
         skillNameInSelect(m_Skill[All_DMGskill[i]][0]),
         All_DMGskill[i],
       );
     for (
-      c.A9_Skill9.options[0] = new documento.Opzione("(no skill selected)", 0), i = 1;
+      c.A9_Skill9.options[0] = new Opzione("(no skill selected)", 0), i = 1;
       i < All_DMGskill.length;
       i++
     )
-      c.A9_Skill9.options[i] = new documento.Opzione(
+      c.A9_Skill9.options[i] = new Opzione(
         skillNameInSelect(m_Skill[All_DMGskill[i]][0]),
         All_DMGskill[i],
       );
@@ -1436,8 +1436,8 @@ function Buf10SW(e) {
       i < v_Element_.length;
       i++
     )
-      ((c.Bman1.options[i] = new documento.Opzione(v_Element_[i], i)),
-        (c.Bman2.options[i] = new documento.Opzione(v_Element_[i], i)));
+      ((c.Bman1.options[i] = new Opzione(v_Element_[i], i)),
+        (c.Bman2.options[i] = new Opzione(v_Element_[i], i)));
     ((c.BRG_RC0.value = n_B_manual[1]),
       (c.Bman1.value = n_B_manual[2]),
       (c.BRG_RC1.value = n_B_manual[3]),
@@ -1548,7 +1548,7 @@ function debufSW(e) {
 
     n += '<span class="disclosure-chevron" aria-hidden="true"></span></TD></TR>';
     var _ = ["(none)", "Water", "Earth", "Fire", "Wind"];
-    for (i = 0; i <= 4; i++) c.B_debuf23.options[i] = new documento.Opzione(_[i], i);
+    for (i = 0; i <= 4; i++) c.B_debuf23.options[i] = new Opzione(_[i], i);
     for (
       targetData[19]
         ? (scrivi("BI18_1", "<S>Mind Breaker</S>"),
@@ -1649,13 +1649,13 @@ function debufSW(e) {
       i <= 10;
       i++
     )
-      ((c.B_debuf0.options[i] = new documento.Opzione(i, i)),
-        (c.B_debuf11.options[i] = new documento.Opzione(i, i)),
-        (c.B_debuf12.options[i] = new documento.Opzione(i, i)));
+      ((c.B_debuf0.options[i] = new Opzione(i, i)),
+        (c.B_debuf11.options[i] = new Opzione(i, i)),
+        (c.B_debuf12.options[i] = new Opzione(i, i)));
     for (i = 0; i <= 5; i++)
-      ((c.B_debuf1.options[i] = new documento.Opzione(i, i)),
-        (c.B_debuf18.options[i] = new documento.Opzione(i, i)),
-        (c.B_debuf24.options[i] = new documento.Opzione(i, i)));
+      ((c.B_debuf1.options[i] = new Opzione(i, i)),
+        (c.B_debuf18.options[i] = new Opzione(i, i)),
+        (c.B_debuf24.options[i] = new Opzione(i, i)));
     ((c.B_debuf0.value = n_B_debuf[0]),
       (c.B_debuf1.value = n_B_debuf[1]),
       (c.B_debuf2.checked = n_B_debuf[2]),
@@ -1744,16 +1744,16 @@ function EnemyBufSW(e) {
       i <= 10;
       i++
     )
-      ((c.B_buf0.options[i] = new documento.Opzione(i, i)),
-        (c.B_buff10.options[i] = new documento.Opzione(i, i)),
-        (c.B_buff11.options[i] = new documento.Opzione(i, i)),
-        (c.B_buff12.options[i] = new documento.Opzione(i, i)));
+      ((c.B_buf0.options[i] = new Opzione(i, i)),
+        (c.B_buff10.options[i] = new Opzione(i, i)),
+        (c.B_buff11.options[i] = new Opzione(i, i)),
+        (c.B_buff12.options[i] = new Opzione(i, i)));
     for (i = 0; i <= 5; i++)
-      ((c.B_buf5.options[i] = new documento.Opzione(i, i)),
-        (c.B_buf7.options[i] = new documento.Opzione(i, i)),
-        (c.B_buf8.options[i] = new documento.Opzione(i, i)),
-        (c.B_buff13.options[i] = new documento.Opzione(i, i)),
-        (c.B_buff14.options[i] = new documento.Opzione(v_EnergyCoat[i], i)));
+      ((c.B_buf5.options[i] = new Opzione(i, i)),
+        (c.B_buf7.options[i] = new Opzione(i, i)),
+        (c.B_buf8.options[i] = new Opzione(i, i)),
+        (c.B_buff13.options[i] = new Opzione(i, i)),
+        (c.B_buff14.options[i] = new Opzione(v_EnergyCoat[i], i)));
     var _ = [
       [
         "(none)",
@@ -1803,7 +1803,7 @@ function EnemyBufSW(e) {
         54, 61, 62, 63, 64, 71, 72, 73, 74, 81, 82, 83, 84, 91, 92, 93, 94,
       ],
     ];
-    for (i = 0; i <= 40; i++) c.B_buf6.options[i] = new documento.Opzione(_[0][i], _[1][i]);
+    for (i = 0; i <= 40; i++) c.B_buf6.options[i] = new Opzione(_[0][i], _[1][i]);
     ((c.B_buf0.value = n_B_buf[0]),
       (c.B_buf1.checked = n_B_buf[1]),
       (c.B_buf2.checked = n_B_buf[2]),

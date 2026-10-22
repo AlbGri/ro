@@ -1,17 +1,13 @@
 // Ricarica una build dal suo indirizzo e legge i risultati, come il banco di prova
 // dell'originale (stessi pannelli aperti, stessa voce di Other Info).
 export const PANNELLI = ["BufSW", "Buf3SW", "Buf4SW", "Buf6SW", "Buf7SW", "Buf9SW", "Buf10SW", "debufSW", "EnemyBufSW"];
-// descrizione dell'ultimo oggetto cliccato e titoli dei pannelli: interfaccia, non calcolo.
-// A_DodgeRatio nello scheletro conteneva BattleFLEE e "%": dalla fase 5 BattleFLEE e' fra i
-// risultati (motore/campi.js) e A_DodgeRatio non dice altro. combat-sim e cresults sono parti
-// dello scheletro che contenevano campi (e per questo non si guardavano): dalla fase 5 i campi
-// fissi non stanno piu' nello scheletro, e il loro testo sono solo le etichette
-export const IGNORATI = /^(item-disclosure|ITEM_TITLE|ITEM\d|ITEM_DATA|ITEM_W_LV|ITEM_LV|ITEM_WAIT|B_SETUMEI|A\w*TD|A\w*used|A_DodgeRatio|combat-sim|cresults)$/;
+// descrizione dell'ultimo oggetto cliccato e segni "attivo" dei pannelli: interfaccia, non calcolo
+export const IGNORATI = /^(ITEM_TITLE|ITEM\d|ITEM_DATA|ITEM_W_LV|ITEM_LV|ITEM_WAIT|B_SETUMEI|A\w*used)$/;
 
 export function caricaBuild(m, url, kakutyou) {
   m.leggiBuild(url);
   for (const p of PANNELLI) m[p](1);
-  const c = m.documento.calcForm;
+  const c = m.c;
   c.A_Kakutyou.value = kakutyou;
   m.preparaAltreInfo();
   m.StAllCalc();
@@ -19,16 +15,8 @@ export function caricaBuild(m, url, kakutyou) {
 }
 
 export function istantanea(m) {
-  const d = m.documento, out = {};
-  const conControlli = (el) => el.figli.some((f) => f.tag && (f.tag === "select" || f.tag === "input" || conControlli(f)));
-  for (const [id, l] of d.perId) {
-    const el = l[0];
-    if (/^(input|select|option|textarea|button)$/.test(el.tag) || conControlli(el)) continue;
-    const t = el.textContent.replace(/\s+/g, " ").trim();
-    if (t) out[id] = t;
-  }
-  // dalla fase 5 i risultati non stanno piu' nel documento (uscite in motore/campi.js)
-  for (const id in m.uscite || {}) {
+  const out = {};
+  for (const id in m.uscite) {
     const t = m.testo(id);
     if (t) out[id] = t;
   }

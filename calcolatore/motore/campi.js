@@ -1,39 +1,224 @@
 // I campi e i risultati del motore come li usa chi sta fuori (la pagina, i test, gli strumenti
 // di prova).
 
-// Un campo creato dal codice, non dall'HTML: tipo "select", "checkbox", "testo" o "pulsante";
-// gestore: la funzione eseguita alla scelta (this e' il campo), o null. imp: opzioni
-// ([valore, testo, scelta], o { gruppo, opzioni } per un optgroup), spuntato, disabilitato,
-// nascosto, valore. Per ora e' un elemento del documento finto fuori dall'albero, registrato
-// in c (calcForm); un campo con lo stesso nome lo sostituisce, con valori e opzioni iniziali
+// Il motore viene da un calcolatore che leggeva un form HTML: un campo ha ancora la semantica
+// delle <select> del browser, su cui il motore conta (una sola opzione scelta, la prima non
+// disabilitata se nessuna lo e'; options[i] = ..., options.length = n, gruppi di opzioni). c e'
+// l'insieme dei campi per nome, come era document.calcForm
+var c = {};
+
+// un'opzione: testo con gli spazi compressi, come quello di un'<option>; senza valore vale il testo
+function Opzione(testo, valore, scelta) {
+  this.text = testo === undefined ? "" : testo;
+  this._valore = valore === undefined ? undefined : String(valore);
+  this.selezionata = !!scelta;
+  this.disabled = false;
+  this.padre = null;
+}
+Object.defineProperty(Opzione.prototype, "text", {
+  get: function () { return this._testo; },
+  set: function (t) { this._testo = String(t).replace(/[\t\n\f\r ]+/g, " ").trim(); },
+});
+Object.defineProperty(Opzione.prototype, "value", {
+  get: function () { return this._valore === undefined ? this.text : this._valore; },
+});
+// un gruppo di opzioni (optgroup)
+function Gruppo() {
+  this.label = "";
+  this.figli = [];
+  this.padre = null;
+}
+Gruppo.prototype.appendChild = function (n) { return attacca(this, n); };
+
+// tipo: "select", "checkbox", "testo" o "pulsante"; gestore: la funzione eseguita alla scelta
+// (this e' il campo), o null. figli: opzioni e gruppi in ordine; _elenco: le opzioni in fila,
+// tenuto aggiornato nei casi comuni (aggiunta in fondo, rimozione). La regola della scelta si
+// applica in ritardo (_sporco), prima del primo uso che ne dipende: stesso risultato, piu' veloce
+function Campo(nome, tipo, gestore) {
+  this.name = nome;
+  this.tipo = tipo;
+  this.gestore = gestore;
+  this.style = {};
+  this._disabilitato = this._nascosto = this._spuntato = false;
+  this._valore = tipo === "checkbox" ? "on" : "";
+  this.figli = [];
+  this._elenco = null;
+  this._sporco = false;
+  this._collezione = null;
+}
+var CP = Campo.prototype;
+// come nel browser, sempre vero o falso qualunque valore si assegni
+Object.defineProperty(CP, "disabled", { get: function () { return this._disabilitato; }, set: function (v) { this._disabilitato = !!v; } });
+Object.defineProperty(CP, "hidden", { get: function () { return this._nascosto; }, set: function (v) { this._nascosto = !!v; } });
+Object.defineProperty(CP, "checked", { get: function () { return this._spuntato; }, set: function (v) { this._spuntato = !!v; } });
+CP.appendChild = function (n) { return attacca(this, n); };
+CP.elenco = function () {
+  if (this._elenco) return this._elenco;
+  var l = [];
+  this.figli.forEach(function (f) {
+    if (f instanceof Gruppo) l.push.apply(l, f.figli);
+    else l.push(f);
+  });
+  return (this._elenco = l);
+};
+CP._assicura = function () {
+  if (!this._sporco) return;
+  this._sporco = false;
+  var l = this.elenco(), scelte = 0, ultima = -1, i;
+  for (i = 0; i < l.length; i++) if (l[i].selezionata) { scelte++; ultima = i; }
+  if (scelte === 0) {
+    for (i = 0; i < l.length; i++) if (!l[i].disabled) { l[i].selezionata = true; break; }
+  } else if (scelte > 1) {
+    for (i = 0; i < l.length; i++) l[i].selezionata = i === ultima;
+  }
+};
+Object.defineProperty(CP, "selectedIndex", {
+  get: function () {
+    this._assicura();
+    var l = this.elenco();
+    for (var i = 0; i < l.length; i++) if (l[i].selezionata) return i;
+    return -1;
+  },
+  set: function (v) {
+    this._assicura();
+    var l = this.elenco();
+    v = Number(v);
+    for (var i = 0; i < l.length; i++) l[i].selezionata = i === v;
+  },
+});
+Object.defineProperty(CP, "value", {
+  get: function () {
+    if (this.tipo !== "select") return this._valore;
+    var o = this.elenco()[this.selectedIndex];
+    return o ? o.value : "";
+  },
+  set: function (v) {
+    v = v === null ? "" : String(v);
+    if (this.tipo !== "select") return void (this._valore = v);
+    this._assicura();
+    var trovata = false;
+    this.elenco().forEach(function (o) {
+      o.selezionata = !trovata && o.value === v;
+      if (o.selezionata) trovata = true;
+    });
+  },
+});
+// options[i] = opzione (null la toglie; oltre la fine aggiunge opzioni vuote), options.length
+Object.defineProperty(CP, "length", {
+  get: function () { return this.elenco().length; },
+  set: function (n) {
+    n = Number(n) >>> 0;
+    var l = this.elenco();
+    if (n < l.length) for (var via = l.slice(n), i = via.length - 1; i >= 0; i--) stacca(via[i]);
+    else while (this.elenco().length < n) attacca(this, new Opzione());
+  },
+});
+CP._imposta = function (i, o) {
+  var l = this.elenco();
+  if (o === null || o === undefined) {
+    if (i < l.length) stacca(l[i]);
+    return;
+  }
+  if (i < l.length) return void sostituisci(l[i], o);
+  while (this.elenco().length < i) attacca(this, new Opzione());
+  attacca(this, o);
+};
+Object.defineProperty(CP, "options", {
+  get: function () {
+    if (this._collezione) return this._collezione;
+    var campo = this;
+    var base = {
+      get length() { return campo.length; },
+      set length(n) { campo.length = n; },
+      [Symbol.iterator]: function () { return campo.elenco().slice()[Symbol.iterator](); },
+    };
+    return (this._collezione = new Proxy(base, {
+      get: function (t, p) {
+        if (typeof p === "string" && /^\d+$/.test(p)) return campo.elenco()[Number(p)];
+        return t[p];
+      },
+      set: function (t, p, v) {
+        if (typeof p === "string" && /^\d+$/.test(p)) campo._imposta(Number(p), v);
+        else t[p] = v;
+        return true;
+      },
+    }));
+  },
+});
+
+// il campo di un'opzione o di un gruppo (null se il gruppo non sta in un campo)
+function campoDi(padre) {
+  return padre instanceof Campo ? padre : padre && padre.padre;
+}
+// n (opzione o gruppo) in fondo a padre (il campo o un suo gruppo), tolto da dove stava. Come
+// nel browser, un'opzione scelta che entra toglie la scelta alle altre
+function attacca(padre, n) {
+  if (n.padre) stacca(n);
+  padre.figli.push(n);
+  n.padre = padre;
+  var campo = campoDi(padre);
+  if (!campo) return n;
+  if (campo._elenco && padre === campo && n instanceof Opzione) campo._elenco.push(n);
+  else campo._elenco = null;
+  campo._sporco = true;
+  if (n instanceof Opzione && n.selezionata)
+    campo.elenco().forEach(function (o) {
+      if (o !== n) o.selezionata = false;
+    });
+  return n;
+}
+function stacca(n) {
+  var padre = n.padre, campo = campoDi(padre);
+  padre.figli.splice(padre.figli.lastIndexOf(n), 1);
+  n.padre = null;
+  if (!campo) return;
+  var l = campo._elenco;
+  if (l && n instanceof Opzione) {
+    var i = l[l.length - 1] === n ? l.length - 1 : l.indexOf(n);
+    if (i >= 0) l.splice(i, 1);
+    else campo._elenco = null;
+  } else campo._elenco = null;
+  campo._sporco = true;
+}
+// l'opzione nuova al posto della vecchia, nel suo stesso gruppo
+function sostituisci(vecchia, nuova) {
+  if (nuova.padre) stacca(nuova);
+  var padre = vecchia.padre, campo = campoDi(padre);
+  padre.figli[padre.figli.indexOf(vecchia)] = nuova;
+  nuova.padre = padre;
+  vecchia.padre = null;
+  if (campo._elenco) campo._elenco[campo._elenco.indexOf(vecchia)] = nuova;
+  campo._sporco = true;
+  if (nuova.selezionata)
+    campo.elenco().forEach(function (o) {
+      if (o !== nuova) o.selezionata = false;
+    });
+}
+
+// Un campo nuovo: imp ha opzioni ([valore, testo, scelta], o { gruppo, opzioni } per un
+// optgroup), spuntato, disabilitato, nascosto, valore (non per le tendine). Un campo con lo
+// stesso nome lo sostituisce
 function campo(nome, tipo, gestore, imp) {
   imp = imp || {};
-  // gli attributi come li avrebbe letti il parser dall'HTML: stessi valori iniziali
-  var attributi = { name: nome };
-  if (tipo !== "select") attributi.type = { testo: "text", pulsante: "button" }[tipo] || tipo;
-  if (imp.spuntato) attributi.checked = "";
-  if (imp.disabilitato) attributi.disabled = "";
-  if (imp.nascosto) attributi.hidden = "";
-  if (imp.valore !== undefined) attributi.value = String(imp.valore);
-  var el = new Elemento(documento, tipo === "select" ? "select" : "input", attributi);
-  el._funzione = gestore;
+  var el = new Campo(nome, tipo, gestore);
+  el.checked = imp.spuntato;
+  el.disabled = imp.disabilitato;
+  el.hidden = imp.nascosto;
+  if (imp.valore !== undefined && tipo !== "select") el.value = imp.valore;
   var opzioni = function (dentro, lista) {
     lista.forEach(function (o) {
-      if (Array.isArray(o)) return dentro.appendChild(new documento.Opzione(o[1], o[0], o[2], o[2]));
-      var g = documento.createElement("optgroup");
+      if (Array.isArray(o)) return dentro.appendChild(new Opzione(o[1], o[0], o[2]));
+      var g = dentro.appendChild(new Gruppo());
       g.label = o.gruppo;
       opzioni(g, o.opzioni);
-      dentro.appendChild(g);
     });
   };
   opzioni(el, imp.opzioni || []);
-  CAMPI_CODICE.add(nome);
-  documento.calcForm[nome] = el;
+  c[nome] = el;
   return el;
 }
 function togliCampo(nome) {
-  CAMPI_CODICE.delete(nome);
-  delete documento.calcForm[nome];
+  delete c[nome];
 }
 
 // Pannelli dei buff (buff.js): pannelli[radice] e' la descrizione del pannello aperto, una lista
@@ -99,7 +284,7 @@ function contenitore(id, voci) {
 function scegli(campo, valore) {
   if (typeof campo === "string") campo = c[campo];
   if (valore !== undefined) {
-    if (campo.type === "checkbox") campo.checked = valore;
+    if (campo.tipo === "checkbox") campo.checked = valore;
     else campo.value = valore;
   }
   if (campo.gestore) campo.gestore.call(campo);
@@ -107,27 +292,154 @@ function scegli(campo, valore) {
 
 // I risultati: uscite[id] e' il testo che il motore scrive con scrivi(id, valore). E' HTML con
 // pochi tag (grassetto, colori, a capo, spiegazioni in span.name/.nametext, le tabelle di Altre
-// informazioni e la scheda dell'oggetto). All'avvio vale il contenuto che l'id aveva nello
-// scheletro della pagina, che poi non lo contiene piu'
-var USCITE = ["A_STPOINT","A_BodySIZE","A_BodyELEMENT","A_STRp","A_AGIp","A_VITp","A_INTp","A_DEXp","A_LUKp","A_MaxHP","A_totalDEF","A_HIT","A_MaxSP","A_MDEF","A_PefHIT","A_HPR","A_RealMDEF","A_CRI","A_SPR","A_ATK2","A_CRITSHIELD","A_ASPD","A_RealATK","A_FLEE","A_MovSPEED","A_MATK","A_WoeFLEE","A_Weight","A_cTime","A_LUCKY","A_cDelay","A_SobWeaponName","ITEM_TITLE","ITEM1","ITEM_DATA","ITEM2","ITEM_W_LV","ITEM3","ITEM_LV","ITEM4","ITEM_WAIT","B_SETUMEI","B_6","B_16","B_agi","B_12","B_13","B_17","B_vit","B_14","B_AA","B_23","B_2","B_int","B_15","B_AB","B_25","B_3","B_dex","B_21","B_4","B_luk","B_22","B_type","nm053","BattleHIT","nm074","A_WeaponElement","nm076","A_WeaponSize","CRIATKname","CRIATK","CRInum","bSUB3name","bSUB3","bSUBname","bSUB","nm055","strID_0","nm056","strID_1","nm057","strID_2","bREFLECT1name","bREFLECT1","bREFLECT2name","bREFLECT2","bSUB2name","bSUB2","nm058","AveSecondATK","nm059","MinATKnum","nm060","AveATKnum","nm061","MaxATKnum","nm062","BattleTime","nm063","AtkBaseExp","nm064","AtkJobExp","nm054","BattleFLEE","nm075","B_WeaponElement","nm067","B_MinAtk","nm065","B_AveAtk","nm068","B_MaxAtk","aREFLECT1name","aREFLECT1","aREFLECT2name","aREFLECT2","nm066","B_Ave2Atk","B_EffectiveHP","B_ExpectedEffectiveHP","B_SurvivalHits","A_KakutyouData"];
-var uscite = {};
-USCITE.forEach(function (id) {
-  var el = documento.getElementById(id);
-  uscite[id] = el.innerHTML;
-  el.padre.removeChild(el);
-});
+// informazioni e la scheda dell'oggetto). USCITE: i risultati con il loro contenuto iniziale,
+// come stavano nella pagina del calcolatore di Thrice
+var USCITE = {
+  A_STPOINT: "48",
+  A_BodySIZE: "Demi-Human &amp; Medium",
+  A_BodyELEMENT: "<b style=\"color: var(--color-neutral)\">Neutral</b>1",
+  A_STRp: " + 0",
+  A_AGIp: " + 0",
+  A_VITp: " + 1",
+  A_INTp: " + 0",
+  A_DEXp: " + 0",
+  A_LUKp: " + 0",
+  A_MaxHP: "57",
+  A_totalDEF: "16+2",
+  A_HIT: "2",
+  A_MaxSP: "19",
+  A_MDEF: "0+1",
+  A_PefHIT: "0",
+  A_HPR: "1",
+  A_RealMDEF: "0+2",
+  A_CRI: "1",
+  A_SPR: "1",
+  A_ATK2: "6+0",
+  A_CRITSHIELD: "1.2",
+  A_ASPD: "150.3",
+  A_RealATK: "6~6",
+  A_FLEE: "2",
+  A_MovSPEED: "100 %",
+  A_MATK: "1~1",
+  A_WoeFLEE: "1",
+  A_Weight: " <span class=\"name\" style=\"color: green\">14.03 %<span class=\"nametext\">285 / 2030</span></span> ",
+  A_cTime: " <span class=\"name\" style=\"color: green\">99.33 % <span class=\"nametext\"><span class=\"name\">Magic Strings<span class=\"nametext\"><b><u>Alt. name</u>:</b><br>A Poem of Bragi</span></span>: 0%<br>Gear: 0%<br>DEX: 1 </span></span> ",
+  A_LUCKY: "1.1",
+  A_cDelay: " <span class=\"name\" style=\"color: green\">100 % <span class=\"nametext\"><span class=\"name\">Magic Strings<span class=\"nametext\"><b><u>Alt. name</u>:</b><br>A Poem of Bragi</span></span>: 0%<br>Gear: 0%</span></span> ",
+  A_SobWeaponName: "",
+  ITEM_TITLE: "(no weapon) [0]",
+  ITEM1: "ATK:",
+  ITEM_DATA: "0",
+  ITEM2: "Weapon Lvl:",
+  ITEM_W_LV: "1",
+  ITEM3: "Req. Lvl:",
+  ITEM_LV: "0",
+  ITEM4: "Weight:",
+  ITEM_WAIT: "0",
+  B_SETUMEI: "",
+  B_6: "1",
+  B_16: "1",
+  B_agi: "0",
+  B_12: "1",
+  B_13: "1",
+  B_17: "1",
+  B_vit: "0",
+  B_14: "0",
+  B_AA: " + ",
+  B_23: "0",
+  B_2: "<b style=\"color: orange\">Demi-Human</b>",
+  B_int: "0",
+  B_15: "0",
+  B_AB: " + ",
+  B_25: "0",
+  B_3: " <b><b style=\"color: var(--color-neutral)\">Neutral</b>1</b> ",
+  B_dex: "0",
+  B_21: "21",
+  B_4: "Medium",
+  B_luk: "0",
+  B_22: "76",
+  B_type: "Normal",
+  nm053: "Player's Hit Ratio",
+  BattleHIT: "81.2",
+  nm074: "Attack Element",
+  A_WeaponElement: "<b style=\"color: var(--color-neutral)\">Neutral</b> (100% vs <b style=\"color: var(--color-neutral)\">Neutral</b>1)",
+  nm076: "Weapon/Skill Size Modifier",
+  A_WeaponSize: "100% <span class=\"font-light\">(Bare Hand vs Medium)</span>",
+  CRIATKname: "Critical damage (Critical rate)",
+  CRIATK: "6",
+  CRInum: " (1.1%)",
+  bSUB3name: "",
+  bSUB3: "",
+  bSUBname: "",
+  bSUB: "",
+  nm055: "Minimum Damage",
+  strID_0: "6",
+  nm056: "Average Damage",
+  strID_1: "6",
+  nm057: "Maximum Damage",
+  strID_2: "6",
+  bREFLECT1name: "",
+  bREFLECT1: "",
+  bREFLECT2name: "",
+  bREFLECT2: "",
+  bSUB2name: "Time/Hit<br>",
+  bSUB2: "0.993 seconds<br>",
+  nm058: "Damage Per Second",
+  AveSecondATK: "4.91",
+  nm059: "Minimum Number of Hits",
+  MinATKnum: "1",
+  nm060: "Average Number of Hits",
+  AveATKnum: "1",
+  nm061: "Maximum Number of Hits",
+  MaxATKnum: "Infinite (no 100% hit)",
+  nm062: "Average Battle Duration",
+  BattleTime: "0.99 seconds",
+  nm063: "",
+  AtkBaseExp: "",
+  nm064: "",
+  AtkJobExp: "",
+  nm054: "Player's Dodge Ratio",
+  BattleFLEE: "21.86",
+  nm075: "Enemy Attack Element",
+  B_WeaponElement: "<b style=\"color: var(--color-neutral)\">Neutral</b> (100% vs <b style=\"color: var(--color-neutral)\">Neutral</b>1)",
+  nm067: "Minimum Damage Received",
+  B_MinAtk: "1",
+  nm065: "Average Damage Received",
+  B_AveAtk: "1",
+  nm068: "Maximum Damage Received",
+  B_MaxAtk: "1",
+  aREFLECT1name: "",
+  aREFLECT1: "",
+  aREFLECT2name: "",
+  aREFLECT2: "",
+  nm066: "Average Dmg Received (w/dodge)",
+  B_Ave2Atk: "0.78",
+  B_EffectiveHP: "—",
+  B_ExpectedEffectiveHP: "—",
+  B_SurvivalHits: "—",
+  A_KakutyouData: "",
+};
+var uscite = Object.assign({}, USCITE);
 function scrivi(id, valore) {
   uscite[id] = "" + valore;
 }
-// il testo di un risultato come lo vede una persona, spazi compressi (anche per gli id rimasti
-// nel documento finto: etichette dei pannelli)
+var ENTITA = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: "\u00a0", times: "×", rarr: "→", larr: "←", middot: "·", hellip: "…", mdash: "—", ndash: "–", deg: "°", plusmn: "±", frac12: "½" };
+// il testo di un risultato come lo vede una persona: senza tag, entita' lette, spazi compressi
 function testo(id) {
   var html = uscite[id];
-  if (html === undefined) return documento.testo(id);
-  return documento._analizza(html).map(function (n) { return n.textContent; }).join("").replace(/\s+/g, " ").trim();
+  if (html === undefined) return "";
+  return html
+    .replace(/<!--[\s\S]*?-->|<\/?[a-zA-Z][a-zA-Z0-9]*(?:[^>"']|"[^"]*"|'[^']*')*>/g, "")
+    .replace(/&(#x[0-9a-f]+|#\d+|[a-z0-9]+);/gi, function (tutto, e) {
+      if (e[0] === "#") return String.fromCodePoint(e[1] === "x" || e[1] === "X" ? parseInt(e.slice(2), 16) : parseInt(e.slice(1), 10));
+      var v = ENTITA[e.toLowerCase()];
+      return v === undefined ? tutto : v;
+    })
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
-// I campi fissi della pagina (erano nello scheletro, pagina.js), nell'ordine in cui vi stavano
+// I campi fissi della pagina, nell'ordine in cui stavano nella pagina di Thrice
 campo("maxASPD", "select", function () { StAllCalc(); calc(); }, { opzioni: [["0", "190"], ["1", "191"], ["2", "192"], ["3", "193"], ["4", "194"], ["5", "195"]] });
 campo("restrict_jobequip", "checkbox", function () { ClickJob(); StAllCalc(); StCalc(); }, { spuntato: true, disabilitato: true });
 campo("restrict_lvlequip", "checkbox", function () { WeaponSet(); ClickWeaponType(0); WeaponSet2(); }, { disabilitato: true });
