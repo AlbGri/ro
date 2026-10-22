@@ -10,6 +10,15 @@
 
 export const ALTRO = "Altro";
 
+/**
+ * Le scritte nelle due lingue: `tr(italiano, inglese)` di gate.js. Nei test, senza gate.js,
+ * l'italiano.
+ */
+export const tr = globalThis.tr ?? ((it) => it);
+
+/** Come si mostra una classe: Altro e' "Other" in inglese, le altre sono nomi del gioco. */
+export const nomeClasse = (classe) => (classe === ALTRO ? tr("Altro", "Other") : classe);
+
 export const ISTANZE = [
   {
     id: "htf",
@@ -42,9 +51,9 @@ export const ISTANZE = [
     // personaggio "totalmente inutile". Contare tutti gli High Priest, obbligatori compresi,
     // ordina come contare i soli liberi: gli obbligatori sono sempre due per run.
     preferiti: [
-      { ruolo: "sniper", nome: "Sniper", perche: "scalano meglio" },
+      { ruolo: "sniper", nome: "Sniper", perche: tr("scalano meglio", "they scale better") },
       { ruolo: "hp", nome: "High Priest" },
-      { ruolo: "priest", nome: "Priest", perche: "meglio di un personaggio inutile" },
+      { ruolo: "priest", nome: "Priest", perche: tr("meglio di un personaggio inutile", "better than a useless character") },
     ],
   },
   {

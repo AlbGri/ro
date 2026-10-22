@@ -31,7 +31,7 @@
  * giocatori chiedevano 13 secondi.
  */
 
-import { ISTANZE, ruoloDi } from "./dati.js";
+import { ISTANZE, ruoloDi, tr } from "./dati.js";
 
 /**
  * I modi di usare un account: uno per ruolo che conta (posti obbligatori e
@@ -423,13 +423,13 @@ function assegnaPosti(membri, istanza) {
 function cosaManca(giocatori, jolly, istanza, run) {
   const mancano = [];
   const minimo = istanza.posti.reduce((n, p) => n + p.quanti, 0);
-  if (giocatori.length < minimo) mancano.push(`servono almeno ${minimo} giocatori presenti, ce ne sono ${giocatori.length}`);
+  if (giocatori.length < minimo) mancano.push(tr(`servono almeno ${minimo} giocatori presenti, ce ne sono ${giocatori.length}`, `at least ${minimo} players present are needed, there are ${giocatori.length}`));
   const haRuolo = (account, ruolo) => account.personaggi.some((p) => ruoloDi(istanza, p.classe) === ruolo);
   for (const posto of istanza.posti) {
     const servono = posto.quanti * run;
     let ci = jolly.filter((a) => haRuolo(a, posto.ruolo)).length;
     for (const g of giocatori) ci += Math.min(run, g.account.filter((a) => haRuolo(a, posto.ruolo)).length);
-    if (ci < servono) mancano.push(`${posto.nome}: per ${run} run ne servono ${servono}, ce ne sono ${ci}`);
+    if (ci < servono) mancano.push(tr(`${posto.nome}: per ${run} run ne servono ${servono}, ce ne sono ${ci}`, `${posto.nome}: ${run} ${run === 1 ? "run needs" : "runs need"} ${servono}, there are ${ci}`));
   }
   return mancano;
 }

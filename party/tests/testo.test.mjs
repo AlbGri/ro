@@ -50,6 +50,17 @@ describe("elenco della gilda", () => {
     ]);
   });
 
+  it("le parole inglesi valgono come le italiane: Guild Account, and, Other", () => {
+    const letto = leggiElenco("Mary\n1) HP and Sniper\n2) Other\nGuild Account Guild1: Clown\nguild account: HP\n");
+    assert.deepEqual(letto.errori, []);
+    assert.deepEqual(letto.giocatori, [{ nome: "Mary", account: ["HP/Sniper", "Other"] }]);
+    assert.deepEqual(letto.jolly, [
+      { nome: "Guild1", classi: "Clown" },
+      { nome: "Jolly 2", classi: "HP" },
+    ]);
+    assert.deepEqual(leggiClassi("Other/Prof").classi, ["Altro", "Professor"]);
+  });
+
   it("account senza giocatore, classi al posto del nome, giocatore senza account", () => {
     const letto = leggiElenco("1) HP\nHP/Sniper\nVuoto\nPieno\n1) Sniper\n");
     assert.deepEqual(letto.errori, [

@@ -69,10 +69,10 @@ pagina con l'attributo `data-theme`; senza una scelta decide il sistema.
 
 ### Lingua
 
-Il sito e' in italiano; home, schermata del codice, timer, calcolatore e livelli
-hanno anche l'inglese, che si sceglie con il pulsante `English` e vale per tutto
-il sito. La lingua del browser non conta. La guida Nuovo Mondo e il party sono
-per ora solo in italiano.
+Il sito e' in italiano; home, schermata del codice, timer, calcolatore, livelli
+e party hanno anche l'inglese, che si sceglie con il pulsante `English` e vale
+per tutto il sito. La lingua del browser non conta. La guida Nuovo Mondo e' per
+ora solo in italiano.
 
 Le due lingue stanno una accanto all'altra, senza un file di traduzioni:
 

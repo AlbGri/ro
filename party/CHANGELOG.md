@@ -2,6 +2,16 @@
 
 Le versioni della pagina `party/`.
 
+## [1.7] - 2026-10-23
+
+- La pagina e' anche in inglese: con `English` nel menu ⚙ si passa all'inglese, e la scelta vale
+  per tutto il sito. I jolly in inglese si chiamano Guild Account, l'id macchina Hardware ID
+- L'elenco della gilda e le caselle degli account capiscono le parole delle due lingue,
+  qualunque sia quella della pagina: `Jolly` o `Guild Account`, `e` o `and`, `Altro` o `Other`.
+  L'elenco esportato usa le parole della lingua della pagina
+- Sul telefono l'etichetta del jolly accanto alla classe va a capo invece di allargare la
+  pagina, e il menu Istanza si restringe
+
 ## [1.6] - 2026-10-22
 
 - Giocatori e jolly in una tabella compatta, una riga a testa: in ogni casella le classi di un account come le scrivete su Discord, per esempio HP/Devo/Clown/Sniper. Uscendo dalla casella la pagina le riscrive come le ha capite; le parole che non conosce restano in rosso

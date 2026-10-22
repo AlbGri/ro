@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" data-bilingual>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -88,7 +88,7 @@ a.btn { text-decoration: none; }
 .more-menu .btn { text-align: left; border-color: transparent; }
 .more-menu .btn:hover { background: var(--surface-2); }
 .istanza { display: flex; gap: 10px; align-items: center; margin: 0 0 16px; font-weight: 700; }
-.istanza select { width: auto; min-width: 220px; }
+.istanza select { min-width: 0; flex: 0 1 220px; }
 
 main { max-width: 960px; margin: 0 auto; padding: 28px 20px 80px; }
 .hero { padding-bottom: 20px; border-bottom: 1px solid var(--line); }
@@ -158,7 +158,7 @@ input[type="text"], select {
 .stage th, .stage td { padding: 5px 8px; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
 .stage th { font-weight: 400; color: var(--muted); font-size: .82rem; border-top: none; }
 .stage td.libero { color: var(--muted); }
-.tag { font-size: .78rem; color: var(--bradium); border: 1px solid color-mix(in srgb, var(--bradium) 45%, transparent); border-radius: 5px; padding: 0 5px; margin-left: 4px; white-space: nowrap; }
+.tag { font-size: .78rem; color: var(--bradium); border: 1px solid color-mix(in srgb, var(--bradium) 45%, transparent); border-radius: 5px; padding: 0 5px; margin-left: 4px; display: inline-block; max-width: 100%; }
 .note-line { margin: 12px 0 0; padding: 7px 12px; border-left: 3px solid var(--verify); border-radius: 0 6px 6px 0; font-size: .95rem; background: var(--surface); }
 .note-line strong { color: var(--verify); }
 
@@ -191,16 +191,16 @@ input[type="text"], select {
 <body>
 <header class="topbar">
   <div class="topbar-inner">
-    <a class="btn" href="../index.html" title="Torna alla scelta dei servizi">Home</a>
+    <a class="btn" href="../index.html" title="Torna alla scelta dei servizi" data-en-title="Back to the list of services">Home</a>
     <span class="brand">Party</span>
     <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, lingua, tema. Lo chiude gate.js. -->
     <details class="more">
       <summary class="btn gear" title="Menu" aria-label="Menu">&#9881;</summary>
       <div class="more-menu">
-        <button class="btn" type="button" data-azione="esporta">Backup dei dati</button>
-        <button class="btn" type="button" data-azione="importa">Ripristina da backup</button>
-        <button class="btn" type="button" onclick="toggleLang()" data-lang>English</button>
-        <button class="btn" type="button" onclick="toggleTheme()">Cambia tema chiaro/scuro</button>
+        <button class="btn" type="button" data-azione="esporta" data-en="Data backup">Backup dei dati</button>
+        <button class="btn" type="button" data-azione="importa" data-en="Restore from backup">Ripristina da backup</button>
+        <button class="btn" type="button" onclick="toggleLang()" data-lang data-en="Italiano">English</button>
+        <button class="btn" type="button" onclick="toggleTheme()" data-en="Switch light/dark theme">Cambia tema chiaro/scuro</button>
       </div>
     </details>
     <input type="file" id="file" accept=".json,application/json" hidden>
@@ -210,47 +210,47 @@ input[type="text"], select {
 <main>
   <section class="hero">
     <h1>Party</h1>
-    <p class="lead">Scegli l'istanza e inserisci i giocatori con le classi dei loro account, e i jolly della gilda: la pagina trova le run migliori.</p>
-    <label class="istanza"><span>Istanza</span><select id="istanza"></select></label>
+    <p class="lead" data-en="Choose the instance and enter the players with the classes of their accounts, and the Guild Accounts: the page finds the best runs.">Scegli l'istanza e inserisci i giocatori con le classi dei loro account, e i jolly della gilda: la pagina trova le run migliori.</p>
+    <label class="istanza"><span data-en="Instance">Istanza</span><select id="istanza"></select></label>
     <ul>
       <li id="composizione"></li>
-      <li>Ogni giocatore entra al massimo una volta per run (un client alla volta). Ogni account, jolly compresi, entra una volta sola.</li>
-      <li>Un jolly è un account della gilda: lo gioca chi ne ha bisogno, al posto di un suo account.</li>
-      <li>Gli account si scrivono come su Discord, per esempio HP/Devo/Clown: la pagina riconosce i soprannomi e corregge gli errori di battitura. Le classi che non contano per l'istanza entrano solo nei posti liberi, se l'istanza li lascia a qualsiasi classe.</li>
+      <li data-en="Each player enters at most once per run (one client at a time). Each account, Guild Accounts included, enters only once.">Ogni giocatore entra al massimo una volta per run (un client alla volta). Ogni account, jolly compresi, entra una volta sola.</li>
+      <li data-en="A Guild Account is an account of the guild: whoever needs it plays it, instead of one of their own accounts.">Un jolly è un account della gilda: lo gioca chi ne ha bisogno, al posto di un suo account.</li>
+      <li data-en="Accounts are written as on Discord, for example HP/Devo/Clown: the page recognizes nicknames and fixes typos. Classes that do not count for the instance enter only the free slots, if the instance leaves them to any class.">Gli account si scrivono come su Discord, per esempio HP/Devo/Clown: la pagina riconosce i soprannomi e corregge gli errori di battitura. Le classi che non contano per l'istanza entrano solo nei posti liberi, se l'istanza li lascia a qualsiasi classe.</li>
       <li id="ordine"></li>
-      <li>Per inserire tanti giocatori insieme: sotto Giocatori, Incolla l'elenco della gilda, con gli account e le classi come li scrivono su Discord.</li>
-      <li>I dati restano in questo browser: per conservarli o passarli a un altro usa il menu ⚙ in alto a destra, Backup dei dati.</li>
+      <li data-en="To enter many players at once: under Players, Paste the guild list, with the accounts and classes as they write them on Discord.">Per inserire tanti giocatori insieme: sotto Giocatori, Incolla l'elenco della gilda, con gli account e le classi come li scrivono su Discord.</li>
+      <li data-en="The data stays in this browser: to keep it or pass it to another one, use the ⚙ menu at the top right, Data backup.">I dati restano in questo browser: per conservarli o passarli a un altro usa il menu ⚙ in alto a destra, Backup dei dati.</li>
     </ul>
   </section>
 
-  <h2>Run</h2>
-  <p class="hint">Si aggiornano da sole quando cambi qualcosa qui sotto.</p>
+  <h2 data-en="Runs">Run</h2>
+  <p class="hint" data-en="They update by themselves when you change something below.">Si aggiornano da sole quando cambi qualcosa qui sotto.</p>
   <div id="risultato"></div>
-  <div class="toolbar azioni"><button class="btn" type="button" data-azione="esporta-run">Esporta le run</button></div>
+  <div class="toolbar azioni"><button class="btn" type="button" data-azione="esporta-run" data-en="Export the runs">Esporta le run</button></div>
 
-  <h2>Giocatori</h2>
-  <p class="hint">Una riga per giocatore, una casella per account: scrivi le classi dei personaggi di quell'account separate da /, come su Discord (HP/Devo/Clown/Sniper). Uscendo dalla casella la pagina le riscrive come le ha capite; le parole che non conosce restano in rosso. L'account entra una volta sola, con una delle sue classi. Togli la spunta a chi non c'è.</p>
+  <h2 data-en="Players">Giocatori</h2>
+  <p class="hint" data-en="One row per player, one box per account: write the classes of that account's characters separated by /, as on Discord (HP/Devo/Clown/Sniper). When you leave the box the page rewrites them as it understood them; the words it does not know stay red. The account enters only once, with one of its classes. Uncheck whoever is not there.">Una riga per giocatore, una casella per account: scrivi le classi dei personaggi di quell'account separate da /, come su Discord (HP/Devo/Clown/Sniper). Uscendo dalla casella la pagina le riscrive come le ha capite; le parole che non conosce restano in rosso. L'account entra una volta sola, con una delle sue classi. Togli la spunta a chi non c'è.</p>
   <div class="toolbar azioni">
-    <button class="btn" type="button" data-azione="apri-elenco">Incolla l'elenco della gilda</button>
-    <button class="btn" type="button" data-azione="esporta-elenco">Esporta l'elenco</button>
+    <button class="btn" type="button" data-azione="apri-elenco" data-en="Paste the guild list">Incolla l'elenco della gilda</button>
+    <button class="btn" type="button" data-azione="esporta-elenco" data-en="Export the list">Esporta l'elenco</button>
   </div>
   <div class="card incolla" id="incolla" hidden>
-    <p class="hint">Un giocatore per nome, sotto i suoi account, uno per riga con un numero davanti e le classi separate da /, come li scrivono su Discord. Vanno bene i soprannomi (HP, Devo, Prete, Bragi, Bio…) e i messaggi copiati con l'ora. I jolly: <code>Jolly nome: classi</code>. Chi ha lo stesso nome di un giocatore già nella tabella prende gli account dell'elenco, gli altri si aggiungono.</p>
-    <textarea id="elenco" rows="9" spellcheck="false" aria-label="Elenco della gilda" placeholder="Efreeet&#10;1) HP/Devo/Clown/Sniper&#10;2) Prete&#10;3) Bragi&#10;&#10;Jolly Gilda1: Clown"></textarea>
+    <p class="hint" data-en="A player by name, under them their accounts, one per line with a number in front and the classes separated by /, as they write them on Discord. Nicknames are fine (HP, Devo, Prete, Bragi, Bio…) and so are messages copied with the time. The Guild Accounts: &lt;code&gt;Guild Account name: classes&lt;/code&gt;. Whoever has the same name as a player already in the table gets the accounts of the list, the others are added. The words work in both languages: Jolly or Guild Account, e or and, Altro or Other.">Un giocatore per nome, sotto i suoi account, uno per riga con un numero davanti e le classi separate da /, come li scrivono su Discord. Vanno bene i soprannomi (HP, Devo, Prete, Bragi, Bio…) e i messaggi copiati con l'ora. I jolly: <code>Jolly nome: classi</code>. Chi ha lo stesso nome di un giocatore già nella tabella prende gli account dell'elenco, gli altri si aggiungono. Le parole valgono nelle due lingue: Jolly o Guild Account, e o and, Altro o Other.</p>
+    <textarea id="elenco" rows="9" spellcheck="false" aria-label="Elenco della gilda" placeholder="Efreeet&#10;1) HP/Devo/Clown/Sniper&#10;2) Prete&#10;3) Bragi&#10;&#10;Jolly Gilda1: Clown" data-en-aria-label="Guild list" data-en-placeholder="Efreeet&#10;1) HP/Devo/Clown/Sniper&#10;2) Priest&#10;3) Bragi&#10;&#10;Guild Account Guild1: Clown"></textarea>
     <div id="anteprima"></div>
     <div class="toolbar">
-      <button class="btn" type="button" id="aggiungi" data-azione="aggiungi-elenco" disabled>Aggiungi alla pagina</button>
-      <button class="btn" type="button" data-azione="chiudi-elenco">Chiudi</button>
+      <button class="btn" type="button" id="aggiungi" data-azione="aggiungi-elenco" disabled data-en="Add to the page">Aggiungi alla pagina</button>
+      <button class="btn" type="button" data-azione="chiudi-elenco" data-en="Close">Chiudi</button>
     </div>
   </div>
   <div class="tabella" id="giocatori"></div>
-  <div class="toolbar azioni"><button class="btn" type="button" data-azione="nuovo-giocatore">Aggiungi giocatore</button></div>
+  <div class="toolbar azioni"><button class="btn" type="button" data-azione="nuovo-giocatore" data-en="Add player">Aggiungi giocatore</button></div>
   <div id="dubbi"></div>
 
-  <h2>Jolly della gilda</h2>
-  <p class="hint">Un jolly è un account della gilda: nella casella le classi dei suoi personaggi, separate da /. Togli la spunta ai jolly già usati o non disponibili.</p>
+  <h2 data-en="Guild Accounts">Jolly della gilda</h2>
+  <p class="hint" data-en="A Guild Account is an account of the guild: in the box, the classes of its characters, separated by /. Uncheck the Guild Accounts already used or not available.">Un jolly è un account della gilda: nella casella le classi dei suoi personaggi, separate da /. Togli la spunta ai jolly già usati o non disponibili.</p>
   <div class="tabella" id="jolly"></div>
-  <div class="toolbar"><button class="btn" type="button" data-azione="nuovo-jolly">Aggiungi jolly</button></div>
+  <div class="toolbar"><button class="btn" type="button" data-azione="nuovo-jolly" data-en="Add Guild Account">Aggiungi jolly</button></div>
 </main>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>

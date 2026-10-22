@@ -12,10 +12,12 @@
  * trattino e' un suo account, con le classi separate da / , + o "e". Va bene anche
  * il messaggio copiato da Discord, "[19:40]Efreeet: 1) HP/...": l'ora si toglie e
  * quello che segue il nome e' il primo account. "Jolly nome: classi" e' un jolly.
+ * Le parole valgono nelle due lingue, qualunque sia quella della pagina (Alberto,
+ * 22/10/2026): "Guild Account nome: classi", "HP and Sniper", "Other".
  * Solo le classi, niente nomi dei personaggi: "basta la classe" (Alberto).
  */
 
-import { ALTRO, CLASSI } from "./dati.js";
+import { ALTRO, CLASSI, tr } from "./dati.js";
 
 // I soprannomi che si usano in gilda (Alberto, 22/10/2026: "non e' tanto standard").
 // SP Song e Bragi sono le canzoni di Dancer e Bard. Gli altri li impara la pagina, quando chi
@@ -55,6 +57,7 @@ function paroleNote(imparati) {
     for (const parte of classe.split("/")) note[chiave(parte)] = classe;
   }
   note[chiave(ALTRO)] = ALTRO;
+  note.other = ALTRO;
   return { ...note, ...SOPRANNOMI, ...imparati };
 }
 
@@ -115,8 +118,10 @@ export const breve = (classe) => BREVE[classe] ?? classe;
 
 const ORA = /^\[\d{1,2}:\d{2}(?::\d{2})?\]\s*/;
 const ACCOUNT = /^(?:\d+\s*[).:-]|[-*•])\s*(.*)$/;
-const JOLLY = /^jolly\b([^:]*):(.*)$/i;
-const SEPARATORI = /\s*(?:[/,+;&]|\s+e\s+)\s*/i;
+const JOLLY = /^(?:jolly|guild account)\b([^:]*):(.*)$/i;
+const SEPARATORI = /\s*(?:[/,+;&]|\s+(?:e|and)\s+)\s*/i;
+// "Jolly" e "Guild Account": la parola che apre la riga di un jolly, e il suo nome predefinito
+const JOLLY_PAROLA = tr("Jolly", "Guild Account");
 
 const parole = (testo) => testo.split(SEPARATORI).filter((p) => chiave(p));
 
@@ -176,12 +181,12 @@ export function leggiElenco(testo, imparati = {}) {
 
     const jolly = testoRiga.match(JOLLY);
     if (jolly) {
-      esito.jolly.push({ nome: jolly[1].trim() || `Jolly ${esito.jolly.length + 1}`, classi: pulisci(jolly[2], imparati) });
+      esito.jolly.push({ nome: jolly[1].trim() || `${JOLLY_PAROLA} ${esito.jolly.length + 1}`, classi: pulisci(jolly[2], imparati) });
       return;
     }
     const account = testoRiga.match(ACCOUNT);
     if (account) {
-      if (!giocatore) esito.errori.push(`riga ${riga}: un account prima del nome del giocatore`);
+      if (!giocatore) esito.errori.push(tr(`riga ${riga}: un account prima del nome del giocatore`, `line ${riga}: an account before the player's name`));
       else aggiungiAccount(account[1]);
       return;
     }
@@ -191,7 +196,10 @@ export function leggiElenco(testo, imparati = {}) {
     // "HP/Sniper" senza numero davanti sembrerebbe un giocatore che si chiama cosi'.
     const scritte = parole(nome);
     if (scritte.length > 0 && scritte.every((p) => riconosci(p, imparati)?.corretta === false)) {
-      esito.errori.push(`riga ${riga}: "${nome}" sembra un account, non un giocatore: scrivi un numero davanti, come 1) ${nome}`);
+      esito.errori.push(tr(
+        `riga ${riga}: "${nome}" sembra un account, non un giocatore: scrivi un numero davanti, come 1) ${nome}`,
+        `line ${riga}: "${nome}" looks like an account, not a player: write a number in front, like 1) ${nome}`,
+      ));
       return;
     }
     giocatore = { nome, account: [] };
@@ -199,7 +207,7 @@ export function leggiElenco(testo, imparati = {}) {
     if (resto) aggiungiAccount(resto.match(ACCOUNT)?.[1] ?? resto);
   });
 
-  for (const g of esito.giocatori) if (g.account.length === 0) esito.errori.push(`${g.nome} non ha account`);
+  for (const g of esito.giocatori) if (g.account.length === 0) esito.errori.push(tr(`${g.nome} non ha account`, `${g.nome} has no accounts`));
   return esito;
 }
 
@@ -208,11 +216,15 @@ export function scriviElenco(stato) {
   const blocchi = [];
   stato.giocatori.forEach((g, i) => {
     const account = g.account.filter((a) => a.trim());
-    if (account.length > 0) blocchi.push([g.nome || `Giocatore ${i + 1}`, ...account.map((a, k) => `${k + 1}) ${a}`)].join("\n"));
+    if (account.length > 0) blocchi.push([g.nome || `${tr("Giocatore", "Player")} ${i + 1}`, ...account.map((a, k) => `${k + 1}) ${a}`)].join("\n"));
   });
   const jolly = stato.jolly
     .filter((j) => j.classi.trim())
-    .map((j, i) => `Jolly ${j.nome || `Jolly ${i + 1}`}: ${j.classi}`);
+    .map((j, i) => `${JOLLY_PAROLA} ${j.nome || `${JOLLY_PAROLA} ${i + 1}`}: ${j.classi}`);
   if (jolly.length > 0) blocchi.push(jolly.join("\n"));
-  return `# Elenco della gilda per la pagina Party: si incolla in "Incolla l'elenco della gilda".\n\n${blocchi.join("\n\n")}\n`;
+  const testa = tr(
+    "# Elenco della gilda per la pagina Party: si incolla in \"Incolla l'elenco della gilda\".",
+    "# Guild list for the Party page: paste it in \"Paste the guild list\".",
+  );
+  return `${testa}\n\n${blocchi.join("\n\n")}\n`;
 }
