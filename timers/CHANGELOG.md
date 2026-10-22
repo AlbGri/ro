@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.2] - 2026-10-22
+
+L'applicazione installata sul telefono o sul computer si chiama `RO Timers`, in entrambe le lingue.
+L'applicazione desktop pubblicata non cambia.
+
+- Il nome compare a chi installa da ora; chi l'ha gia' installata lo vede quando il browser rilegge il manifest, sul computer dopo una conferma
+
 ## [1.5.1] - 2026-10-18
 
 Torna l'ingranaggio, che ora apre il menu uguale in tutte le pagine del sito.
