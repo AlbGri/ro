@@ -1608,11 +1608,12 @@ function Buf9SW(e) {
     var aggiorna = function () {
       A9(1);
     };
-    // "+ [casella] etichetta": le caselle non hanno gestore (nell'originale era onkeyup)
+    // "+ [casella] etichetta"; ogni casella aggiorna il segno "attivo" (nell'originale onkeyup)
     var piu = function (campo, etichetta, segno) {
       return {
         campo: campo,
         tipo: "testo",
+        gestore: aggiorna,
         etichetta: etichetta,
         segno: segno || "+",
         valore: "0",
@@ -1676,6 +1677,7 @@ function Buf9SW(e) {
           {
             campo: "ARG_RC" + k,
             tipo: "testo",
+            gestore: aggiorna,
             valore: "0",
           },
           "% vs",
@@ -1705,6 +1707,7 @@ function Buf9SW(e) {
           {
             campo: "ARG_RC" + k,
             tipo: "testo",
+            gestore: aggiorna,
             valore: "0",
           },
           "% ",
@@ -1891,12 +1894,13 @@ function Buf10SW(e) {
     var aggiorna = function () {
       A10(1);
     };
-    // "+ [casella] etichetta": le caselle non hanno gestore (nell'originale era onkeyup); le voci
-    // barrate sono disabilitate
+    // "+ [casella] etichetta": ogni casella aggiorna il segno "attivo" (nell'originale onkeyup);
+    // le voci barrate sono disabilitate
     var piu = function (campo, etichetta, disabilitato) {
       var v = {
         campo: campo,
         tipo: "testo",
+        gestore: aggiorna,
         etichetta: etichetta,
         segno: "+",
         valore: "0",
@@ -1911,6 +1915,7 @@ function Buf10SW(e) {
           {
             campo: "BRG_RC" + k,
             tipo: "testo",
+            gestore: aggiorna,
             valore: "0",
           },
           "vs",
