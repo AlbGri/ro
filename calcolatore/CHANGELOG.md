@@ -2,6 +2,21 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.8] - 2026-10-22
+
+Oggetti dagli screen del gioco:
+
+- Nuovi: Boitata Hat (MDEF +5; resistenza ai Brute +5% a +5 e altri +5% a +7), Old Minstrel
+  Song's Hat (per Clown e Gypsy: tutte le statistiche +1, Arrow Vulcan +20%, danno a distanza
+  +1% ogni 2 raffinamenti), Handkerchief in Mouth (resistenza ai Demi-Human +2% e al vento +5%),
+  Yin Yang Earrings (danno di Chain Combo, Triple Attack e Combo Finish), con il bonus quando si
+  indossano insieme all'Hot-Blooded Headband, e la Kraken Card per il mantello (FLEE +10,
+  resistenza a tutti gli elementi +25%)
+- Necktie: tornano VIT +1 e HIT -5, e la combinazione con il Blush (ASPD +3%) funziona: il Blush
+  mancava dagli elenchi
+- Pecopeco Wing Ears: c'era due volte (una come "Peco Ears"), ora una sola, con il bonus insieme
+  al Darkness Helm (AGI +1, FLEE +3). Le build salvate con l'altra si aprono con questa
+
 ## [1.7] - 2026-10-22
 
 - Altre informazioni: le voci con dei campi (bonus al danno, esperienza, Potion Pitcher,

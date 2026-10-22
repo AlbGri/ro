@@ -6,6 +6,8 @@
 // id degli oggetti aggiunti qui che il resto del motore deve riconoscere
 var OLD_MITRA_UARO = 0;
 var GIGANTIC_GOAT_UARO = [];
+var BOITATA_HAT_UARO = 0;
+var OLD_MINSTREL_HAT_UARO = 0;
 
 // Chiamata da StAllCalc (statistiche.js) dopo la somma dei bonus dell'equipaggiamento
 function applyUaroHeadgearBonuses() {
@@ -22,6 +24,12 @@ function applyUaroHeadgearBonuses() {
   // Gigantic Majestic Goat (ATK e DEF): ATK + livello job * 2 / 7 (rAthena, bBaseAtk)
   if (GIGANTIC_GOAT_UARO.some((id) => id == n_A_Equip[2]))
     bonusValues[BONUSID.ATK] += Math.floor((n_A_JobLV * 2) / 7);
+  // Boitata Hat: resistenza ai Brute +5% a +5 e altri +5% a +7 (screen del gioco)
+  if (BOITATA_HAT_UARO && n_A_Equip[2] == BOITATA_HAT_UARO)
+    bonusValues[BONUSID.RESIST_BRUTE_PERCENT] += (n_A_HEAD_REFINE >= 5 ? 5 : 0) + (n_A_HEAD_REFINE >= 7 ? 5 : 0);
+  // Old Minstrel Song's Hat: danno fisico a distanza +1% ogni 2 raffinamenti (screen del gioco)
+  if (OLD_MINSTREL_HAT_UARO && n_A_Equip[2] == OLD_MINSTREL_HAT_UARO)
+    bonusValues[BONUSID.RANGED_ATK_PERCENT] += Math.floor(n_A_HEAD_REFINE / 2);
 }
 
 (function () {
@@ -107,11 +115,9 @@ function applyUaroHeadgearBonuses() {
     equipType: 52, attackOrDefense: 0, slots: 0, weight: 10, requiredLevel: 0, name: "Antique Smoking Pipe",
     bonuses: [{ id: BONUSID.RESIST_DEMI_HUMAN_PERCENT, value: 2 }],
   });
-  nuovo({
-    equipType: 51, attackOrDefense: 1, slots: 0, weight: 10, requiredLevel: 70, name: "Pecopeco Wing Ears",
-    description: "The Darkness Helm combo is not simulated.",
-    bonuses: [{ id: BONUSID.AGI, value: 1 }, { id: BONUSID.MDEF, value: 2 }],
-  });
+  // posto vuoto: nella 1.6 c'era Pecopeco Wing Ears, doppione di Peco Ears (805), che ora ha il nome
+  // del gioco e la combinazione con il Darkness Helm
+  nuovo({ equipType: -1, attackOrDefense: 0, slots: 0, weight: 0, requiredLevel: 0, name: "" });
   // Old Mitra: i bonus per raffinamento li applica la modifica al codice (Item Changes)
   OLD_MITRA_UARO = nuovo({
     equipType: 50, attackOrDefense: 0, slots: 1, weight: 10, requiredLevel: 70, name: "Old Mitra (UARO)",
@@ -145,4 +151,55 @@ function applyUaroHeadgearBonuses() {
     description: "1% chance to absorb 3% of the physical damage dealt as HP (not simulated).",
     bonuses: [{ id: BONUSID.HP_RECOVERY_PERCENT, value: -100 }, { id: BONUSID.SP_RECOVERY_PERCENT, value: -100 }],
   });
+
+  // Dagli screen del gioco di Alberto (22/10/2026). Il danno di una skill e' il bonus 5000 + skill
+  // (nomi iRO: Triple Attack = Raging Trifecta Blow 187, Chain Combo = Raging Quadruple Blow 188,
+  // Combo Finish = Raging Thrust 189, Tiger Fist = Glacier Fist 289, Chain Crush Combo 290)
+  correggi(805, { name: "Pecopeco Wing Ears" }); // era "Peco Ears"
+  // Necktie: VIT +1 e HIT -5 (tolti nella fase 3 del refactoring perche' il motore non li leggeva)
+  correggi(1182, {
+    name: "Necktie",
+    bonuses: itemData[1182].bonuses.concat([{ id: BONUSID.VIT, value: 1 }, { id: BONUSID.HIT, value: -5 }]),
+  });
+  // Blush, posto vuoto in Thrice: serve alla combinazione con la Necktie (ASPD +3%, lancio +3%).
+  // Dati da rAthena (copricapo medio, peso 10, nessun bonus)
+  correggi(247, { equipType: 51, attackOrDefense: 0, slots: 0, weight: 10, requiredLevel: 0, name: "Blush" });
+  BOITATA_HAT_UARO = nuovo({
+    equipType: 50, attackOrDefense: 5, slots: 1, weight: 30, requiredLevel: 20, name: "Boitata Hat",
+    description: "When killing a Brute monster with physical attacks: SP +5.<br>When killing a monster with physical attacks: HP +100.<br><b>[Refine Rate 5~10]</b><br>Damage from Brute race -5%.<br><b>[Refine Rate 7~10]</b><br>Damage from Brute race -5%.",
+    bonuses: [{ id: BONUSID.MDEF, value: 5 }],
+  });
+  // jobMask 150: Clown e Gypsy
+  OLD_MINSTREL_HAT_UARO = nuovo({
+    equipType: 50, attackOrDefense: 3, slots: 1, weight: 10, requiredLevel: 90, name: "Old Minstrel Song's Hat", jobMask: 150,
+    description: "<b>For each 2 refine levels:</b><br>Ranged physical damage +1%.",
+    bonuses: [{ id: BONUSID.ALL_STATS, value: 1 }, { id: 5292, value: 20 }],
+  });
+  nuovo({
+    equipType: 52, attackOrDefense: 1, slots: 0, weight: 10, requiredLevel: 10, name: "Handkerchief in Mouth",
+    bonuses: [{ id: BONUSID.RESIST_DEMI_HUMAN_PERCENT, value: 2 }, { id: BONUSID.RESIST_WIND_PERCENT, value: 5 }],
+  });
+  var yinYang = nuovo({
+    equipType: 51, attackOrDefense: 0, slots: 0, weight: 10, requiredLevel: 70, name: "Yin Yang Earrings",
+    bonuses: [{ id: 5188, value: 10 }, { id: 5187, value: 5 }, { id: 5189, value: 5 }],
+  });
+  // combinazione con l'Hot-Blooded Headband (357), come quelle di w_SE in item.js
+  var yinYangCombo = nuovo({
+    equipType: 100, attackOrDefense: 0, slots: 0, weight: 0, requiredLevel: 0, name: "Yin Yang Earrings & Hot-Blooded Headband",
+    bonuses: [{ id: 5187, value: 5 }, { id: 5189, value: 5 }, { id: 5289, value: 3 }, { id: 5290, value: 3 }],
+  });
+  w_SE.push([yinYangCombo, 357, yinYang, "NULL"]);
+  SE_MAXnum = w_SE.length - 1;
+  itemData[357].bonuses.push({ id: BONUSID.GEAR_SET_ID, value: SE_MAXnum });
+  itemData[yinYang].bonuses.push({ id: BONUSID.GEAR_SET_ID, value: SE_MAXnum });
+
+  // Kraken Card (mantello): FLEE +10, resistenza a tutti gli elementi +25%, Hiding livello 1 (220,
+  // 22 come la Smokie Card)
+  var kraken = m_Card.length;
+  m_Card.push([kraken, 5, "Kraken", 0, BONUSID.FLEE, 10, 60, 25, 61, 25, 62, 25, 63, 25, 64, 25, 65, 25, 66, 25, 67, 25, 68, 25, 69, 25, 220, 22, 0]);
+  var mantelli = m_CardSort[5];
+  var dove = mantelli.findIndex(function (id, k) {
+    return k > 0 && (id == "NULL" || m_Card[id][2].localeCompare("Kraken") > 0);
+  });
+  mantelli.splice(dove, 0, kraken);
 })();

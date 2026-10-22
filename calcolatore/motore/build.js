@@ -344,7 +344,9 @@ function leggiBuild(build) {
   }
   var pos = 45;
   for (var [campo, larghezza] of EQUIP_BUILD) {
-    c[campo].value = x(pos, larghezza);
+    var valore = x(pos, larghezza);
+    // Pecopeco Wing Ears: la 1.6 l'aveva al posto 3003, doppione di 805 (vedi uaro.js)
+    c[campo].value = campo == "A_head2" && valore == 3003 ? 805 : valore;
     pos += larghezza;
   }
   // un oggetto che la classe non indossa (l'originale lo lasciava negli elenchi, vedi
