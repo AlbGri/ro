@@ -195,6 +195,37 @@ function sostituisci(vecchia, nuova) {
     });
 }
 
+// Le opzioni di un campo dalla posizione da (0 se manca) in poi, da una lista di [valore, testo],
+// come le scrivevano options[da + k] = ... una per una: oltre la fine si aggiungono opzioni
+// vuote, e se l'elenco era piu' lungo la coda resta
+function opzioni(campo, lista, da) {
+  da = da || 0;
+  lista.forEach(function (o, k) {
+    campo._imposta(da + k, new Opzione(o[1], o[0]));
+  });
+}
+// un gruppo di opzioni (optgroup) in fondo al campo, da una lista di [valore, testo]
+function gruppo(campo, etichetta, lista) {
+  var g = campo.appendChild(new Gruppo());
+  g.label = etichetta;
+  lista.forEach(function (o) {
+    g.appendChild(new Opzione(o[1], o[0]));
+  });
+  return g;
+}
+// [[da, da], ..., [a, a]]: i livelli 0..10 e simili
+function numeri(da, a) {
+  return serie(da, a, function (i) {
+    return [i, i];
+  });
+}
+// [voce(da), ..., voce(a)]
+function serie(da, a, voce) {
+  var l = [];
+  for (var i = da; i <= a; i++) l.push(voce(i));
+  return l;
+}
+
 // Un campo nuovo: imp ha opzioni ([valore, testo, scelta], o { gruppo, opzioni } per un
 // optgroup), spuntato, disabilitato, nascosto, valore (non per le tendine). Un campo con lo
 // stesso nome lo sostituisce

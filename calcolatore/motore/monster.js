@@ -19583,8 +19583,12 @@ var v_Place = [
   "Endless Cellar (UARO)",
   "Horror Toy Factory [HTF] (UARO)",
 ];
-for (var i = 0; i < v_Place.length; i++)
-    c.ENEMY_SORT2.options[i] = new Opzione(v_Place[i], String(i));
+opzioni(
+  c.ENEMY_SORT2,
+  v_Place.map(function (luogo, i) {
+    return [String(i), luogo];
+  }),
+);
 m_MonsterMap = [
   [0],
   [265, 298, 400, 401, 404, 405, 406, 407, 408, 409, 410, 411, "N"],

@@ -426,9 +426,11 @@ function leggiBuild(build) {
   if (doppio && bolt.includes(n_A_ActiveSkill)) {
     var r = 1 * doppio + 3;
     campoSkill("AASkill", "SkillSubNum", "Double Bolt chance: ");
-    c.SkillSubNum.options[0] = new Opzione("No chance (0%)", 0);
-    c.SkillSubNum.options[1] = new Opzione("Average chance (" + 10 * r + "%)", r);
-    c.SkillSubNum.options[2] = new Opzione("Max chance (100%)", 10);
+    opzioni(c.SkillSubNum, [
+      [0, "No chance (0%)"],
+      [r, "Average chance (" + 10 * r + "%)"],
+      [10, "Max chance (100%)"],
+    ]);
     c.SkillSubNum.value = valoreSkill;
   }
   var mostro = normalizeSavedMonsterId(x(p + 13, 2));
