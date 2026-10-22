@@ -2,6 +2,13 @@
 
 Le versioni della pagina `livelli/`.
 
+## [1.14] - 2026-10-23
+
+- La pagina e' anche in inglese: con `English` nel menu ⚙ si passa all'inglese, e la scelta vale
+  per tutto il sito. I termini sono quelli del gioco e del wiki di uaRO (turn-in, hunting quest,
+  Transcendent, Battle Manual (50%) e Battle Manual (100%))
+- In inglese i numeri si scrivono all'inglese: 1,163,200 e 2.25
+
 ## [1.13] - 2026-10-21
 
 - I testi occupano tutta la larghezza della pagina e vanno a capo solo dove finisce lo spazio, invece che a metà pagina

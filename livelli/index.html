@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" data-bilingual>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>uaRO – Livelli fino all'84</title>
+<title data-en="uaRO – Levels up to 84">uaRO – Livelli fino all'84</title>
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F5F7F1">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1B2420">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -205,16 +205,16 @@ details.steps li.kill { color: var(--muted); font-style: italic; }
 <body>
 <header class="topbar">
   <div class="topbar-inner">
-    <a class="btn" href="../index.html" title="Torna alla scelta dei servizi">Home</a>
-    <span class="brand">Livelli</span>
+    <a class="btn" href="../index.html" title="Torna alla scelta dei servizi" data-en-title="Back to the list of services">Home</a>
+    <span class="brand" data-en="Levels">Livelli</span>
     <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, lingua, tema. Lo chiude gate.js. -->
     <details class="more">
       <summary class="btn gear" title="Menu" aria-label="Menu">&#9881;</summary>
       <div class="more-menu">
-        <button class="btn" type="button" id="btnBackup">Backup dei dati</button>
-        <button class="btn" type="button" id="btnRipristina">Ripristina da backup</button>
-        <button class="btn" type="button" onclick="toggleLang()" data-lang>English</button>
-        <button class="btn" type="button" onclick="toggleTheme()">Cambia tema chiaro/scuro</button>
+        <button class="btn" type="button" id="btnBackup" data-en="Data backup">Backup dei dati</button>
+        <button class="btn" type="button" id="btnRipristina" data-en="Restore from backup">Ripristina da backup</button>
+        <button class="btn" type="button" onclick="toggleLang()" data-lang data-en="Italiano">English</button>
+        <button class="btn" type="button" onclick="toggleTheme()" data-en="Switch light/dark theme">Cambia tema chiaro/scuro</button>
       </div>
     </details>
     <input type="file" id="file" accept=".json,application/json" hidden>
@@ -223,90 +223,90 @@ details.steps li.kill { color: var(--muted); font-style: italic; }
 
 <main>
   <section class="hero">
-    <h1>Livelli fino all'84</h1>
-    <p class="lead">Il piano più economico per salire di livello con le quest ripetibili di uaRO, da non rinato o da rinato. Inserisci il personaggio, gli oggetti che hai e i prezzi del mercato: il piano si aggiorna da solo.</p>
+    <h1 data-en="Levels up to 84">Livelli fino all'84</h1>
+    <p class="lead" data-en="The cheapest plan to level up with the repeatable quests of uaRO, as non-Transcendent or as Transcendent. Enter the character, the items you have and the market prices: the plan updates by itself.">Il piano più economico per salire di livello con le quest ripetibili di uaRO, da non rinato o da rinato. Inserisci il personaggio, gli oggetti che hai e i prezzi del mercato: il piano si aggiorna da solo.</p>
     <ul>
-      <li>Ogni consegna fa salire al massimo un livello: l'EXP in più si ferma poco prima del livello successivo e il resto va perso. Il piano ne tiene conto.</li>
-      <li>Il bonus del weekend (+50%) moltiplica quello del manuale: weekend e manuale al 50% fanno ×2,25. Di due manuali conta il più forte.</li>
-      <li>Il job non cambia il piano: si segue accanto, con il momento del cambio di classe e gli avvisi sulla job EXP sprecata.</li>
-      <li>Senza scrivere niente il piano ti dice quanti oggetti comprare. Se ne hai già, scrivili in «Ne ho» e li compri in meno; se conosci il prezzo del mercato, scrivilo e il piano lo usa.</li>
-      <li>Clicca un /navi o un @ws: viene copiato, e lo incolli nella chat del gioco.</li>
+      <li data-en="Each turn-in raises at most one level: the extra EXP stops just before the next level and the rest is lost. The plan takes this into account.">Ogni consegna fa salire al massimo un livello: l'EXP in più si ferma poco prima del livello successivo e il resto va perso. Il piano ne tiene conto.</li>
+      <li data-en="The weekend bonus (+50%) multiplies the Battle Manual bonus: weekend and Battle Manual (50%) make ×2.25. Of two Battle Manuals, the stronger one counts.">Il bonus del weekend (+50%) moltiplica quello del manuale: weekend e manuale al 50% fanno ×2,25. Di due manuali conta il più forte.</li>
+      <li data-en="The job does not change the plan: it is followed alongside, with the moment of the job change and the warnings about wasted Job EXP.">Il job non cambia il piano: si segue accanto, con il momento del cambio di classe e gli avvisi sulla job EXP sprecata.</li>
+      <li data-en="Without typing anything, the plan tells you how many items to buy. If you already have some, enter them in “I have” and you buy fewer; if you know the market price, enter it and the plan uses it.">Senza scrivere niente il piano ti dice quanti oggetti comprare. Se ne hai già, scrivili in «Ne ho» e li compri in meno; se conosci il prezzo del mercato, scrivilo e il piano lo usa.</li>
+      <li data-en="Click a /navi or an @ws: it is copied, and you paste it in the game chat.">Clicca un /navi o un @ws: viene copiato, e lo incolli nella chat del gioco.</li>
     </ul>
   </section>
 
-  <h2>Personaggio</h2>
+  <h2 data-en="Character">Personaggio</h2>
   <form id="form" autocomplete="off">
     <div class="form-grid">
       <fieldset>
-        <legend>Livello</legend>
-        <div class="radios" role="radiogroup" aria-label="Classe">
-          <label class="check"><input type="radio" name="rinato" value="no" checked> Non rinato</label>
-          <label class="check"><input type="radio" name="rinato" value="si"> Rinato</label>
+        <legend data-en="Level">Livello</legend>
+        <div class="radios" role="radiogroup" aria-label="Classe" data-en-aria-label="Class">
+          <label class="check"><input type="radio" name="rinato" value="no" checked> <span data-en="Non-Transcendent">Non rinato</span></label>
+          <label class="check"><input type="radio" name="rinato" value="si"> <span data-en="Transcendent">Rinato</span></label>
         </div>
-        <p class="hint">Con un Bow Mercenary e l'accesso al Moscovia Dungeon si arriva al 40 cacciando i Les, senza spendere zeny: poi scrivi 40 come livello attuale.</p>
+        <p class="hint" data-en="With a Bow Mercenary and access to the Moscovia Dungeon you reach 40 by hunting Les, without spending zeny: then enter 40 as current level.">Con un Bow Mercenary e l'accesso al Moscovia Dungeon si arriva al 40 cacciando i Les, senza spendere zeny: poi scrivi 40 come livello attuale.</p>
         <div class="row">
-          <label class="field"><span>Livello attuale</span><input type="number" name="livello" min="1" max="98" value="1"></label>
-          <label class="field"><span>Percentuale</span><input type="number" name="percentuale" min="0" max="99.9" step="0.1" value="0"></label>
-          <label class="field"><span>Obiettivo</span><input type="number" name="obiettivo" min="2" max="99" value="84"></label>
+          <label class="field"><span data-en="Current level">Livello attuale</span><input type="number" name="livello" min="1" max="98" value="1"></label>
+          <label class="field"><span data-en="Percentage">Percentuale</span><input type="number" name="percentuale" min="0" max="99.9" step="0.1" value="0"></label>
+          <label class="field"><span data-en="Target">Obiettivo</span><input type="number" name="obiettivo" min="2" max="99" value="84"></label>
         </div>
         <div class="row">
-          <label class="field wide"><span>Classe</span>
+          <label class="field wide"><span data-en="Class">Classe</span>
             <select name="classe">
-              <option value="1">Prima classe</option>
-              <option value="2">Seconda classe</option>
+              <option value="1" data-en="First class">Prima classe</option>
+              <option value="2" data-en="Second class">Seconda classe</option>
             </select>
           </label>
-          <label class="field"><span>Livello job</span><input type="number" name="job" min="1" max="70" value="1"></label>
-          <label class="field" id="campoCambio"><span>Cambio classe al job</span><input type="number" name="cambioJob" min="40" max="50" value="50"></label>
+          <label class="field"><span data-en="Job Level">Livello job</span><input type="number" name="job" min="1" max="70" value="1"></label>
+          <label class="field" id="campoCambio"><span data-en="Job change at Job Level">Cambio classe al job</span><input type="number" name="cambioJob" min="40" max="50" value="50"></label>
         </div>
-        <p class="hint">Classe e livello job di adesso: servono a dirti quando cambiare classe e dove si spreca job EXP, non cambiano il piano. In prima classe, «Cambio classe al job» è il job a cui farai il cambio, di solito 50.</p>
+        <p class="hint" data-en="Your class and Job Level now: they tell you when to do the job change and where Job EXP is wasted, they do not change the plan. In first class, “Job change at Job Level” is the Job Level at which you will change, usually 50.">Classe e livello job di adesso: servono a dirti quando cambiare classe e dove si spreca job EXP, non cambiano il piano. In prima classe, «Cambio classe al job» è il job a cui farai il cambio, di solito 50.</p>
       </fieldset>
 
       <fieldset>
-        <legend>Opzioni</legend>
+        <legend data-en="Options">Opzioni</legend>
         <label class="check"><input type="checkbox" name="weekend"> <span>Weekend (+50%)</span></label>
-        <label class="field"><span>Manuale</span>
+        <label class="field"><span data-en="Battle Manual">Manuale</span>
           <select name="manuale">
-            <option value="0">Nessuno</option>
-            <option value="50">Manuale 50%</option>
-            <option value="100">Manuale 100%</option>
+            <option value="0" data-en="None">Nessuno</option>
+            <option value="50" data-en="Battle Manual (50%)">Manuale 50%</option>
+            <option value="100" data-en="Battle Manual (100%)">Manuale 100%</option>
           </select>
         </label>
         <p class="hint" id="moltiplicatore"></p>
         <label class="check"><input type="checkbox" name="rabbocchi">
-          <span>Completo il livello uccidendo mostri quando manca meno del <input class="inline" type="number" name="soglia" min="1" max="50" value="10">%</span>
+          <span><span data-en="I finish the level by killing monsters when less than">Completo il livello uccidendo mostri quando manca meno del</span> <input class="inline" type="number" name="soglia" min="1" max="50" value="10"><span data-en="% is left">%</span></span>
         </label>
-        <label class="field"><span>Risparmio minimo per cambiare quest (zeny)</span><input type="number" name="cambio" min="0" step="1000" value="30000"></label>
-        <p class="hint">Ogni cambio di quest è un viaggio verso un altro NPC. Il piano cambia quest solo se così risparmi almeno questa cifra, per non farti girare fra NPC diversi per pochi zeny. È solo un criterio di scelta: non è una spesa e non entra nel totale. Con 0 il piano spende il meno possibile, anche con molti cambi.</p>
+        <label class="field"><span data-en="Minimum saving to change quest (zeny)">Risparmio minimo per cambiare quest (zeny)</span><input type="number" name="cambio" min="0" step="1000" value="30000"></label>
+        <p class="hint" data-en="Each quest change is a trip to another NPC. The plan changes quest only if this saves you at least this amount, so that you do not go back and forth between NPCs for a few zeny. It is only a choice criterion: it is not an expense and it is not in the total. With 0 the plan spends as little as possible, even with many changes.">Ogni cambio di quest è un viaggio verso un altro NPC. Il piano cambia quest solo se così risparmi almeno questa cifra, per non farti girare fra NPC diversi per pochi zeny. È solo un criterio di scelta: non è una spesa e non entra nel totale. Con 0 il piano spende il meno possibile, anche con molti cambi.</p>
       </fieldset>
 
       <fieldset>
-        <legend>Cacce pronte</legend>
-        <p class="hint">Quest di caccia già completate. Si prendono solo entro i loro livelli, ma si consegnano a qualsiasi livello: il trucco è completarle prima di rinascere e consegnarle da rinato quando il piano lo dice, anche sotto il livello minimo.</p>
+        <legend data-en="Hunting quests ready">Cacce pronte</legend>
+        <p class="hint" data-en="Hunting quests already completed. They can be taken only within their Level Range, but they can be turned in at any level: the trick is to complete them before rebirth and turn them in as Transcendent when the plan says so, even below the minimum level.">Quest di caccia già completate. Si prendono solo entro i loro livelli, ma si consegnano a qualsiasi livello: il trucco è completarle prima di rinascere e consegnarle da rinato quando il piano lo dice, anche sotto il livello minimo.</p>
         <div id="cacce"></div>
       </fieldset>
     </div>
 
     <fieldset class="manuali">
-      <legend>Manuale: 50% o 100%?</legend>
+      <legend data-en="Battle Manual: 50% or 100%?">Manuale: 50% o 100%?</legend>
       <div class="row">
-        <label class="field"><span>Prezzo di un Poring Coin (zeny)</span><input type="number" name="poringCoin" min="0" step="500" value="13000"></label>
-        <label class="field"><span>Manuali al 50% che hai</span><input type="number" name="manuali50" min="0" value="3"></label>
-        <label class="field"><span>Mezz'ore di consegne</span><input type="number" name="mezzore" min="1" value="1"></label>
+        <label class="field"><span data-en="Price of a Poring Coin (zeny)">Prezzo di un Poring Coin (zeny)</span><input type="number" name="poringCoin" min="0" step="500" value="13000"></label>
+        <label class="field"><span data-en="Battle Manuals (50%) you have">Manuali al 50% che hai</span><input type="number" name="manuali50" min="0" value="3"></label>
+        <label class="field"><span data-en="Half hours of turn-ins">Mezz'ore di consegne</span><input type="number" name="mezzore" min="1" value="1"></label>
       </div>
-      <p class="hint">Un manuale dura 30 minuti: quello al 50% si riceve gratis (3 all'inizio), quello al 100% costa 40 Poring Coin. Conta quante mezz'ore ti servono per tutte le consegne, viaggi compresi: tanti manuali ti servono. Il piano qui sotto usa il manuale scelto nelle Opzioni.</p>
+      <p class="hint" data-en="A Battle Manual lasts 30 minutes: the 50% one is given for free (3 at the start), the 100% one costs 40 Poring Coins. Count how many half hours you need for all the turn-ins, travel included: that is how many Battle Manuals you need. The plan below uses the Battle Manual chosen in Options.">Un manuale dura 30 minuti: quello al 50% si riceve gratis (3 all'inizio), quello al 100% costa 40 Poring Coin. Conta quante mezz'ore ti servono per tutte le consegne, viaggi compresi: tanti manuali ti servono. Il piano qui sotto usa il manuale scelto nelle Opzioni.</p>
       <div id="confrontoManuali"></div>
     </fieldset>
 
-    <h2>Oggetti</h2>
-    <p class="hint">Quanti ne hai e quanto costa uno. Se lasci vuoto il prezzo vale quello in grigio: per gli oggetti degli NPC è il loro prezzo, per gli altri una stima.</p>
+    <h2 data-en="Items">Oggetti</h2>
+    <p class="hint" data-en="How many you have and how much one costs. If you leave the price empty, the grey one applies: for NPC items it is their price, for the others an estimate.">Quanti ne hai e quanto costa uno. Se lasci vuoto il prezzo vale quello in grigio: per gli oggetti degli NPC è il loro prezzo, per gli altri una stima.</p>
     <div class="items" id="items"></div>
   </form>
 
-  <h2>Piano</h2>
+  <h2 data-en="Plan">Piano</h2>
   <div id="piano"></div>
 
-  <p class="footer">Fonti: tabelle dell'EXP e regola del livello a consegna dagli script di rAthena (pre-renewal), il software su cui gira uaRO; quest, NPC e premi dal wiki di uaRO; prezzi degli NPC dagli script di rAthena, confermati in gioco per le Antelope Horn. I negozi e le città con l'etichetta da verificare non sono ancora stati provati in gioco.</p>
+  <p class="footer" data-en="Sources: EXP tables and the rule of one level per turn-in from the rAthena scripts (pre-renewal), the software uaRO runs on; quests, NPCs and rewards from the uaRO wiki; NPC prices from the rAthena scripts, confirmed in game for the Antelope Horn. The shops and towns marked as to be verified have not been tried in game yet.">Fonti: tabelle dell'EXP e regola del livello a consegna dagli script di rAthena (pre-renewal), il software su cui gira uaRO; quest, NPC e premi dal wiki di uaRO; prezzi degli NPC dagli script di rAthena, confermati in gioco per le Antelope Horn. I negozi e le città con l'etichetta da verificare non sono ancora stati provati in gioco.</p>
 </main>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
