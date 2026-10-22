@@ -14,7 +14,10 @@ Le versioni della pagina `calcolatore/`.
   fa danno 0, perche' l'Emperium prende solo attacchi normali
 - Modifiche manuali al personaggio e al nemico: scrivendo un numero in una casella compare
   subito il segno "attivo" del pannello
-- Nel pannello del cibo non c'e' piu' la scritta "&nbsp"
+- Pannello del cibo riordinato: ogni elenco ha il suo titolo (Stat Foods, Stat+20 Foods, New
+  World Food, Battle Grounds Food, Elemental Resist Pot.), con le pozioni e gli altri oggetti in
+  cima, e le Stat Foods hanno il nome della statistica accanto (da +0 a +10). Prima le colonne
+  della tabella originale si mescolavano, con i titoli in mezzo alle voci e una scritta "&nbsp"
 - Dopo il salvataggio automatico e dopo "Copia link" la pagina mostra subito i risultati
   ricalcolati (prima, per esempio, lo stato dei debuff del nemico poteva comparire solo alla
   scelta seguente)

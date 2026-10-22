@@ -1161,14 +1161,26 @@ function Buf7SW(e) {
           titolo: null,
           voci: [
             {
+              campo: "A_SpeedPOT",
+              opzioni: [["0", "(no Speed Potion)"]],
+            },
+            {
+              campo: "A7_Skill42",
+              opzioni: [["0", "(none)"]],
+            },
+            {
+              campo: "A7_Skill39",
+              opzioni: [["0", "(no HP Increase Potion)"]],
+            },
+            {
+              campo: "A7_Skill40",
+              opzioni: [["0", "(no SP Increase Potion)"]],
+            },
+            {
               campo: "A7_Skill31",
               tipo: "checkbox",
               etichetta:
                 '<span class="name">Aloevera<span class="nametext">Self Provoke Lvl 1</span></span>',
-            },
-            {
-              campo: "A_SpeedPOT",
-              opzioni: [["0", "(no Speed Potion)"]],
             },
             {
               campo: "A7_Skill26",
@@ -1195,64 +1207,10 @@ function Buf7SW(e) {
                 '<span class="name">Small/Big Defense Potion<span class="nametext">DEF +3</span></span>',
             },
             {
-              nota: '<font size="2"><b>Stat Foods</b></font>',
-            },
-            {
-              nota: '<font size="2"><b>Stat+20 Foods</b></font>',
-            },
-            {
               campo: "A7_Skill33",
               tipo: "checkbox",
               etichetta:
                 '<span class="name">Small/Big Magic Defense Potion<span class="nametext">MDEF +3</span></span>',
-            },
-            {
-              campo: "A7_Skill3",
-            },
-            {
-              campo: "A7_Skill41",
-              tipo: "checkbox",
-              etichetta:
-                '<span class="name">Savage BBQ<span class="nametext">STR +20</span></span>',
-            },
-            {
-              campo: "A7_Skill42",
-              opzioni: [["0", "(none)"]],
-            },
-            {
-              campo: "A7_Skill4",
-            },
-            {
-              campo: "A7_Skill47",
-              tipo: "checkbox",
-              etichetta:
-                '<span class="name">Cocktail Warg Blood<span class="nametext">AGI +20</span></span>',
-            },
-            {
-              campo: "A7_Skill39",
-              opzioni: [["0", "(no HP Increase Potion)"]],
-            },
-            {
-              campo: "A7_Skill5",
-            },
-            {
-              campo: "A7_Skill48",
-              tipo: "checkbox",
-              etichetta:
-                '<span class="name">Minor Stew<span class="nametext">VIT +20</span></span>',
-            },
-            {
-              campo: "A7_Skill40",
-              opzioni: [["0", "(no SP Increase Potion)"]],
-            },
-            {
-              campo: "A7_Skill6",
-            },
-            {
-              campo: "A7_Skill49",
-              tipo: "checkbox",
-              etichetta:
-                '<span class="name">Siroma Iced Tea<span class="nametext">INT +20</span></span>',
             },
             {
               campo: "A7_Skill36",
@@ -1261,28 +1219,10 @@ function Buf7SW(e) {
                 '<span class="name">Halo-Halo / Luxurious Western Food<span class="nametext">All Stats +3</span></span>',
             },
             {
-              campo: "A7_Skill7",
-            },
-            {
-              campo: "A7_Skill50",
-              tipo: "checkbox",
-              etichetta:
-                '<span class="name">Drosera Herb Salad<span class="nametext">DEX +20</span></span>',
-            },
-            {
               campo: "A7_Skill37",
               tipo: "checkbox",
               etichetta:
                 '<span class="name">Lucky Rice Cake<span class="nametext">LUK +21</span></span>',
-            },
-            {
-              campo: "A7_Skill8",
-            },
-            {
-              campo: "A7_Skill51",
-              tipo: "checkbox",
-              etichetta:
-                '<span class="name">Petite Tail Noodles<span class="nametext">LUK +20</span></span>',
             },
             {
               campo: "A7_Skill34",
@@ -1293,28 +1233,10 @@ function Buf7SW(e) {
                 " Lvl 1</span></span>",
             },
             {
-              nota: '<font size="2"><b>New World Food</b></font>',
-            },
-            {
-              nota: '<font size="2"><b>Battle Grounds Food</b></font>',
-            },
-            {
               campo: "A7_Skill10",
               tipo: "checkbox",
               etichetta:
                 '<span class="name">Box of Drowsiness<span class="nametext">MATK +20</span></span>',
-            },
-            {
-              campo: "A7_Skill17",
-              tipo: "checkbox",
-              etichetta:
-                '<span class="name">Rune Strawberry Cake<span class="nametext">ATK +5, MATK +5</span></span>',
-            },
-            {
-              campo: "A7_Skill27",
-              tipo: "checkbox",
-              etichetta:
-                '<span class="name">Military Ration B<span class="nametext">HIT +33</span></span>',
             },
             {
               campo: "A7_Skill9",
@@ -1323,34 +1245,10 @@ function Buf7SW(e) {
                 '<span class="name">Box of Resentment<span class="nametext">ATK +20</span></span>',
             },
             {
-              campo: "A7_Skill18",
-              tipo: "checkbox",
-              etichetta:
-                '<span class="name">Schwartzwald Pine Jubilee<span class="nametext">HIT +10, Perfect Dodge +20</span></span>',
-            },
-            {
-              campo: "A7_Skill28",
-              tipo: "checkbox",
-              etichetta:
-                '<span class="name">Military Ration C<span class="nametext">FLEE +33</span></span>',
-            },
-            {
               campo: "A7_Skill38",
               tipo: "checkbox",
               etichetta:
                 '<span class="name">Distilled Fighting Spirit<span class="nametext">ATK +30</span></span>',
-            },
-            {
-              campo: "A7_Skill19",
-              tipo: "checkbox",
-              etichetta:
-                '<span class="name">Arunafeltz Desert Sandwich<span class="nametext">CRIT +7</span></span>',
-            },
-            {
-              campo: "A7_Skill29",
-              tipo: "checkbox",
-              etichetta:
-                '<span class="name">Tasty Pink Ration<span class="nametext">ATK +15</span></span>',
             },
             {
               campo: "A7_Skill16",
@@ -1359,31 +1257,10 @@ function Buf7SW(e) {
                 '<span class="name">Buche de Noel<span class="nametext">HIT +3%, CRIT +7, MaxHP&amp;SP +3%</span></span>',
             },
             {
-              campo: "A7_Skill20",
-              tipo: "checkbox",
-              etichetta:
-                '<span class="name">Manuk\'s Sturdiness<span class="nametext">ATK based damage on Manuk maps +10%</span></span>',
-            },
-            {
-              campo: "A7_Skill30",
-              tipo: "checkbox",
-              etichetta:
-                '<span class="name">Tasty White Ration<span class="nametext">MATK +15</span></span>',
-            },
-            {
               campo: "A7_Skill46",
               tipo: "checkbox",
               etichetta:
                 '<span class="name">Tyr\'s Blessing<span class="nametext">FLEE +30, HIT +30, ATK +20, MATK +20</span></span>',
-            },
-            {
-              campo: "A7_Skill21",
-              tipo: "checkbox",
-              etichetta:
-                '<span class="name">Manuk\'s Faith<span class="nametext">MATK based damage on Manuk maps +10%</span></span>',
-            },
-            {
-              nota: '<font size="2"><b>Elemental Resist Pot.</b></font>',
             },
             {
               campo: "A7_Skill2",
@@ -1392,21 +1269,127 @@ function Buf7SW(e) {
                 '<span class="name">Rainbow Cake<span class="nametext">ATK +10, MATK +10</span></span>',
             },
             {
-              campo: "A7_Skill22",
-              tipo: "checkbox",
-              etichetta:
-                '<span class="name">Manuk\'s Will<span class="nametext">Received damage on Manuk maps -10%</span></span>',
-            },
-            {
-              campo: "A7_Skill11",
-              tipo: "checkbox",
-              etichetta: "Coldproof Potion",
-            },
-            {
               campo: "A7_Skill1",
               tipo: "checkbox",
               etichetta:
                 '<span class="name">Honey Pastry<span class="nametext">FLEE +30</span></span>',
+            },
+            {
+              campo: "A7_Skill0",
+              tipo: "checkbox",
+              etichetta:
+                '<span class="name">Sesame Pastry<span class="nametext">HIT +30</span></span>',
+            },
+          ],
+        },
+        {
+          titolo: "Stat Foods",
+          voci: [
+            {
+              campo: "A7_Skill3",
+              etichetta: "STR",
+            },
+            {
+              campo: "A7_Skill4",
+              etichetta: "AGI",
+            },
+            {
+              campo: "A7_Skill5",
+              etichetta: "VIT",
+            },
+            {
+              campo: "A7_Skill6",
+              etichetta: "INT",
+            },
+            {
+              campo: "A7_Skill7",
+              etichetta: "DEX",
+            },
+            {
+              campo: "A7_Skill8",
+              etichetta: "LUK",
+            },
+          ],
+        },
+        {
+          titolo: "Stat+20 Foods",
+          voci: [
+            {
+              campo: "A7_Skill41",
+              tipo: "checkbox",
+              etichetta:
+                '<span class="name">Savage BBQ<span class="nametext">STR +20</span></span>',
+            },
+            {
+              campo: "A7_Skill47",
+              tipo: "checkbox",
+              etichetta:
+                '<span class="name">Cocktail Warg Blood<span class="nametext">AGI +20</span></span>',
+            },
+            {
+              campo: "A7_Skill48",
+              tipo: "checkbox",
+              etichetta:
+                '<span class="name">Minor Stew<span class="nametext">VIT +20</span></span>',
+            },
+            {
+              campo: "A7_Skill49",
+              tipo: "checkbox",
+              etichetta:
+                '<span class="name">Siroma Iced Tea<span class="nametext">INT +20</span></span>',
+            },
+            {
+              campo: "A7_Skill50",
+              tipo: "checkbox",
+              etichetta:
+                '<span class="name">Drosera Herb Salad<span class="nametext">DEX +20</span></span>',
+            },
+            {
+              campo: "A7_Skill51",
+              tipo: "checkbox",
+              etichetta:
+                '<span class="name">Petite Tail Noodles<span class="nametext">LUK +20</span></span>',
+            },
+          ],
+        },
+        {
+          titolo: "New World Food",
+          voci: [
+            {
+              campo: "A7_Skill17",
+              tipo: "checkbox",
+              etichetta:
+                '<span class="name">Rune Strawberry Cake<span class="nametext">ATK +5, MATK +5</span></span>',
+            },
+            {
+              campo: "A7_Skill18",
+              tipo: "checkbox",
+              etichetta:
+                '<span class="name">Schwartzwald Pine Jubilee<span class="nametext">HIT +10, Perfect Dodge +20</span></span>',
+            },
+            {
+              campo: "A7_Skill19",
+              tipo: "checkbox",
+              etichetta:
+                '<span class="name">Arunafeltz Desert Sandwich<span class="nametext">CRIT +7</span></span>',
+            },
+            {
+              campo: "A7_Skill20",
+              tipo: "checkbox",
+              etichetta:
+                '<span class="name">Manuk\'s Sturdiness<span class="nametext">ATK based damage on Manuk maps +10%</span></span>',
+            },
+            {
+              campo: "A7_Skill21",
+              tipo: "checkbox",
+              etichetta:
+                '<span class="name">Manuk\'s Faith<span class="nametext">MATK based damage on Manuk maps +10%</span></span>',
+            },
+            {
+              campo: "A7_Skill22",
+              tipo: "checkbox",
+              etichetta:
+                '<span class="name">Manuk\'s Will<span class="nametext">Received damage on Manuk maps -10%</span></span>',
             },
             {
               campo: "A7_Skill23",
@@ -1415,32 +1398,65 @@ function Buf7SW(e) {
                 '<span class="name">Pinguicula\'s Fruit Jam<span class="nametext">ATK based dmg on Splendide maps +10%</span></span>',
             },
             {
-              campo: "A7_Skill12",
-              tipo: "checkbox",
-              etichetta: "Earthproof Potion",
-            },
-            {
-              campo: "A7_Skill0",
-              tipo: "checkbox",
-              etichetta:
-                '<span class="name">Sesame Pastry<span class="nametext">HIT +30</span></span>',
-            },
-            {
               campo: "A7_Skill24",
               tipo: "checkbox",
               etichetta:
                 '<span class="name">Cornus\' Tear<span class="nametext">MATK based damage on Splendide maps +10%</span></span>',
             },
             {
-              campo: "A7_Skill13",
-              tipo: "checkbox",
-              etichetta: "Fireproof Potion",
-            },
-            {
               campo: "A7_Skill25",
               tipo: "checkbox",
               etichetta:
                 '<span class="name">Luciola\'s Honey Jam<span class="nametext">Received damage on Splendide maps -10%</span></span>',
+            },
+          ],
+        },
+        {
+          titolo: "Battle Grounds Food",
+          voci: [
+            {
+              campo: "A7_Skill27",
+              tipo: "checkbox",
+              etichetta:
+                '<span class="name">Military Ration B<span class="nametext">HIT +33</span></span>',
+            },
+            {
+              campo: "A7_Skill28",
+              tipo: "checkbox",
+              etichetta:
+                '<span class="name">Military Ration C<span class="nametext">FLEE +33</span></span>',
+            },
+            {
+              campo: "A7_Skill29",
+              tipo: "checkbox",
+              etichetta:
+                '<span class="name">Tasty Pink Ration<span class="nametext">ATK +15</span></span>',
+            },
+            {
+              campo: "A7_Skill30",
+              tipo: "checkbox",
+              etichetta:
+                '<span class="name">Tasty White Ration<span class="nametext">MATK +15</span></span>',
+            },
+          ],
+        },
+        {
+          titolo: "Elemental Resist Pot.",
+          voci: [
+            {
+              campo: "A7_Skill11",
+              tipo: "checkbox",
+              etichetta: "Coldproof Potion",
+            },
+            {
+              campo: "A7_Skill12",
+              tipo: "checkbox",
+              etichetta: "Earthproof Potion",
+            },
+            {
+              campo: "A7_Skill13",
+              tipo: "checkbox",
+              etichetta: "Fireproof Potion",
             },
             {
               campo: "A7_Skill14",
@@ -1452,53 +1468,16 @@ function Buf7SW(e) {
       ],
     );
     _ += '<span class="disclosure-chevron" aria-hidden="true"></span></TD></TR>';
-    opzioni(c.A7_Skill3, [[0, "STR+"]]);
-    opzioni(c.A7_Skill4, [[0, "AGI+"]]);
-    opzioni(c.A7_Skill5, [[0, "VIT+"]]);
-    opzioni(c.A7_Skill6, [[0, "INT+"]]);
-    opzioni(c.A7_Skill7, [[0, "DEX+"]]);
-    opzioni(c.A7_Skill8, [[0, "LUK+"]]);
-    opzioni(
-      c.A7_Skill3,
-      serie(1, 10, function (i) {
-        return [i, "+" + i];
-      }),
-      1,
-    );
-    opzioni(
-      c.A7_Skill4,
-      serie(1, 10, function (i) {
-        return [i, "+" + i];
-      }),
-      1,
-    );
-    opzioni(
-      c.A7_Skill5,
-      serie(1, 10, function (i) {
-        return [i, "+" + i];
-      }),
-      1,
-    );
-    opzioni(
-      c.A7_Skill6,
-      serie(1, 10, function (i) {
-        return [i, "+" + i];
-      }),
-      1,
-    );
-    opzioni(
-      c.A7_Skill7,
-      serie(1, 10, function (i) {
-        return [i, "+" + i];
-      }),
-      1,
-    );
-    opzioni(
-      c.A7_Skill8,
-      serie(1, 10, function (i) {
-        return [i, "+" + i];
-      }),
-      1,
+    // Stat Foods: +0 ... +10 (il nome della statistica e' l'etichetta)
+    ["A7_Skill3", "A7_Skill4", "A7_Skill5", "A7_Skill6", "A7_Skill7", "A7_Skill8"].forEach(
+      function (nome) {
+        opzioni(
+          c[nome],
+          serie(0, 10, function (i) {
+            return [i, "+" + i];
+          }),
+        );
+      },
     );
     opzioni(c.A7_Skill39, [
       [0, "(no HP Increase Potion)"],
