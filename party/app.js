@@ -215,7 +215,8 @@ function datiCalcolo() {
     .filter((g) => g.presente)
     .map((g) => ({
       ...g,
-      account: g.account.map(personaggi).filter((p) => p.length > 0).map((p) => ({ personaggi: p })),
+      // `numero`: la colonna della tabella, per "Per la run N" (le caselle vuote non entrano nel calcolo).
+      account: g.account.map((testo, i) => ({ personaggi: personaggi(testo), numero: i + 1 })).filter((a) => a.personaggi.length > 0),
     }));
   const jolly = stato.jolly
     .map((j, indice) => ({ nome: j.nome || `${NOME_JOLLY} ${indice + 1}`, disponibile: j.disponibile, personaggi: personaggi(j.classi) }))

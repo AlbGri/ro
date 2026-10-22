@@ -215,7 +215,19 @@ describe("casi di Alberto", () => {
     );
     const esito = calcolaRun(giocatori, []);
     assert.equal(esito.run.length, 0);
-    assert.deepEqual(esito.mancano, ["Professor: per 1 run ne servono 1, ce ne sono 0"]);
+    assert.deepEqual(esito.mancano, ["Per 1 run serve 1 Professor. Nessun account ha un Professor."]);
+  });
+
+  it("un giocatore con piu' account delle run ne conta al piu' uno per run, e lo dice", () => {
+    const giocatori = [
+      giocatore("Uno", account("High Priest"), account("High Priest"), account("High Priest"), account("High Priest")),
+      giocatore("Due", account("High Priest")),
+      ...["Sniper", "Clown/Bard", "Professor"].map((c, i) => giocatore(`G${i}`, account(c))),
+    ];
+    const esito = calcolaRun(giocatori, []);
+    assert.equal(esito.run.length, 1);
+    assert.equal(esito.mancano[0],
+      "Per 2 run servono 4 High Priest. Gli account che lo hanno sono 5: Uno (1, 2, 3, 4) e Due (1). Un giocatore entra una volta per run, quindi ne contano 3.");
   });
 
   it("dice cosa manca anche quando i posti bastano uno per uno ma non insieme", () => {
@@ -229,13 +241,19 @@ describe("casi di Alberto", () => {
       giocatore("Negaz", account("High Priest")),
       giocatore("Mario", account("High Priest")),
     ];
-    const jolly = [account("Gypsy/Dancer"), account("Clown/Bard"), account("Professor")];
+    const jolly = [
+      { nome: "Gypsy Gilda", ...account("Gypsy/Dancer") },
+      { nome: "Clown Gilda", ...account("Clown/Bard") },
+      { nome: "Prof Gilda", ...account("Professor") },
+    ];
     const esito = calcolaRun(giocatori, jolly);
     verifica(giocatori, jolly, ISTANZA, esito);
     assert.equal(esito.run.length, 2);
     assert.deepEqual(esito.mancano, [
-      "High Priest e Clown/Bard insieme: per 3 run ne servono 9, ci sono 8 account che li coprono",
-      "High Priest e Professor insieme: per 3 run ne servono 9, ci sono 8 account che li coprono",
+      "Per 3 run servono 6 High Priest e 3 Clown/Bard, 9 personaggi su account diversi. Gli account che hanno almeno uno dei due sono 8: " +
+        "Alberto (1, 2), Efreeet (1, 3), Pastafarian (1), Negaz (1), Mario (1) e jolly Clown Gilda. Ogni account entra con un solo personaggio.",
+      "Per 3 run servono 6 High Priest e 3 Professor, 9 personaggi su account diversi. Gli account che hanno almeno uno dei due sono 8: " +
+        "Alberto (1, 2), Efreeet (1), Pastafarian (1), Johnny (1), Negaz (1), Mario (1) e jolly Prof Gilda. Ogni account entra con un solo personaggio.",
     ]);
   });
 });

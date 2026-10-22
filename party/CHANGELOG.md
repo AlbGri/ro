@@ -2,6 +2,15 @@
 
 Le versioni della pagina `party/`.
 
+## [1.10] - 2026-10-23
+
+- `Per la run N` dice quanti personaggi servono e quali account potrebbero coprirli, con il
+  numero della loro casella: per esempio "Per 3 run servono 6 High Priest e 3 Professor, 9
+  personaggi su account diversi. Gli account che hanno almeno uno dei due sono 8: Alberto (1,
+  2), ... Ogni account entra con un solo personaggio."
+- Se un giocatore ha piu' account di quante sono le run, la riga ricorda che ne contano al piu'
+  uno per run
+
 ## [1.9] - 2026-10-23
 
 - Quando le run sono meno di tre, `Per la run N` dice cosa manca anche se ogni posto basta da

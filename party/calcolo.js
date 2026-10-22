@@ -416,6 +416,53 @@ function assegnaPosti(membri, istanza) {
   return [...obbligatori, ...liberi.map((m) => ({ ...m, posto: null }))];
 }
 
+/** "A, B e C" o "A, B and C". */
+const elenca = (parti) => (parti.length === 1 ? parti[0] : `${parti.slice(0, -1).join(", ")} ${tr("e", "and")} ${parti.at(-1)}`);
+
+/**
+ * La frase di un gruppo di posti che non basta, con gli account che lo coprono:
+ * Alberto non capiva "ci sono 8 account che li coprono" senza vedere quali
+ * (23/10/2026). Un account si indica con la sua colonna (`numero`, dalla pagina).
+ */
+function spiega(giocatori, jolly, gruppo, run, servono, ci, copre) {
+  const elenco = [];
+  let n = 0;
+  for (const g of giocatori) {
+    const numeri = g.account.flatMap((a, ai) => (copre(a, gruppo) ? [a.numero ?? ai + 1] : []));
+    if (numeri.length) elenco.push(`${g.nome} (${numeri.join(", ")})`);
+    n += numeri.length;
+  }
+  jolly.forEach((j, ji) => {
+    if (!copre(j, gruppo)) return;
+    elenco.push(`${tr("jolly", "Guild Account")} ${j.nome ?? ji + 1}`);
+    n++;
+  });
+  const posti = elenca(gruppo.map((p) => `${p.quanti * run} ${p.nome}`));
+  const runIt = `Per ${run} run ${servono === 1 ? "serve" : "servono"} ${posti}`;
+  const runEn = `${run} ${run === 1 ? "run needs" : "runs need"} ${posti}`;
+  let frase;
+  if (gruppo.length === 1) {
+    const nome = gruppo[0].nome;
+    frase = n === 0
+      ? tr(`${runIt}. Nessun account ha un ${nome}.`, `${runEn}. No account has a ${nome}.`)
+      : tr(`${runIt}. Gli account che lo hanno sono ${n}: ${elenca(elenco)}.`,
+        `${runEn}. There ${n === 1 ? "is 1 account" : `are ${n} accounts`} with one: ${elenca(elenco)}.`);
+  } else {
+    frase = tr(
+      `${runIt}, ${servono} personaggi su account diversi. Gli account che hanno almeno uno ${gruppo.length === 2 ? "dei due" : "di questi"} sono ${n}: ${elenca(elenco)}. Ogni account entra con un solo personaggio.`,
+      `${runEn}, ${servono} characters on different accounts. There ${n === 1 ? "is 1 account" : `are ${n} accounts`} with at least one of ${gruppo.length === 2 ? "the two" : "these"}: ${elenca(elenco)}. Each account enters with one character only.`,
+    );
+  }
+  // Un giocatore entra al piu' una volta per run, anche con un jolly: chi ha piu' account delle
+  // run, o jolly senza chi li giochi, ne conta meno di quanti ne elenca.
+  if (n !== ci) {
+    const conJolly = jolly.some((j) => copre(j, gruppo));
+    frase += tr(` Un giocatore entra una volta per run${conJolly ? ", anche con un jolly" : ""}, quindi ne contano ${ci}.`,
+      ` A player enters once per run${conJolly ? ", also with a Guild Account" : ""}, so ${ci} of them count.`);
+  }
+  return frase;
+}
+
 /**
  * Perche' non si arriva a `run` run: i posti obbligatori per cui mancano account.
  * Si guarda anche ogni gruppo di posti insieme, perche' un account con piu' classi
@@ -428,7 +475,7 @@ function assegnaPosti(membri, istanza) {
 function cosaManca(giocatori, jolly, istanza, run) {
   const mancano = [];
   const minimo = istanza.posti.reduce((n, p) => n + p.quanti, 0);
-  if (giocatori.length < minimo) mancano.push(tr(`servono almeno ${minimo} giocatori presenti, ce ne sono ${giocatori.length}`, `at least ${minimo} players present are needed, there are ${giocatori.length}`));
+  if (giocatori.length < minimo) mancano.push(tr(`Servono almeno ${minimo} giocatori presenti, ce ne sono ${giocatori.length}.`, `At least ${minimo} players present are needed, there are ${giocatori.length}.`));
   const posti = istanza.posti.filter((p) => p.quanti > 0);
   const copre = (account, gruppo) => account.personaggi.some((p) => gruppo.some((posto) => ruoloDi(istanza, p.classe) === posto.ruolo));
   const scarsi = [];
@@ -448,12 +495,8 @@ function cosaManca(giocatori, jolly, istanza, run) {
     const ci = propri + Math.min(liberi, jolly.filter((a) => copre(a, gruppo)).length);
     if (ci >= servono) continue;
     scarsi.push(maschera);
-    const nomi = gruppo.map((p) => p.nome);
-    mancano.push(nomi.length === 1
-      ? tr(`${nomi[0]}: per ${run} run ne servono ${servono}, ce ne sono ${ci}`, `${nomi[0]}: ${run} ${run === 1 ? "run needs" : "runs need"} ${servono}, there are ${ci}`)
-      : tr(`${nomi.slice(0, -1).join(", ")} e ${nomi.at(-1)} insieme: per ${run} run ne servono ${servono}, ci sono ${ci} account che li coprono`,
-        `${nomi.slice(0, -1).join(", ")} and ${nomi.at(-1)} together: ${run} ${run === 1 ? "run needs" : "runs need"} ${servono}, there are ${ci} accounts that cover them`));
+    mancano.push(spiega(giocatori, jolly, gruppo, run, servono, ci, copre));
   }
-  if (mancano.length === 0) mancano.push(tr("i posti obbligatori basterebbero, ma gli account non si riescono a dividere fra le run con una entrata per run a giocatore", "the required slots would be enough, but the accounts cannot be split among the runs with one entry per run per player"));
+  if (mancano.length === 0) mancano.push(tr("I posti obbligatori basterebbero, ma gli account non si riescono a dividere fra le run con una entrata per run a giocatore.", "The required slots would be enough, but the accounts cannot be split among the runs with one entry per run per player."));
   return mancano;
 }
