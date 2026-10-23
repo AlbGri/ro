@@ -206,6 +206,28 @@ function applyUaroHeadgearBonuses() {
   // +5%; CRI +1 ogni 2 raffinamenti delle calzature in applyUaroHeadgearBonuses
   GARLING_CARD_UARO = aggiungiCarta(6, "Garling", "<b>For every 2 refine levels of the footgear:</b><br>CRIT +1", [BONUSID.CRIT, 2, BONUSID.CRIT_DMG_PERCENT, 5]);
 
+  // Garling (evento Halloween 2026), da @mi nel gioco. EXP divisa per 5, come quella degli altri
+  // mostri del motore (rAthena): @mi la mostra gia' moltiplicata per i rate del server (Alligator
+  // 1379 nel motore, 6895 in @mi). Mostro normale, attacco in mischia (Range 1), senza skill note
+  aggiungiMostro(["Garling", RACEID.UNDEAD, ELEMENTID.UNDEAD_1, SIZEID.SMALL, 48, 5800, 42, 38, 35, 46, 32, 420, 620, 22, 18, 2300, 1600, 0, 0, 0]);
+
+  // Un mostro nuovo in fondo a m_Monster, nei campi di monster.js dal nome (1) a quello che dice
+  // se attacca a distanza (20); HIT e FLEE (21, 22) come li calcola monster.js, nessuna skill.
+  // Rifa' l'ordine alfabetico dell'elenco (v_MonsterSort)
+  function aggiungiMostro(campi) {
+    var id = m_Monster.length;
+    var riga = [id].concat(campi);
+    riga[21] = 20 + riga[5] + riga[8];
+    riga[22] = 75 + riga[5] + riga[10];
+    riga[23] = 0;
+    m_Monster.push(riga);
+    EnemyNum = id;
+    v_MonsterSort = m_Monster
+      .map(function (mostro) { return mostro[0]; })
+      .sort(function (x, y) { return m_Monster[x][1] < m_Monster[y][1] ? -1 : m_Monster[x][1] > m_Monster[y][1] ? 1 : 0; });
+    return id;
+  }
+
   // Una carta nuova in fondo a m_Card e nell'elenco del suo posto (m_CardSort[posto]) in ordine
   // alfabetico, dopo la prima voce (nessuna carta). Restituisce il suo id
   function aggiungiCarta(posto, nome, descrizione, bonus) {

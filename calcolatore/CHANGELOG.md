@@ -2,6 +2,12 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.17] - 2026-10-23
+
+- Nuovo mostro, Garling (evento Halloween 2026), con i dati di @mi nel gioco: livello 48, Undead
+  di elemento Undead 1, piccolo, HP 5800, ATK 420-620, DEF 22, MDEF 18. Sta nell'elenco con tutti
+  i mostri, non in un luogo
+
 ## [1.16] - 2026-10-23
 
 - Scelta del mostro, categoria: "Boss (non MvP)" diventa "Mini", come i mostri [Mini] dell'elenco,

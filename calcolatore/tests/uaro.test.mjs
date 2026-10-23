@@ -267,3 +267,14 @@ test("Garling Card: CRI +2, danno critico +5%, CRI +1 ogni 2 raffinamenti delle 
   assert.deepEqual(conCarta(garling, 5), [cri + 4, danno + 5]);
   assert.deepEqual(conCarta(garling, 9), [cri + 6, danno + 5]);
 });
+
+test("Garling: mostro dell'evento Halloween 2026 con i dati di @mi", () => {
+  const m = creaMotore();
+  const mostri = costante(m, "m_Monster");
+  const garling = mostri.findIndex((x) => x[1] === "Garling");
+  assert.equal(garling, mostri.length - 1);
+  assert.equal(costante(m, "EnemyNum"), garling);
+  assert.ok(costante(m, "v_MonsterSort").includes(garling));
+  scegli(m, "B_Enemy", garling);
+  assert.deepEqual(["B_6", "B_12", "B_13", "B_14", "B_16", "B_17"].map((id) => testo(m, id)), ["5800", "420", "620", "22", "2300", "1600"]);
+});
