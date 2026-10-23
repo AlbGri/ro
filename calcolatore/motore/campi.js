@@ -528,7 +528,7 @@ campo("A_DICASTES_ACCESSORY2_STATS2", "select", function () { StAllCalc(); }, { 
 campo("A_Kakutyou", "select", function () { preparaAltreInfo(); StAllCalc(); }, { opzioni: [["0", "-"], ["2", "Heal amount"], ["4", "Sanctuary amount"], ["12", "Player Resistance"], ["14", "+% ATK based Damage Modifiers"], ["16", "+% MATK based Damage Modifiers"], ["20", "Experience"], ["22", "Potion Pitcher HP/SP power"], ["24", "Forge/Potion/EDP Creation Success Rate"], ["28", "Strip chance & duration"], ["30", "Cooking Success Rates"], ["32", "Capture Pet Success Rate"], ["34", "NPC Refinement Cost & Success Rate"], ["36", "NPC Socket Enchant Cost & Success Rate"], ["40", "Non-Damage Skill Cast Time"]] });
 campo("ENEMY_SORT2", "select", function () { riempiMappe(); EnemySort(); calc(); });
 campo("ENEMY_MAP", "select", function () { EnemySort(); calc(); });
-campo("ENEMY_TYPE", "select", function () { EnemySort(); calc(); }, { opzioni: [["0", "All types"], ["1", "MvP"], ["2", "Boss (not MvP)"], ["3", "Normal monsters"]] });
+campo("ENEMY_TYPE", "select", function () { EnemySort(); calc(); }, { opzioni: [["0", "All types"], ["1", "MVP"], ["2", "Mini"], ["3", "Normal monsters"]] });
 campo("ENEMY_SORT", "select", function () { EnemySort(); calc(); }, { opzioni: [["0", "Alphabetical"], ["1", "By attribute"], ["2", "By race"], ["8", "By size"], ["3", "By 100%Hit"], ["4", "By 95%Flee"], ["5", "By BaseExp"], ["6", "By JobExp"], ["7", "By MaxATK"], ["9", "By DEF"], ["10", "By MDEF"], ["11", "By Type"]] });
 campo("B_Enemy", "select", function () { Bskill(true); });
 campo("all_dmgSkills", "checkbox", function () { Askill(); calc(); });

@@ -2,6 +2,11 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.16] - 2026-10-23
+
+- Scelta del mostro, categoria: "Boss (non MvP)" diventa "Mini", come i mostri [Mini] dell'elenco,
+  e "MvP" diventa "MVP"
+
 ## [1.15] - 2026-10-23
 
 - Nuova carta per le calzature, Garling Card (evento Halloween 2026): CRI +2, danno critico +5%,

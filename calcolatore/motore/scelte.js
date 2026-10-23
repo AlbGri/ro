@@ -1550,7 +1550,7 @@ function mostriDelLuogo(luogo, mappa) {
   for (var x of mappe) for (var id of x[2]) ammessi.add(id);
   return ammessi;
 }
-// tipo: 0 tutti, 1 MvP, 2 boss non MvP, 3 gli altri
+// tipo: 0 tutti, 1 MVP, 2 Mini (boss non MVP), 3 gli altri
 function mostroDelTipo(mostro, tipo) {
   if (tipo == 0) return true;
   if (tipo == 1) return isMvpMonster(mostro);

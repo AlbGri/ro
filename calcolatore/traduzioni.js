@@ -140,7 +140,6 @@ const ESATTE = {
   "All Regions": "Tutte le zone",
   "All maps": "Tutte le mappe",
   "All types": "Tutti i tipi",
-  "Boss (not MvP)": "Boss (non MvP)",
   "Normal monsters": "Normali",
   "(no upper headgear)": "(nessun copricapo)",
   "(no middle headgear)": "(nessun copricapo)",
