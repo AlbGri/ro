@@ -238,3 +238,15 @@ test("manuali di uaRO: Battle Manual +50% base e job, Field Manual solo base; ni
   assert.deepEqual(exp(3), [Math.floor(base * 1.5), job]);
   assert.deepEqual(exp(4), [base * 2, job]);
 });
+
+test("limite degli slot attivo di partenza: copricapo doppio e arma a due mani", () => {
+  const m = creaMotore();
+  assert.equal(m.c.restrict_equipslot.checked, true);
+  scegli(m, "A_JOB", 7); // Knight
+  scegli(m, "A_head1", id(m, "Crown of Deceit (UARO)")); // copricapo alto e centro
+  assert.equal(m.c.A_head2.disabled, true);
+  assert.equal(m.c.A_head2.value, "243"); // (no middle headgear)
+  scegli(m, "A_weapon1", id(m, "Two-handed Sword"));
+  assert.equal(m.c.A_left.disabled, true);
+  assert.equal(m.c.A_left.value, "305"); // (no shield)
+});

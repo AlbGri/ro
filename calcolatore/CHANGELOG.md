@@ -2,6 +2,12 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.14] - 2026-10-23
+
+- "Limitare gli slot dell'equipaggiamento" (riquadro Opzioni) e' attivo di partenza: con un
+  copricapo che occupa piu' posti, come la Crown of Deceit, gli altri posti restano vuoti, e con
+  un'arma a due mani non si sceglie lo scudo. Le build gia' salvate tengono la loro scelta
+
 ## [1.13] - 2026-10-23
 
 - Buff, esperienza: la voce "Battle Manual" (25, 50, 100% a EXP base e job) diventa "Manuale"

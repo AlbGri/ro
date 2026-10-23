@@ -231,7 +231,9 @@ c.maxASPD.value = 0;
 c.all_dmgSkills.checked = false;
 c.restrict_jobequip.checked = true;
 c.restrict_lvlequip.checked = false;
-c.restrict_equipslot.checked = false;
+// Attivo di partenza: il gioco non permette scudo con armi a due mani ne' copricapi nei posti
+// gia' occupati (Alberto, 23/10/2026). Le build salvate tengono la loro scelta
+c.restrict_equipslot.checked = true;
 c.restrict_cardslot.checked = false;
 c.all_card.checked = false;
 c.A_JOB.value = 0;
