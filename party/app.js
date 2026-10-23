@@ -9,7 +9,7 @@
  */
 
 import { calcolaRun } from "./calcolo.js";
-import { ALTRO, CLASSI, HP_TANKER, ISTANZE, MAX_RUN, nomeClasse, TANKER, tr } from "./dati.js";
+import { ALTRO, CLASSI, classeForte, HP_TANKER, ISTANZE, MAX_RUN, nomeClasse, tr } from "./dati.js";
 import { breve, conTanker, leggiClassi, leggiElenco, pulisci, scriviElenco } from "./testo.js";
 
 const STORAGE_KEY = "ragnarok-party/stato";
@@ -120,16 +120,20 @@ function disegnaIstanza() {
   const obbligatori = i.posti.filter((p) => p.quanti > 0);
   const desiderati = i.posti.filter((p) => p.desiderati > 0);
   const quanti = (n, p) => `${n} ${p.nome}`;
-  const obbligatorio = (p) =>
-    quanti(p.quanti, p) +
-    (p.tanker ? tr(` (almeno ${p.tanker} ${TANKER})`, ` (at least ${p.tanker} ${TANKER})`) : "");
+  // "2 High Priest (almeno 1 HP Tanker)", o "1 Sniper Incubus" se lo sono tutti.
+  const obbligatorio = (p) => {
+    if (!p.forti) return quanti(p.quanti, p);
+    const forte = classeForte(i, p.ruolo);
+    return p.forti === p.quanti ? `${p.quanti} ${forte}` : quanti(p.quanti, p) + tr(` (almeno ${p.forti} ${forte})`, ` (at least ${p.forti} ${forte})`);
+  };
   const desiderato = (p) =>
     `${quanti(p.desiderati, p)} per run` +
     (p.alternativa ? tr(` (se manca, ${quanti(p.desiderati, p.alternativa)})`, ` (or, if there is none, ${quanti(p.desiderati, p.alternativa)})`) : "");
   const elenca = (parti) => (parti.length === 1 ? parti[0] : `${parti.slice(0, -1).join(", ")} ${tr("e", "and")} ${parti.at(-1)}`);
-  // Chi tanka, con i posti di ogni tipo di run: "1 Champion, 1 High Priest e 1 High Priest o Priest, oppure ...".
-  const tank = i.tipi
-    ? tr(" e chi tanka: ", " and a tank: ") + i.tipi.map((t) => elenca(t.posti.filter((p) => p.quanti > 0).map(obbligatorio))).join(tr(", oppure ", ", or "))
+  // I posti di ogni tipo di run: "1 Champion, 1 High Priest, ... e 1 Professor; oppure ...".
+  const tipi = i.tipi
+    ? tr(" e una di queste composizioni: ", " and one of these: ") +
+      i.tipi.map((t) => elenca(t.posti.filter((p) => p.quanti > 0).map(obbligatorio))).join(tr("; oppure ", "; or "))
     : "";
   const nomeRuolo = (ruolo) => i.posti.find((p) => p.ruolo === ruolo)?.nome ?? ruolo;
   const massimi = i.posti
@@ -141,7 +145,7 @@ function disegnaIstanza() {
   document.getElementById("composizione").textContent =
     tr(`${i.nome}: ogni run ha al massimo ${i.maxParty} persone e deve avere `, `${i.nome}: each run has at most ${i.maxParty} people and must have `) +
     obbligatori.map(obbligatorio).join(", ") +
-    tank +
+    tipi +
     liberi +
     (massimi.length ? `, ${massimi.join(", ")}` : "") +
     (desiderati.length
@@ -156,7 +160,8 @@ function disegnaIstanza() {
     );
   document.getElementById("ordine").textContent =
     tr("Le run migliori: prima il numero di run, poi far entrare tutti il più possibile, ", "The best runs: first the number of runs, then letting everyone in as much as possible, ") +
-    (i.tipi ? tr(`poi più run con ${i.tipi[0].nome}, `, `then more runs with ${i.tipi[0].nome}, `) : "") +
+    // Meno run dell'ultimo tipo, poi del penultimo: "poi meno run con Sniper Incubus, poi meno run con HP Tanker".
+    (i.tipi ?? []).slice(1).reverse().map((t) => tr(`poi meno run con ${t.nome}, `, `then fewer runs with ${t.nome}, `)).join("") +
     desiderati.map((p) => tr(`poi ${desiderato(p)}, `, `then ${desiderato(p)}, `)).join("") +
     i.preferiti.map((p) => `${tr("poi più", "then more")} ${p.nome}${p.perche ? ` (${p.perche})` : ""}, `).join("") +
     tr("poi run equilibrate.", "then balanced runs.");

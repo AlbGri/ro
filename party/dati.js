@@ -17,12 +17,14 @@ export const ALTRO = "Altro";
 export const tr = globalThis.tr ?? ((it) => it);
 
 /**
- * L'High Priest che regge la Horror Toy Factory da tank (`tanker` di un posto): una classe, perche'
- * dipende dal personaggio, non dal giocatore (Alberto, 23/10/2026: "alcuni HP non possono essere
- * main tank" anche se chi li gioca tanka con un altro). Nei dati `HP_TANKER`, scritto `TANKER`.
+ * L'High Priest che regge la Horror Toy Factory da tank: una classe, perche' dipende dal
+ * personaggio, non dal giocatore (Alberto, 23/10/2026: "alcuni HP non possono essere main tank"
+ * anche se chi li gioca tanka con un altro). Nei dati `HP_TANKER`, scritto `TANKER`.
  */
 export const HP_TANKER = "HP Tanker";
 export const TANKER = tr("HP Tanker", "Tanker HP");
+/** Lo Sniper che regge la run senza Professor (Alberto, 23/10/2026): stesso nome nelle due lingue. */
+export const SNIPER_INCUBUS = "Sniper Incubus";
 
 /** Come si mostra una classe: Altro e' "Other" in inglese, le altre sono nomi del gioco. */
 export const nomeClasse = (classe) => (classe === ALTRO ? tr("Altro", "Other") : classe === HP_TANKER ? TANKER : classe);
@@ -39,24 +41,25 @@ export const ISTANZE = [
     // Un id macchina entra al massimo 3 volte, un account alla volta.
     maxRun: 3,
     // `quanti`: posti obbligatori per run. `desiderati`: posti non obbligatori ma i primi fra i
-    // liberi, fino a tanti per run. Il party minimo e' fisso, di 5 (Alberto, 19/10/2026): la
-    // Gypsy o Dancer non serve, ma se c'e' e' "la prima nella lista delle priorita'".
-    // `alternativa`: il ruolo che copre un posto desiderato se manca il suo: il Soul Linker fa il
-    // link al Clown, che cosi' usa la canzone degli SP; con una Gypsy nella run non serve.
+    // liberi, fino a tanti per run: la Gypsy o Dancer non serve, ma se c'e' e' "la prima nella
+    // lista delle priorita'" (Alberto, 19/10/2026). `alternativa`: il ruolo che copre un posto
+    // desiderato se manca il suo: il Soul Linker fa il link al Clown, che cosi' usa la canzone
+    // degli SP; con una Gypsy nella run non serve.
     posti: [
-      { ruolo: "sniper", nome: "Sniper", quanti: 1 },
       { ruolo: "bard", nome: CLOWN, quanti: 1 },
-      { ruolo: "prof", nome: "Professor", quanti: 1 },
       { ruolo: "dancer", nome: GYPSY, quanti: 0, desiderati: 1, alternativa: { ruolo: "sl", nome: "Soul Linker" } },
     ],
-    // Chi tanka (Alberto, 23/10/2026), in ogni run in piu' ai `posti`, in ordine di preferenza: si
-    // preferisce il primo tipo quando non costa run o entrate ("la prima se ci sono poche persone,
-    // la seconda se ce ne sono di piu'": la run col Champion vuole una persona in piu').
-    // - un Champion con Steel Body, chiunque lo giochi: non puo' usare Safety Wall, quindi servono
-    //   un High Priest di supporto e un secondo High Priest o un Priest (`ruoli`: uno qualsiasi)
-    // - un HP Tanker: due High Priest "scarsi" non la completano, ne basta uno che ci riesce.
-    //   `tanker`: quanti dei posti li gioca un personaggio HP Tanker, anche di un Account Gilda
-    // Chi tanka ha l'etichetta Tanker nelle run: chi occupa un posto con `tank` o un posto `tanker`.
+    // I tipi di run (Alberto, 23/10/2026), con i loro posti in piu' ai `posti`, in ordine di
+    // preferenza: a parita' di run ed entrate prima meno run dell'ultimo tipo, poi del penultimo.
+    // - Champion: un Champion con Steel Body tanka, chiunque lo giochi; non puo' usare Safety Wall,
+    //   quindi servono un High Priest di supporto e un secondo High Priest o un Priest (`ruoli`)
+    // - HP Tanker: due High Priest "scarsi" non la completano, ne basta uno che ci riesce. Il
+    //   Champion e' preferito: "la prima se ci sono poche persone, la seconda se ce ne sono di piu'"
+    // - Sniper Incubus: la run da 4 senza Professor, con lo Sniper Incubus e l'HP Tanker; in
+    //   qualsiasi run, ma solo se una run completa costa run o entrate
+    // `forti`: quanti dei posti li gioca un personaggio della classe `forte` del ruolo, anche di un
+    // Account Gilda. `tank`: chi occupa il posto tanka (dei `forti`, se ci sono), con l'etichetta
+    // Tanker nelle run.
     tipi: [
       {
         nome: "Champion",
@@ -64,19 +67,36 @@ export const ISTANZE = [
           { ruolo: "champion", nome: "Champion", quanti: 1, tank: true },
           { ruolo: "hp", nome: "High Priest", quanti: 1 },
           { ruoli: ["hp", "priest"], nome: tr("High Priest o Priest", "High Priest or Priest"), quanti: 1 },
+          { ruolo: "sniper", nome: "Sniper", quanti: 1 },
+          { ruolo: "prof", nome: "Professor", quanti: 1 },
         ],
       },
-      { nome: TANKER, posti: [{ ruolo: "hp", nome: "High Priest", quanti: 2, tanker: 1 }] },
+      {
+        nome: TANKER,
+        posti: [
+          { ruolo: "hp", nome: "High Priest", quanti: 2, forti: 1, tank: true },
+          { ruolo: "sniper", nome: "Sniper", quanti: 1 },
+          { ruolo: "prof", nome: "Professor", quanti: 1 },
+        ],
+      },
+      {
+        nome: SNIPER_INCUBUS,
+        posti: [
+          { ruolo: "hp", nome: "High Priest", quanti: 2, forti: 1, tank: true },
+          { ruolo: "sniper", nome: "Sniper", quanti: 1, forti: 1 },
+        ],
+      },
     ],
     // Bard e Dancer valgono anche non rinati, nello stesso posto di Clown e Gypsy (Alberto,
     // 18/10/2026); Priest, Hunter e Sage no, servono le skill da rinati. Dalla 1.18 sono classi
     // separate, perche' nelle run si veda quella scritta (Alberto: "non e' che deve uscire
-    // Clown/Bard"). `tanker`: la classe copre i posti `tanker`.
+    // Clown/Bard"). `forte`: la classe copre i posti `forti` del suo ruolo.
     classi: [
       { nome: "High Priest", ruolo: "hp" },
-      { nome: HP_TANKER, ruolo: "hp", tanker: true },
+      { nome: HP_TANKER, ruolo: "hp", forte: true },
       { nome: "Champion", ruolo: "champion" },
       { nome: "Sniper", ruolo: "sniper" },
+      { nome: SNIPER_INCUBUS, ruolo: "sniper", forte: true },
       { nome: "Clown", ruolo: "bard" },
       { nome: "Bard", ruolo: "bard" },
       { nome: "Gypsy", ruolo: "dancer" },
@@ -121,6 +141,7 @@ export const ISTANZE = [
       { nome: "High Priest", ruolo: "hp" },
       { nome: HP_TANKER, ruolo: "hp" },
       { nome: "Sniper", ruolo: "sniper" },
+      { nome: SNIPER_INCUBUS, ruolo: "sniper" },
       { nome: "Gypsy", ruolo: "dancer" },
       { nome: "Dancer", ruolo: "dancer" },
       { nome: "Clown", ruolo: "bard" },
@@ -149,8 +170,11 @@ export function ruoloDi(istanza, classe) {
   return istanza.classi.find((c) => c.nome === classe)?.ruolo ?? "altro";
 }
 
-/** Se una classe copre i posti `tanker` dell'istanza: l'HP Tanker. */
-export const eTanker = (istanza, classe) => istanza.classi.some((c) => c.nome === classe && c.tanker);
+/** Se una classe copre i posti `forti` del suo ruolo nell'istanza: HP Tanker e Sniper Incubus. */
+export const eForte = (istanza, classe) => istanza.classi.some((c) => c.nome === classe && c.forte);
+
+/** La classe che copre i posti `forti` di un ruolo, come si mostra: "HP Tanker" per gli High Priest. */
+export const classeForte = (istanza, ruolo) => nomeClasse(istanza.classi.find((c) => c.ruolo === ruolo && c.forte)?.nome ?? ruolo);
 
 /** I ruoli che coprono un posto: il suo, o quelli di `ruoli`. */
 export const ruoliDi = (posto) => posto.ruoli ?? [posto.ruolo];
@@ -161,7 +185,7 @@ export const composizioni = (istanza) => (istanza.tipi ? istanza.tipi.map((t) =>
 /**
  * Cosa deve avere una run con quei posti: per ogni posto, almeno tanti personaggi dei suoi ruoli
  * quanti ne chiedono lui e i posti con ruoli fra i suoi (un High Priest copre anche "High Priest
- * o Priest"), e i personaggi dei tanker. Con ruoli annidati o separati basta (teorema di Hall).
+ * o Priest"), e i personaggi delle classi forti. Con ruoli annidati o separati basta (teorema di Hall).
  */
 export function richieste(posti) {
   const esito = [];
@@ -169,13 +193,13 @@ export function richieste(posti) {
     const ruoli = ruoliDi(p);
     const quanti = posti.filter((q) => ruoliDi(q).every((r) => ruoli.includes(r))).reduce((n, q) => n + q.quanti, 0);
     if (quanti > 0 || p.massimo !== undefined) esito.push({ ruoli, quanti, massimo: p.massimo });
-    if (p.tanker) esito.push({ ruoli, quanti: p.tanker, tanker: true });
+    if (p.forti) esito.push({ ruoli, quanti: p.forti, forte: true });
   }
   return esito;
 }
 
 /** Se un membro di una run conta per una richiesta. */
-export const soddisfa = (membro, richiesta) => richiesta.ruoli.includes(membro.ruolo) && (!richiesta.tanker || membro.tanker === true);
+export const soddisfa = (membro, richiesta) => richiesta.ruoli.includes(membro.ruolo) && (!richiesta.forte || membro.forte === true);
 
 /** Se i membri di una run hanno tutto quello che chiedono i posti. */
 export const copre = (membri, posti) =>

@@ -45,6 +45,11 @@ describe("caselle degli account", () => {
     assert.equal(conTanker("HP/Clown/Stalker"), "HP Tanker/Clown/Stalker");
   });
 
+  it("Sniper Incubus, anche scritto Incubus o Snip Incubus", () => {
+    assert.deepEqual(leggiClassi("Sniper Incubus/HP").classi, ["Sniper Incubus", "High Priest"]);
+    assert.equal(pulisci("incubus, Snip Incubus Prof"), "Sniper Incubus/Prof");
+  });
+
   it("le sigle corte non si correggono: HQ non diventa HP", () => {
     assert.equal(riconosci("HQ"), null);
     assert.equal(riconosci("Wizard"), null);

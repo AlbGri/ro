@@ -19,7 +19,7 @@
  * Solo le classi, niente nomi dei personaggi: "basta la classe" (Alberto).
  */
 
-import { ALTRO, CLASSI, HP_TANKER, MAX_RUN, TANKER, tr } from "./dati.js";
+import { ALTRO, CLASSI, HP_TANKER, MAX_RUN, SNIPER_INCUBUS, TANKER, tr } from "./dati.js";
 
 // I soprannomi che si usano in gilda (Alberto, 22/10/2026: "non e' tanto standard").
 // SP Song e Bragi sono le canzoni di Dancer e Bard: valgono come Gypsy e Clown, le classi rinate
@@ -32,6 +32,8 @@ export const SOPRANNOMI = {
   bragi: "Clown",
   "sp song": "Gypsy",
   "tanker hp": HP_TANKER,
+  incubus: SNIPER_INCUBUS,
+  "snip incubus": SNIPER_INCUBUS,
   prof: "Professor",
   champ: "Champion",
   devo: "Paladin",

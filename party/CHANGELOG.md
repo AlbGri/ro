@@ -2,6 +2,17 @@
 
 Le versioni della pagina `party/`.
 
+## [1.20] - 2026-10-23
+
+- Horror Toy Factory: nuova run da 4 senza Professor, con 2 High Priest (almeno un HP Tanker),
+  Clown o Bard e uno Sniper Incubus, la nuova classe dello Sniper che regge la run da solo. Si
+  scrive nella casella dell'account, `Sniper Incubus` (anche `Incubus`), e vale anche per un
+  Account Gilda. Puo' essere una run qualsiasi della serata: con poche persone anche tutte
+- Una run completa, con il Professor, vale piu' di una run Sniper Incubus quando non costa run o
+  entrate. Le run con Sniper Incubus si riconoscono dalla scritta `con Sniper Incubus`
+- `Per la run N` spiega cosa manca anche per la run Sniper Incubus, se qualcuno ha uno Sniper
+  Incubus
+
 ## [1.19] - 2026-10-23
 
 - L'elenco esportato scrive chi non e' presente: `Nome (assente)`, anche con le run,

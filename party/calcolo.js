@@ -8,8 +8,8 @@
  * quei ruoli, e un posto con `massimo` ne ha al piu' tanti per run. Con `tipi`
  * (la Horror Toy Factory) ogni run ha in piu' i posti di uno dei tipi.
  *
- * Ordine di preferenza: piu' run complete, piu' entrate, piu' run del primo
- * tipo, piu' posti desiderati coperti (`desiderati` di un posto: non
+ * Ordine di preferenza: piu' run complete, piu' entrate, meno run dell'ultimo
+ * tipo, poi del penultimo e cosi' via, piu' posti desiderati coperti (`desiderati` di un posto: non
  * obbligatori, ma i primi fra i liberi, fino a tanti per run; la Gypsy/Dancer
  * della Horror Toy Factory), piu' personaggi dei ruoli preferiti nell'ordine
  * dell'istanza (Sniper, poi High Priest, poi Priest), entrate divise fra i
@@ -42,7 +42,7 @@
  * giocatori chiedevano 13 secondi.
  */
 
-import { composizioni, copre, eTanker, ISTANZE, richieste, ruoliDi, ruoloDi, soddisfa, TANKER, tr } from "./dati.js";
+import { classeForte, composizioni, copre, eForte, ISTANZE, richieste, ruoliDi, ruoloDi, soddisfa, tr } from "./dati.js";
 
 /**
  * I modi di usare un account: uno per ruolo che conta (posti obbligatori e
@@ -59,12 +59,12 @@ function usiAccount(account, istanza) {
   account.personaggi.forEach((p, indice) => {
     const ruolo = ruoloDi(istanza, p.classe);
     if (!contano.has(ruolo)) return;
-    const tanker = eTanker(istanza, p.classe);
-    const uso = { ruolo, personaggio: indice, ...(tanker ? { tanker } : {}) };
+    const forte = eForte(istanza, p.classe);
+    const uso = { ruolo, personaggio: indice, ...(forte ? { forte } : {}) };
     const gia = usi.findIndex((u) => u.ruolo === ruolo);
     // Con un High Priest e un HP Tanker nello stesso account conta l'HP Tanker, che copre di piu'.
     if (gia < 0) usi.push(uso);
-    else if (tanker && !usi[gia].tanker) usi[gia] = uso;
+    else if (forte && !usi[gia].forte) usi[gia] = uso;
   });
   if (usi.length === 0 && account.personaggi.length > 0 && !istanza.liberi) usi.push({ ruolo: "altro", personaggio: 0 });
   return usi;
@@ -90,14 +90,14 @@ const runDi = (giocatore, n) => (giocatore.run ? giocatore.run.filter((r) => r <
  *
  * @param {Array<{nome: string, run?: number[], account: Array<{personaggi: Array<{classe: string}>}>}>} giocatori
  *   solo i presenti; `run`: le run in cui c'e', con i numeri da 1 (senza, tutte); le run fatte sono
- *   sempre le prime. I posti `tanker` li coprono i personaggi di una classe con `tanker` (HP Tanker)
+ *   sempre le prime. I posti `forti` li coprono i personaggi di una classe `forte` (HP Tanker, Sniper Incubus)
  * @param {Array<{personaggi: Array<{classe: string}>}>} jolly solo i disponibili
  * @param {object} [istanza] una di `ISTANZE`, la prima se non si indica
  * @returns {{run: Array<{membri: Array<object>, preferiti: number[], tipo: number | null}>, entrate: number,
  *   preferiti: number[], jolly: number, fuori: Array<{giocatore: number, entrate: number, motivo: string}>,
  *   mancano: string[]}}
  *   Ogni membro: `giocatore`, `account` o `jolly` (indici), `personaggio`, `ruolo`, `posto` (null se libero),
- *   `tanker` se copre un posto `tanker`, `tank` se e' lui a tankare. `tipo`: l'indice in `istanza.tipi`
+ *   `forte` se copre un posto `forti`, `tank` se e' lui a tankare. `tipo`: l'indice in `istanza.tipi`
  */
 export function calcolaRun(giocatori, jolly, istanza = ISTANZE[0]) {
   const tipi = composizioni(istanza);
@@ -108,11 +108,14 @@ export function calcolaRun(giocatori, jolly, istanza = ISTANZE[0]) {
         const tipoRun = quante.flatMap((n, t) => Array(n).fill(t));
         const postiRun = tipoRun.map((t) => tipi[t]);
         const trovato = cerca(giocatori, jolly, istanza, postiRun);
-        // Piu' run del primo tipo: vale meno delle entrate e piu' di tutto il resto.
-        return trovato && { ...trovato, costo: trovato.costo - quante[0] * trovato.pesi.tipo, tipoRun };
+        // Meno run dell'ultimo tipo, poi del penultimo: la run del tipo t costa (nRun + 1)^t.
+        const tipo = quante.reduce((s, q, t) => s + q * (nRun + 1) ** t, 0);
+        return trovato && { ...trovato, tipo, tipoRun };
       })
       .filter(Boolean)
-      .sort((a, b) => a.costo - b.costo);
+      // Il tipo vale meno delle entrate e piu' del resto del costo. Fuori dai pesi del flusso, dove
+      // e' fisso per ogni ripartizione: con tre tipi i pesi supererebbero 2^53.
+      .sort((a, b) => b.scelti.length - a.scelti.length || a.tipo - b.tipo || a.costo - b.costo);
     // Le run fatte sono sempre le prime (Alberto, 23/10/2026): run r vuol dire la r-esima della serata.
     const puo = (g, r) => !giocatori[g].run || giocatori[g].run.includes(r + 1);
     const limitati = giocatori.some((g) => runDi(g, nRun) < nRun);
@@ -132,7 +135,7 @@ export function calcolaRun(giocatori, jolly, istanza = ISTANZE[0]) {
 
 /**
  * Passo 1: i personaggi che entrano in run complete con i posti `postiRun` (uno
- * per run), come `{scelti, costo, pesi}`: i contributi `{giocatore, account,
+ * per run), come `{scelti, costo}`: i contributi `{giocatore, account,
  * jolly, personaggio, ruolo}`, il costo senza i posti obbligatori, o null.
  *
  * La rete: sorgente, giocatori (una unita' per entrata), i loro account e i
@@ -160,8 +163,6 @@ function cerca(giocatori, jolly, istanza, postiRun) {
     // Un posto desiderato coperto dal suo ruolo e non dall'alternativa: la Gypsy prima del Soul Linker.
     ["principali", maxEntrate],
     ["desiderati", maxEntrate],
-    // Le run del primo tipo: le conta `calcolaRun`, che confronta le ripartizioni.
-    ["tipo", nRun],
     ["entrate", maxEntrate],
     ["posti", maxEntrate],
   ];
@@ -207,35 +208,35 @@ function cerca(giocatori, jolly, istanza, postiRun) {
     return desiderato.get(posto);
   };
   // Ruoli: un nodo per ruolo che conta, con i suoi posti obbligatori, desiderati e liberi. Con
-  // `tanker` un nodo in piu' per i personaggi HP Tanker: copre quei posti, poi vale come gli altri.
+  // `forti` un nodo in piu' per i personaggi della classe forte: copre quei posti, poi vale come gli altri.
   const ruoli = new Map();
-  const nodiTanker = new Map();
+  const nodiForti = new Map();
   const nodoRuolo = (ruolo) => {
     if (ruoli.has(ruolo)) return ruoli.get(ruolo);
     const n = nodo();
     ruoli.set(ruolo, n);
     const ammesso = !istanza.liberi || istanza.liberi.includes(ruolo);
     let quanti = 0;
-    let tanker = 0;
+    let forti = 0;
     let tetto = 0;
     postiRun.forEach((posti, r) => {
       const suoi = posti.filter((p) => !p.ruoli && p.ruolo === ruolo);
       const qui = suoi.reduce((s, p) => s + p.quanti, 0);
       quanti += qui;
-      tanker += suoi.reduce((s, p) => s + (p.tanker ?? 0), 0);
+      forti += suoi.reduce((s, p) => s + (p.forti ?? 0), 0);
       tetto += Math.min(...suoi.map((p) => p.massimo ?? Infinity), qui + (ammesso ? liberiRun[r] : 0));
     });
     const posto = istanza.posti.find((p) => p.ruolo === ruolo && p.desiderati > 0);
     const diAlternativa = istanza.posti.find((p) => p.alternativa?.ruolo === ruolo && p.desiderati > 0);
     const desiderati = posto ? Math.min(posto.desiderati * nRun, tetto - quanti) : 0;
     const alternativa = diAlternativa ? Math.min(diAlternativa.desiderati * nRun, tetto - quanti - desiderati) : 0;
-    if (tanker > 0) {
+    if (forti > 0) {
       const c = nodo();
-      nodiTanker.set(ruolo, c);
-      obbligatorio(c, tanker);
+      nodiForti.set(ruolo, c);
+      obbligatorio(c, forti);
       arco(c, n, maxEntrate, 0);
     }
-    if (quanti > tanker) obbligatorio(n, quanti - tanker);
+    if (quanti > forti) obbligatorio(n, quanti - forti);
     for (const m of multipli.values()) if (m.ruoli.includes(ruolo)) arco(n, m.nodo, m.quanti, 0);
     if (desiderati > 0) arco(n, nodoDesiderato(posto), desiderati, -pesi.desiderati - pesi.principali);
     if (alternativa > 0) arco(n, nodoDesiderato(diAlternativa), alternativa, -pesi.desiderati);
@@ -243,10 +244,10 @@ function cerca(giocatori, jolly, istanza, postiRun) {
     return n;
   };
   const versoRuoli = (n, account) => {
-    for (const { tanker, ...uso } of usiAccount(account, istanza)) {
+    for (const { forte, ...uso } of usiAccount(account, istanza)) {
       const preferito = pesi[`preferito:${uso.ruolo}`] ?? 0;
       const verso = nodoRuolo(uso.ruolo);
-      if (tanker && nodiTanker.has(uso.ruolo)) arco(n, nodiTanker.get(uso.ruolo), 1, -preferito, { uso: { ...uso, tanker: true } });
+      if (forte && nodiForti.has(uso.ruolo)) arco(n, nodiForti.get(uso.ruolo), 1, -preferito, { uso: { ...uso, forte: true } });
       else arco(n, verso, 1, -preferito, { uso });
     }
   };
@@ -290,7 +291,7 @@ function cerca(giocatori, jolly, istanza, postiRun) {
   });
   // Senza i posti obbligatori, che cambiano con la ripartizione: cosi' i costi si confrontano.
   const costo = archi.reduce((s, e, i) => s + flusso[i] * e.costo, 0) + obbligatori * pesi.posti;
-  return { scelti, costo, pesi };
+  return { scelti, costo };
 }
 
 /**
@@ -344,14 +345,14 @@ function flussoMinimo(nNodi, archi) {
 }
 
 /**
- * I posti obbligatori nell'ordine in cui si riempiono: prima quelli dei tanker,
+ * I posti obbligatori nell'ordine in cui si riempiono: prima quelli con `forti`,
  * poi quelli di un ruolo solo, poi quelli con piu' ruoli, cosi' nessuno prende i
  * personaggi che servono a un posto piu' stretto.
  */
 const ordinePosti = (posti) =>
   [...posti.entries()]
     .filter(([, p]) => p.quanti > 0)
-    .sort(([, a], [, b]) => (a.tanker ? 0 : a.ruoli ? 2 : 1) - (b.tanker ? 0 : b.ruoli ? 2 : 1));
+    .sort(([, a], [, b]) => (a.forti ? 0 : a.ruoli ? 2 : 1) - (b.forti ? 0 : b.ruoli ? 2 : 1));
 
 /**
  * Passo 2 con run tutte dello stesso tipo: divide i contributi in `nRun` run.
@@ -373,9 +374,9 @@ function dividi(scelti, istanza, posti, nRun) {
   for (const [, posto] of ordinePosti(posti)) {
     for (let q = 0; q < posto.quanti; q++) {
       const nodo = nuovoDestro();
-      const soloTanker = q < (posto.tanker ?? 0);
+      const soloForti = q < (posto.forti ?? 0);
       for (let r = 0; r < nRun; r++) {
-        const i = restanti.findIndex((c) => ruoliDi(posto).includes(c.ruolo) && (!soloTanker || c.tanker));
+        const i = restanti.findIndex((c) => ruoliDi(posto).includes(c.ruolo) && (!soloForti || c.forte));
         archi.push({ contributo: restanti.splice(i, 1)[0], destro: nodo });
       }
     }
@@ -495,7 +496,7 @@ function separa(scelti, istanza, gruppi, postiRun, puo) {
     for (const r of runGruppo) {
       const qui = new Map();
       for (const q of richieste(postiRun[r])) {
-        const chiave = `${[...q.ruoli].sort().join("+")}${q.tanker ? "+tanker" : ""}`;
+        const chiave = `${[...q.ruoli].sort().join("+")}${q.forte ? "+forte" : ""}`;
         const fuoriLiberi = istanza.liberi && !q.ruoli.some((x) => istanza.liberi.includes(x));
         const tetto = q.massimo ?? (fuoriLiberi ? q.quanti : Infinity);
         const prima = qui.get(chiave);
@@ -503,7 +504,7 @@ function separa(scelti, istanza, gruppi, postiRun, puo) {
       }
       for (const [chiave, { q, chiesti, tetto }] of qui) {
         let s = insiemi.find((x) => x.chiave === chiave);
-        if (!s) insiemi.push((s = { chiave, ruoli: q.ruoli, tanker: q.tanker === true, chiesti: [0, 0], tetto: [0, 0] }));
+        if (!s) insiemi.push((s = { chiave, ruoli: q.ruoli, forte: q.forte === true, chiesti: [0, 0], tetto: [0, 0] }));
         s.chiesti[g] += chiesti;
         s.tetto[g] += tetto;
       }
@@ -512,12 +513,12 @@ function separa(scelti, istanza, gruppi, postiRun, puo) {
   // Un insieme chiesto solo da un gruppo non ha massimi nell'altro.
   for (const s of insiemi) {
     gruppi.forEach((runGruppo, g) => {
-      const chiedono = runGruppo.filter((r) => richieste(postiRun[r]).some((q) => `${[...q.ruoli].sort().join("+")}${q.tanker ? "+tanker" : ""}` === s.chiave)).length;
+      const chiedono = runGruppo.filter((r) => richieste(postiRun[r]).some((q) => `${[...q.ruoli].sort().join("+")}${q.forte ? "+forte" : ""}` === s.chiave)).length;
       if (chiedono < runGruppo.length) s.tetto[g] = Infinity;
     });
   }
-  insiemi.sort((x, y) => x.ruoli.length * 2 - x.tanker - (y.ruoli.length * 2 - y.tanker));
-  const dentro = (x, y) => x !== y && x.ruoli.every((r) => y.ruoli.includes(r)) && (!y.tanker || x.tanker);
+  insiemi.sort((x, y) => x.ruoli.length * 2 - x.forte - (y.ruoli.length * 2 - y.forte));
+  const dentro = (x, y) => x !== y && x.ruoli.every((r) => y.ruoli.includes(r)) && (!y.forte || x.forte);
 
   // Nodi: 0 e 1 sorgente e pozzo dei limiti minimi, 2 sorgente e 3 pozzo veri, poi giocatori e insiemi.
   let nNodi = 4;
@@ -684,8 +685,8 @@ function assegnaPosti(membri, posti) {
   const obbligatori = [];
   for (const [indice, posto] of ordinePosti(posti)) {
     for (let i = 0; i < posto.quanti; i++) {
-      const k = liberi.findIndex((m) => ruoliDi(posto).includes(m.ruolo) && (i >= (posto.tanker ?? 0) || m.tanker));
-      const tank = posto.tank || i < (posto.tanker ?? 0);
+      const k = liberi.findIndex((m) => ruoliDi(posto).includes(m.ruolo) && (i >= (posto.forti ?? 0) || m.forte));
+      const tank = posto.tank && i < (posto.forti ?? posto.quanti);
       if (k >= 0) obbligatori.push({ ...liberi.splice(k, 1)[0], posto: posto.nome, indice, ...(tank ? { tank } : {}) });
     }
   }
@@ -766,13 +767,13 @@ function cosaMancaCon(giocatori, jolly, istanza, posti, run) {
       `${run} runs need ${minimo * run} entries, the players present make ${entrate}: some play fewer than ${run} runs.`,
     ));
   }
-  // I posti dei tanker sono un posto in piu', contato da solo o con gli altri, ma non insieme al suo
+  // I posti `forti` sono un posto in piu', contato da solo o con gli altri, ma non insieme al suo
   // posto: `quanti` li comprende gia'.
   const gruppi = posti
     .filter((p) => p.quanti > 0)
-    .flatMap((p) => [p, ...(p.tanker ? [{ ruoli: ruoliDi(p), nome: `${p.nome} (${TANKER})`, quanti: p.tanker, di: p }] : [])]);
+    .flatMap((p) => [p, ...(p.forti ? [{ ruoli: ruoliDi(p), nome: `${p.nome} (${classeForte(istanza, p.ruolo)})`, quanti: p.forti, di: p }] : [])]);
   const copreAccount = (account, gruppo) =>
-    account.personaggi.some((p) => gruppo.some((posto) => ruoliDi(posto).includes(ruoloDi(istanza, p.classe)) && (!posto.di || eTanker(istanza, p.classe))));
+    account.personaggi.some((p) => gruppo.some((posto) => ruoliDi(posto).includes(ruoloDi(istanza, p.classe)) && (!posto.di || eForte(istanza, p.classe))));
   const scarsi = [];
   for (let maschera = 1; maschera < 1 << gruppi.length; maschera++) {
     if (scarsi.some((s) => (s & maschera) === s)) continue;
@@ -802,6 +803,9 @@ function cosaMancaCon(giocatori, jolly, istanza, posti, run) {
  * tutte di quel tipo: le righe uguali una volta sola, le altre con il tipo
  * davanti. Si lasciano fuori i tipi che non si possono fare per niente (nessuno
  * ha un Champion, o i giocatori sono meno del suo party minimo), se ne resta uno.
+ * Si guardano solo i posti che distinguono il tipo: chi tanka e i posti `forti`
+ * che non tankano. Senza HP Tanker la run con l'HP Tanker si spiega (manca chi
+ * tanka), quella con lo Sniper Incubus solo se qualcuno ne ha uno.
  */
 function cosaManca(giocatori, jolly, istanza, run) {
   const tipi = composizioni(istanza);
@@ -809,7 +813,9 @@ function cosaManca(giocatori, jolly, istanza, run) {
   const account = [...giocatori.flatMap((g) => g.account), ...jolly];
   const possibile = (t) =>
     giocatori.length >= tipi[t].reduce((n, p) => n + p.quanti, 0) &&
-    istanza.tipi[t].posti.every((p) => account.some((a) => a.personaggi.some((x) => ruoliDi(p).includes(ruoloDi(istanza, x.classe)))));
+    istanza.tipi[t].posti
+      .filter((p) => p.tank || p.forti)
+      .every((p) => account.some((a) => a.personaggi.some((x) => ruoliDi(p).includes(ruoloDi(istanza, x.classe)) && (p.tank || eForte(istanza, x.classe)))));
   const scelti = tipi.map((_, t) => t).filter(possibile);
   const usati = scelti.length > 0 ? scelti : tipi.map((_, t) => t);
   const perTipo = usati.map((t) => cosaMancaCon(giocatori, jolly, istanza, tipi[t], run));
