@@ -47,11 +47,12 @@ export const ISTANZE = [
     //   un High Priest di supporto e un secondo High Priest o un Priest (`ruoli`: uno qualsiasi)
     // - un HP Tanker: due High Priest "scarsi" non la completano, ne basta uno che ci riesce.
     //   `tanker`: quanti dei posti li gioca un giocatore con la spunta TANKER
+    // Chi tanka ha l'etichetta Tanker nelle run: chi occupa un posto con `tank` o un posto `tanker`.
     tipi: [
       {
         nome: "Champion",
         posti: [
-          { ruolo: "champion", nome: "Champion", quanti: 1 },
+          { ruolo: "champion", nome: "Champion", quanti: 1, tank: true },
           { ruolo: "hp", nome: "High Priest", quanti: 1 },
           { ruoli: ["hp", "priest"], nome: tr("High Priest o Priest", "High Priest or Priest"), quanti: 1 },
         ],

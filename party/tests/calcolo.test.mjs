@@ -329,6 +329,9 @@ describe("HP tanker e Soul Linker (Alberto, 23/10/2026)", () => {
     const soloTanker = calcolaRun([giocatore("T", account("High Priest", "Champion")), scarso("H", account("High Priest")), ...altri.map((c) => giocatore(c, account(c)))], []);
     assert.equal(soloTanker.run.length, 1);
     assert.equal(soloTanker.run[0].tipo, 1);
+    // Chi tanka: il Champion nella prima, l'HP Tanker (non l'altro High Priest) nella seconda.
+    assert.deepEqual(esito.run[0].membri.filter((m) => m.tank).map((m) => giocatori[m.giocatore].nome), ["C"]);
+    assert.deepEqual(soloTanker.run[0].membri.filter((m) => m.tank).map((m) => m.giocatore), [0]);
   });
 
   it("un solo HP Tanker e due Champion: tre run, due col Champion e una con l'HP Tanker", () => {

@@ -318,11 +318,13 @@ function aggiorna() {
   esito.run.forEach((run, i) => {
     const righe = run.membri.map((m) => {
       const { giocatore, p, jolly: nomeJolly } = membro(presenti, jolly, m);
-      const etichetta = nomeJolly === null ? "" : `<span class="tag">${tr("Account Gilda", "Guild Account")}: ${escape(nomeJolly)}</span>`;
+      const etichette =
+        (m.tank ? `<span class="tag">Tanker</span>` : "") +
+        (nomeJolly === null ? "" : `<span class="tag">${tr("Account Gilda", "Guild Account")}: ${escape(nomeJolly)}</span>`);
       return `<tr>
         <td class="${m.posto ? "" : "libero"}">${m.posto ? escape(m.posto) : tr("libero", "free")}</td>
         <td>${escape(giocatore)}</td>
-        <td>${escape(classeMostrata(p.classe))}${etichetta}</td>
+        <td>${escape(classeMostrata(p.classe))}${etichette}</td>
       </tr>`;
     });
     html.push(`
@@ -362,6 +364,7 @@ function testoRun({ presenti, jolly, esito }) {
       return (
         `${m.posto ?? tr("Libero", "Free")}: ${giocatore}` +
         (m.posto ? "" : ` (${classe})`) +
+        (m.tank ? ", Tanker" : "") +
         (nomeJolly === null ? "" : `, ${tr("Account Gilda", "Guild Account")} ${nomeJolly}`)
       );
     });

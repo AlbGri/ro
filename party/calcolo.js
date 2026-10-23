@@ -81,7 +81,7 @@ function ripartizioni(tipi, n) {
  *   preferiti: number[], jolly: number, fuori: Array<{giocatore: number, entrate: number, motivo: string}>,
  *   mancano: string[]}}
  *   Ogni membro: `giocatore`, `account` o `jolly` (indici), `personaggio`, `ruolo`, `posto` (null se libero),
- *   `tanker` se copre un posto `tanker`. `tipo`: l'indice in `istanza.tipi`
+ *   `tanker` se copre un posto `tanker`, `tank` se e' lui a tankare. `tipo`: l'indice in `istanza.tipi`
  */
 export function calcolaRun(giocatori, jolly, istanza = ISTANZE[0]) {
   const tipi = composizioni(istanza);
@@ -623,7 +623,8 @@ function assegnaPosti(membri, posti) {
   for (const [indice, posto] of ordinePosti(posti)) {
     for (let i = 0; i < posto.quanti; i++) {
       const k = liberi.findIndex((m) => ruoliDi(posto).includes(m.ruolo) && (i >= (posto.tanker ?? 0) || m.tanker));
-      if (k >= 0) obbligatori.push({ ...liberi.splice(k, 1)[0], posto: posto.nome, indice });
+      const tank = posto.tank || i < (posto.tanker ?? 0);
+      if (k >= 0) obbligatori.push({ ...liberi.splice(k, 1)[0], posto: posto.nome, indice, ...(tank ? { tank } : {}) });
     }
   }
   obbligatori.sort((a, b) => a.indice - b.indice);

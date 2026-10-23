@@ -2,6 +2,11 @@
 
 Le versioni della pagina `party/`.
 
+## [1.14] - 2026-10-23
+
+- Nelle run, accanto alla classe di chi tanka (il Champion o l'HP Tanker), l'etichetta `Tanker`,
+  come quella degli Account Gilda; nel txt delle run `, Tanker`
+
 ## [1.13] - 2026-10-23
 
 - Horror Toy Factory: in ogni run qualcuno tanka. Puo' essere un HP Tanker, nuova colonna per i
