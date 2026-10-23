@@ -9,7 +9,7 @@
  */
 
 import { calcolaRun } from "./calcolo.js";
-import { ALTRO, CLASSI, ISTANZE, MAX_RUN, nomeClasse, TANKER, tr } from "./dati.js";
+import { ALTRO, CLASSI, composizioni, ISTANZE, MAX_RUN, nomeClasse, TANKER, tr } from "./dati.js";
 import { breve, leggiClassi, leggiElenco, pulisci, scriviElenco } from "./testo.js";
 
 const STORAGE_KEY = "ragnarok-party/stato";
@@ -107,6 +107,11 @@ function disegnaIstanza() {
   const desiderato = (p) =>
     `${quanti(p.desiderati, p)} per run` +
     (p.alternativa ? tr(` (se manca, ${quanti(p.desiderati, p.alternativa)})`, ` (or, if there is none, ${quanti(p.desiderati, p.alternativa)})`) : "");
+  const elenca = (parti) => (parti.length === 1 ? parti[0] : `${parti.slice(0, -1).join(", ")} ${tr("e", "and")} ${parti.at(-1)}`);
+  // Chi tanka, con i posti di ogni tipo di run: "1 Champion, 1 High Priest e 1 High Priest o Priest, oppure ...".
+  const tank = i.tipi
+    ? tr(" e chi tanka: ", " and a tank: ") + i.tipi.map((t) => elenca(t.posti.filter((p) => p.quanti > 0).map(obbligatorio))).join(tr(", oppure ", ", or "))
+    : "";
   const nomeRuolo = (ruolo) => i.posti.find((p) => p.ruolo === ruolo)?.nome ?? ruolo;
   const massimi = i.posti
     .filter((p) => p.massimo !== undefined)
@@ -117,6 +122,7 @@ function disegnaIstanza() {
   document.getElementById("composizione").textContent =
     tr(`${i.nome}: ogni run ha al massimo ${i.maxParty} persone e deve avere `, `${i.nome}: each run has at most ${i.maxParty} people and must have `) +
     obbligatori.map(obbligatorio).join(", ") +
+    tank +
     liberi +
     (massimi.length ? `, ${massimi.join(", ")}` : "") +
     (desiderati.length
@@ -131,6 +137,7 @@ function disegnaIstanza() {
     );
   document.getElementById("ordine").textContent =
     tr("Le run migliori: prima il numero di run, poi far entrare tutti il più possibile, ", "The best runs: first the number of runs, then letting everyone in as much as possible, ") +
+    (i.tipi ? tr(`poi più run con ${i.tipi[0].nome}, `, `then more runs with ${i.tipi[0].nome}, `) : "") +
     desiderati.map((p) => tr(`poi ${desiderato(p)}, `, `then ${desiderato(p)}, `)).join("") +
     i.preferiti.map((p) => `${tr("poi più", "then more")} ${p.nome}${p.perche ? ` (${p.perche})` : ""}, `).join("") +
     tr("poi run equilibrate.", "then balanced runs.");
@@ -151,7 +158,7 @@ function disegnaGiocatori() {
   const n = colonne();
   const stile = `style="--colonne: ${n}"`;
   // La spunta HP Tanker solo nelle istanze che la usano: resta salvata anche nelle altre.
-  const conTanker = istanza().posti.some((p) => p.tanker);
+  const conTanker = composizioni(istanza()).flat().some((p) => p.tanker);
   const classe = conTanker ? "riga con-tanker" : "riga";
   const intestazione = `<div class="${classe} intestazione" ${stile}>
     <span>${tr("Presente", "Present")}</span><span>${NOME_GIOCATORE}</span><span>Run</span>${conTanker ? `<span>${TANKER}</span>` : ""}${[...Array(n)].map((_, i) => `<span>Account ${i + 1}</span>`).join("")}
@@ -249,6 +256,14 @@ function calcola() {
 }
 
 // Le scritte del risultato, uguali nella pagina e nel txt delle run.
+/** Persone, Sniper e chi tanka in una run: "7 persone, 2 Sniper, con Champion". */
+const descriviRun = (run) =>
+  [
+    plurale(run.membri.length, tr("persona", "person"), tr("persone", "people")),
+    ...contoPreferiti(run.preferiti),
+    ...(run.tipo === null ? [] : [tr(`con ${istanza().tipi[run.tipo].nome}`, `with ${istanza().tipi[run.tipo].nome}`)]),
+  ].join(", ");
+
 // Nel riepilogo solo il primo preferito: degli altri il conto comprenderebbe i posti obbligatori.
 const contoPreferiti = (conti) => (istanza().preferiti.length ? [`${conti[0]} ${istanza().preferiti[0].nome}`] : []);
 const riepilogo = (esito) => [
@@ -315,7 +330,7 @@ function aggiorna() {
         <div class="stage-num">${i + 1}</div>
         <div>
           <h3 class="stage-title">Run ${i + 1}</h3>
-          <div class="stage-range">${escape([plurale(run.membri.length, tr("persona", "person"), tr("persone", "people")), ...contoPreferiti(run.preferiti)].join(", "))}</div>
+          <div class="stage-range">${escape(descriviRun(run))}</div>
           <table><thead><tr><th>${tr("Posto", "Slot")}</th><th>${NOME_GIOCATORE}</th><th>${tr("Classe", "Class")}</th></tr></thead><tbody>${righe.join("")}</tbody></table>
         </div>
       </article>`);
@@ -350,7 +365,7 @@ function testoRun({ presenti, jolly, esito }) {
         (nomeJolly === null ? "" : `, ${tr("Account Gilda", "Guild Account")} ${nomeJolly}`)
       );
     });
-    elenco(`Run ${i + 1}, ${[plurale(run.membri.length, tr("persona", "person"), tr("persone", "people")), ...contoPreferiti(run.preferiti)].join(", ")}`, voci);
+    elenco(`Run ${i + 1}, ${descriviRun(run)}`, voci);
   });
   if (esito.fuori.length > 0) elenco(tr("Non giocano tutte le run:", "Not playing all the runs:"), nonGiocano(presenti, esito));
   if (esito.mancano.length > 0) elenco(tr(`Per la run ${esito.run.length + 1}:`, `For run ${esito.run.length + 1}:`), esito.mancano);

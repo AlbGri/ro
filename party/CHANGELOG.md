@@ -4,11 +4,14 @@ Le versioni della pagina `party/`.
 
 ## [1.13] - 2026-10-23
 
-- Horror Toy Factory: nuova colonna `HP Tanker` per i giocatori che la reggono da High Priest.
-  Dei due High Priest di ogni run almeno uno deve essere di un giocatore con la spunta, con uno
-  qualsiasi dei suoi account (l'equipaggiamento si passa); un Account Gilda non conta come HP Tanker.
-  Se ne mancano, `Per la run N` lo dice. Nell'elenco della gilda: `Nome (HP Tanker)`; in
-  inglese Tanker HP
+- Horror Toy Factory: in ogni run qualcuno tanka. Puo' essere un HP Tanker, nuova colonna per i
+  giocatori che la reggono da High Priest: dei due High Priest della run almeno uno e' di un
+  giocatore con la spunta, con uno qualsiasi dei suoi account (l'equipaggiamento si passa); un
+  Account Gilda non conta come HP Tanker. Oppure un Champion con Steel Body, chiunque lo giochi,
+  con un High Priest di supporto e un secondo High Priest o un Priest, perche' il Champion non
+  puo' usare Safety Wall. A parita' di run ed entrate si preferisce il Champion. Ogni run dice
+  chi tanka, e `Per la run N` spiega cosa manca per l'uno e per l'altro. Nell'elenco della gilda:
+  `Nome (HP Tanker)`; in inglese Tanker HP
 - Nuova colonna `Run`: quante run puo' fare al massimo un giocatore, 3 se non si cambia. Chi ne
   fa meno per scelta non e' fra quelli che "non giocano tutte le run". Nell'elenco della gilda:
   `Nome (2 run)`, anche insieme alla spunta: `Nome (HP Tanker, 2 run)`

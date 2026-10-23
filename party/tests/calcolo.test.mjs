@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import { calcolaRun } from "../calcolo.js";
-import { ISTANZE, ruoloDi } from "../dati.js";
+import { composizioni, copre, ISTANZE, ruoliDi, ruoloDi } from "../dati.js";
 
 const ISTANZA = ISTANZE[0];
 
@@ -22,17 +22,14 @@ function personaggio(giocatori, jolly, m) {
   return a.personaggi[m.personaggio];
 }
 
-/** Una run rispetta persone, posti obbligatori, massimi e posti liberi riservati. */
-function runValida(membri, istanza) {
-  if (membri.length > istanza.maxParty) return false;
-  for (const p of istanza.posti) {
-    const ci = membri.filter((m) => m.ruolo === p.ruolo).length;
-    if (ci < p.quanti || ci > (p.massimo ?? Infinity)) return false;
-    if (membri.filter((m) => m.ruolo === p.ruolo && m.tanker).length < (p.tanker ?? 0)) return false;
-    if (istanza.liberi && !istanza.liberi.includes(p.ruolo) && ci > p.quanti) return false;
-  }
-  return !istanza.liberi || membri.every((m) => istanza.posti.some((p) => p.ruolo === m.ruolo));
-}
+/** Una run rispetta persone, posti obbligatori, massimi e posti liberi riservati di una composizione. */
+const validaCon = (membri, istanza, posti) =>
+  membri.length <= istanza.maxParty &&
+  copre(membri, posti) &&
+  (!istanza.liberi ||
+    (posti.every((p) => istanza.liberi.includes(p.ruolo) || membri.filter((m) => ruoliDi(p).includes(m.ruolo)).length <= p.quanti) &&
+      membri.every((m) => posti.some((p) => ruoliDi(p).includes(m.ruolo)))));
+const runValida = (membri, istanza) => composizioni(istanza).some((posti) => validaCon(membri, istanza, posti));
 
 /** Controlla le regole e rende il punteggio da confrontare con la ricerca esaustiva. */
 function verifica(giocatori, jolly, istanza, esito) {
@@ -79,7 +76,9 @@ function punteggio(run, istanza) {
   const totale = [...entrate.values()].reduce((a, b) => a + b, 0);
   const quadrati = [...entrate.values()].reduce((a, b) => a + b * b, 0);
   // + 0 trasforma -0 in 0, che deepEqual distingue.
-  return [run.length, totale, desiderati, principali, ...preferiti, -quadrati, -jolly, -persone2, -preferiti2].map((x) => x + 0);
+  // Le run che vanno bene per il primo tipo, quello preferito.
+  const primoTipo = istanza.tipi ? run.filter((m) => validaCon(m, istanza, composizioni(istanza)[0])).length : 0;
+  return [run.length, totale, primoTipo, desiderati, principali, ...preferiti, -quadrati, -jolly, -persone2, -preferiti2].map((x) => x + 0);
 }
 
 /** Il punteggio migliore provando tutte le ripartizioni. */
@@ -313,6 +312,61 @@ describe("HP tanker e Soul Linker (Alberto, 23/10/2026)", () => {
     ]);
   });
 
+  it("a parita' di run ed entrate la run col Champion; senza secondo High Priest o Priest l'HP Tanker", () => {
+    const giocatori = [
+      giocatore("T", account("High Priest")),
+      scarso("H", account("High Priest")),
+      ...altri.map((c) => giocatore(c, account(c))),
+      giocatore("C", account("Champion")),
+    ];
+    const esito = calcolaRun(giocatori, []);
+    verifica(giocatori, [], ISTANZA, esito);
+    assert.equal(esito.run[0].tipo, 0);
+    assert.deepEqual(esito.run[0].membri.slice(0, 3).map((m) => [m.posto, giocatori[m.giocatore].nome]), [
+      ["Champion", "C"], ["High Priest", "T"], ["High Priest o Priest", "H"],
+    ]);
+    // Se il Champion e l'HP Tanker sono lo stesso account, il Champion non ha il secondo High Priest.
+    const soloTanker = calcolaRun([giocatore("T", account("High Priest", "Champion")), scarso("H", account("High Priest")), ...altri.map((c) => giocatore(c, account(c)))], []);
+    assert.equal(soloTanker.run.length, 1);
+    assert.equal(soloTanker.run[0].tipo, 1);
+  });
+
+  it("un solo HP Tanker e due Champion: tre run, due col Champion e una con l'HP Tanker", () => {
+    const tre = (c) => [account(c), account(c), account(c)];
+    const giocatori = [
+      giocatore("T", account("High Priest")),
+      scarso("H", ...tre("High Priest")),
+      scarso("P", ...tre("Priest")),
+      giocatore("C", account("Champion"), account("Champion")),
+      ...altri.map((c) => giocatore(c, ...tre(c))),
+    ];
+    const esito = calcolaRun(giocatori, []);
+    verifica(giocatori, [], ISTANZA, esito);
+    assert.equal(esito.run.length, 3);
+    assert.deepEqual(esito.run.map((r) => r.tipo).sort(), [0, 0, 1]);
+    assert.ok(esito.run.filter((r) => r.tipo === 1).every((r) => r.membri.some((m) => m.giocatore === 0 && m.tanker)));
+  });
+
+  it("20 giocatori con tre account, pochi Champion e HP Tanker: run miste, e risponde in fretta", () => {
+    let seme = 11;
+    const caso = (n) => Math.floor((seme = (seme * 1103515245 + 12345) % 2147483648) / 2147483648 * n);
+    const tutte = ["High Priest", "High Priest", "Sniper", "Clown/Bard", "Professor", "Gypsy/Dancer", "Priest", "Soul Linker", "Knight"];
+    // Un solo HP Tanker con un High Priest e due Champion: tre run solo mescolando i tipi.
+    const giocatori = [
+      giocatore("T", account("High Priest"), account("Knight"), account("Knight")),
+      scarso("C1", account("Champion"), account("High Priest"), account("Priest")),
+      scarso("C2", account("Champion"), account("High Priest"), account("Priest")),
+      ...altri.map((c) => scarso(c, account(c), account(c), account(c))),
+      ...[...Array(14)].map((_, g) => scarso(`G${g}`, ...[...Array(3)].map(() => account(...[...Array(1 + caso(2))].map(() => tutte[caso(tutte.length)]))))),
+    ];
+    const inizio = performance.now();
+    const esito = calcolaRun(giocatori, [], ISTANZA);
+    verifica(giocatori, [], ISTANZA, esito);
+    assert.ok(performance.now() - inizio < 5000);
+    assert.equal(esito.run.length, 3);
+    assert.equal(new Set(esito.run.map((r) => r.tipo)).size, 2);
+  });
+
   it("il Soul Linker prende il posto della Gypsy/Dancer solo se manca", () => {
     const minimo = ["High Priest", "High Priest", "Sniper", "Clown/Bard", "Professor"].map((c, i) => giocatore(`M${i}`, account(c)));
     const sniper = [...Array(6)].map((_, i) => giocatore(`S${i}`, account("Sniper")));
@@ -459,6 +513,36 @@ describe("confronto con la ricerca esaustiva", () => {
       const atteso = forzaBruta(giocatori, jolly, istanza);
       assert.deepEqual(verifica(giocatori, jolly, istanza, esito), atteso, JSON.stringify({ giocatori, jolly, istanza }));
     }
+  });
+
+  it("300 casi casuali con due tipi di run, come Champion e HP Tanker", () => {
+    // Pensati per mescolare i tipi: meno run, piu' Champion e High Priest. Misurato il 23/10/2026: su
+    // 3.000 casi (47 con run miste) sempre lo stesso punteggio della ricerca esaustiva.
+    const istanzaTipi = {
+      ...piccola,
+      posti: [
+        { ruolo: "sniper", nome: "Sniper", quanti: 0, desiderati: 1, alternativa: { ruolo: "sl", nome: "Soul Linker" } },
+        { ruolo: "knight", nome: "Knight", quanti: 1 },
+      ],
+      tipi: [
+        { nome: "Champion", posti: [{ ruolo: "champion", nome: "Champion", quanti: 1 }, { ruoli: ["hp", "priest"], nome: "HP o Priest", quanti: 1 }] },
+        { nome: "Tanker", posti: [{ ruolo: "hp", nome: "High Priest", quanti: 1, tanker: 1 }] },
+      ],
+      classi: [...piccola.classi, { nome: "Champion", ruolo: "champion" }, { nome: "Knight", ruolo: "knight" }, { nome: "Soul Linker", ruolo: "sl" }],
+    };
+    const classiTipi = ["High Priest", "Sniper", "Priest", "Champion", "Knight", "Soul Linker"];
+    let misti = 0;
+    for (let n = 0; n < 300; n++) {
+      const istanza = { ...istanzaTipi, maxParty: 3 + intero(2), maxRun: 2 + intero(2) };
+      const nGiocatori = istanza.maxRun === 3 ? 3 : 3 + intero(2);
+      const giocatori = [...Array(nGiocatori)].map((_, g) =>
+        (intero(3) ? scarso : giocatore)(`G${g}`, ...[...Array(1 + intero(2))].map(() => account(...[...Array(1 + intero(2))].map(() => classiTipi[intero(6)])))),
+      );
+      const esito = calcolaRun(giocatori, [], istanza);
+      if (new Set(esito.run.map((r) => r.tipo)).size > 1) misti++;
+      assert.deepEqual(verifica(giocatori, [], istanza, esito), forzaBruta(giocatori, [], istanza), JSON.stringify({ giocatori, istanza }));
+    }
+    assert.ok(misti > 0, "nessun caso con run miste");
   });
 
   it("300 casi casuali con i posti liberi riservati, come l'Endless Cellar", () => {
