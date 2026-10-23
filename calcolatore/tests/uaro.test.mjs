@@ -250,3 +250,20 @@ test("limite degli slot attivo di partenza: copricapo doppio e arma a due mani",
   assert.equal(m.c.A_left.disabled, true);
   assert.equal(m.c.A_left.value, "305"); // (no shield)
 });
+
+test("Garling Card: CRI +2, danno critico +5%, CRI +1 ogni 2 raffinamenti delle calzature", () => {
+  const m = creaMotore();
+  const garling = costante(m, "GARLING_CARD_UARO");
+  assert.equal(costante(m, "m_Card")[garling][2], "Garling");
+  assert.ok(costante(m, "m_CardSort")[6].includes(garling)); // fra le carte delle calzature
+  scegli(m, "A_shoes", m.c.A_shoes.elenco()[1].value); // la prima calzatura che il Novice puo' usare
+  const conCarta = (carta, raffinamento) => {
+    scegli(m, "A_shoes_card", carta);
+    scegli(m, "A_SHOES_REFINE", raffinamento);
+    return [m.n_A_CRI, costante(m, "bonusValues")[costante(m, "BONUSID").CRIT_DMG_PERCENT]];
+  };
+  const [cri, danno] = conCarta(0, 0);
+  assert.deepEqual(conCarta(garling, 0), [cri + 2, danno + 5]);
+  assert.deepEqual(conCarta(garling, 5), [cri + 4, danno + 5]);
+  assert.deepEqual(conCarta(garling, 9), [cri + 6, danno + 5]);
+});

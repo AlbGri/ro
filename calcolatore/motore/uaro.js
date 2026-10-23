@@ -8,8 +8,10 @@ var OLD_MITRA_UARO = 0;
 var GIGANTIC_GOAT_UARO = [];
 var BOITATA_HAT_UARO = 0;
 var OLD_MINSTREL_HAT_UARO = 0;
+var GARLING_CARD_UARO = 0;
 
-// Chiamata da StAllCalc (statistiche.js) dopo la somma dei bonus dell'equipaggiamento
+// Chiamata da StAllCalc (statistiche.js) dopo la somma dei bonus dell'equipaggiamento; oltre ai
+// copricapi, le carte i cui bonus dipendono dal raffinamento
 function applyUaroHeadgearBonuses() {
   // Mitra: MATK +10 con INT base almeno 90 (Item Changes, Dimonka)
   if (n_A_Equip[2] == 1876 && SU_INT >= 90) bonusValues[BONUSID.MATK] += 10;
@@ -30,6 +32,9 @@ function applyUaroHeadgearBonuses() {
   // Old Minstrel Song's Hat: danno fisico a distanza +1% ogni 2 raffinamenti (screen del gioco)
   if (OLD_MINSTREL_HAT_UARO && n_A_Equip[2] == OLD_MINSTREL_HAT_UARO)
     bonusValues[BONUSID.RANGED_ATK_PERCENT] += Math.floor(n_A_HEAD_REFINE / 2);
+  // Garling Card: CRI +1 ogni 2 raffinamenti delle calzature (screen del gioco)
+  if (GARLING_CARD_UARO && n_A_card[13] == GARLING_CARD_UARO)
+    bonusValues[BONUSID.CRIT] += Math.floor(n_A_SHOES_REFINE / 2);
 }
 
 (function () {
@@ -195,11 +200,22 @@ function applyUaroHeadgearBonuses() {
 
   // Kraken Card (mantello): FLEE +10, resistenza a tutti gli elementi +25%, Hiding livello 1 (220,
   // 22 come la Smokie Card)
-  var kraken = m_Card.length;
-  m_Card.push([kraken, 5, "Kraken", 0, BONUSID.FLEE, 10, 60, 25, 61, 25, 62, 25, 63, 25, 64, 25, 65, 25, 66, 25, 67, 25, 68, 25, 69, 25, 220, 22, 0]);
-  var mantelli = m_CardSort[5];
-  var dove = mantelli.findIndex(function (id, k) {
-    return k > 0 && (id == "NULL" || m_Card[id][2].localeCompare("Kraken") > 0);
-  });
-  mantelli.splice(dove, 0, kraken);
+  aggiungiCarta(5, "Kraken", 0, [BONUSID.FLEE, 10, 60, 25, 61, 25, 62, 25, 63, 25, 64, 25, 65, 25, 66, 25, 67, 25, 68, 25, 69, 25, 220, 22]);
+
+  // Garling Card (calzature, evento Halloween 2026, id 300557 nel gioco): CRI +2, danno critico
+  // +5%; CRI +1 ogni 2 raffinamenti delle calzature in applyUaroHeadgearBonuses
+  GARLING_CARD_UARO = aggiungiCarta(6, "Garling", "<b>For every 2 refine levels of the footgear:</b><br>CRIT +1", [BONUSID.CRIT, 2, BONUSID.CRIT_DMG_PERCENT, 5]);
+
+  // Una carta nuova in fondo a m_Card e nell'elenco del suo posto (m_CardSort[posto]) in ordine
+  // alfabetico, dopo la prima voce (nessuna carta). Restituisce il suo id
+  function aggiungiCarta(posto, nome, descrizione, bonus) {
+    var id = m_Card.length;
+    m_Card.push([id, posto, nome, descrizione].concat(bonus, [0]));
+    var elenco = m_CardSort[posto];
+    var dove = elenco.findIndex(function (altro, k) {
+      return k > 0 && (altro == "NULL" || m_Card[altro][2].localeCompare(nome) > 0);
+    });
+    elenco.splice(dove, 0, id);
+    return id;
+  }
 })();

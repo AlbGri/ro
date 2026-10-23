@@ -2,6 +2,11 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.15] - 2026-10-23
+
+- Nuova carta per le calzature, Garling Card (evento Halloween 2026): CRI +2, danno critico +5%,
+  e CRI +1 ogni 2 raffinamenti delle calzature, dallo screen del gioco
+
 ## [1.14] - 2026-10-23
 
 - "Limitare gli slot dell'equipaggiamento" (riquadro Opzioni) e' attivo di partenza: con un
