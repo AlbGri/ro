@@ -437,6 +437,13 @@ describe("serializzazione", () => {
     assert.equal(Settings.fromDict({ geometry: "820x560+100+50" }).geometry, "820x560+100+50");
   });
 
+  it("conserva la lingua del desktop, italiano salvo una scelta valida", () => {
+    assert.equal(Settings.fromDict({}).language, "it");
+    assert.equal(Settings.fromDict({ language: "en" }).language, "en");
+    assert.equal(Settings.fromDict({ language: "fr" }).language, "it");
+    assert.equal(Settings.fromDict({ language: "en" }).toDict().language, "en");
+  });
+
   it("crea un preset da un timer", () => {
     const preset = Preset.fromTimer(makeTimer({ dmin: 190, dmax: 370 }));
     assert.equal(preset.dmin, 190);

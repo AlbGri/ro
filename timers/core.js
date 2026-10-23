@@ -9,7 +9,7 @@
  * epoch, le durate `dmin` e `dmax` sono minuti.
  */
 
-export const VERSION = "1.5.3";
+export const VERSION = "1.6.0";
 export const DATA_VERSION = 4;
 
 export const DEFAULT_CATEGORIES = ["MvP", "Quest"];
@@ -22,6 +22,9 @@ export const MAX_ARCHIVE = 200;
 
 // Tetto alla colonna Bip: due cifre, e a un bip ogni 15 secondi sono gia' 25 minuti.
 export const MAX_BEEPS = 99;
+// Lingua dell'applicazione desktop, salvata nel file dati: il web la conserva soltanto.
+const LANGUAGES = ["it", "en"];
+const DEFAULT_LANGUAGE = "it";
 
 export const MINUTE = 60_000;
 export const HOUR = 60 * MINUTE;
@@ -790,13 +793,16 @@ const SETTINGS_FIELDS = [
   ["repeat_alert", "repeatAlert", Boolean],
   ["alert_repeat_seconds", "alertRepeatSeconds", toInt],
   ["alert_max_count", "alertMaxCount", toInt],
+  ["language", "language", String],
 ];
 
 /**
  * Preferenze dell'utente, salvate insieme ai timer.
  *
- * `topmost` e `geometry` non hanno effetto nel browser: restano per non
- * cancellare le preferenze dell'applicazione desktop nel file condiviso.
+ * `topmost`, `geometry` e `language` non hanno effetto nel browser: restano per
+ * non cancellare le preferenze dell'applicazione desktop nel file condiviso. La
+ * lingua del sito sta in `ragnarok/lang`, la gestisce gate.js.
+ * `repeatAlert` e `alertMaxCount` restano per l'eseguibile 1.0.0.
  */
 export class Settings {
   constructor() {
@@ -806,6 +812,7 @@ export class Settings {
     this.repeatAlert = true;
     this.alertRepeatSeconds = 15;
     this.alertMaxCount = 6;
+    this.language = DEFAULT_LANGUAGE;
   }
 
   /** @returns {object} Le impostazioni serializzate per il file dati. */
@@ -833,6 +840,7 @@ export class Settings {
       }
     }
     if (!isValidGeometry(settings.geometry)) settings.geometry = "";
+    if (!LANGUAGES.includes(settings.language)) settings.language = DEFAULT_LANGUAGE;
     return settings;
   }
 }

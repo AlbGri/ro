@@ -355,6 +355,15 @@ def test_settings_accetta_geometria_valida():
     assert Settings.from_dict({"geometry": "820x560+100+50"}).geometry == "820x560+100+50"
 
 
+@pytest.mark.parametrize(
+    "payload, expected",
+    [({}, "it"), ({"language": "en"}, "en"), ({"language": "it"}, "it"),
+     ({"language": "fr"}, "it"), ({"language": 3}, "it")],
+)
+def test_settings_lingua_italiano_salvo_scelta_valida(payload, expected):
+    assert Settings.from_dict(payload).language == expected
+
+
 # ------------------------------------------------------ geometria finestra ---
 
 
@@ -439,6 +448,43 @@ def test_round_trip_completo(store):
     assert riletto.presets["atroce"].dmax == 370
     assert riletto.settings.volume == 33
     assert riletto.settings.topmost is True
+
+
+def test_backup_ripristinato_tiene_le_preferenze_del_computer(store, tmp_path):
+    origine = TimerStore(path=tmp_path / "web.json")
+    origine.add(make_timer("Atroce", minutes_ago=10))
+    origine.timers["1"].beeps = 4
+    origine.remember("mappa", "ve_fild02")
+    origine.settings.volume = 20
+    origine.settings.language = "en"
+    origine.settings.geometry = "900x600+0+0"
+    backup = tmp_path / "backup.json"
+    assert origine.export_to(backup)
+
+    store.add(make_timer("Da sostituire"))
+    store.settings.geometry = "820x560+10+10"
+    store.settings.topmost = True
+    ripristinato = store.restore_backup(backup)
+
+    assert ripristinato is not None
+    assert ripristinato.path == store.path
+    assert [(t.name, t.beeps) for t in ripristinato.timers.values()] == [("Atroce", 4)]
+    assert "ve_fild02" in ripristinato.history["mappa"]
+    assert ripristinato.settings.volume == 20
+    assert ripristinato.settings.language == "it"
+    assert ripristinato.settings.geometry == "820x560+10+10"
+    assert ripristinato.settings.topmost is True
+
+
+@pytest.mark.parametrize("contenuto", ["{ non e' json", "[]", '{"timers": 3}', '{"altro": []}'])
+def test_backup_non_valido_rifiutato(store, tmp_path, contenuto):
+    backup = tmp_path / "backup.json"
+    backup.write_text(contenuto, encoding="utf-8")
+    assert store.restore_backup(backup) is None
+
+
+def test_backup_assente_rifiutato(store, tmp_path):
+    assert store.restore_backup(tmp_path / "manca.json") is None
 
 
 def test_ripiego_sul_backup_se_il_file_e_corrotto(store):

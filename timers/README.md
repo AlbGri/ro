@@ -4,14 +4,14 @@ Timer per le finestre di respawn di MvP e quest di Ragnarok Online: registri l'o
 
 Le applicazioni sono due, con lo stesso formato dei dati:
 
-- la [versione web](#versione-web), su `albgri.github.io/ro/timers/`: in italiano o in inglese, installabile su telefono e computer. Oggi le novita' arrivano li'
-- l'[applicazione desktop](#applicazione-desktop) per Windows, in tkinter e senza dipendenze esterne: in inglese, con un allarme sonoro e il lampeggio nella barra delle applicazioni che avvisano anche con il browser chiuso. L'eseguibile pubblicato nelle [release](https://github.com/AlbGri/ro/releases) e' piu' vecchio della versione web
+- la [versione web](#versione-web), su `albgri.github.io/ro/timers/`: in italiano o in inglese, installabile su telefono e computer
+- l'[applicazione desktop](#applicazione-desktop) per Windows, in tkinter e senza dipendenze esterne: in italiano o in inglese, con un allarme sonoro e il lampeggio nella barra delle applicazioni che avvisano anche con il browser chiuso. L'eseguibile si scarica dalle [release](https://github.com/AlbGri/ro/releases)
 
 Commenti, docstring e documentazione sono in italiano.
 
 ## Finestre di respawn
 
-I nomi sono quelli della versione web; nel desktop `Ora`, `Spawn max` e `Manca` si chiamano `Time`, `Max. Spawn` e `Left`.
+I nomi delle colonne sono quelli in italiano, uguali nelle due applicazioni.
 
 Ogni timer ha una durata minima e una massima, che diventano due orari: `Spawn` e `Spawn max`. Uccidendo un MvP alle 13:12 con respawn dichiarato di 180-190 minuti si inserisce `13:12`, `180` e `190`, e la tabella mostra `Spawn 16:12` e `Spawn max 16:22`.
 
@@ -40,18 +40,17 @@ comandi `Backup dei dati` e `Ripristina da backup` del menu ⚙ in alto a destra
 Il layout e' unico: su telefono ogni timer e' una scheda, da 880px in su le
 stesse celle diventano le colonne della tabella.
 
-Le scritte sono in italiano; il pulsante `English` nel menu ⚙ le porta
-in inglese, e la scelta vale per tutto il sito. In italiano le colonne si
+Le scritte sono in italiano; il pulsante `EN` in alto, accanto all'⚙, le
+porta in inglese, e la scelta vale per tutto il sito. In italiano le colonne si
 chiamano `Suono`, `Bip`, `Nome`, `Mappa`, `Categoria`, `Ora`, `Spawn`,
 `Spawn max` e `Manca`; in inglese `Sound`, `Beeps`, `Name`, `Map`, `Category`,
-`Time`, `Spawn`, `Max. Spawn` e `Left`, che tolta `Beeps` sono i nomi
-dell'applicazione desktop. I termini del gioco, come `Spawn` e `MvP`, restano
-in inglese.
+`Time`, `Spawn`, `Max. Spawn` e `Left`, come nell'applicazione desktop. I
+termini del gioco, come `Spawn` e `MvP`, restano in inglese.
 
 La colonna `Bip` dice quante volte suona l'allarme di quel timer, una ogni 15
 secondi finche' la riga non viene toccata: si scrive un numero da 1 a 99, e il
-campo vuoto vale 1. Il numero viaggia nel file dati (campo `beeps` del timer):
-l'applicazione desktop lo conserva ma non lo usa.
+campo vuoto vale 1. Il numero viaggia nel file dati (campo `beeps` del timer)
+e vale anche nell'applicazione desktop.
 
 Differenze rispetto al desktop, tutte volute:
 
@@ -62,7 +61,8 @@ Differenze rispetto al desktop, tutte volute:
 | `Ctrl+D`, `Ctrl+R` | `d`, `r`, piu' `n` per un timer nuovo. Nel browser quelle combinazioni sono gia' occupate |
 | colore di categoria per ordine di apparizione | colore derivato dal nome, uguale su ogni dispositivo |
 | allarme sonoro e lampeggio della barra | suono, notifica di sistema e titolo della scheda lampeggiante |
-| `Repeat alert` nelle impostazioni, uguale per tutti i timer | colonna `Bip`, un numero di ripetizioni per ogni timer |
+| fuso orario di Windows | fuso scelto toccando l'orologio, perche' alcuni browser lo dichiarano sbagliato |
+| lingua salvata nel file dati | lingua del sito, uguale per tutte le pagine |
 
 ### Fuso orario
 
@@ -100,18 +100,21 @@ pubblicazione riguarda il repository intero: sono descritti nel
 
 ## Applicazione desktop
 
-L'interfaccia e' in inglese: questa sezione usa i suoi nomi.
+L'interfaccia e' in italiano; il pulsante `EN` in alto a destra la porta in
+inglese, e `IT` la riporta in italiano. La scelta resta nel file dati. Accanto
+c'e' l'orologio con i secondi, nel fuso orario di Windows.
 
 ### Colonne
 
 | Colonna | Contenuto |
 |---|---|
-| `Sound` | casella di spunta, attiva di default. Un clic la inverte: deselezionata, quel timer non emette allarmi |
-| `Name`, `Map`, `Category` | dati del timer. La categoria determina il colore della riga |
-| `Time` | ora dell'uccisione |
-| `Spawn` | `Time` piu' la durata minima |
-| `Max. Spawn` | `Time` piu' la durata massima, `-` per i timer a durata fissa |
-| `Left` | contatore verso la soglia corrente, negativo quando e' passata, `-` oltre le 24 ore dalla scadenza |
+| `Suono` | casella di spunta, attiva di default. Un clic la inverte: deselezionata, quel timer non emette allarmi |
+| `Bip` | quante volte suona l'allarme, una ogni 15 secondi finche' non selezioni la riga. Da 1 a 99, vuoto vale 1 |
+| `Nome`, `Mappa`, `Categoria` | dati del timer. La categoria determina il colore della riga |
+| `Ora` | ora dell'uccisione |
+| `Spawn` | `Ora` piu' la durata minima |
+| `Spawn max` | `Ora` piu' la durata massima, `-` per i timer a durata fissa |
+| `Manca` | contatore verso la soglia corrente, negativo quando e' passata, `-` oltre le 24 ore dalla scadenza |
 
 ### Setup
 
@@ -126,10 +129,10 @@ L'applicazione usa solo la libreria standard: per eseguirla non serve installare
 
 ### Utilizzo
 
-Compila il form e premi `Add` o `Invio`:
+Compila il form e premi `Aggiungi` o `Invio`:
 
-- **Name, Map, Category**: campi con storico e completamento automatico. La categoria determina il colore della riga e per impostazione predefinita e' `MvP`.
-- **Time**: ora dell'uccisione in formato `HH:MM`, o `HH:MM:SS` nella versione web. Se lo lasci vuoto parte da adesso. Un orario che risulterebbe oltre 12 ore nel futuro viene letto come "ieri", cosi' un'uccisione delle 23:50 registrata dopo mezzanotte non parte fra un giorno.
+- **Nome, Mappa, Categoria**: campi con storico e completamento automatico. La categoria determina il colore della riga e per impostazione predefinita e' `MvP`.
+- **Ora**: ora dell'uccisione, `HH:MM` o `HH:MM:SS`. Se la lasci vuota parte da adesso. Un orario che risulterebbe oltre 12 ore nel futuro viene letto come "ieri", cosi' un'uccisione delle 23:50 registrata dopo mezzanotte non parte fra un giorno. Modificando la cella `Ora` il campo mostra anche i secondi; se non lo cambi, il timer resta dov'era.
 - **Min / Max**: durata della finestra in minuti. Accetta `190`, `90,5`, `1h30`, `3:10`. Lasciando `Max` vuoto il timer e' a durata fissa.
 
 Scrivendo un nome gia' usato, mappa, categoria e durate vengono compilate con i valori dell'ultima volta. I preset si imparano dai timer che crei: non c'e' una tabella di respawn precaricata, perche' i tempi variano da server a server.
@@ -138,21 +141,25 @@ Scrivendo un nome gia' usato, mappa, categoria e durate vengono compilate con i 
 
 | Comando | Effetto |
 |---|---|
-| Clic sulla casella `Sound` | attiva o disattiva l'allarme di quel timer |
-| Doppio clic su una cella | modifica nome, mappa, categoria, orario o durate |
-| `+1 (duplicate)` / `Ctrl+D` | ricrea il timer selezionato a partire da adesso |
-| `Refresh` / `Ctrl+R` | fa ripartire il timer selezionato da adesso |
-| `Remove` / `Canc` | elimina i timer selezionati, con conferma |
-| `Undo` / `Ctrl+Z` | ripristina l'ultimo gruppo rimosso o archiviato |
-| `Clear expired` | archivia i timer con la finestra chiusa da almeno un'ora |
+| Clic sulla casella `Suono` | attiva o disattiva l'allarme di quel timer |
+| Doppio clic su una cella | modifica bip, nome, mappa, categoria, orario o durate |
+| `+1 (duplica da adesso)` / `Ctrl+D` | ricrea il timer selezionato a partire da adesso |
+| `Riparti da adesso` / `Ctrl+R` | fa ripartire il timer selezionato da adesso |
+| `Rimuovi` / `Canc` | elimina i timer selezionati, con conferma |
+| `Annulla` / `Ctrl+Z` | ripristina l'ultimo gruppo rimosso o archiviato |
+| `Togli gli scaduti` | archivia i timer con la finestra chiusa da almeno un'ora |
+| `Backup dei dati` | salva una copia dei dati in un file, lo stesso del backup della versione web |
+| `Ripristina da backup` | sostituisce i timer con quelli di un backup, del desktop o del web, con conferma |
 
-Selezionare una riga vale come "l'ho visto" e ferma la ripetizione dell'allarme senza spegnerlo per le volte successive; togliere la spunta a `Sound` lo disattiva stabilmente per quel timer.
+Selezionare una riga vale come "l'ho visto" e ferma la ripetizione dell'allarme senza spegnerlo per le volte successive; togliere la spunta a `Suono` lo disattiva stabilmente per quel timer.
 
-Niente sparisce dalla lista da solo: i timer restano finche' non li togli tu. `Clear expired` sposta nella sezione `archive` del file dati quelli con la finestra chiusa da almeno un'ora, e anche quello si annulla con `Ctrl+Z`.
+Niente sparisce dalla lista da solo: i timer restano finche' non li togli tu. `Togli gli scaduti` sposta nella sezione `archive` del file dati quelli con la finestra chiusa da almeno un'ora, e anche quello si annulla con `Ctrl+Z`.
 
 ### Dati e impostazioni
 
-Tutto sta in `ragnarok_timers.json`, accanto allo script o all'eseguibile: timer, storico dei nomi, preset, archivio, volume, posizione della finestra e opzione "sempre in primo piano".
+Tutto sta in `ragnarok_timers.json`, accanto allo script o all'eseguibile: timer, storico dei nomi, preset, archivio, volume, lingua, posizione della finestra e opzione "sempre in primo piano".
+
+`Ripristina da backup` prende dal file timer, storico, preset, archivio e volume; posizione della finestra, primo piano e lingua restano quelli del computer. Il backup del desktop si chiama `ragnarok_timers_backup.json`, per non sostituire per sbaglio il file dati se lo salvi accanto all'exe.
 
 Il salvataggio e' atomico e mantiene una copia `.bak`: se il file principale risulta illeggibile, all'avvio i dati vengono recuperati dal backup. Gli errori finiscono in `ragnarok_timers.log`.
 
@@ -165,6 +172,7 @@ I percorsi partono da questa cartella, `timers/`.
 | `desktop/ragnarok_timers.py` | interfaccia tkinter: finestra, tabella, editing inline, entry point |
 | `desktop/timers_core.py` | modello dati, persistenza, audio, parsing. Nessun import di tkinter |
 | `desktop/tests/test_core.py` | test pytest della logica non grafica |
+| `desktop/icon.png`, `desktop/icon.ico` | icona della finestra e dell'exe, rigenerate da `../tools/make-icons.mjs` |
 | `index.html`, `style.css` | pagina e stile dell'applicazione web |
 | `core.js` | gemello JavaScript di `timers_core.py`. Non tocca il DOM |
 | `app.js` | interfaccia web: lista, form, comandi, allarmi |
@@ -217,7 +225,7 @@ La build va lanciata da un environment conda con tkinter. Lo spec copia dalla ca
 Distribuzione:
 
 ```powershell
-Compress-Archive -Path "dist\RagnarokTimers\*" -DestinationPath "RagnarokTimers-v1.0.0-windows.zip"
+Compress-Archive -Path "dist\RagnarokTimers\*" -DestinationPath "RagnarokTimers-v1.6.0-windows.zip"
 ```
 
 Lo zip si pubblica come release del repository, con il tag `timers-v` seguito

@@ -28,7 +28,7 @@ from functools import lru_cache
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-__version__ = "1.5.2"
+__version__ = "1.6.0"
 
 log = logging.getLogger(__name__)
 
@@ -47,6 +47,9 @@ MAX_ARCHIVE = 200
 # Tetto alla colonna Bip della versione web: due cifre, e a un bip ogni 15
 # secondi sono gia' 25 minuti.
 MAX_BEEPS = 99
+# Come nel sito: chi non ha scelto vede l'italiano.
+LANGUAGES = ("it", "en")
+DEFAULT_LANGUAGE = "it"
 
 # Un HH:MM inserito a mano che cade oltre questo margine nel futuro viene letto
 # come "ieri": serve per le uccisioni a cavallo della mezzanotte.
@@ -680,7 +683,12 @@ class Preset:
 
 @dataclass
 class Settings:
-    """Preferenze dell'utente, salvate insieme ai timer."""
+    """Preferenze dell'utente, salvate insieme ai timer.
+
+    `repeat_alert` e `alert_max_count` non li usa piu' nessuno, dalla 1.6.0 anche
+    il desktop suona quanto dice la colonna Bip: restano per l'eseguibile 1.0.0,
+    che legge lo stesso file.
+    """
 
     volume: int = 60
     topmost: bool = False
@@ -688,6 +696,7 @@ class Settings:
     repeat_alert: bool = True
     alert_repeat_seconds: int = 15
     alert_max_count: int = 6
+    language: str = DEFAULT_LANGUAGE
 
     def to_dict(self) -> dict:
         """Serializza le impostazioni per il file dati."""
@@ -698,6 +707,7 @@ class Settings:
             "repeat_alert": self.repeat_alert,
             "alert_repeat_seconds": self.alert_repeat_seconds,
             "alert_max_count": self.alert_max_count,
+            "language": self.language,
         }
 
     @classmethod
@@ -716,6 +726,8 @@ class Settings:
                 log.warning("Impostazione %s ignorata, valore non valido: %r", key, value)
         if not GEOMETRY_RE.match(settings.geometry):
             settings.geometry = ""
+        if settings.language not in LANGUAGES:
+            settings.language = DEFAULT_LANGUAGE
         return settings
 
 
@@ -844,6 +856,17 @@ class TimerStore:
 
     # ---- file ----
 
+    def to_dict(self) -> dict:
+        """Serializza lo stato: e' il contenuto del file dati e del backup."""
+        return {
+            "version": DATA_VERSION,
+            "settings": self.settings.to_dict(),
+            "timers": [timer.to_dict() for timer in self.timers.values()],
+            "history": self.history,
+            "presets": {key: preset.to_dict() for key, preset in self.presets.items()},
+            "archive": self.archive,
+        }
+
     def save(self) -> bool:
         """Scrive il file dati in modo atomico.
 
@@ -854,17 +877,9 @@ class TimerStore:
         Returns:
             True se il salvataggio e' riuscito.
         """
-        data = {
-            "version": DATA_VERSION,
-            "settings": self.settings.to_dict(),
-            "timers": [timer.to_dict() for timer in self.timers.values()],
-            "history": self.history,
-            "presets": {key: preset.to_dict() for key, preset in self.presets.items()},
-            "archive": self.archive,
-        }
         try:
             with open(self.tmp_path, "w", encoding="utf-8") as handle:
-                json.dump(data, handle, ensure_ascii=False, indent=2)
+                json.dump(self.to_dict(), handle, ensure_ascii=False, indent=2)
                 handle.flush()
                 os.fsync(handle.fileno())
             if self.path.exists():
@@ -931,11 +946,62 @@ class TimerStore:
         Returns:
             True se i dati provengono dalla copia di sicurezza.
         """
-        now = now or now_local()
         data, from_backup = self._read_file()
         if data is None:
             return False
+        self._apply_data(data, now or now_local())
+        return from_backup
 
+    def export_to(self, target: Path) -> bool:
+        """Scrive il backup dei dati, lo stesso file del backup della versione web.
+
+        Args:
+            target: File scelto dall'utente.
+
+        Returns:
+            True se la scrittura e' riuscita.
+        """
+        try:
+            with open(target, "w", encoding="utf-8") as handle:
+                json.dump(self.to_dict(), handle, ensure_ascii=False, indent=2)
+            return True
+        except OSError:
+            log.exception("Backup non scritto: %s", target)
+            return False
+
+    def restore_backup(self, source: Path, now: datetime | None = None) -> TimerStore | None:
+        """Legge un backup, del desktop o della versione web.
+
+        Posizione della finestra, primo piano e lingua restano quelli di questo
+        computer: sono preferenze del dispositivo, non dei timer.
+
+        Args:
+            source: File scelto dall'utente.
+            now: Istante di riferimento, utile nei test.
+
+        Returns:
+            Il nuovo stato, sullo stesso file dati di questo, oppure None se il
+            file non e' un backup dei timer.
+        """
+        try:
+            with open(source, "r", encoding="utf-8") as handle:
+                data = json.load(handle)
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+            log.warning("Backup illeggibile: %s", source, exc_info=True)
+            return None
+        if not isinstance(data, dict) or not isinstance(data.get("timers"), list):
+            log.warning("Il file non e' un backup dei timer: %s", source)
+            return None
+
+        restored = TimerStore(path=self.path)
+        restored._apply_data(data, now or now_local())
+        restored.settings.geometry = self.settings.geometry
+        restored.settings.topmost = self.settings.topmost
+        restored.settings.language = self.settings.language
+        return restored
+
+    def _apply_data(self, data: dict, now: datetime) -> None:
+        """Carica nello stato il contenuto di un file dati gia' letto."""
         self.settings = Settings.from_dict(data.get("settings", {}))
 
         history = data.get("history", {})
@@ -973,5 +1039,4 @@ class TimerStore:
         if data.get("version", 1) < DATA_VERSION:
             self._migrate_categories()
 
-        log.info("Caricati %d timer da %s", len(self.timers), self.path)
-        return from_backup
+        log.info("Caricati %d timer", len(self.timers))

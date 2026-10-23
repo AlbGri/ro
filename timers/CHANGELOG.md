@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.6.0] - 2026-10-23
+
+Nuova versione dell'applicazione per Windows, la prima dalla 1.0.0: ora fa quello che fa la versione web, in italiano o in inglese.
+
+- In italiano, con il pulsante `EN` in alto per passare all'inglese e `IT` per tornare. Chi non ha scelto vede l'italiano; la scelta resta nel file dei dati
+- Colonna `Bip`, come nel web: quante volte suona l'allarme di ogni timer, da cambiare con un doppio clic sulla cella. Prende il posto di `Repeat alert`, che valeva per tutti i timer: i timer gia' salvati suonano una volta, finche' non si scrive un numero piu' alto
+- L'ora si puo' scrivere con i secondi, `23:50:30`. Modificando la cella `Ora` il campo mostra i secondi, e se non lo cambi il timer resta dov'era: prima cliccare la cella e uscirne riportava i secondi a zero e faceva risuonare l'allarme
+- Sotto il form tre righe spiegano cosa scrivere in `Ora`, `Min` e `Max` e cosa fa `Bip`
+- In alto l'orologio con i secondi
+- `Backup dei dati` e `Ripristina da backup`, come nel web e con lo stesso file: spostano i timer fra le due applicazioni senza copiare file a mano
+- La finestra si chiama `RO Timers`, come l'app installata dal web, e ha l'icona del sito
+- La versione web conserva la lingua scelta nell'applicazione desktop quando un backup passa di li'; per il resto non cambia
+
 ## [1.5.3] - 2026-10-23
 
 Il pulsante della lingua esce dal menu ⚙ e sta in alto, subito prima dell'ingranaggio, con la bandiera della lingua in cui si passa.

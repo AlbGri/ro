@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Interfaccia tkinter del Timer Ragnarok.
+"""Interfaccia tkinter di RO Timers.
 
 Sorveglia le finestre di respawn di MvP e quest: la riga resta neutra finche'
 la finestra non si apre, diventa gialla mentre e' aperta e rossa quando si e'
@@ -9,9 +9,11 @@ chiusa. Tutta la logica non grafica sta in timers_core.
 from __future__ import annotations
 
 import logging
+import sys
 import tkinter as tk
 from datetime import timedelta
-from tkinter import messagebox, ttk
+from pathlib import Path
+from tkinter import filedialog, messagebox, ttk
 
 from timers_core import (
     DEFAULT_CATEGORIES,
@@ -25,6 +27,7 @@ from timers_core import (
     geometry_is_reachable,
     local_at,
     now_local,
+    parse_beeps,
     parse_hhmm,
     parse_minutes,
     play_beep,
@@ -33,6 +36,8 @@ from timers_core import (
 )
 
 log = logging.getLogger(__name__)
+
+APP_NAME = "RO Timers"
 
 BG = "#1e1e1e"
 BG_ALT = "#2b2b2b"
@@ -56,34 +61,49 @@ PURGE_MIN_AGE = timedelta(hours=1)
 # "-111:25:21" non dice niente di piu' di "e' passato da un pezzo".
 LEFT_HIDE_AFTER = timedelta(hours=24)
 MAX_UNDO = 20
+HINT_WRAP = 760
 
-COLUMNS = ("name", "map", "category", "time", "spawn", "maxspawn", "left")
+COLUMNS = ("beeps", "name", "map", "category", "time", "spawn", "maxspawn", "left")
+# Colonna -> ((italiano, inglese), larghezza, allineamento). Le scritte sono
+# quelle della versione web.
 HEADINGS = {
-    "#0": ("Sound", 55, "center"),
-    "name": ("Name", 130, "w"),
-    "map": ("Map", 100, "center"),
-    "category": ("Category", 85, "center"),
-    "time": ("Time", 60, "center"),
-    "spawn": ("Spawn", 65, "center"),
-    "maxspawn": ("Max. Spawn", 85, "center"),
-    "left": ("Left", 90, "center"),
+    "#0": (("Suono", "Sound"), 55, "center"),
+    "beeps": (("Bip", "Beeps"), 45, "center"),
+    "name": (("Nome", "Name"), 130, "w"),
+    "map": (("Mappa", "Map"), 100, "center"),
+    "category": (("Categoria", "Category"), 85, "center"),
+    "time": (("Ora", "Time"), 60, "center"),
+    "spawn": (("Spawn", "Spawn"), 65, "center"),
+    "maxspawn": (("Spawn max", "Max. Spawn"), 85, "center"),
+    "left": (("Manca", "Left"), 90, "center"),
 }
 # Colonna del Treeview -> campo modificabile con doppio clic.
 EDITABLE_COLUMNS = {
-    "#1": "name",
-    "#2": "mappa",
-    "#3": "categoria",
-    "#4": "orario",
-    "#5": "dmin",
-    "#6": "dmax",
+    "#1": "beeps",
+    "#2": "name",
+    "#3": "mappa",
+    "#4": "categoria",
+    "#5": "orario",
+    "#6": "dmin",
+    "#7": "dmax",
 }
 # Caselle della colonna Sound: BALLOT BOX WITH CHECK e BALLOT BOX. Sono simboli
 # Unicode e non emoji, quindi restano monocromatici: aggiungere il selettore di
-# variante U+FE0F li trasformerebbe in emoji a colori. Scritti come escape per
-# tenere il sorgente in ASCII.
-SOUND_ON = "\u2611"
-SOUND_OFF = "\u2610"
+# variante U+FE0F li trasformerebbe in emoji a colori. Scritti come escape
+# perche' a vista non si distinguono da altri simboli simili.
+SOUND_ON = "☑"
+SOUND_OFF = "☐"
 NO_TIME = "-"
+TIME_FORMAT = "%H:%M:%S"
+
+
+def resource_path(name: str) -> Path:
+    """Percorso di un file distribuito con l'applicazione.
+
+    Nell'eseguibile di PyInstaller i file di supporto stanno in `sys._MEIPASS`,
+    non accanto all'exe.
+    """
+    return Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent)) / name
 
 
 class AutocompleteCombobox(ttk.Combobox):
@@ -163,17 +183,43 @@ class TimerApp:
         self._after_id: str | None = None
         self._status_token = 0
 
-        root.title(f"Timer Ragnarok {__version__}")
-        root.geometry("820x560")
-        root.minsize(700, 420)
+        root.title(f"{APP_NAME} {__version__}")
+        root.geometry("860x600")
+        root.minsize(760, 460)
         root.configure(bg=BG)
+        self._set_icon()
 
+        # La lingua sta nel file dati: va letta prima di scrivere le scritte.
+        from_backup = self.store.load()
         self._build_ui()
-        self._load()
+        self._show_store()
+        self._apply_geometry()
+        if from_backup:
+            self.set_status(
+                self.tr(
+                    "Dati principali illeggibili: recuperati dalla copia di sicurezza.",
+                    "Main data was unreadable: restored from the backup copy.",
+                ),
+                error=True,
+            )
         root.protocol("WM_DELETE_WINDOW", self.close)
         self._update_loop()
 
+    def tr(self, italian: str, english: str) -> str:
+        """Sceglie una scritta nella lingua dell'applicazione, come `tr()` del sito.
+
+        Ogni scritta nuova va data in entrambe le lingue.
+        """
+        return english if self.store.settings.language == "en" else italian
+
     # ------------------------------------------------------------ interfaccia
+
+    def _set_icon(self) -> None:
+        try:
+            self._icon = tk.PhotoImage(file=str(resource_path("icon.png")))
+            self.root.iconphoto(True, self._icon)
+        except tk.TclError:
+            log.warning("Icona della finestra non caricata", exc_info=True)
 
     def _build_ui(self) -> None:
         self._configure_style()
@@ -182,11 +228,23 @@ class TimerApp:
         top.pack(fill="x", padx=8, pady=(6, 0))
         self.topmost_var = tk.BooleanVar(value=False)
         self._dark_checkbutton(
-            top, "Always on top", self.topmost_var, self._toggle_topmost
+            top, self.tr("Sempre in primo piano", "Always on top"),
+            self.topmost_var, self._toggle_topmost,
         ).pack(side="left")
         tk.Label(
-            top, text="Double-click a cell to edit it", bg=BG, fg=FG_MUTED
+            top,
+            text=self.tr(
+                "Doppio clic su una cella per modificarla", "Double-click a cell to edit it"
+            ),
+            bg=BG, fg=FG_MUTED,
+        ).pack(side="left", padx=(12, 0))
+        # Mostra la lingua in cui si passa, come il pulsante del sito.
+        ttk.Button(
+            top, text=self.tr("EN", "IT"), style="Dark.TButton", width=4,
+            command=self.toggle_language,
         ).pack(side="right")
+        self.clock_label = tk.Label(top, text="--:--:--", bg=BG, fg=FG, font=("Segoe UI", 11))
+        self.clock_label.pack(side="right", padx=(0, 12))
 
         self._build_form()
         self._build_tree()
@@ -241,16 +299,45 @@ class TimerApp:
         form = tk.Frame(self.root, bg=BG)
         form.pack(fill="x", padx=8, pady=6)
 
-        self.name_entry = self._form_combo(form, "Name", 0, width=15)
-        self.mappa_entry = self._form_combo(form, "Map", 1, width=14)
-        self.category_entry = self._form_combo(form, "Category", 2, width=11)
-        self.start_entry = self._form_entry(form, "Time (HH:MM)", 3, width=9)
+        self.name_entry = self._form_combo(form, self.tr("Nome", "Name"), 0, width=15)
+        self.mappa_entry = self._form_combo(form, self.tr("Mappa", "Map"), 1, width=14)
+        self.category_entry = self._form_combo(
+            form, self.tr("Categoria", "Category"), 2, width=11
+        )
+        self.start_entry = self._form_entry(form, self.tr("Ora", "Time"), 3, width=9)
         self.min_entry = self._form_entry(form, "Min", 4, width=7, default="60")
         self.max_entry = self._form_entry(form, "Max", 5, width=7)
 
         ttk.Button(
-            form, text="Add", style="Dark.TButton", command=self.add_timer
+            form, text=self.tr("Aggiungi", "Add"), style="Dark.TButton", command=self.add_timer
         ).grid(row=1, column=6, padx=(8, 2))
+
+        hints = (
+            self.tr(
+                "Ora: quando è morto il MvP o hai finito la quest, come 23:50 o 23:50:30. "
+                "Vuota vale adesso.",
+                "Time: when the MvP died or you finished the quest, like 23:50 or 23:50:30. "
+                "Empty means now.",
+            ),
+            self.tr(
+                "Min e Max: minuti che mancano al respawn, oppure 1h30 e 3:10. "
+                "Lascia vuoto Max per un conto alla rovescia fisso.",
+                "Min and Max: minutes until the respawn, or 1h30 and 3:10. "
+                "Leave Max empty for a fixed countdown.",
+            ),
+            self.tr(
+                "Bip: quante volte suona l'allarme di quel timer, una ogni 15 secondi, "
+                "finché non selezioni la riga. Vuoto vale 1.",
+                "Beeps: how many times that timer's alarm rings, once every 15 seconds, "
+                "until you select the row. Empty means 1.",
+            ),
+        )
+        for offset, text in enumerate(hints):
+            tk.Label(
+                form, text=text, bg=BG, fg=FG_MUTED, justify="left", anchor="w",
+                wraplength=HINT_WRAP,
+            ).grid(row=2 + offset, column=0, columnspan=7, sticky="w", padx=2,
+                   pady=(4 if offset == 0 else 0, 0))
 
         self.name_entry.bind("<<ComboboxSelected>>", self._apply_preset)
         self.name_entry.bind("<FocusOut>", self._apply_preset, add="+")
@@ -267,8 +354,8 @@ class TimerApp:
         frame.columnconfigure(0, weight=1)
 
         self.tree = ttk.Treeview(frame, columns=COLUMNS, show="tree headings", height=12)
-        for column, (text, width, anchor) in HEADINGS.items():
-            self.tree.heading(column, text=text)
+        for column, ((italian, english), width, anchor) in HEADINGS.items():
+            self.tree.heading(column, text=self.tr(italian, english))
             self.tree.column(column, width=width, anchor=anchor, stretch=(column == "name"))
         self.tree.grid(row=0, column=0, sticky="nsew")
 
@@ -289,11 +376,12 @@ class TimerApp:
         frame = tk.Frame(self.root, bg=BG)
         frame.pack(fill="x", padx=8, pady=4)
         for text, command in (
-            ("+1 (duplicate)", self.duplicate_selected),
-            ("Refresh", self.refresh_selected),
-            ("Remove", self.remove_selected),
-            ("Clear expired", self.purge_expired),
-            ("Undo (Ctrl+Z)", self.undo_last),
+            (self.tr("+1 (duplica da adesso)", "+1 (duplicate from now)"),
+             self.duplicate_selected),
+            (self.tr("Riparti da adesso", "Restart from now"), self.refresh_selected),
+            (self.tr("Rimuovi", "Remove"), self.remove_selected),
+            (self.tr("Togli gli scaduti", "Clear expired"), self.purge_expired),
+            (self.tr("Annulla (Ctrl+Z)", "Undo (Ctrl+Z)"), self.undo_last),
         ):
             ttk.Button(frame, text=text, style="Dark.TButton", command=command).pack(
                 side="left", padx=2
@@ -302,24 +390,32 @@ class TimerApp:
     def _build_footer(self) -> None:
         frame = tk.Frame(self.root, bg=BG)
         frame.pack(fill="x", padx=8, pady=(4, 0))
-        tk.Label(frame, text="Beep volume", bg=BG, fg=FG).pack(side="left")
-
         self.volume_var = tk.IntVar(value=self.store.settings.volume)
+        tk.Label(
+            frame, text=self.tr("Volume dell'allarme:", "Alarm volume:"), bg=BG, fg=FG
+        ).pack(side="left")
+        tk.Label(
+            frame, textvariable=self.volume_var, width=3, anchor="w", bg=BG, fg=FG
+        ).pack(side="left")
+
+        # Senza showvalue: il numero sopra il cursore spostava la barra piu' in
+        # basso della scritta e dei pulsanti. Il valore sta nell'etichetta accanto.
         scale = tk.Scale(
             frame, from_=0, to=100, orient="horizontal", variable=self.volume_var,
-            bg=BG, fg=FG, troughcolor=BG_HEAD, highlightthickness=0, activebackground=ACCENT,
+            showvalue=False, bg=BG, troughcolor=BG_HEAD, highlightthickness=0,
+            activebackground=ACCENT,
         )
-        scale.pack(side="left", fill="x", expand=True)
+        scale.pack(side="left", fill="x", expand=True, padx=(4, 6))
         scale.bind("<ButtonRelease-1>", lambda _e: self._save())
 
-        self.repeat_var = tk.BooleanVar(value=self.store.settings.repeat_alert)
-        self._dark_checkbutton(frame, "Repeat alert", self.repeat_var, self._save).pack(
-            side="left", padx=(8, 0)
-        )
-        ttk.Button(
-            frame, text="Test", style="Dark.TButton",
-            command=lambda: play_beep(self.volume_var.get()),
-        ).pack(side="left", padx=4)
+        for text, command in (
+            (self.tr("Prova", "Test"), lambda: play_beep(self.volume_var.get())),
+            (self.tr("Backup dei dati", "Data backup"), self.export_backup),
+            (self.tr("Ripristina da backup", "Restore from backup"), self.restore_backup),
+        ):
+            ttk.Button(frame, text=text, style="Dark.TButton", command=command).pack(
+                side="left", padx=2
+            )
 
         self.status_label = tk.Label(self.root, text="", bg=BG, fg=FG_MUTED, anchor="w")
         self.status_label.pack(fill="x", padx=10, pady=(2, 6))
@@ -352,6 +448,25 @@ class TimerApp:
     def _toggle_topmost(self) -> None:
         self.root.attributes("-topmost", self.topmost_var.get())
         self._save()
+
+    def toggle_language(self) -> None:
+        """Passa all'altra lingua e ridisegna la finestra, come il pulsante del sito."""
+        settings = self.store.settings
+        settings.language = "it" if settings.language == "en" else "en"
+        self._save()
+        self._rebuild_ui()
+
+    def _rebuild_ui(self) -> None:
+        """Ricostruisce tutti i widget, per esempio nell'altra lingua."""
+        self._destroy_editor()
+        for child in self.root.winfo_children():
+            child.destroy()
+        self.category_colors.clear()
+        self.row_cells.clear()
+        self.row_tags.clear()
+        self.current_order = []
+        self._build_ui()
+        self._show_store()
 
     def set_status(self, message: str, error: bool = False) -> None:
         """Mostra un messaggio nella barra di stato, cancellandolo dopo qualche secondo.
@@ -416,7 +531,10 @@ class TimerApp:
         dmin = parse_minutes(self.min_entry.get())
         if dmin is None:
             self.set_status(
-                "Invalid Min: enter a number of minutes (e.g. 190, 1h30, 3:10).",
+                self.tr(
+                    "Min deve essere una durata positiva, come 190 o 1h30.",
+                    "Min must be a positive duration, like 190 or 1h30.",
+                ),
                 error=True,
             )
             self.min_entry.focus_set()
@@ -428,7 +546,11 @@ class TimerApp:
             parsed = parse_minutes(max_text)
             if parsed is None:
                 self.set_status(
-                    "Invalid Max: leave it empty for a fixed timer.", error=True
+                    self.tr(
+                        "Max non è una durata valida. Lascialo vuoto per un timer fisso.",
+                        "Max is not a valid duration. Leave it empty for a fixed timer.",
+                    ),
+                    error=True,
                 )
                 self.max_entry.focus_set()
                 return
@@ -438,9 +560,7 @@ class TimerApp:
         if start_text:
             parsed_time = parse_hhmm(start_text)
             if parsed_time is None:
-                self.set_status(
-                    "Invalid Time: expected format HH:MM (e.g. 23:50).", error=True
-                )
+                self.set_status(self._invalid_time_message(), error=True)
                 self.start_entry.focus_set()
                 return
             start = local_at(*parsed_time)
@@ -474,8 +594,20 @@ class TimerApp:
             if timer.is_fixed
             else f"{format_minutes(dmin)}-{format_minutes(dmax)} min"
         )
-        self.set_status(f"Added {timer.name} ({window}) from {start.strftime('%H:%M')}.")
+        clock = start.strftime(TIME_FORMAT)
+        self.set_status(
+            self.tr(
+                f"Aggiunto {timer.name} ({window}) dalle {clock}.",
+                f"Added {timer.name} ({window}) from {clock}.",
+            )
+        )
         self.start_entry.delete(0, "end")
+
+    def _invalid_time_message(self) -> str:
+        return self.tr(
+            "L'ora va scritta come 23:50 o 23:50:30. Lasciala vuota per partire da adesso.",
+            "The time must look like 23:50 or 23:50:30. Leave it empty to start from now.",
+        )
 
     def duplicate_selected(self) -> None:
         """Ricrea i timer selezionati facendoli partire da adesso."""
@@ -492,7 +624,12 @@ class TimerApp:
             )
             self._add_row(self.store.add(copy))
         self._save()
-        self.set_status(f"Duplicated {len(selection)} timers from now.")
+        self.set_status(
+            self.tr(
+                f"Timer duplicati da adesso: {len(selection)}.",
+                f"Timers duplicated from now: {len(selection)}.",
+            )
+        )
 
     def refresh_selected(self) -> None:
         """Fa ripartire i timer selezionati da adesso."""
@@ -505,7 +642,12 @@ class TimerApp:
             self._render_row(timer_id, now)
         self.current_order = []
         self._save()
-        self.set_status(f"Restarted {len(selection)} timers.")
+        self.set_status(
+            self.tr(
+                f"Timer ripartiti da adesso: {len(selection)}.",
+                f"Timers restarted from now: {len(selection)}.",
+            )
+        )
 
     def remove_selected(self) -> None:
         """Elimina i timer selezionati, previa conferma."""
@@ -515,46 +657,135 @@ class TimerApp:
         names = [self.store.timers[tid].name for tid in selection]
         preview = ", ".join(names[:5]) + ("..." if len(names) > 5 else "")
         if not messagebox.askyesno(
-            "Remove timers",
-            f"Remove {len(selection)} timers?\n\n{preview}\n\nYou can undo with Ctrl+Z.",
+            self.tr("Rimuovi", "Remove"),
+            self.tr(
+                f"Rimuovere i timer selezionati ({len(selection)})?\n\n{preview}\n\n"
+                "Si può annullare con Ctrl+Z.",
+                f"Remove the selected timers ({len(selection)})?\n\n{preview}\n\n"
+                "You can undo with Ctrl+Z.",
+            ),
             parent=self.root,
         ):
             return
         self._drop_rows(selection, self.store.remove(selection))
-        self.set_status(f"Removed {len(selection)} timers. Ctrl+Z to undo.")
+        self.set_status(
+            self.tr(
+                f"Timer rimossi: {len(selection)}. Ctrl+Z per annullare.",
+                f"Timers removed: {len(selection)}. Ctrl+Z to undo.",
+            )
+        )
 
     def purge_expired(self) -> None:
         """Archivia i timer con la finestra chiusa da almeno un'ora."""
         now = now_local()
         stale = self.store.stale_ids(now, PURGE_MIN_AGE)
         if not stale:
-            self.set_status("No expired timers to clear.")
+            self.set_status(
+                self.tr(
+                    "Niente da togliere: nessuna finestra chiusa da più di un'ora.",
+                    "Nothing to clear: no window closed more than an hour ago.",
+                )
+            )
             return
         if not messagebox.askyesno(
-            "Clear expired",
-            f"Archive {len(stale)} timers whose window is already closed?\n\n"
-            "You can undo with Ctrl+Z.",
+            self.tr("Togli gli scaduti", "Clear expired"),
+            self.tr(
+                f"Archiviare i timer con la finestra chiusa da più di un'ora ({len(stale)})?"
+                "\n\nSi può annullare con Ctrl+Z.",
+                f"Archive the timers whose window closed more than an hour ago ({len(stale)})?"
+                "\n\nYou can undo with Ctrl+Z.",
+            ),
             parent=self.root,
         ):
             return
         self._drop_rows(stale, self.store.archive_ids(stale, now))
-        self.set_status(f"Archived {len(stale)} expired timers. Ctrl+Z to undo.")
+        self.set_status(
+            self.tr(
+                f"Timer archiviati: {len(stale)}. Ctrl+Z per annullare.",
+                f"Timers archived: {len(stale)}. Ctrl+Z to undo.",
+            )
+        )
 
     def undo_last(self) -> None:
         """Ripristina l'ultimo gruppo di timer rimossi o archiviati."""
         if not self.undo_stack:
-            self.set_status("Nothing to undo.")
+            self.set_status(self.tr("Niente da annullare.", "Nothing to undo."))
             return
         payloads = self.undo_stack.pop()
         for timer_id in self.store.restore(payloads):
             self._add_row(timer_id)
         self._save()
-        self.set_status(f"Restored {len(payloads)} timers.")
+        self.set_status(
+            self.tr(f"Timer ripristinati: {len(payloads)}.", f"Timers restored: {len(payloads)}.")
+        )
+
+    def export_backup(self) -> None:
+        """Salva il backup dei dati in un file scelto dall'utente."""
+        target = filedialog.asksaveasfilename(
+            parent=self.root,
+            title=self.tr("Backup dei dati", "Data backup"),
+            # Non ragnarok_timers.json: accanto all'exe sostituirebbe il file dati.
+            initialfile="ragnarok_timers_backup.json",
+            defaultextension=".json",
+            filetypes=[("JSON", "*.json")],
+        )
+        if not target:
+            return
+        self._collect_settings()
+        if self.store.export_to(Path(target)):
+            self.set_status(
+                self.tr(f"Backup salvato: {Path(target).name}.",
+                        f"Backup saved: {Path(target).name}.")
+            )
+        else:
+            self.set_status(
+                self.tr("Backup non riuscito, vedi il log.", "Backup failed, see the log."),
+                error=True,
+            )
+
+    def restore_backup(self) -> None:
+        """Sostituisce i dati con quelli di un backup, del desktop o del web."""
+        source = filedialog.askopenfilename(
+            parent=self.root,
+            title=self.tr("Ripristina da backup", "Restore from backup"),
+            filetypes=[("JSON", "*.json")],
+        )
+        if not source:
+            return
+        if not messagebox.askyesno(
+            self.tr("Ripristina da backup", "Restore from backup"),
+            self.tr(
+                "I timer di adesso vengono sostituiti da quelli del backup. Continuare?",
+                "The current timers are replaced by those in the backup. Continue?",
+            ),
+            parent=self.root,
+        ):
+            return
+        self._collect_settings()
+        restored = self.store.restore_backup(Path(source))
+        if restored is None:
+            self.set_status(
+                self.tr("Quel file non è un backup dei timer.", "That file is not a timers backup."),
+                error=True,
+            )
+            return
+        self.store = restored
+        self.undo_stack.clear()
+        # Prima i widget, poi il salvataggio: _save rilegge il volume dal cursore.
+        self._rebuild_ui()
+        self._save()
+        self.set_status(
+            self.tr(
+                f"Timer ripristinati dal backup: {len(self.store.timers)}.",
+                f"Timers restored from backup: {len(self.store.timers)}.",
+            )
+        )
 
     def _selection(self) -> list[str]:
         selection = [tid for tid in self.tree.selection() if tid in self.store.timers]
         if not selection:
-            self.set_status("Select a timer first.", error=True)
+            self.set_status(self.tr("Seleziona prima un timer.", "Select a timer first."),
+                            error=True)
         return selection
 
     def _drop_rows(self, timer_ids: list[str], payloads: list[dict]) -> None:
@@ -601,6 +832,7 @@ class TimerApp:
             left = format_duration(timer.countdown(now))
 
         values = (
+            str(timer.beeps),
             timer.name,
             timer.mappa,
             timer.categoria,
@@ -674,10 +906,12 @@ class TimerApp:
             self._destroy_editor()
 
     def _current_text(self, timer: Timer, field: str) -> str:
+        if field == "beeps":
+            return str(timer.beeps)
         if field == "name":
             return timer.name
         if field == "orario":
-            return timer.start.strftime("%H:%M")
+            return timer.start.strftime(TIME_FORMAT)
         if field == "dmin":
             return format_minutes(timer.dmin.total_seconds() / 60)
         return "" if timer.is_fixed else format_minutes(timer.dmax.total_seconds() / 60)
@@ -687,7 +921,7 @@ class TimerApp:
 
         Args:
             row_id: Identificatore del timer.
-            field: Campo modificato: "name", "orario", "dmin" o "dmax".
+            field: Campo modificato: "beeps", "name", "orario", "dmin" o "dmax".
             bbox: Rettangolo della cella restituito dal Treeview.
 
         Returns:
@@ -790,16 +1024,22 @@ class TimerApp:
             text: Testo inserito dall'utente.
         """
         timer = self.store.timers[row_id]
-        if field == "name":
+        if field == "beeps":
+            timer.beeps = parse_beeps(text)
+        elif field == "name":
             if not text:
                 return
             timer.name = text
             if self.store.remember("nome", text):
                 self._refresh_history_widgets()
         elif field == "orario":
+            # Ora non toccata: resta l'istante esatto. Rileggerla dal campo
+            # perderebbe i decimali e il giorno, e la differenza riarmerebbe l'allarme.
+            if text == timer.start.strftime(TIME_FORMAT):
+                return
             parsed = parse_hhmm(text)
             if parsed is None:
-                self.set_status("Invalid Time: use HH:MM.", error=True)
+                self.set_status(self._invalid_time_message(), error=True)
                 return
             timer.reschedule(local_at(*parsed))
         else:
@@ -809,7 +1049,11 @@ class TimerApp:
                 parsed_minutes = parse_minutes(text)
                 if parsed_minutes is None:
                     self.set_status(
-                        "Invalid duration: use minutes (e.g. 190, 1h30, 3:10).", error=True
+                        self.tr(
+                            "Durata non valida: scrivi i minuti, come 190, 1h30 o 3:10.",
+                            "Invalid duration: write the minutes, like 190, 1h30 or 3:10.",
+                        ),
+                        error=True,
                     )
                     return
                 minutes = parsed_minutes
@@ -832,27 +1076,31 @@ class TimerApp:
             # La riprogrammazione avviene comunque: se saltasse, tutti i
             # countdown si fermerebbero in silenzio.
             log.exception("Errore durante l'aggiornamento dei timer")
-            self.set_status("Update error, see the log.", error=True)
+            self.set_status(
+                self.tr("Errore nell'aggiornamento, vedi il log.", "Update error, see the log."),
+                error=True,
+            )
         finally:
             self._after_id = self.root.after(TICK_MS, self._update_loop)
 
     def tick(self) -> None:
-        """Aggiorna righe, allarmi e ordinamento."""
+        """Aggiorna orologio, righe, allarmi e ordinamento."""
         now = now_local()
+        self.clock_label.config(text=now.strftime(TIME_FORMAT))
         dirty = False
         alerting = False
-        max_alerts = self.store.settings.alert_max_count if self.repeat_var.get() else 1
 
         for timer_id, timer in list(self.store.timers.items()):
             self._render_row(timer_id, now)
-            if timer.alert_due(now, max_alerts):
+            # Quante volte suonare lo dice la colonna Bip del timer.
+            if timer.alert_due(now, timer.beeps):
                 timer.register_alert(now, self.store.settings.alert_repeat_seconds)
                 alerting = True
                 dirty = True
             elif (
                 not timer.acked
                 and timer.state(now) is not TimerState.PENDING
-                and timer.alerts_sent >= max_alerts
+                and timer.alerts_sent >= timer.beeps
             ):
                 timer.acknowledge()
                 dirty = True
@@ -880,7 +1128,6 @@ class TimerApp:
         try:
             self.store.settings.volume = self.volume_var.get()
             self.store.settings.topmost = bool(self.topmost_var.get())
-            self.store.settings.repeat_alert = bool(self.repeat_var.get())
             self.store.settings.geometry = self.root.geometry()
         except tk.TclError:
             log.warning("Impostazioni non leggibili, finestra gia' chiusa")
@@ -888,23 +1135,23 @@ class TimerApp:
     def _save(self) -> None:
         self._collect_settings()
         if not self.store.save():
-            self.set_status("Save failed, see the log.", error=True)
+            self.set_status(
+                self.tr("Salvataggio non riuscito, vedi il log.", "Save failed, see the log."),
+                error=True,
+            )
 
-    def _load(self) -> None:
-        from_backup = self.store.load()
+    def _show_store(self) -> None:
+        """Riempie tabella, storico e impostazioni con il contenuto dello store."""
         for timer_id in self.store.timers:
             self._add_row(timer_id)
         self._refresh_history_widgets()
-        self._apply_settings()
-        if from_backup:
-            self.set_status("Data file unreadable: restored from backup.", error=True)
-
-    def _apply_settings(self) -> None:
         settings = self.store.settings
         self.volume_var.set(settings.volume)
-        self.repeat_var.set(settings.repeat_alert)
         self.topmost_var.set(settings.topmost)
         self.root.attributes("-topmost", settings.topmost)
+
+    def _apply_geometry(self) -> None:
+        settings = self.store.settings
         if not settings.geometry:
             return
         if not geometry_is_reachable(settings.geometry, self._screen_bounds()):
@@ -946,7 +1193,7 @@ class TimerApp:
 def main() -> None:
     """Avvia l'applicazione."""
     setup_logging()
-    log.info("Timer Ragnarok %s", __version__)
+    log.info("%s %s", APP_NAME, __version__)
     root = tk.Tk()
     TimerApp(root)
     root.mainloop()

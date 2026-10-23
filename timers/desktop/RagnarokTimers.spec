@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-# PyInstaller spec per Ragnarok Timers
+# PyInstaller spec per RO Timers
 # Build: pyinstaller RagnarokTimers.spec --noconfirm
 # Nota: il file ragnarok_timers.json viene creato accanto all'exe al primo salvataggio
 
@@ -36,7 +36,9 @@ a = Analysis(
     ["ragnarok_timers.py", "timers_core.py"],
     pathex=[],
     binaries=binaries,
-    datas=[],
+    # Icona della finestra; quella dell'exe e' icon.ico, in EXE. Le rigenera
+    # tools/make-icons.mjs da icon.svg.
+    datas=[("icon.png", ".")],
     hiddenimports=[
         "timers_core",
         # Importato solo dentro una funzione, PyInstaller non lo rileva.
@@ -78,6 +80,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon="icon.ico",
 )
 
 coll = COLLECT(

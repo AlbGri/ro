@@ -41,7 +41,7 @@ restano nel suo browser: non c'e' nulla di condiviso da proteggere.
 | `gate.js` | codice di accesso, tema chiaro o scuro e lingua, incluso da ogni pagina |
 | `icon.svg` | icona del sito, la stessa per tutte le pagine |
 | `tools/set-access-code.mjs` | imposta l'impronta del codice di accesso |
-| `tools/make-icons.mjs` | rigenera da `icon.svg` i PNG che servono ai timer installati come applicazione |
+| `tools/make-icons.mjs` | rigenera da `icon.svg` i PNG dei timer installati come applicazione e le icone della versione desktop |
 | `timers/` | applicazione web dei timer; in `timers/desktop/` la versione desktop in Python |
 | `guide/` | guide in un solo file HTML ciascuna; in `guide/strumenti/` gli script Node che le validano |
 | `livelli/` | calcolatore dei livelli: dati, calcolo del piano e pagina; test con `node --test tests/*.mjs` |
