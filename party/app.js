@@ -9,8 +9,8 @@
  */
 
 import { calcolaRun } from "./calcolo.js";
-import { ALTRO, CLASSI, composizioni, ISTANZE, MAX_RUN, nomeClasse, TANKER, tr } from "./dati.js";
-import { breve, leggiClassi, leggiElenco, pulisci, scriviElenco } from "./testo.js";
+import { ALTRO, CLASSI, HP_TANKER, ISTANZE, MAX_RUN, nomeClasse, TANKER, tr } from "./dati.js";
+import { breve, conTanker, leggiClassi, leggiElenco, pulisci, scriviElenco } from "./testo.js";
 
 const STORAGE_KEY = "ragnarok-party/stato";
 const LOCALE = tr("it-IT", "en-GB");
@@ -43,17 +43,27 @@ function runSalvate(run) {
   return valide.length > 0 ? valide : TUTTE_LE_RUN;
 }
 
+// Fino alla 1.17 Clown e Bard, Gypsy e Dancer erano una classe sola.
+const RINOMINATE = { "Clown/Bard": "Clown", "Gypsy/Dancer": "Gypsy" };
+const rinominata = (classe) => RINOMINATE[classe] ?? classe;
+
 /**
  * Lo stato da un oggetto letto (localStorage o file), con i campi mancanti a posto.
  * I dati fino alla 1.5 avevano gli account come elenchi di personaggi: diventano testo.
+ * Fino alla 1.17 HP Tanker era una spunta del giocatore: diventa la classe dei suoi High Priest.
  */
 function normalizza(dati) {
   if (!dati || !Array.isArray(dati.giocatori) || !Array.isArray(dati.jolly)) throw new Error("formato non valido");
+  const soprannomi = Object.fromEntries(
+    Object.entries(dati.soprannomi ?? {})
+      .filter(([k, c]) => typeof k === "string" && typeof c === "string")
+      .map(([k, c]) => [k, rinominata(c)]),
+  );
   const testo = (a) =>
     typeof a === "string"
       ? a
       : (Array.isArray(a?.personaggi) ? a.personaggi : [])
-          .map((p) => breve(String(p?.classe ?? "")))
+          .map((p) => breve(rinominata(String(p?.classe ?? ""))))
           .filter(Boolean)
           .join("/");
   return {
@@ -61,18 +71,15 @@ function normalizza(dati) {
     giocatori: dati.giocatori.map((g) => ({
       nome: String(g?.nome ?? ""),
       presente: g?.presente !== false,
-      tanker: g?.tanker === true,
       run: runSalvate(g?.run),
-      account: (Array.isArray(g?.account) ? g.account : []).map(testo),
+      account: (Array.isArray(g?.account) ? g.account : []).map((a) => (g?.tanker === true ? conTanker(testo(a), soprannomi) : testo(a))),
     })),
     jolly: dati.jolly.map((j) => ({
       nome: String(j?.nome ?? ""),
       disponibile: j?.disponibile !== false,
       classi: typeof j?.classi === "string" ? j.classi : testo(j),
     })),
-    soprannomi: Object.fromEntries(
-      Object.entries(dati.soprannomi ?? {}).filter(([k, c]) => typeof k === "string" && typeof c === "string"),
-    ),
+    soprannomi,
   };
 }
 
@@ -115,7 +122,7 @@ function disegnaIstanza() {
   const quanti = (n, p) => `${n} ${p.nome}`;
   const obbligatorio = (p) =>
     quanti(p.quanti, p) +
-    (p.tanker ? tr(` (almeno ${p.tanker} di un giocatore con la spunta ${TANKER})`, ` (at least ${p.tanker} from a player with ${TANKER} checked)`) : "");
+    (p.tanker ? tr(` (almeno ${p.tanker} ${TANKER})`, ` (at least ${p.tanker} ${TANKER})`) : "");
   const desiderato = (p) =>
     `${quanti(p.desiderati, p)} per run` +
     (p.alternativa ? tr(` (se manca, ${quanti(p.desiderati, p.alternativa)})`, ` (or, if there is none, ${quanti(p.desiderati, p.alternativa)})`) : "");
@@ -181,22 +188,18 @@ function campoClassi(testo, attributi, segnaposto) {
 function disegnaGiocatori() {
   const n = colonne();
   aggiornaColonne();
-  // La spunta HP Tanker solo nelle istanze che la usano: resta salvata anche nelle altre.
-  const conTanker = composizioni(istanza()).flat().some((p) => p.tanker);
-  const classe = conTanker ? "riga con-tanker" : "riga";
-  const intestazione = `<div class="${classe} intestazione">
-    <span>${tr("Presente", "Present")}</span><span>${NOME_GIOCATORE}</span><span>Run</span>${conTanker ? `<span>${TANKER}</span>` : ""}${[...Array(n)].map((_, i) => `<span>Account ${i + 1}</span>`).join("")}
+  const intestazione = `<div class="riga intestazione">
+    <span>${tr("Presente", "Present")}</span><span>${NOME_GIOCATORE}</span><span>Run</span>${[...Array(n)].map((_, i) => `<span>Account ${i + 1}</span>`).join("")}
     <button class="btn small" type="button" data-azione="nuova-colonna" title="${tr("Una colonna di account in più", "One more account column")}" aria-label="${tr("Una colonna di account in più", "One more account column")}">+</button>
   </div>`;
   const righe = stato.giocatori.map(
-    (g, gi) => `<div class="${classe}${g.presente ? "" : " spento"}">
+    (g, gi) => `<div class="riga${g.presente ? "" : " spento"}">
       <input type="checkbox" data-g="${gi}" data-campo="presente"${g.presente ? " checked" : ""} aria-label="${tr("Presente", "Present")}">
       <input type="text" class="nome" value="${escape(g.nome)}" placeholder="${NOME_GIOCATORE} ${gi + 1}" data-g="${gi}" data-campo="nome" aria-label="${tr("Nome del giocatore", "Player name")}">
       <span class="quante"><span>Run</span>${[...Array(istanza().maxRun)].map((_, k) => {
         const titolo = tr(`C'è nella run ${k + 1}`, `Present in run ${k + 1}`);
         return `<button class="btn small" type="button" data-g="${gi}" data-r="${k + 1}" data-azione="run" aria-pressed="${g.run.includes(k + 1)}" title="${titolo}" aria-label="${titolo}">${k + 1}</button>`;
       }).join("")}</span>
-      ${conTanker ? `<label class="tanker"><input type="checkbox" data-g="${gi}" data-campo="tanker"${g.tanker ? " checked" : ""} aria-label="${TANKER}"><span>${TANKER}</span></label>` : ""}
       ${[...Array(n)].map((_, ai) => campoClassi(g.account[ai] ?? "", `data-g="${gi}" data-a="${ai}" data-campo="account"`, `Account ${ai + 1}`)).join("")}
       <button class="btn small danger" type="button" data-g="${gi}" data-azione="togli-giocatore" title="${tr("Togli il giocatore", "Remove the player")}" aria-label="${tr("Togli il giocatore", "Remove the player")}">✕</button>
     </div>`,
@@ -258,7 +261,7 @@ function disegnaDubbi() {
 function datiCalcolo() {
   const personaggi = (testo) => leggiClassi(testo, stato.soprannomi).classi.map((classe) => ({ classe }));
   const presenti = stato.giocatori
-    .map((g, indice) => ({ nome: g.nome || `${NOME_GIOCATORE} ${indice + 1}`, presente: g.presente, tanker: g.tanker, run: g.run, account: g.account }))
+    .map((g, indice) => ({ nome: g.nome || `${NOME_GIOCATORE} ${indice + 1}`, presente: g.presente, run: g.run, account: g.account }))
     .filter((g) => g.presente)
     .map((g) => ({
       ...g,
@@ -426,8 +429,6 @@ document.addEventListener("input", (event) => {
   if (campo === "presente" || campo === "disponibile") {
     oggetto[campo] = el.checked;
     el.closest(".riga").classList.toggle("spento", !el.checked);
-  } else if (campo === "tanker") {
-    oggetto.tanker = el.checked;
   } else if (campo === "account") {
     while (oggetto.account.length <= el.dataset.a) oggetto.account.push("");
     oggetto.account[el.dataset.a] = el.value;
@@ -629,9 +630,13 @@ function aggiungiElenco() {
   ))) return;
   for (const g of letto.giocatori) {
     const esistente = stato.giocatori.find((x) => stessoNome(x.nome, g.nome));
-    // Spunta HP Tanker e run li mette l'elenco, ma non li toglie: i messaggi di Discord non li hanno.
-    if (esistente) Object.assign(esistente, { account: g.account, tanker: esistente.tanker || g.tanker, run: g.run ?? esistente.run });
-    else stato.giocatori.push({ nome: g.nome, presente: true, tanker: g.tanker, run: g.run ?? TUTTE_LE_RUN, account: g.account });
+    // Run e HP Tanker li mette l'elenco, ma non li toglie: i messaggi di Discord non li hanno. Un
+    // account che nella tabella ha un HP Tanker lo tiene, se nell'elenco ha un High Priest.
+    const tanker = (testo) => leggiClassi(testo ?? "", stato.soprannomi).classi.includes(HP_TANKER);
+    const tieni = (a, i) => (tanker(esistente.account[i]) ? pulisci(conTanker(a, stato.soprannomi), stato.soprannomi) : a);
+    const account = esistente ? g.account.map(tieni) : g.account;
+    if (esistente) Object.assign(esistente, { account, run: g.run ?? esistente.run });
+    else stato.giocatori.push({ nome: g.nome, presente: true, run: g.run ?? TUTTE_LE_RUN, account });
   }
   for (const j of letto.jolly) {
     const esistente = stato.jolly.find((x) => stessoNome(x.nome, j.nome));

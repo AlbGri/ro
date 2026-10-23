@@ -7,14 +7,16 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import { calcolaRun } from "../calcolo.js";
-import { composizioni, copre, ISTANZE, ruoliDi, ruoloDi } from "../dati.js";
+import { composizioni, copre, eTanker, ISTANZE, ruoliDi, ruoloDi } from "../dati.js";
 
 const ISTANZA = ISTANZE[0];
 
 const account = (...classi) => ({ personaggi: classi.map((classe) => ({ classe })) });
-// Nei casi che non riguardano gli HP tanker tutti i giocatori lo sono, come prima della spunta.
-const giocatore = (nome, ...accounts) => ({ nome, tanker: true, account: accounts });
-const scarso = (nome, ...accounts) => ({ nome, tanker: false, account: accounts });
+// Nei casi che non riguardano gli HP Tanker tutti gli High Priest di `giocatore` lo sono; quelli
+// di `scarso` no.
+const tank = (a) => ({ ...a, personaggi: a.personaggi.map((p) => (p.classe === "High Priest" ? { classe: "HP Tanker" } : p)) });
+const giocatore = (nome, ...accounts) => ({ nome, account: accounts.map(tank) });
+const scarso = (nome, ...accounts) => ({ nome, account: accounts });
 
 /** Il personaggio di un membro del risultato. */
 function personaggio(giocatori, jolly, m) {
@@ -44,7 +46,7 @@ function verifica(giocatori, jolly, istanza, esito) {
       assert.ok(!accountUsati.has(id), "un account in due run");
       accountUsati.add(id);
       assert.equal(ruoloDi(istanza, personaggio(giocatori, jolly, m).classe), m.ruolo);
-      if (m.tanker) assert.ok(m.jolly === null && giocatori[m.giocatore].tanker, "tanker senza la spunta");
+      if (m.tanker) assert.ok(eTanker(istanza, personaggio(giocatori, jolly, m).classe), "tanker senza HP Tanker");
     }
   }
   return punteggio(esito.run.map((r) => r.membri.map((m) => ({ ...m }))), istanza);
@@ -118,7 +120,7 @@ function forzaBruta(giocatori, jolly, istanza) {
         usati.add(s.id);
         if (s.jolly !== null) jollyUsati.add(s.jolly);
         for (const p of s.a.personaggi) {
-          run[r].push({ giocatore: g, jolly: s.jolly, ruolo: ruolo(p), tanker: s.jolly === null && giocatori[g].tanker });
+          run[r].push({ giocatore: g, jolly: s.jolly, ruolo: ruolo(p), tanker: eTanker(istanza, p.classe) });
           perRun(r + 1);
           run[r].pop();
         }
@@ -137,8 +139,8 @@ describe("casi di Alberto", () => {
       giocatore("A", account("High Priest"), account("High Priest"), account("High Priest")),
       giocatore("B", account("High Priest"), account("High Priest")),
       giocatore("C", account("Sniper"), account("Sniper"), account("Sniper")),
-      giocatore("D", account("Clown/Bard"), account("Clown/Bard"), account("Clown/Bard")),
-      giocatore("E", account("Gypsy/Dancer"), account("Gypsy/Dancer"), account("Gypsy/Dancer")),
+      giocatore("D", account("Clown"), account("Clown"), account("Clown")),
+      giocatore("E", account("Gypsy"), account("Gypsy"), account("Gypsy")),
       giocatore("F", account("Professor"), account("Professor"), account("Professor")),
     ];
     const esito = calcolaRun(giocatori, []);
@@ -155,11 +157,11 @@ describe("casi di Alberto", () => {
       giocatore("A", account("High Priest")),
       giocatore("B", account("High Priest")),
       giocatore("C", account("Sniper")),
-      giocatore("D", account("Gypsy/Dancer")),
+      giocatore("D", account("Gypsy")),
       giocatore("E", account("Professor")),
       giocatore("F", account("Knight")),
     ];
-    const jolly = [account("Clown/Bard")];
+    const jolly = [account("Clown")];
     const esito = calcolaRun(giocatori, jolly);
     verifica(giocatori, jolly, ISTANZA, esito);
     assert.equal(esito.run.length, 1);
@@ -169,12 +171,12 @@ describe("casi di Alberto", () => {
 
   it("un account con piu' personaggi gioca quello che serve", () => {
     const giocatori = [
-      giocatore("Alberto", account("Professor", "Sniper", "Clown/Bard"), account("Priest"), account("Priest")),
+      giocatore("Alberto", account("Professor", "Sniper", "Clown"), account("Priest"), account("Priest")),
       giocatore("A", account("High Priest")),
       giocatore("B", account("High Priest")),
       giocatore("C", account("Sniper")),
-      giocatore("D", account("Gypsy/Dancer")),
-      giocatore("E", account("Clown/Bard")),
+      giocatore("D", account("Gypsy")),
+      giocatore("E", account("Clown")),
     ];
     const esito = calcolaRun(giocatori, []);
     verifica(giocatori, [], ISTANZA, esito);
@@ -188,8 +190,8 @@ describe("casi di Alberto", () => {
       giocatore("A", account("High Priest")),
       giocatore("B", account("High Priest")),
       giocatore("C", account("Sniper")),
-      giocatore("D", account("Clown/Bard")),
-      giocatore("E", account("Gypsy/Dancer")),
+      giocatore("D", account("Clown")),
+      giocatore("E", account("Gypsy")),
       giocatore("F", account("Professor")),
     ];
     const altri = [...Array(6)].map((_, i) => giocatore(`X${i}`, account("Knight")));
@@ -205,12 +207,12 @@ describe("casi di Alberto", () => {
   });
 
   it("la Gypsy/Dancer non e' obbligatoria ma entra per prima fra i liberi, prima di uno Sniper", () => {
-    const minimo = ["High Priest", "High Priest", "Sniper", "Clown/Bard", "Professor"].map((c, i) =>
+    const minimo = ["High Priest", "High Priest", "Sniper", "Clown", "Professor"].map((c, i) =>
       giocatore(`M${i}`, account(c)),
     );
     assert.equal(calcolaRun(minimo, []).run.length, 1);
     const sniper = [...Array(7)].map((_, i) => giocatore(`S${i}`, account("Sniper")));
-    const giocatori = [...minimo, ...sniper, giocatore("Gypsy", account("Gypsy/Dancer"))];
+    const giocatori = [...minimo, ...sniper, giocatore("Gypsy", account("Gypsy"))];
     const esito = calcolaRun(giocatori, []);
     verifica(giocatori, [], ISTANZA, esito);
     assert.equal(esito.run[0].membri.length, 12);
@@ -219,7 +221,7 @@ describe("casi di Alberto", () => {
   });
 
   it("senza Professor nessuna run, e lo dice", () => {
-    const giocatori = ["High Priest", "High Priest", "Sniper", "Clown/Bard", "Gypsy/Dancer", "Knight"].map((c, i) =>
+    const giocatori = ["High Priest", "High Priest", "Sniper", "Clown", "Gypsy", "Knight"].map((c, i) =>
       giocatore(`G${i}`, account(c)),
     );
     const esito = calcolaRun(giocatori, []);
@@ -231,7 +233,7 @@ describe("casi di Alberto", () => {
     const giocatori = [
       giocatore("Uno", account("High Priest"), account("High Priest"), account("High Priest"), account("High Priest")),
       giocatore("Due", account("High Priest")),
-      ...["Sniper", "Clown/Bard", "Professor"].map((c, i) => giocatore(`G${i}`, account(c))),
+      ...["Sniper", "Clown", "Professor"].map((c, i) => giocatore(`G${i}`, account(c))),
     ];
     const esito = calcolaRun(giocatori, []);
     assert.equal(esito.run.length, 1);
@@ -243,23 +245,23 @@ describe("casi di Alberto", () => {
     // L'elenco di Alberto del 23/10/2026: gli HP sono 6, ma due stanno su account che servono anche
     // come Professor o Clown/Bard, quindi la terza run non c'e'.
     const giocatori = [
-      giocatore("Alberto", account("High Priest", "Professor", "Gypsy/Dancer", "Clown/Bard"), account("High Priest"), account("Priest")),
-      giocatore("Efreeet", account("High Priest", "Clown/Bard", "Sniper"), account("Priest"), account("Clown/Bard")),
+      giocatore("Alberto", account("High Priest", "Professor", "Gypsy", "Clown"), account("High Priest"), account("Priest")),
+      giocatore("Efreeet", account("High Priest", "Clown", "Sniper"), account("Priest"), account("Clown")),
       giocatore("Pastafarian", account("Sniper", "High Priest"), account("Sniper"), account("Sniper")),
       giocatore("Johnny", account("Sniper", "Professor"), account("Sniper"), account("Sniper")),
       giocatore("Negaz", account("High Priest")),
       giocatore("Mario", account("High Priest")),
     ];
     const jolly = [
-      { nome: "Gypsy Gilda", ...account("Gypsy/Dancer") },
-      { nome: "Clown Gilda", ...account("Clown/Bard") },
+      { nome: "Gypsy Gilda", ...account("Gypsy") },
+      { nome: "Clown Gilda", ...account("Clown") },
       { nome: "Prof Gilda", ...account("Professor") },
     ];
     const esito = calcolaRun(giocatori, jolly);
     verifica(giocatori, jolly, ISTANZA, esito);
     assert.equal(esito.run.length, 2);
     assert.deepEqual(esito.mancano, [
-      "Per 3 run servono 6 High Priest e 3 Clown/Bard, 9 personaggi su account diversi. Gli account che hanno almeno uno dei due sono 8: " +
+      "Per 3 run servono 6 High Priest e 3 Clown o Bard, 9 personaggi su account diversi. Gli account che hanno almeno uno dei due sono 8: " +
         "Alberto (1, 2), Efreeet (1, 3), Pastafarian (1), Negaz (1), Mario (1) e Account Gilda Clown Gilda. Ogni account entra con un solo personaggio.",
       "Per 3 run servono 6 High Priest e 3 Professor, 9 personaggi su account diversi. Gli account che hanno almeno uno dei due sono 8: " +
         "Alberto (1, 2), Efreeet (1), Pastafarian (1), Johnny (1), Negaz (1), Mario (1) e Account Gilda Prof Gilda. Ogni account entra con un solo personaggio.",
@@ -267,19 +269,44 @@ describe("casi di Alberto", () => {
   });
 });
 
-describe("HP tanker e Soul Linker (Alberto, 23/10/2026)", () => {
-  const altri = ["Sniper", "Clown/Bard", "Professor"];
+describe("HP Tanker e Soul Linker (Alberto, 23/10/2026)", () => {
+  const altri = ["Sniper", "Clown", "Professor"];
 
   it("due High Priest scarsi non bastano, e lo dice", () => {
     const giocatori = [scarso("A", account("High Priest")), scarso("B", account("High Priest")), ...altri.map((c) => giocatore(c, account(c)))];
     const esito = calcolaRun(giocatori, [account("High Priest")]);
     assert.equal(esito.run.length, 0);
     assert.deepEqual(esito.mancano, ["Per 1 run serve 1 High Priest (HP Tanker). Nessun account ha un High Priest (HP Tanker)."]);
-    giocatori[0].tanker = true;
+    giocatori[0] = giocatore("A", account("High Priest"));
     const conTanker = calcolaRun(giocatori, []);
     verifica(giocatori, [], ISTANZA, conTanker);
     assert.equal(conTanker.run.length, 1);
     assert.deepEqual(conTanker.run[0].membri.filter((m) => m.ruolo === "hp").map((m) => [m.giocatore, m.tanker ?? false]), [[0, true], [1, false]]);
+  });
+
+  it("l'HP Tanker e' del personaggio: un altro High Priest dello stesso giocatore non tanka (Alberto, 23/10/2026)", () => {
+    const tre = (c) => [account(c), account(c), account(c)];
+    const giocatori = [
+      scarso("Alberto", account("HP Tanker"), account("High Priest")),
+      scarso("H", ...tre("High Priest")),
+      ...altri.map((c) => giocatore(c, ...tre(c))),
+    ];
+    const esito = calcolaRun(giocatori, []);
+    verifica(giocatori, [], ISTANZA, esito);
+    assert.equal(esito.run.length, 1);
+    assert.deepEqual(esito.mancano, ["Per 2 run servono 2 High Priest (HP Tanker). Gli account che lo hanno sono 1: Alberto (1)."]);
+    // Un account con un High Priest e un HP Tanker gioca l'HP Tanker.
+    giocatori[0] = scarso("Alberto", account("HP Tanker"), account("High Priest", "HP Tanker"));
+    assert.equal(calcolaRun(giocatori, []).run.length, 2);
+  });
+
+  it("un Account Gilda con un HP Tanker tanka, chiunque lo giochi", () => {
+    const giocatori = [scarso("A", account("High Priest")), scarso("B", account("High Priest"), account("Knight")), ...altri.map((c) => giocatore(c, account(c)))];
+    const jolly = [{ nome: "Tank Gilda", ...account("HP Tanker") }];
+    const esito = calcolaRun(giocatori, jolly);
+    verifica(giocatori, jolly, ISTANZA, esito);
+    assert.equal(esito.run.length, 1);
+    assert.deepEqual(esito.run[0].membri.filter((m) => m.tank).map((m) => m.jolly), [0]);
   });
 
   it("un tanker con tre account High Priest ne gioca uno per run, gli scarsi fanno il secondo", () => {
@@ -355,7 +382,7 @@ describe("HP tanker e Soul Linker (Alberto, 23/10/2026)", () => {
   it("20 giocatori con tre account, pochi Champion e HP Tanker: run miste, e risponde in fretta", () => {
     let seme = 11;
     const caso = (n) => Math.floor((seme = (seme * 1103515245 + 12345) % 2147483648) / 2147483648 * n);
-    const tutte = ["High Priest", "High Priest", "Sniper", "Clown/Bard", "Professor", "Gypsy/Dancer", "Priest", "Soul Linker", "Knight"];
+    const tutte = ["High Priest", "High Priest", "Sniper", "Clown", "Professor", "Gypsy", "Priest", "Soul Linker", "Knight"];
     // Un solo HP Tanker con un High Priest e due Champion: tre run solo mescolando i tipi.
     const giocatori = [
       giocatore("T", account("High Priest"), account("Knight"), account("Knight")),
@@ -393,14 +420,14 @@ describe("HP tanker e Soul Linker (Alberto, 23/10/2026)", () => {
   });
 
   it("il Soul Linker prende il posto della Gypsy/Dancer solo se manca", () => {
-    const minimo = ["High Priest", "High Priest", "Sniper", "Clown/Bard", "Professor"].map((c, i) => giocatore(`M${i}`, account(c)));
+    const minimo = ["High Priest", "High Priest", "Sniper", "Clown", "Professor"].map((c, i) => giocatore(`M${i}`, account(c)));
     const sniper = [...Array(6)].map((_, i) => giocatore(`S${i}`, account("Sniper")));
     const soloLinker = [...minimo, ...sniper, giocatore("SL", account("Soul Linker")), giocatore("S6", account("Sniper"))];
     const esito = calcolaRun(soloLinker, []);
     verifica(soloLinker, [], ISTANZA, esito);
     assert.ok(esito.run[0].membri.some((m) => m.ruolo === "sl"));
     assert.deepEqual(esito.fuori.map((f) => soloLinker[f.giocatore].nome), ["S6"]);
-    const conGypsy = [...soloLinker, giocatore("G", account("Gypsy/Dancer"))];
+    const conGypsy = [...soloLinker, giocatore("G", account("Gypsy"))];
     const conLaGypsy = calcolaRun(conGypsy, []);
     verifica(conGypsy, [], ISTANZA, conLaGypsy);
     assert.deepEqual(conLaGypsy.fuori.map((f) => conGypsy[f.giocatore].nome).sort(), ["S6", "SL"]);
@@ -409,7 +436,7 @@ describe("HP tanker e Soul Linker (Alberto, 23/10/2026)", () => {
 
 describe("Endless Cellar", () => {
   const EC = ISTANZE.find((i) => i.id === "ec");
-  const MINIMO = ["Champion", "High Priest", "High Priest", "Sniper", "Sniper", "Gypsy/Dancer", "Clown/Bard", "Professor", "Paladin", "Creator"];
+  const MINIMO = ["Champion", "High Priest", "High Priest", "Sniper", "Sniper", "Gypsy", "Clown", "Professor", "Paladin", "Creator"];
   // Un giocatore per posto del party minimo, ognuno con `n` account della sua classe.
   const base = (n) => MINIMO.map((c, i) => giocatore(`M${i}`, ...[...Array(n)].map(() => account(c))));
   const classe = (giocatori, f) => giocatori[f.giocatore].account[0].personaggi[0].classe;
@@ -461,7 +488,7 @@ describe("Endless Cellar", () => {
     const giocatori = [...Array(20)].map((_, g) =>
       giocatore(`G${g}`, ...[...Array(3)].map(() => account(...[...Array(1 + caso(2))].map(() => tutte[caso(tutte.length)])))),
     );
-    const jolly = [account("Clown/Bard"), account("Creator", "Paladin")];
+    const jolly = [account("Clown"), account("Creator", "Paladin")];
     const inizio = performance.now();
     const esito = calcolaRun(giocatori, jolly, EC);
     verifica(giocatori, jolly, EC, esito);
@@ -485,6 +512,7 @@ describe("confronto con la ricerca esaustiva", () => {
     ],
     classi: [
       { nome: "High Priest", ruolo: "hp" },
+      { nome: "HP Tanker", ruolo: "hp", tanker: true },
       { nome: "Sniper", ruolo: "sniper" },
       { nome: "Priest", ruolo: "priest" },
     ],
@@ -533,7 +561,8 @@ describe("confronto con la ricerca esaustiva", () => {
         // Un giocatore su tre c'e' solo in alcune run.
         ...(intero(3) === 0 ? { run: [[1], [2], [3], [1, 2], [2, 3], [1, 3]][intero(6)] } : {}),
       }));
-      const jolly = [...Array(intero(2))].map(() => account(classi[intero(4)]));
+      // Anche un Account Gilda puo' essere un HP Tanker.
+      const jolly = [...Array(intero(2))].map(() => account([...classi, "HP Tanker"][intero(5)]));
       const esito = calcolaRun(giocatori, jolly, istanza);
       const atteso = forzaBruta(giocatori, jolly, istanza);
       assert.deepEqual(verifica(giocatori, jolly, istanza, esito), atteso, JSON.stringify({ giocatori, jolly, istanza }));

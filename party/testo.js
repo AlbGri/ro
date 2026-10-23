@@ -12,24 +12,26 @@
  * trattino e' un suo account, con le classi separate da / , + o "e". Va bene anche
  * il messaggio copiato da Discord, "[19:40]Efreeet: 1) HP/...": l'ora si toglie e
  * quello che segue il nome e' il primo account. "Account Gilda nome: classi" e' un jolly.
- * Fra parentesi dopo il nome la spunta HP Tanker e le run in cui c'e': "Efreeet (HP Tanker, run 1-2)".
+ * Fra parentesi dopo il nome le run in cui c'e': "Efreeet (run 1-2)". Fino alla 1.17 anche la spunta
+ * HP Tanker del giocatore, che diventa HP Tanker nei suoi High Priest.
  * Le parole valgono nelle due lingue, qualunque sia quella della pagina (Alberto,
  * 22/10/2026): "Guild Account nome: classi", "HP and Sniper", "Other".
  * Solo le classi, niente nomi dei personaggi: "basta la classe" (Alberto).
  */
 
-import { ALTRO, CLASSI, MAX_RUN, TANKER, tr } from "./dati.js";
+import { ALTRO, CLASSI, HP_TANKER, MAX_RUN, TANKER, tr } from "./dati.js";
 
 // I soprannomi che si usano in gilda (Alberto, 22/10/2026: "non e' tanto standard").
-// SP Song e Bragi sono le canzoni di Dancer e Bard. Gli altri li impara la pagina, quando chi
-// incolla sceglie la classe.
+// SP Song e Bragi sono le canzoni di Dancer e Bard: valgono come Gypsy e Clown, le classi rinate
+// (Alberto, 23/10/2026). Gli altri li impara la pagina, quando chi incolla sceglie la classe.
 export const SOPRANNOMI = {
   hp: "High Priest",
   prete: "Priest",
   sniper: "Sniper",
   snip: "Sniper",
-  bragi: "Clown/Bard",
-  "sp song": "Gypsy/Dancer",
+  bragi: "Clown",
+  "sp song": "Gypsy",
+  "tanker hp": HP_TANKER,
   prof: "Professor",
   champ: "Champion",
   devo: "Paladin",
@@ -53,13 +55,10 @@ export const chiave = (parola) =>
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 
-/** Le parole note: nomi delle classi, ognuna delle due di "Clown/Bard", Altro e i soprannomi. */
+/** Le parole note: nomi delle classi, Altro e i soprannomi. */
 function paroleNote(imparati) {
   const note = {};
-  for (const classe of CLASSI) {
-    note[chiave(classe)] = classe;
-    for (const parte of classe.split("/")) note[chiave(parte)] = classe;
-  }
+  for (const classe of CLASSI) note[chiave(classe)] = classe;
   note[chiave(ALTRO)] = ALTRO;
   note.other = ALTRO;
   return { ...note, ...SOPRANNOMI, ...imparati };
@@ -111,8 +110,7 @@ export function riconosci(parola, imparati = {}) {
 // Come la pagina riscrive una classe riconosciuta: corta, come la si scrive su Discord.
 const BREVE = {
   "High Priest": "HP",
-  "Clown/Bard": "Clown",
-  "Gypsy/Dancer": "Gypsy",
+  [HP_TANKER]: TANKER,
   Professor: "Prof",
   Champion: "Champ",
   "High Wizard": "HW",
@@ -158,7 +156,7 @@ function scriviRun(run) {
 }
 
 /**
- * Nome, spunta HP Tanker e run in cui c'e' un giocatore: "Efreeet (HP Tanker, run 1-2)".
+ * Nome, spunta HP Tanker (fino alla 1.17) e run in cui c'e' un giocatore: "Efreeet (HP Tanker, run 1-2)".
  * Una parentesi con altre parole resta nel nome. `run` e' null se la riga non lo dice.
  */
 function segni(riga) {
@@ -242,18 +240,28 @@ export function pulisci(testo, imparati = {}) {
 }
 
 /**
+ * Il testo di un account con gli High Priest scritti come HP Tanker: per la spunta HP Tanker del
+ * giocatore, fino alla 1.17, che valeva per tutti i suoi High Priest.
+ */
+export function conTanker(testo, imparati = {}) {
+  return parole(testo, imparati)
+    .map((p) => (riconosci(p, imparati)?.classe === "High Priest" ? TANKER : p.trim()))
+    .join("/");
+}
+
+/**
  * Legge l'elenco incollato.
  *
  * @param {string} testo
  * @param {Object<string, string>} imparati i soprannomi imparati, chiave -> classe
- * @returns {{giocatori: Array<{nome: string, tanker: boolean, run: number[] | null, account: string[]}>, jolly: Array<{nome: string, classi: string}>,
+ * @returns {{giocatori: Array<{nome: string, run: number[] | null, account: string[]}>, jolly: Array<{nome: string, classi: string}>,
  *   errori: string[]}} gli account e le classi dei jolly gia' riscritti con `pulisci`
  */
 export function leggiElenco(testo, imparati = {}) {
   const esito = { giocatori: [], jolly: [], errori: [] };
   let giocatore = null;
   const aggiungiAccount = (scritte) => {
-    const pulito = pulisci(scritte, imparati);
+    const pulito = pulisci(giocatore.tanker ? conTanker(scritte, imparati) : scritte, imparati);
     if (pulito) giocatore.account.push(pulito);
   };
 
@@ -289,6 +297,7 @@ export function leggiElenco(testo, imparati = {}) {
     esito.giocatori.push(giocatore);
     if (resto) aggiungiAccount(resto.match(ACCOUNT)?.[1] ?? resto);
   });
+  esito.giocatori = esito.giocatori.map(({ tanker, ...g }) => g);
 
   for (const g of esito.giocatori) if (g.account.length === 0) esito.errori.push(tr(`${g.nome} non ha account`, `${g.nome} has no accounts`));
   return esito;
@@ -299,11 +308,8 @@ export function scriviElenco(stato) {
   const blocchi = [];
   stato.giocatori.forEach((g, i) => {
     const account = g.account.filter((a) => a.trim());
-    const parentesi = [
-      ...(g.tanker ? [TANKER] : []),
-      ...(g.run && g.run.length < MAX_RUN ? [scriviRun(g.run)] : []),
-    ];
-    const nome = (g.nome || `${tr("Giocatore", "Player")} ${i + 1}`) + (parentesi.length ? ` (${parentesi.join(", ")})` : "");
+    const run = g.run && g.run.length < MAX_RUN ? ` (${scriviRun(g.run)})` : "";
+    const nome = (g.nome || `${tr("Giocatore", "Player")} ${i + 1}`) + run;
     if (account.length > 0) blocchi.push([nome, ...account.map((a, k) => `${k + 1}) ${a}`)].join("\n"));
   });
   const jolly = stato.jolly

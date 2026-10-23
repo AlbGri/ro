@@ -2,6 +2,21 @@
 
 Le versioni della pagina `party/`.
 
+## [1.18] - 2026-10-23
+
+- HP Tanker non e' piu' una spunta del giocatore ma una classe del personaggio: si scrive nella
+  casella dell'account, `HP Tanker/Clown` (anche `Tanker HP`). Cosi' un giocatore puo' avere un
+  High Priest che tanka e uno che non tanka. Anche un Account Gilda con un HP Tanker tanka,
+  chiunque lo giochi. La colonna HP Tanker della tabella non c'e' piu'
+- Le spunte gia' messe diventano HP Tanker in tutti gli High Priest di quel giocatore: togli
+  Tanker da quelli che non tankano. Lo stesso vale per `Nome (HP Tanker)` negli elenchi esportati
+  prima
+- Incollando l'elenco della gilda, un account che nella tabella ha un HP Tanker lo tiene, se
+  nell'elenco ha un High Priest
+- Clown, Bard, Gypsy e Dancer sono classi separate: nelle caselle e nelle run si vede quella
+  scritta. Bragi vale come Clown e SP Song come Gypsy. I posti si chiamano `Clown o Bard` e
+  `Gypsy o Dancer`. Un Bard salvato prima come Clown resta Clown: va corretto a mano
+
 ## [1.17] - 2026-10-23
 
 - Tabella dei giocatori: le colonne del nome, di Presente e di HP Tanker sono piu' strette, e lo

@@ -5,19 +5,19 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { leggiClassi, leggiElenco, pulisci, riconosci, scriviElenco } from "../testo.js";
+import { conTanker, leggiClassi, leggiElenco, pulisci, riconosci, scriviElenco } from "../testo.js";
 
 describe("caselle degli account", () => {
   it("soprannomi, canzoni, sigle ed errori di battitura", () => {
-    assert.deepEqual(leggiClassi("HP/Devo/Clown/Sniper"), { classi: ["High Priest", "Paladin", "Clown/Bard", "Sniper"], ignote: [] });
-    assert.deepEqual(leggiClassi("Bragi, SP Song + bio e Wiz").classi, ["Clown/Bard", "Gypsy/Dancer", "Creator", "High Wizard"]);
+    assert.deepEqual(leggiClassi("HP/Devo/Clown/Sniper"), { classi: ["High Priest", "Paladin", "Clown", "Sniper"], ignote: [] });
+    assert.deepEqual(leggiClassi("Bragi, SP Song + bio e Wiz").classi, ["Clown", "Gypsy", "Creator", "High Wizard"]);
     assert.deepEqual(leggiClassi("Processor/Snipper/Hight Priest").classi, ["Professor", "Sniper", "High Priest"]);
     assert.deepEqual(leggiClassi("Stalker/HP"), { classi: ["High Priest"], ignote: ["Stalker"] });
     assert.deepEqual(leggiClassi("Stalker/HP", { stalker: "Altro" }).classi, ["Altro", "High Priest"]);
   });
 
   it("riscritte in forma breve, le sconosciute e quelle imparate come Altro restano come sono", () => {
-    assert.equal(pulisci("high priest / devo, Processor/bragi/bard"), "HP/Paladin/Prof/Clown");
+    assert.equal(pulisci("high priest / devo, Processor/bragi/bard"), "HP/Paladin/Prof/Clown/Bard");
     assert.equal(pulisci("Stalker/hw"), "Stalker/HW");
     assert.equal(pulisci("Stalker/hw", { stalker: "Altro" }), "Stalker/HW");
     assert.equal(pulisci(""), "");
@@ -33,6 +33,18 @@ describe("caselle degli account", () => {
     assert.deepEqual(leggiClassi("HP Lord Knight Hight Priest Snip"), { classi: ["High Priest", "Sniper"], ignote: ["Lord Knight"] });
   });
 
+  it("Bard e Dancer restano come sono scritti, non diventano Clown e Gypsy (Alberto, 23/10/2026)", () => {
+    assert.deepEqual(leggiClassi("Bard/Dancer/Clown/Gypsy").classi, ["Bard", "Dancer", "Clown", "Gypsy"]);
+    assert.equal(pulisci("bard, dancer"), "Bard/Dancer");
+  });
+
+  it("HP Tanker e' una classe, scritta anche Tanker HP; conTanker la mette agli High Priest", () => {
+    assert.deepEqual(leggiClassi("HP Tanker/Clown").classi, ["HP Tanker", "Clown"]);
+    assert.deepEqual(leggiClassi("tanker hp, HP").classi, ["HP Tanker", "High Priest"]);
+    assert.equal(pulisci("Snip HP Tanker Bragi"), "Sniper/HP Tanker/Clown");
+    assert.equal(conTanker("HP/Clown/Stalker"), "HP Tanker/Clown/Stalker");
+  });
+
   it("le sigle corte non si correggono: HQ non diventa HP", () => {
     assert.equal(riconosci("HQ"), null);
     assert.equal(riconosci("Wizard"), null);
@@ -44,15 +56,15 @@ describe("caselle degli account", () => {
 describe("elenco della gilda", () => {
   it("il messaggio di Efreeet copiato da Discord, con l'ora e il primo account sulla riga del nome", () => {
     const letto = leggiElenco("[19:40]Efreeet: 1) HP/Devo/Clown/Sniper\n2) Prete\n3) Bragi\n");
-    assert.deepEqual(letto, { giocatori: [{ nome: "Efreeet", tanker: false, run: null, account: ["HP/Paladin/Clown/Sniper", "Priest", "Clown"] }], jolly: [], errori: [] });
+    assert.deepEqual(letto, { giocatori: [{ nome: "Efreeet", run: null, account: ["HP/Paladin/Clown/Sniper", "Priest", "Clown"] }], jolly: [], errori: [] });
   });
 
   it("piu' giocatori, separatori diversi, trattini, Account Gilda (anche come Jolly), commenti e parole sconosciute", () => {
     const letto = leggiElenco("# gilda\nMario\n1. Bio, Champ\n- HW + gypsy\n\nAnna:\n1 - Prof e Stalker\nAccount Gilda Gilda1: Clown/Sniper\nJolly: HP\n");
     assert.deepEqual(letto.errori, []);
     assert.deepEqual(letto.giocatori, [
-      { nome: "Mario", tanker: false, run: null, account: ["Creator/Champ", "HW/Gypsy"] },
-      { nome: "Anna", tanker: false, run: null, account: ["Prof/Stalker"] },
+      { nome: "Mario", run: null, account: ["Creator/Champ", "HW/Gypsy"] },
+      { nome: "Anna", run: null, account: ["Prof/Stalker"] },
     ]);
     assert.deepEqual(letto.jolly, [
       { nome: "Gilda1", classi: "Clown/Sniper" },
@@ -63,7 +75,7 @@ describe("elenco della gilda", () => {
   it("le parole inglesi valgono come le italiane: Guild Account, and, Other", () => {
     const letto = leggiElenco("Mary\n1) HP and Sniper\n2) Other\nGuild Account Guild1: Clown\nguild account: HP\n");
     assert.deepEqual(letto.errori, []);
-    assert.deepEqual(letto.giocatori, [{ nome: "Mary", tanker: false, run: null, account: ["HP/Sniper", "Other"] }]);
+    assert.deepEqual(letto.giocatori, [{ nome: "Mary", run: null, account: ["HP/Sniper", "Other"] }]);
     assert.deepEqual(letto.jolly, [
       { nome: "Guild1", classi: "Clown" },
       { nome: "Account Gilda 2", classi: "HP" },
@@ -80,37 +92,37 @@ describe("elenco della gilda", () => {
     ]);
   });
 
-  it("fra parentesi dopo il nome la spunta HP Tanker e le run in cui c'e', anche in inglese", () => {
+  it("fra parentesi dopo il nome le run in cui c'e', anche in inglese; la vecchia spunta HP Tanker va negli High Priest", () => {
     const letto = leggiElenco(
-      "[19:40]Alby (HP Tanker, run 2-3): 1) HP\nMary (tanker HP)\n1) HP\nJo (run 1+3)\n1) HP\nLia (run 1, 2)\n1) HP\nEd (runs 2)\n1) HP\n" +
+      "[19:40]Alby (HP Tanker, run 2-3): 1) HP/Clown\n2) Sniper\nMary (tanker HP)\n1) HP\nJo (run 1+3)\n1) HP\nLia (run 1, 2)\n1) HP\nEd (runs 2)\n1) HP\n" +
         "Asimo (2 run)\n1) HP\nMario (Rossi)\n1) HP\nPasta\n1) HP\n",
     );
-    assert.deepEqual(letto.giocatori.map((g) => [g.nome, g.tanker, g.run]), [
-      ["Alby", true, [2, 3]], ["Mary", true, null], ["Jo", false, [1, 3]], ["Lia", false, [1, 2]], ["Ed", false, [2]],
+    assert.deepEqual(letto.giocatori.map((g) => [g.nome, g.run, g.account]), [
+      ["Alby", [2, 3], ["HP Tanker/Clown", "Sniper"]], ["Mary", null, ["HP Tanker"]], ["Jo", [1, 3], ["HP"]], ["Lia", [1, 2], ["HP"]],
       // Fino alla 1.14 "2 run" era quante: sono le prime due.
-      ["Asimo", false, [1, 2]], ["Mario (Rossi)", false, null], ["Pasta", false, null],
+      ["Ed", [2], ["HP"]], ["Asimo", [1, 2], ["HP"]], ["Mario (Rossi)", null, ["HP"]], ["Pasta", null, ["HP"]],
     ]);
   });
 
   it("l'elenco esportato si rilegge uguale", () => {
     const stato = {
       giocatori: [
-        { nome: "Efreeet", tanker: true, run: [1, 2], account: ["HP/Paladin/Clown/Sniper", "", "Clown"] },
-        { nome: "", tanker: false, run: [1, 2, 3], account: ["Stalker"] },
-        { nome: "Senza", tanker: false, run: [1, 2, 3], account: [""] },
-        { nome: "Tardi", tanker: false, run: [1, 3], account: ["HP"] },
+        { nome: "Efreeet", run: [1, 2], account: ["HP Tanker/Paladin/Clown/Sniper", "", "Bard"] },
+        { nome: "", run: [1, 2, 3], account: ["Stalker"] },
+        { nome: "Senza", run: [1, 2, 3], account: [""] },
+        { nome: "Tardi", run: [1, 3], account: ["HP"] },
       ],
       jolly: [{ nome: "Gilda 1", classi: "Gypsy/Altro" }, { nome: "Vuoto", classi: "" }],
     };
     const testo = scriviElenco(stato);
-    assert.match(testo, /Efreeet \(HP Tanker, run 1-2\)\n1\) HP\/Paladin\/Clown\/Sniper\n2\) Clown/);
+    assert.match(testo, /Efreeet \(run 1-2\)\n1\) HP Tanker\/Paladin\/Clown\/Sniper\n2\) Bard/);
     assert.match(testo, /Tardi \(run 1\+3\)/);
     assert.match(testo, /Account Gilda Gilda 1: Gypsy\/Altro/);
     assert.deepEqual(leggiElenco(testo), {
       giocatori: [
-        { nome: "Efreeet", tanker: true, run: [1, 2], account: ["HP/Paladin/Clown/Sniper", "Clown"] },
-        { nome: "Giocatore 2", tanker: false, run: null, account: ["Stalker"] },
-        { nome: "Tardi", tanker: false, run: [1, 3], account: ["HP"] },
+        { nome: "Efreeet", run: [1, 2], account: ["HP Tanker/Paladin/Clown/Sniper", "Bard"] },
+        { nome: "Giocatore 2", run: null, account: ["Stalker"] },
+        { nome: "Tardi", run: [1, 3], account: ["HP"] },
       ],
       jolly: [{ nome: "Gilda 1", classi: "Gypsy/Altro" }],
       errori: [],

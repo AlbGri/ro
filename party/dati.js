@@ -16,11 +16,20 @@ export const ALTRO = "Altro";
  */
 export const tr = globalThis.tr ?? ((it) => it);
 
-/** Come si mostra una classe: Altro e' "Other" in inglese, le altre sono nomi del gioco. */
-export const nomeClasse = (classe) => (classe === ALTRO ? tr("Altro", "Other") : classe);
-
-/** La spunta dei giocatori che reggono la Horror Toy Factory da High Priest (`tanker` di un posto). */
+/**
+ * L'High Priest che regge la Horror Toy Factory da tank (`tanker` di un posto): una classe, perche'
+ * dipende dal personaggio, non dal giocatore (Alberto, 23/10/2026: "alcuni HP non possono essere
+ * main tank" anche se chi li gioca tanka con un altro). Nei dati `HP_TANKER`, scritto `TANKER`.
+ */
+export const HP_TANKER = "HP Tanker";
 export const TANKER = tr("HP Tanker", "Tanker HP");
+
+/** Come si mostra una classe: Altro e' "Other" in inglese, le altre sono nomi del gioco. */
+export const nomeClasse = (classe) => (classe === ALTRO ? tr("Altro", "Other") : classe === HP_TANKER ? TANKER : classe);
+
+// I posti di Clown e Bard, di Gypsy e Dancer: classi diverse, stesso posto.
+const CLOWN = tr("Clown o Bard", "Clown or Bard");
+const GYPSY = tr("Gypsy o Dancer", "Gypsy or Dancer");
 
 export const ISTANZE = [
   {
@@ -31,14 +40,14 @@ export const ISTANZE = [
     maxRun: 3,
     // `quanti`: posti obbligatori per run. `desiderati`: posti non obbligatori ma i primi fra i
     // liberi, fino a tanti per run. Il party minimo e' fisso, di 5 (Alberto, 19/10/2026): la
-    // Gypsy/Dancer non serve, ma se c'e' e' "la prima nella lista delle priorita'".
+    // Gypsy o Dancer non serve, ma se c'e' e' "la prima nella lista delle priorita'".
     // `alternativa`: il ruolo che copre un posto desiderato se manca il suo: il Soul Linker fa il
     // link al Clown, che cosi' usa la canzone degli SP; con una Gypsy nella run non serve.
     posti: [
       { ruolo: "sniper", nome: "Sniper", quanti: 1 },
-      { ruolo: "bard", nome: "Clown/Bard", quanti: 1 },
+      { ruolo: "bard", nome: CLOWN, quanti: 1 },
       { ruolo: "prof", nome: "Professor", quanti: 1 },
-      { ruolo: "dancer", nome: "Gypsy/Dancer", quanti: 0, desiderati: 1, alternativa: { ruolo: "sl", nome: "Soul Linker" } },
+      { ruolo: "dancer", nome: GYPSY, quanti: 0, desiderati: 1, alternativa: { ruolo: "sl", nome: "Soul Linker" } },
     ],
     // Chi tanka (Alberto, 23/10/2026), in ogni run in piu' ai `posti`, in ordine di preferenza: si
     // preferisce il primo tipo quando non costa run o entrate ("la prima se ci sono poche persone,
@@ -46,7 +55,7 @@ export const ISTANZE = [
     // - un Champion con Steel Body, chiunque lo giochi: non puo' usare Safety Wall, quindi servono
     //   un High Priest di supporto e un secondo High Priest o un Priest (`ruoli`: uno qualsiasi)
     // - un HP Tanker: due High Priest "scarsi" non la completano, ne basta uno che ci riesce.
-    //   `tanker`: quanti dei posti li gioca un giocatore con la spunta TANKER
+    //   `tanker`: quanti dei posti li gioca un personaggio HP Tanker, anche di un Account Gilda
     // Chi tanka ha l'etichetta Tanker nelle run: chi occupa un posto con `tank` o un posto `tanker`.
     tipi: [
       {
@@ -59,14 +68,19 @@ export const ISTANZE = [
       },
       { nome: TANKER, posti: [{ ruolo: "hp", nome: "High Priest", quanti: 2, tanker: 1 }] },
     ],
-    // Bard e Dancer valgono anche non rinati, quindi una voce sola con Clown e Gypsy (Alberto,
-    // 18/10/2026); Priest, Hunter e Sage no, servono le skill da rinati.
+    // Bard e Dancer valgono anche non rinati, nello stesso posto di Clown e Gypsy (Alberto,
+    // 18/10/2026); Priest, Hunter e Sage no, servono le skill da rinati. Dalla 1.18 sono classi
+    // separate, perche' nelle run si veda quella scritta (Alberto: "non e' che deve uscire
+    // Clown/Bard"). `tanker`: la classe copre i posti `tanker`.
     classi: [
       { nome: "High Priest", ruolo: "hp" },
+      { nome: HP_TANKER, ruolo: "hp", tanker: true },
       { nome: "Champion", ruolo: "champion" },
       { nome: "Sniper", ruolo: "sniper" },
-      { nome: "Clown/Bard", ruolo: "bard" },
-      { nome: "Gypsy/Dancer", ruolo: "dancer" },
+      { nome: "Clown", ruolo: "bard" },
+      { nome: "Bard", ruolo: "bard" },
+      { nome: "Gypsy", ruolo: "dancer" },
+      { nome: "Dancer", ruolo: "dancer" },
       { nome: "Professor", ruolo: "prof" },
       { nome: "Priest", ruolo: "priest" },
       { nome: "Soul Linker", ruolo: "sl" },
@@ -92,8 +106,8 @@ export const ISTANZE = [
       { ruolo: "champion", nome: "Champion", quanti: 1 },
       { ruolo: "hp", nome: "High Priest", quanti: 2 },
       { ruolo: "sniper", nome: "Sniper", quanti: 2 },
-      { ruolo: "dancer", nome: "Gypsy/Dancer", quanti: 1 },
-      { ruolo: "bard", nome: "Clown/Bard", quanti: 1 },
+      { ruolo: "dancer", nome: GYPSY, quanti: 1 },
+      { ruolo: "bard", nome: CLOWN, quanti: 1 },
       { ruolo: "prof", nome: "Professor", quanti: 1 },
       { ruolo: "paladin", nome: "Paladin", quanti: 1 },
       { ruolo: "creator", nome: "Creator", quanti: 1 },
@@ -105,9 +119,12 @@ export const ISTANZE = [
     classi: [
       { nome: "Champion", ruolo: "champion" },
       { nome: "High Priest", ruolo: "hp" },
+      { nome: HP_TANKER, ruolo: "hp" },
       { nome: "Sniper", ruolo: "sniper" },
-      { nome: "Gypsy/Dancer", ruolo: "dancer" },
-      { nome: "Clown/Bard", ruolo: "bard" },
+      { nome: "Gypsy", ruolo: "dancer" },
+      { nome: "Dancer", ruolo: "dancer" },
+      { nome: "Clown", ruolo: "bard" },
+      { nome: "Bard", ruolo: "bard" },
       { nome: "Professor", ruolo: "prof" },
       { nome: "Paladin", ruolo: "paladin" },
       { nome: "Creator", ruolo: "creator" },
@@ -131,6 +148,9 @@ export const CLASSI = [...new Set(ISTANZE.flatMap((i) => i.classi.map((c) => c.n
 export function ruoloDi(istanza, classe) {
   return istanza.classi.find((c) => c.nome === classe)?.ruolo ?? "altro";
 }
+
+/** Se una classe copre i posti `tanker` dell'istanza: l'HP Tanker. */
+export const eTanker = (istanza, classe) => istanza.classi.some((c) => c.nome === classe && c.tanker);
 
 /** I ruoli che coprono un posto: il suo, o quelli di `ruoli`. */
 export const ruoliDi = (posto) => posto.ruoli ?? [posto.ruolo];
