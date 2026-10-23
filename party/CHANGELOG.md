@@ -2,6 +2,17 @@
 
 Le versioni della pagina `party/`.
 
+## [1.13] - 2026-10-23
+
+- Horror Toy Factory: nuova colonna `HP capace` per i giocatori che la reggono da High Priest.
+  Dei due High Priest di ogni run almeno uno deve essere di un giocatore con la spunta, con uno
+  qualsiasi dei suoi account (l'equipaggiamento si passa); un Account Gilda non conta come capace.
+  Se ne mancano, `Per la run N` lo dice. Nell'elenco della gilda: `Nome (HP capace)`
+- Soul Linker riconosciuto (anche `SL`): con il link il Clown usa la canzone degli SP, quindi in
+  una run senza Gypsy/Dancer prende il suo posto fra i liberi
+- Nell'elenco della gilda e nelle caselle `Snip` vale come Sniper, e le classi separate solo da
+  spazi si leggono una per una: `Snip Prof Bragi` sono Sniper, Professor e Clown/Bard
+
 ## [1.12] - 2026-10-23
 
 - I jolly si chiamano Account Gilda, come Guild Account nella versione inglese. Nell'elenco della

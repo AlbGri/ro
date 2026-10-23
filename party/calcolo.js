@@ -31,7 +31,7 @@
  * giocatori chiedevano 13 secondi.
  */
 
-import { ISTANZE, ruoloDi, tr } from "./dati.js";
+import { CAPACE, ISTANZE, ruoloDi, tr } from "./dati.js";
 
 /**
  * I modi di usare un account: uno per ruolo che conta (posti obbligatori e
@@ -40,7 +40,10 @@ import { ISTANZE, ruoloDi, tr } from "./dati.js";
  */
 function usiAccount(account, istanza) {
   // Con i posti liberi riservati (`liberi`) entrano solo i ruoli dei posti: gli altri non hanno dove stare.
-  const contano = new Set([...istanza.posti.map((p) => p.ruolo), ...(istanza.liberi ? [] : istanza.preferiti.map((p) => p.ruolo))]);
+  const contano = new Set([
+    ...istanza.posti.flatMap((p) => [p.ruolo, ...(p.alternativa ? [p.alternativa.ruolo] : [])]),
+    ...(istanza.liberi ? [] : istanza.preferiti.map((p) => p.ruolo)),
+  ]);
   const usi = [];
   account.personaggi.forEach((p, indice) => {
     const ruolo = ruoloDi(istanza, p.classe);
@@ -53,13 +56,14 @@ function usiAccount(account, istanza) {
 /**
  * Le run migliori con i giocatori presenti e i jolly disponibili.
  *
- * @param {Array<{nome: string, account: Array<{personaggi: Array<{classe: string}>}>}>} giocatori
- *   solo i presenti
+ * @param {Array<{nome: string, capace?: boolean, account: Array<{personaggi: Array<{classe: string}>}>}>} giocatori
+ *   solo i presenti; `capace`: copre i posti `capaci` con i suoi account (non con i jolly)
  * @param {Array<{personaggi: Array<{classe: string}>}>} jolly solo i disponibili
  * @param {object} [istanza] una di `ISTANZE`, la prima se non si indica
  * @returns {{run: Array<{membri: Array<object>, preferiti: number[]}>, entrate: number, preferiti: number[],
  *   jolly: number, fuori: Array<{giocatore: number, entrate: number, motivo: string}>, mancano: string[]}}
- *   Ogni membro: `giocatore`, `account` o `jolly` (indici), `personaggio`, `ruolo`, `posto` (null se libero)
+ *   Ogni membro: `giocatore`, `account` o `jolly` (indici), `personaggio`, `ruolo`, `posto` (null se libero),
+ *   `capace` se copre un posto `capaci`
  */
 export function calcolaRun(giocatori, jolly, istanza = ISTANZE[0]) {
   for (let nRun = istanza.maxRun; nRun > 0; nRun--) {
@@ -92,6 +96,8 @@ function cerca(giocatori, jolly, istanza, nRun) {
     ["jolly", maxEntrate],
     ["quadrati", maxEntrate * nRun],
     ...istanza.preferiti.map((p) => [`preferito:${p.ruolo}`, maxEntrate]).reverse(),
+    // Un posto desiderato coperto dal suo ruolo e non dall'alternativa: la Gypsy prima del Soul Linker.
+    ["principali", maxEntrate],
     ["desiderati", maxEntrate],
     ["entrate", maxEntrate],
     ["posti", maxEntrate],
@@ -109,26 +115,49 @@ function cerca(giocatori, jolly, istanza, nRun) {
   const archi = [];
   const arco = (da, a, cap, costo, info = {}) => archi.push({ da, a, cap, costo, ...info }) - 1;
 
-  // Ruoli: un nodo per ruolo che conta, con i suoi posti obbligatori, desiderati e liberi.
+  // Un posto desiderato e' un nodo verso i liberi, condiviso fra il suo ruolo e l'alternativa.
+  const desiderato = new Map();
+  const nodoDesiderato = (posto) => {
+    if (!desiderato.has(posto)) {
+      desiderato.set(posto, nodo());
+      arco(desiderato.get(posto), 2, posto.desiderati * nRun, 0);
+    }
+    return desiderato.get(posto);
+  };
+  // Ruoli: un nodo per ruolo che conta, con i suoi posti obbligatori, desiderati e liberi. Con
+  // `capaci` un nodo in piu' per i personaggi dei giocatori capaci: copre quei posti, poi vale come gli altri.
   const ruoli = new Map();
+  const capaci = new Map();
   const nodoRuolo = (ruolo) => {
     if (ruoli.has(ruolo)) return ruoli.get(ruolo);
     const n = nodo();
     ruoli.set(ruolo, n);
     const posto = istanza.posti.find((p) => p.ruolo === ruolo);
+    const diAlternativa = istanza.posti.find((p) => p.alternativa?.ruolo === ruolo && p.desiderati > 0);
     const quanti = (posto?.quanti ?? 0) * nRun;
     const ammesso = !istanza.liberi || istanza.liberi.includes(ruolo);
     const tetto = Math.min(posto?.massimo ?? Infinity, (posto?.quanti ?? 0) + (ammesso ? liberiPerRun : 0)) * nRun;
     const desiderati = Math.min((posto?.desiderati ?? 0) * nRun, tetto - quanti);
-    if (quanti > 0) arco(n, 1, quanti, -pesi.posti, { obbligatorio: true });
-    if (desiderati > 0) arco(n, 2, desiderati, -pesi.desiderati);
-    if (tetto - quanti - desiderati > 0) arco(n, 2, tetto - quanti - desiderati, 0);
+    const alternativa = diAlternativa ? Math.min(diAlternativa.desiderati * nRun, tetto) : 0;
+    const quantiCapaci = (posto?.capaci ?? 0) * nRun;
+    if (quantiCapaci > 0) {
+      const c = nodo();
+      capaci.set(ruolo, c);
+      arco(c, 1, quantiCapaci, -pesi.posti, { obbligatorio: true });
+      arco(c, n, tetto, 0);
+    }
+    if (quanti > quantiCapaci) arco(n, 1, quanti - quantiCapaci, -pesi.posti, { obbligatorio: true });
+    if (desiderati > 0) arco(n, nodoDesiderato(posto), desiderati, -pesi.desiderati - pesi.principali);
+    if (alternativa > 0) arco(n, nodoDesiderato(diAlternativa), alternativa, -pesi.desiderati);
+    if (tetto - quanti - desiderati - alternativa > 0) arco(n, 2, tetto - quanti - desiderati - alternativa, 0);
     return n;
   };
-  const versoRuoli = (n, account) => {
+  const versoRuoli = (n, account, capace = false) => {
     for (const uso of usiAccount(account, istanza)) {
       const preferito = pesi[`preferito:${uso.ruolo}`] ?? 0;
-      arco(n, nodoRuolo(uso.ruolo), 1, -preferito, { uso });
+      const verso = nodoRuolo(uso.ruolo);
+      if (capace && capaci.has(uso.ruolo)) arco(n, capaci.get(uso.ruolo), 1, -preferito, { uso: { ...uso, capace: true } });
+      else arco(n, verso, 1, -preferito, { uso });
     }
   };
   arco(2, 1, liberiPerRun * nRun, 0);
@@ -149,7 +178,7 @@ function cerca(giocatori, jolly, istanza, nRun) {
     g.account.forEach((a, ai) => {
       const n2 = nodo();
       arco(n, n2, 1, 0, { giocatore: gi, account: ai });
-      versoRuoli(n2, a);
+      versoRuoli(n2, a, g.capace);
     });
     nodiJolly.forEach((nj, ji) => arco(n, nj, 1, pesi.jolly, { giocatore: gi, jolly: ji }));
   });
@@ -241,10 +270,12 @@ function dividi(scelti, istanza, nRun) {
 
   const restanti = [...scelti];
   for (const posto of istanza.posti) {
+    // Prima i posti dei capaci, cosi' gli altri non prendono i loro personaggi.
     for (let q = 0; q < posto.quanti; q++) {
       const nodo = nuovoDestro();
+      const soloCapaci = q < (posto.capaci ?? 0);
       for (let r = 0; r < nRun; r++) {
-        const i = restanti.findIndex((c) => c.ruolo === posto.ruolo);
+        const i = restanti.findIndex((c) => c.ruolo === posto.ruolo && (!soloCapaci || c.capace));
         archi.push({ contributo: restanti.splice(i, 1)[0], destro: nodo });
       }
     }
@@ -255,7 +286,8 @@ function dividi(scelti, istanza, nRun) {
       const nodo = nuovoDestro();
       let archiNodo = 0;
       for (let r = 0; r < nRun; r++) {
-        const i = restanti.findIndex((c) => c.ruolo === posto.ruolo);
+        let i = restanti.findIndex((c) => c.ruolo === posto.ruolo);
+        if (i < 0 && posto.alternativa) i = restanti.findIndex((c) => c.ruolo === posto.alternativa.ruolo);
         if (i < 0) break;
         archi.push({ contributo: restanti.splice(i, 1)[0], destro: nodo });
         archiNodo++;
@@ -333,10 +365,24 @@ function dividi(scelti, istanza, nRun) {
  */
 function pareggia(run, istanza) {
   const conta = (membri, ruolo) => membri.filter((m) => m.ruolo === ruolo).length;
+  // I posti desiderati coperti in una run, e quanti dal loro ruolo e non dall'alternativa.
   const desiderati = (membri) =>
-    istanza.posti.reduce((n, p) => n + Math.min(Math.max(0, conta(membri, p.ruolo) - p.quanti), p.desiderati ?? 0), 0);
+    istanza.posti.reduce(
+      (n, p) => {
+        const propri = Math.max(0, conta(membri, p.ruolo) - p.quanti);
+        const alternativa = p.alternativa ? conta(membri, p.alternativa.ruolo) : 0;
+        return [n[0] + Math.min(propri + alternativa, p.desiderati ?? 0), n[1] + Math.min(propri, p.desiderati ?? 0)];
+      },
+      [0, 0],
+    );
   const copre = (membri) =>
-    istanza.posti.every((p) => conta(membri, p.ruolo) >= p.quanti && conta(membri, p.ruolo) <= (p.massimo ?? Infinity));
+    istanza.posti.every(
+      (p) =>
+        conta(membri, p.ruolo) >= p.quanti &&
+        conta(membri, p.ruolo) <= (p.massimo ?? Infinity) &&
+        membri.filter((m) => m.ruolo === p.ruolo && m.capace).length >= (p.capaci ?? 0),
+    );
+  const somma = (a, b) => [a[0] + b[0], a[1] + b[1]];
   const squilibrio = () => istanza.preferiti.map((p) => run.reduce((n, m) => n + conta(m, p.ruolo) ** 2, 0));
   const meno = (a, b) => {
     for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return a[i] < b[i];
@@ -352,13 +398,14 @@ function pareggia(run, istanza) {
           for (const y of [...run[b]]) {
             if (x.ruolo === y.ruolo || !run[a].includes(x)) continue;
             if (presente(run[b], x.giocatore, y) || presente(run[a], y.giocatore, x)) continue;
-            const prima = { squilibrio: squilibrio(), desiderati: desiderati(run[a]) + desiderati(run[b]) };
+            const prima = { squilibrio: squilibrio(), desiderati: somma(desiderati(run[a]), desiderati(run[b])) };
             const scambia = () => {
               run[a][run[a].indexOf(x)] = y;
               run[b][run[b].indexOf(y)] = x;
             };
             scambia();
-            const valido = copre(run[a]) && copre(run[b]) && desiderati(run[a]) + desiderati(run[b]) >= prima.desiderati;
+            const dopo = somma(desiderati(run[a]), desiderati(run[b]));
+            const valido = copre(run[a]) && copre(run[b]) && dopo[0] >= prima.desiderati[0] && dopo[1] >= prima.desiderati[1];
             if (valido && meno(squilibrio(), prima.squilibrio)) {
               migliorato = true;
               break;
@@ -409,7 +456,7 @@ function assegnaPosti(membri, istanza) {
   const obbligatori = [];
   for (const posto of istanza.posti) {
     for (let i = 0; i < posto.quanti; i++) {
-      const k = liberi.findIndex((m) => m.ruolo === posto.ruolo);
+      const k = liberi.findIndex((m) => m.ruolo === posto.ruolo && (i >= (posto.capaci ?? 0) || m.capace));
       if (k >= 0) obbligatori.push({ ...liberi.splice(k, 1)[0], posto: posto.nome });
     }
   }
@@ -428,7 +475,7 @@ function spiega(giocatori, jolly, gruppo, run, servono, ci, copre) {
   const elenco = [];
   let n = 0;
   for (const g of giocatori) {
-    const numeri = g.account.flatMap((a, ai) => (copre(a, gruppo) ? [a.numero ?? ai + 1] : []));
+    const numeri = g.account.flatMap((a, ai) => (copre(a, gruppo, g.capace) ? [a.numero ?? ai + 1] : []));
     if (numeri.length) elenco.push(`${g.nome} (${numeri.join(", ")})`);
     n += numeri.length;
   }
@@ -476,19 +523,25 @@ function cosaManca(giocatori, jolly, istanza, run) {
   const mancano = [];
   const minimo = istanza.posti.reduce((n, p) => n + p.quanti, 0);
   if (giocatori.length < minimo) mancano.push(tr(`Servono almeno ${minimo} giocatori presenti, ce ne sono ${giocatori.length}.`, `At least ${minimo} players present are needed, there are ${giocatori.length}.`));
-  const posti = istanza.posti.filter((p) => p.quanti > 0);
-  const copre = (account, gruppo) => account.personaggi.some((p) => gruppo.some((posto) => ruoloDi(istanza, p.classe) === posto.ruolo));
+  // I posti dei capaci sono un posto in piu', contato da solo o con gli altri, ma non insieme al suo
+  // posto: `quanti` li comprende gia'.
+  const posti = istanza.posti
+    .filter((p) => p.quanti > 0)
+    .flatMap((p) => [p, ...(p.capaci ? [{ ruolo: p.ruolo, nome: `${p.nome} (${CAPACE})`, quanti: p.capaci, di: p }] : [])]);
+  const copre = (account, gruppo, capace = false) =>
+    account.personaggi.some((p) => gruppo.some((posto) => ruoloDi(istanza, p.classe) === posto.ruolo && (!posto.di || capace)));
   const scarsi = [];
   for (let maschera = 1; maschera < 1 << posti.length; maschera++) {
     if (scarsi.some((s) => (s & maschera) === s)) continue;
     const gruppo = posti.filter((_, i) => maschera & (1 << i));
+    if (gruppo.some((p) => gruppo.includes(p.di))) continue;
     const servono = run * gruppo.reduce((n, p) => n + p.quanti, 0);
     // Piu' posti per run che giocatori presenti: lo dice gia' la riga dei giocatori.
     if (servono > run * giocatori.length) continue;
     let propri = 0;
     let liberi = 0;
     for (const g of giocatori) {
-      const usati = Math.min(run, g.account.filter((a) => copre(a, gruppo)).length);
+      const usati = Math.min(run, g.account.filter((a) => copre(a, gruppo, g.capace)).length);
       propri += usati;
       liberi += run - usati;
     }

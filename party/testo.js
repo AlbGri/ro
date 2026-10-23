@@ -12,12 +12,13 @@
  * trattino e' un suo account, con le classi separate da / , + o "e". Va bene anche
  * il messaggio copiato da Discord, "[19:40]Efreeet: 1) HP/...": l'ora si toglie e
  * quello che segue il nome e' il primo account. "Account Gilda nome: classi" e' un jolly.
+ * "Efreeet (HP capace)" mette la spunta HP capace al giocatore.
  * Le parole valgono nelle due lingue, qualunque sia quella della pagina (Alberto,
  * 22/10/2026): "Guild Account nome: classi", "HP and Sniper", "Other".
  * Solo le classi, niente nomi dei personaggi: "basta la classe" (Alberto).
  */
 
-import { ALTRO, CLASSI, tr } from "./dati.js";
+import { ALTRO, CAPACE, CLASSI, tr } from "./dati.js";
 
 // I soprannomi che si usano in gilda (Alberto, 22/10/2026: "non e' tanto standard").
 // SP Song e Bragi sono le canzoni di Dancer e Bard. Gli altri li impara la pagina, quando chi
@@ -26,6 +27,7 @@ export const SOPRANNOMI = {
   hp: "High Priest",
   prete: "Priest",
   sniper: "Sniper",
+  snip: "Sniper",
   bragi: "Clown/Bard",
   "sp song": "Gypsy/Dancer",
   prof: "Professor",
@@ -39,6 +41,7 @@ export const SOPRANNOMI = {
   biochemist: "Creator",
   hw: "High Wizard",
   wiz: "High Wizard",
+  sl: "Soul Linker",
 };
 
 /** Una parola come chiave di confronto: minuscole, senza accenti, spazi semplici. */
@@ -113,6 +116,7 @@ const BREVE = {
   Professor: "Prof",
   Champion: "Champ",
   "High Wizard": "HW",
+  "Soul Linker": "SL",
 };
 /** La forma breve di una classe ("HP" per High Priest); le altre restano come sono. */
 export const breve = (classe) => BREVE[classe] ?? classe;
@@ -125,7 +129,40 @@ const SEPARATORI = /\s*(?:[/,+;&]|\s+(?:e|and)\s+)\s*/i;
 // "Account Gilda" e "Guild Account": la parola che apre la riga di un jolly, e il suo nome predefinito
 const JOLLY_PAROLA = tr("Account Gilda", "Guild Account");
 
-const parole = (testo) => testo.split(SEPARATORI).filter((p) => chiave(p));
+// "(HP capace)" dopo il nome di un giocatore: la spunta della tabella.
+const SEGNO_CAPACE = /\s*\((?:hp capace|skilled hp)\)\s*$/i;
+
+/**
+ * Le parole di un account. Una parte fra due separatori che non e' una classe si divide negli
+ * spazi: "Snip Prof Bragi" sono tre classi (Alberto, 23/10/2026). Si prende ogni volta la
+ * sequenza piu' lunga che e' una classe, cosi' "High Priest" e "SP Song" restano intere; le parole
+ * sconosciute vicine restano insieme, come "Lord Knight", da imparare una volta sola.
+ */
+function parole(testo, imparati) {
+  const esito = [];
+  for (const parte of testo.split(SEPARATORI).filter((p) => chiave(p))) {
+    const spezzate = parte.trim().split(/\s+/);
+    if (spezzate.length === 1 || riconosci(parte, imparati)) {
+      esito.push(parte);
+      continue;
+    }
+    let ignota = [];
+    for (let i = 0; i < spezzate.length; ) {
+      let j = spezzate.length;
+      while (j > i && !riconosci(spezzate.slice(i, j).join(" "), imparati)) j--;
+      if (j === i) {
+        ignota.push(spezzate[i++]);
+        continue;
+      }
+      if (ignota.length) esito.push(ignota.join(" "));
+      ignota = [];
+      esito.push(spezzate.slice(i, j).join(" "));
+      i = j;
+    }
+    if (ignota.length) esito.push(ignota.join(" "));
+  }
+  return esito.filter((p) => chiave(p));
+}
 
 /**
  * Le classi scritte in un account, come "HP/Devo/Clown".
@@ -137,7 +174,7 @@ const parole = (testo) => testo.split(SEPARATORI).filter((p) => chiave(p));
 export function leggiClassi(testo, imparati = {}) {
   const classi = [];
   const ignote = [];
-  for (const parola of parole(testo)) {
+  for (const parola of parole(testo, imparati)) {
     const classe = riconosci(parola, imparati)?.classe;
     if (!classe) ignote.push(parola);
     else if (!classi.includes(classe)) classi.push(classe);
@@ -152,7 +189,7 @@ export function leggiClassi(testo, imparati = {}) {
  */
 export function pulisci(testo, imparati = {}) {
   const fatte = [];
-  for (const parola of parole(testo)) {
+  for (const parola of parole(testo, imparati)) {
     const classe = riconosci(parola, imparati)?.classe;
     const scritta = !classe || classe === ALTRO ? parola.trim() : breve(classe);
     if (!fatte.some((f) => chiave(f) === chiave(scritta))) fatte.push(scritta);
@@ -165,7 +202,7 @@ export function pulisci(testo, imparati = {}) {
  *
  * @param {string} testo
  * @param {Object<string, string>} imparati i soprannomi imparati, chiave -> classe
- * @returns {{giocatori: Array<{nome: string, account: string[]}>, jolly: Array<{nome: string, classi: string}>,
+ * @returns {{giocatori: Array<{nome: string, capace: boolean, account: string[]}>, jolly: Array<{nome: string, classi: string}>,
  *   errori: string[]}} gli account e le classi dei jolly gia' riscritti con `pulisci`
  */
 export function leggiElenco(testo, imparati = {}) {
@@ -193,10 +230,12 @@ export function leggiElenco(testo, imparati = {}) {
       return;
     }
     const dueP = testoRiga.indexOf(":");
-    const nome = (dueP < 0 ? testoRiga : testoRiga.slice(0, dueP)).trim();
+    const prima = (dueP < 0 ? testoRiga : testoRiga.slice(0, dueP)).trim();
+    const capace = SEGNO_CAPACE.test(prima);
+    const nome = prima.replace(SEGNO_CAPACE, "");
     const resto = dueP < 0 ? "" : testoRiga.slice(dueP + 1).trim();
     // "HP/Sniper" senza numero davanti sembrerebbe un giocatore che si chiama cosi'.
-    const scritte = parole(nome);
+    const scritte = parole(nome, imparati);
     if (scritte.length > 0 && scritte.every((p) => riconosci(p, imparati)?.corretta === false)) {
       esito.errori.push(tr(
         `riga ${riga}: "${nome}" sembra un account, non un giocatore: scrivi un numero davanti, come 1) ${nome}`,
@@ -204,7 +243,7 @@ export function leggiElenco(testo, imparati = {}) {
       ));
       return;
     }
-    giocatore = { nome, account: [] };
+    giocatore = { nome, capace, account: [] };
     esito.giocatori.push(giocatore);
     if (resto) aggiungiAccount(resto.match(ACCOUNT)?.[1] ?? resto);
   });
@@ -218,7 +257,8 @@ export function scriviElenco(stato) {
   const blocchi = [];
   stato.giocatori.forEach((g, i) => {
     const account = g.account.filter((a) => a.trim());
-    if (account.length > 0) blocchi.push([g.nome || `${tr("Giocatore", "Player")} ${i + 1}`, ...account.map((a, k) => `${k + 1}) ${a}`)].join("\n"));
+    const nome = (g.nome || `${tr("Giocatore", "Player")} ${i + 1}`) + (g.capace ? ` (${CAPACE})` : "");
+    if (account.length > 0) blocchi.push([nome, ...account.map((a, k) => `${k + 1}) ${a}`)].join("\n"));
   });
   const jolly = stato.jolly
     .filter((j) => j.classi.trim())

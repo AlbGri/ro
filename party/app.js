@@ -9,7 +9,7 @@
  */
 
 import { calcolaRun } from "./calcolo.js";
-import { ALTRO, CLASSI, ISTANZE, nomeClasse, tr } from "./dati.js";
+import { ALTRO, CAPACE, CLASSI, ISTANZE, nomeClasse, tr } from "./dati.js";
 import { breve, leggiClassi, leggiElenco, pulisci, scriviElenco } from "./testo.js";
 
 const STORAGE_KEY = "ragnarok-party/stato";
@@ -49,6 +49,7 @@ function normalizza(dati) {
     giocatori: dati.giocatori.map((g) => ({
       nome: String(g?.nome ?? ""),
       presente: g?.presente !== false,
+      capace: g?.capace === true,
       account: (Array.isArray(g?.account) ? g.account : []).map(testo),
     })),
     jolly: dati.jolly.map((j) => ({
@@ -99,6 +100,12 @@ function disegnaIstanza() {
   const obbligatori = i.posti.filter((p) => p.quanti > 0);
   const desiderati = i.posti.filter((p) => p.desiderati > 0);
   const quanti = (n, p) => `${n} ${p.nome}`;
+  const obbligatorio = (p) =>
+    quanti(p.quanti, p) +
+    (p.capaci ? tr(` (almeno ${p.capaci} di un giocatore con la spunta ${CAPACE})`, ` (at least ${p.capaci} from a player with ${CAPACE} checked)`) : "");
+  const desiderato = (p) =>
+    `${quanti(p.desiderati, p)} per run` +
+    (p.alternativa ? tr(` (se manca, ${quanti(p.desiderati, p.alternativa)})`, ` (or, if there is none, ${quanti(p.desiderati, p.alternativa)})`) : "");
   const nomeRuolo = (ruolo) => i.posti.find((p) => p.ruolo === ruolo)?.nome ?? ruolo;
   const massimi = i.posti
     .filter((p) => p.massimo !== undefined)
@@ -108,13 +115,13 @@ function disegnaIstanza() {
     : tr(". Gli altri posti sono liberi, per qualsiasi classe", ". The other slots are free, for any class");
   document.getElementById("composizione").textContent =
     tr(`${i.nome}: ogni run ha al massimo ${i.maxParty} persone e deve avere `, `${i.nome}: each run has at most ${i.maxParty} people and must have `) +
-    obbligatori.map((p) => quanti(p.quanti, p)).join(", ") +
+    obbligatori.map(obbligatorio).join(", ") +
     liberi +
     (massimi.length ? `, ${massimi.join(", ")}` : "") +
     (desiderati.length
       ? tr(
-          `; fra questi, se c'è, viene prima ${desiderati.map((p) => quanti(p.desiderati, p)).join(" e ")} per run`,
-          `; among these, if there is one, ${desiderati.map((p) => quanti(p.desiderati, p)).join(" and ")} per run comes first`,
+          `; fra questi, se c'è, viene prima ${desiderati.map(desiderato).join(" e ")}`,
+          `; among these, if there is one, ${desiderati.map(desiderato).join(" and ")} comes first`,
         )
       : "") +
     tr(
@@ -123,7 +130,7 @@ function disegnaIstanza() {
     );
   document.getElementById("ordine").textContent =
     tr("Le run migliori: prima il numero di run, poi far entrare tutti il più possibile, ", "The best runs: first the number of runs, then letting everyone in as much as possible, ") +
-    desiderati.map((p) => tr(`poi ${quanti(p.desiderati, p)} per run, `, `then ${quanti(p.desiderati, p)} per run, `)).join("") +
+    desiderati.map((p) => tr(`poi ${desiderato(p)}, `, `then ${desiderato(p)}, `)).join("") +
     i.preferiti.map((p) => `${tr("poi più", "then more")} ${p.nome}${p.perche ? ` (${p.perche})` : ""}, `).join("") +
     tr("poi run equilibrate.", "then balanced runs.");
 }
@@ -142,14 +149,18 @@ function campoClassi(testo, attributi, segnaposto) {
 function disegnaGiocatori() {
   const n = colonne();
   const stile = `style="--colonne: ${n}"`;
-  const intestazione = `<div class="riga intestazione" ${stile}>
-    <span>${tr("Presente", "Present")}</span><span>${NOME_GIOCATORE}</span>${[...Array(n)].map((_, i) => `<span>Account ${i + 1}</span>`).join("")}
+  // La spunta HP capace solo nelle istanze che la usano: resta salvata anche nelle altre.
+  const conCapaci = istanza().posti.some((p) => p.capaci);
+  const classe = conCapaci ? "riga capaci" : "riga";
+  const intestazione = `<div class="${classe} intestazione" ${stile}>
+    <span>${tr("Presente", "Present")}</span><span>${NOME_GIOCATORE}</span>${conCapaci ? `<span>${CAPACE}</span>` : ""}${[...Array(n)].map((_, i) => `<span>Account ${i + 1}</span>`).join("")}
     <button class="btn small" type="button" data-azione="nuova-colonna" title="${tr("Una colonna di account in più", "One more account column")}" aria-label="${tr("Una colonna di account in più", "One more account column")}">+</button>
   </div>`;
   const righe = stato.giocatori.map(
-    (g, gi) => `<div class="riga${g.presente ? "" : " spento"}" ${stile}>
+    (g, gi) => `<div class="${classe}${g.presente ? "" : " spento"}" ${stile}>
       <input type="checkbox" data-g="${gi}" data-campo="presente"${g.presente ? " checked" : ""} aria-label="${tr("Presente", "Present")}">
       <input type="text" class="nome" value="${escape(g.nome)}" placeholder="${NOME_GIOCATORE} ${gi + 1}" data-g="${gi}" data-campo="nome" aria-label="${tr("Nome del giocatore", "Player name")}">
+      ${conCapaci ? `<label class="capace"><input type="checkbox" data-g="${gi}" data-campo="capace"${g.capace ? " checked" : ""} aria-label="${CAPACE}"><span>${CAPACE}</span></label>` : ""}
       ${[...Array(n)].map((_, ai) => campoClassi(g.account[ai] ?? "", `data-g="${gi}" data-a="${ai}" data-campo="account"`, `Account ${ai + 1}`)).join("")}
       <button class="btn small danger" type="button" data-g="${gi}" data-azione="togli-giocatore" title="${tr("Togli il giocatore", "Remove the player")}" aria-label="${tr("Togli il giocatore", "Remove the player")}">✕</button>
     </div>`,
@@ -211,7 +222,7 @@ function disegnaDubbi() {
 function datiCalcolo() {
   const personaggi = (testo) => leggiClassi(testo, stato.soprannomi).classi.map((classe) => ({ classe }));
   const presenti = stato.giocatori
-    .map((g, indice) => ({ nome: g.nome || `${NOME_GIOCATORE} ${indice + 1}`, presente: g.presente, account: g.account }))
+    .map((g, indice) => ({ nome: g.nome || `${NOME_GIOCATORE} ${indice + 1}`, presente: g.presente, capace: g.capace, account: g.account }))
     .filter((g) => g.presente)
     .map((g) => ({
       ...g,
@@ -368,6 +379,8 @@ document.addEventListener("input", (event) => {
   if (campo === "presente" || campo === "disponibile") {
     oggetto[campo] = el.checked;
     el.closest(".riga").classList.toggle("spento", !el.checked);
+  } else if (campo === "capace") {
+    oggetto.capace = el.checked;
   } else if (campo === "account") {
     while (oggetto.account.length <= el.dataset.a) oggetto.account.push("");
     oggetto.account[el.dataset.a] = el.value;
@@ -558,8 +571,9 @@ function aggiungiElenco() {
   ))) return;
   for (const g of letto.giocatori) {
     const esistente = stato.giocatori.find((x) => stessoNome(x.nome, g.nome));
-    if (esistente) esistente.account = g.account;
-    else stato.giocatori.push({ nome: g.nome, presente: true, account: g.account });
+    // La spunta HP capace la mette l'elenco, ma non la toglie: i messaggi di Discord non la hanno.
+    if (esistente) Object.assign(esistente, { account: g.account, capace: esistente.capace || g.capace });
+    else stato.giocatori.push({ nome: g.nome, presente: true, capace: g.capace, account: g.account });
   }
   for (const j of letto.jolly) {
     const esistente = stato.jolly.find((x) => stessoNome(x.nome, j.nome));

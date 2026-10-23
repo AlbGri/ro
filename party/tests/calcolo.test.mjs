@@ -12,7 +12,9 @@ import { ISTANZE, ruoloDi } from "../dati.js";
 const ISTANZA = ISTANZE[0];
 
 const account = (...classi) => ({ personaggi: classi.map((classe) => ({ classe })) });
-const giocatore = (nome, ...accounts) => ({ nome, account: accounts });
+// Nei casi che non riguardano gli HP capaci tutti i giocatori lo sono, come prima della spunta.
+const giocatore = (nome, ...accounts) => ({ nome, capace: true, account: accounts });
+const scarso = (nome, ...accounts) => ({ nome, capace: false, account: accounts });
 
 /** Il personaggio di un membro del risultato. */
 function personaggio(giocatori, jolly, m) {
@@ -26,6 +28,7 @@ function runValida(membri, istanza) {
   for (const p of istanza.posti) {
     const ci = membri.filter((m) => m.ruolo === p.ruolo).length;
     if (ci < p.quanti || ci > (p.massimo ?? Infinity)) return false;
+    if (membri.filter((m) => m.ruolo === p.ruolo && m.capace).length < (p.capaci ?? 0)) return false;
     if (istanza.liberi && !istanza.liberi.includes(p.ruolo) && ci > p.quanti) return false;
   }
   return !istanza.liberi || membri.every((m) => istanza.posti.some((p) => p.ruolo === m.ruolo));
@@ -44,6 +47,7 @@ function verifica(giocatori, jolly, istanza, esito) {
       assert.ok(!accountUsati.has(id), "un account in due run");
       accountUsati.add(id);
       assert.equal(ruoloDi(istanza, personaggio(giocatori, jolly, m).classe), m.ruolo);
+      if (m.capace) assert.ok(m.jolly === null && giocatori[m.giocatore].capace, "capace senza la spunta");
     }
   }
   return punteggio(esito.run.map((r) => r.membri.map((m) => ({ ...m }))), istanza);
@@ -57,10 +61,13 @@ function punteggio(run, istanza) {
   let persone2 = 0;
   let preferiti2 = 0;
   let desiderati = 0;
+  let principali = 0;
   for (const membri of run) {
     for (const p of istanza.posti) {
-      const ci = membri.filter((m) => m.ruolo === p.ruolo).length;
-      desiderati += Math.min(Math.max(0, ci - p.quanti), p.desiderati ?? 0);
+      const propri = Math.max(0, membri.filter((m) => m.ruolo === p.ruolo).length - p.quanti);
+      const alternativa = p.alternativa ? membri.filter((m) => m.ruolo === p.alternativa.ruolo).length : 0;
+      desiderati += Math.min(propri + alternativa, p.desiderati ?? 0);
+      principali += Math.min(propri, p.desiderati ?? 0);
     }
     istanza.preferiti.forEach((p, k) => (preferiti[k] += membri.filter((m) => m.ruolo === p.ruolo).length));
     const pref = membri.filter((m) => m.ruolo === istanza.preferiti[0].ruolo).length;
@@ -72,7 +79,7 @@ function punteggio(run, istanza) {
   const totale = [...entrate.values()].reduce((a, b) => a + b, 0);
   const quadrati = [...entrate.values()].reduce((a, b) => a + b * b, 0);
   // + 0 trasforma -0 in 0, che deepEqual distingue.
-  return [run.length, totale, desiderati, ...preferiti, -quadrati, -jolly, -persone2, -preferiti2].map((x) => x + 0);
+  return [run.length, totale, desiderati, principali, ...preferiti, -quadrati, -jolly, -persone2, -preferiti2].map((x) => x + 0);
 }
 
 /** Il punteggio migliore provando tutte le ripartizioni. */
@@ -109,7 +116,7 @@ function forzaBruta(giocatori, jolly, istanza) {
         usati.add(s.id);
         if (s.jolly !== null) jollyUsati.add(s.jolly);
         for (const p of s.a.personaggi) {
-          run[r].push({ giocatore: g, jolly: s.jolly, ruolo: ruolo(p) });
+          run[r].push({ giocatore: g, jolly: s.jolly, ruolo: ruolo(p), capace: s.jolly === null && giocatori[g].capace });
           perRun(r + 1);
           run[r].pop();
         }
@@ -258,6 +265,55 @@ describe("casi di Alberto", () => {
   });
 });
 
+describe("HP capaci e Soul Linker (Alberto, 23/10/2026)", () => {
+  const altri = ["Sniper", "Clown/Bard", "Professor"];
+
+  it("due High Priest scarsi non bastano, e lo dice", () => {
+    const giocatori = [scarso("A", account("High Priest")), scarso("B", account("High Priest")), ...altri.map((c) => giocatore(c, account(c)))];
+    const esito = calcolaRun(giocatori, [account("High Priest")]);
+    assert.equal(esito.run.length, 0);
+    assert.deepEqual(esito.mancano, ["Per 1 run serve 1 High Priest (HP capace). Nessun account ha un High Priest (HP capace)."]);
+    giocatori[0].capace = true;
+    const conCapace = calcolaRun(giocatori, []);
+    verifica(giocatori, [], ISTANZA, conCapace);
+    assert.equal(conCapace.run.length, 1);
+    assert.deepEqual(conCapace.run[0].membri.filter((m) => m.ruolo === "hp").map((m) => [m.giocatore, m.capace ?? false]), [[0, true], [1, false]]);
+  });
+
+  it("un capace con tre account High Priest ne gioca uno per run, gli scarsi fanno il secondo", () => {
+    const giocatori = [
+      giocatore("Capace", account("High Priest"), account("High Priest"), account("High Priest")),
+      scarso("S1", account("High Priest"), account("High Priest")),
+      scarso("S2", account("High Priest"), account("High Priest")),
+      ...altri.map((c) => giocatore(c, account(c), account(c), account(c))),
+    ];
+    const esito = calcolaRun(giocatori, []);
+    verifica(giocatori, [], ISTANZA, esito);
+    assert.equal(esito.run.length, 3);
+    for (const run of esito.run) assert.ok(run.membri.some((m) => m.giocatore === 0 && m.posto === "High Priest"));
+    giocatori[0].account.pop();
+    const due = calcolaRun(giocatori, []);
+    assert.equal(due.run.length, 2);
+    assert.deepEqual(due.mancano, [
+      "Per 3 run servono 3 High Priest (HP capace). Gli account che lo hanno sono 2: Capace (1, 2).",
+    ]);
+  });
+
+  it("il Soul Linker prende il posto della Gypsy/Dancer solo se manca", () => {
+    const minimo = ["High Priest", "High Priest", "Sniper", "Clown/Bard", "Professor"].map((c, i) => giocatore(`M${i}`, account(c)));
+    const sniper = [...Array(6)].map((_, i) => giocatore(`S${i}`, account("Sniper")));
+    const soloLinker = [...minimo, ...sniper, giocatore("SL", account("Soul Linker")), giocatore("S6", account("Sniper"))];
+    const esito = calcolaRun(soloLinker, []);
+    verifica(soloLinker, [], ISTANZA, esito);
+    assert.ok(esito.run[0].membri.some((m) => m.ruolo === "sl"));
+    assert.deepEqual(esito.fuori.map((f) => soloLinker[f.giocatore].nome), ["S6"]);
+    const conGypsy = [...soloLinker, giocatore("G", account("Gypsy/Dancer"))];
+    const conLaGypsy = calcolaRun(conGypsy, []);
+    verifica(conGypsy, [], ISTANZA, conLaGypsy);
+    assert.deepEqual(conLaGypsy.fuori.map((f) => conGypsy[f.giocatore].nome).sort(), ["S6", "SL"]);
+  });
+});
+
 describe("Endless Cellar", () => {
   const EC = ISTANZE.find((i) => i.id === "ec");
   const MINIMO = ["Champion", "High Priest", "High Priest", "Sniper", "Sniper", "Gypsy/Dancer", "Clown/Bard", "Professor", "Paladin", "Creator"];
@@ -353,6 +409,31 @@ describe("confronto con la ricerca esaustiva", () => {
       const nGiocatori = istanza.maxRun === 3 ? 2 + intero(2) : 2 + intero(3);
       const giocatori = [...Array(nGiocatori)].map((_, g) =>
         giocatore(
+          `G${g}`,
+          ...[...Array(intero(3))].map(() => account(...[...Array(1 + intero(2))].map(() => classi[intero(4)]))),
+        ),
+      );
+      const jolly = [...Array(intero(2))].map(() => account(classi[intero(4)]));
+      const esito = calcolaRun(giocatori, jolly, istanza);
+      const atteso = forzaBruta(giocatori, jolly, istanza);
+      assert.deepEqual(verifica(giocatori, jolly, istanza, esito), atteso, JSON.stringify({ giocatori, jolly, istanza }));
+    }
+  });
+
+  it("300 casi casuali con posti dei capaci e un'alternativa al posto desiderato, come la Horror Toy Factory", () => {
+    for (let n = 0; n < 300; n++) {
+      const istanza = {
+        ...piccola,
+        maxParty: 2 + intero(3),
+        maxRun: 1 + intero(3),
+        posti: [
+          { ruolo: "hp", nome: "High Priest", quanti: 1 + intero(2), capaci: 1 },
+          { ruolo: "sniper", nome: "Sniper", quanti: 0, desiderati: 1, alternativa: { ruolo: "priest", nome: "Priest" } },
+        ],
+      };
+      const nGiocatori = istanza.maxRun === 3 ? 2 + intero(2) : 2 + intero(3);
+      const giocatori = [...Array(nGiocatori)].map((_, g) =>
+        (intero(2) ? giocatore : scarso)(
           `G${g}`,
           ...[...Array(intero(3))].map(() => account(...[...Array(1 + intero(2))].map(() => classi[intero(4)]))),
         ),
