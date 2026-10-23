@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Interfaccia tkinter di RO Timers.
 
-Sorveglia le finestre di respawn di MvP e quest: la riga resta neutra finche'
+Sorveglia le finestre di respawn di MVP e quest: la riga resta neutra finche'
 la finestra non si apre, diventa gialla mentre e' aperta e rossa quando si e'
 chiusa. Tutta la logica non grafica sta in timers_core.
 """
@@ -314,9 +314,9 @@ class TimerApp:
 
         hints = (
             self.tr(
-                "Ora: quando è morto il MvP o hai finito la quest, come 23:50 o 23:50:30. "
+                "Ora: quando è morto il MVP o hai finito la quest, come 23:50 o 23:50:30. "
                 "Vuota vale adesso.",
-                "Time: when the MvP died or you finished the quest, like 23:50 or 23:50:30. "
+                "Time: when the MVP died or you finished the quest, like 23:50 or 23:50:30. "
                 "Empty means now.",
             ),
             self.tr(

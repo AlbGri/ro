@@ -28,19 +28,19 @@ from functools import lru_cache
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-__version__ = "1.6.0"
+__version__ = "1.6.1"
 
 log = logging.getLogger(__name__)
 
 DATA_FILENAME = "ragnarok_timers.json"
 LOG_FILENAME = "ragnarok_timers.log"
-DATA_VERSION = 4
+DATA_VERSION = 5
 
-DEFAULT_CATEGORIES = ("MvP", "Quest")
+DEFAULT_CATEGORIES = ("MVP", "Quest")
 HISTORY_KEYS = ("nome", "mappa", "categoria")
 
 # Rinomine di categoria applicate ai file salvati con un formato precedente.
-CATEGORY_RENAMES = {"Mostro": "MvP", "MVP": "MvP"}
+CATEGORY_RENAMES = {"Mostro": "MVP", "MvP": "MVP"}
 
 MAX_ARCHIVE = 200
 

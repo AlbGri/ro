@@ -2,7 +2,7 @@
   "name": "RO Timers",
   "lang": "it",
   "short_name": "RO Timers",
-  "description": "Timer delle finestre di respawn per MvP e quest di Ragnarok Online.",
+  "description": "Timer delle finestre di respawn per MVP e quest di Ragnarok Online.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",

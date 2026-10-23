@@ -43,7 +43,7 @@ function makeTimer({ name = "Atroce", minutesAgo = 0, dmin = 190, dmax = 370 } =
   return new Timer({
     name,
     mappa: "ve_fild01",
-    categoria: "MvP",
+    categoria: "MVP",
     start: nowLocal() - minutesAgo * MINUTE,
     dmin,
     dmax,
@@ -107,7 +107,7 @@ describe("rendering", () => {
   });
 
   it("assegna un colore stabile a ogni categoria", () => {
-    assert.equal(categoryColor("MvP"), COLOR_PALETTE[0]);
+    assert.equal(categoryColor("MVP"), COLOR_PALETTE[0]);
     assert.equal(categoryColor("Quest"), COLOR_PALETTE[1]);
     // Il colore dipende dal nome, non dall'ordine di apparizione.
     assert.equal(categoryColor("Boss"), categoryColor("boss"));
@@ -501,7 +501,7 @@ describe("persistenza", () => {
     assert.equal(perNome.Atteso.acked, false);
   });
 
-  it("migra la categoria Mostro in MvP", () => {
+  it("migra la categoria Mostro in MVP", () => {
     // I file salvati prima della versione 3 usavano Mostro come categoria.
     const store = new TimerStore();
     store.loadDict({
@@ -530,10 +530,33 @@ describe("persistenza", () => {
         },
       ],
     });
-    assert.deepEqual([...store.timers.values()].map((t) => t.categoria), ["MvP"]);
-    assert.deepEqual(store.history.categoria, ["MvP", "Quest"]);
-    assert.equal(store.presets.get("atroce").categoria, "MvP");
-    assert.equal(store.archive[0].categoria, "MvP");
+    assert.deepEqual([...store.timers.values()].map((t) => t.categoria), ["MVP"]);
+    assert.deepEqual(store.history.categoria, ["MVP", "Quest"]);
+    assert.equal(store.presets.get("atroce").categoria, "MVP");
+    assert.equal(store.archive[0].categoria, "MVP");
+  });
+
+  it("migra la categoria MvP in MVP", () => {
+    // Fino alla versione 4 dei dati la categoria predefinita era MvP, con la v minuscola.
+    const store = new TimerStore();
+    store.loadDict({
+      version: 4,
+      timers: [
+        {
+          name: "Atroce",
+          categoria: "MvP",
+          start: toLocalISO(nowLocal()),
+          duration_min_minutes: 190,
+          duration_max_minutes: 370,
+        },
+      ],
+      history: { nome: ["Atroce"], mappa: [], categoria: ["MvP", "Quest"] },
+      presets: { atroce: { nome: "Atroce", mappa: "", categoria: "MvP", min: 190, max: 370 } },
+      archive: [],
+    });
+    assert.deepEqual([...store.timers.values()].map((t) => t.categoria), ["MVP"]);
+    assert.deepEqual(store.history.categoria, ["MVP", "Quest"]);
+    assert.equal(store.presets.get("atroce").categoria, "MVP");
   });
 
   it("non migra la categoria sui file gia' aggiornati", () => {

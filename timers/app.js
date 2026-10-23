@@ -426,7 +426,7 @@ function readEditor() {
   return {
     name: $("field-name").value.trim() || "Timer",
     mappa: $("field-map").value.trim(),
-    categoria: $("field-category").value.trim() || "MvP",
+    categoria: $("field-category").value.trim() || "MVP",
     start,
     dmin: Math.min(dmin, dmax),
     dmax: Math.max(dmin, dmax),

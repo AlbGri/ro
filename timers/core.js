@@ -9,14 +9,14 @@
  * epoch, le durate `dmin` e `dmax` sono minuti.
  */
 
-export const VERSION = "1.6.0";
-export const DATA_VERSION = 4;
+export const VERSION = "1.6.1";
+export const DATA_VERSION = 5;
 
-export const DEFAULT_CATEGORIES = ["MvP", "Quest"];
+export const DEFAULT_CATEGORIES = ["MVP", "Quest"];
 export const HISTORY_KEYS = ["nome", "mappa", "categoria"];
 
 // Rinomine di categoria applicate ai file salvati con un formato precedente.
-export const CATEGORY_RENAMES = { Mostro: "MvP", MVP: "MvP" };
+export const CATEGORY_RENAMES = { Mostro: "MVP", MvP: "MVP" };
 
 export const MAX_ARCHIVE = 200;
 

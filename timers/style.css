@@ -444,7 +444,7 @@ button {
 }
 
 /* Lo stato colora anche il fondo: il solo testo ambra si confonderebbe con
-   l'arancio della categoria MvP. */
+   l'arancio della categoria MVP. */
 .timer[data-state="open"] {
   --row: var(--open);
   background: var(--open-bg);

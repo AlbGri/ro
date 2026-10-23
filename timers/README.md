@@ -1,6 +1,6 @@
 # Timer di respawn
 
-Timer per le finestre di respawn di MvP e quest di Ragnarok Online: registri l'ora dell'uccisione e la finestra di respawn del mostro, e la riga cambia colore quando la finestra si apre.
+Timer per le finestre di respawn di MVP e quest di Ragnarok Online: registri l'ora dell'uccisione e la finestra di respawn del mostro, e la riga cambia colore quando la finestra si apre.
 
 Le applicazioni sono due, con lo stesso formato dei dati:
 
@@ -13,7 +13,7 @@ Commenti, docstring e documentazione sono in italiano.
 
 I nomi delle colonne sono quelli in italiano, uguali nelle due applicazioni.
 
-Ogni timer ha una durata minima e una massima, che diventano due orari: `Spawn` e `Spawn max`. Uccidendo un MvP alle 13:12 con respawn dichiarato di 180-190 minuti si inserisce `13:12`, `180` e `190`, e la tabella mostra `Spawn 16:12` e `Spawn max 16:22`.
+Ogni timer ha una durata minima e una massima, che diventano due orari: `Spawn` e `Spawn max`. Uccidendo un MVP alle 13:12 con respawn dichiarato di 180-190 minuti si inserisce `13:12`, `180` e `190`, e la tabella mostra `Spawn 16:12` e `Spawn max 16:22`.
 
 | Fase | Colore riga | `Manca` |
 |---|---|---|
@@ -45,7 +45,7 @@ porta in inglese, e la scelta vale per tutto il sito. In italiano le colonne si
 chiamano `Suono`, `Bip`, `Nome`, `Mappa`, `Categoria`, `Ora`, `Spawn`,
 `Spawn max` e `Manca`; in inglese `Sound`, `Beeps`, `Name`, `Map`, `Category`,
 `Time`, `Spawn`, `Max. Spawn` e `Left`, come nell'applicazione desktop. I
-termini del gioco, come `Spawn` e `MvP`, restano in inglese.
+termini del gioco, come `Spawn` e `MVP`, restano in inglese.
 
 La colonna `Bip` dice quante volte suona l'allarme di quel timer, una ogni 15
 secondi finche' la riga non viene toccata: si scrive un numero da 1 a 99, e il
@@ -131,7 +131,7 @@ L'applicazione usa solo la libreria standard: per eseguirla non serve installare
 
 Compila il form e premi `Aggiungi` o `Invio`:
 
-- **Nome, Mappa, Categoria**: campi con storico e completamento automatico. La categoria determina il colore della riga e per impostazione predefinita e' `MvP`.
+- **Nome, Mappa, Categoria**: campi con storico e completamento automatico. La categoria determina il colore della riga e per impostazione predefinita e' `MVP`.
 - **Ora**: ora dell'uccisione, `HH:MM` o `HH:MM:SS`. Se la lasci vuota parte da adesso. Un orario che risulterebbe oltre 12 ore nel futuro viene letto come "ieri", cosi' un'uccisione delle 23:50 registrata dopo mezzanotte non parte fra un giorno. Modificando la cella `Ora` il campo mostra anche i secondi; se non lo cambi, il timer resta dov'era.
 - **Min / Max**: durata della finestra in minuti. Accetta `190`, `90,5`, `1h30`, `3:10`. Lasciando `Max` vuoto il timer e' a durata fissa.
 

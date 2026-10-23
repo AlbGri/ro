@@ -43,7 +43,7 @@ def make_timer(name: str = "Atroce", minutes_ago: float = 0.0, dmin: float = 190
     return Timer(
         name=name,
         mappa="ve_fild01",
-        categoria="MvP",
+        categoria="MVP",
         start=now_local() - timedelta(minutes=minutes_ago),
         dmin=timedelta(minutes=dmin),
         dmax=timedelta(minutes=dmax),
@@ -536,10 +536,31 @@ def test_categoria_mostro_migrata_a_mvp(store):
     store.path.write_text(json.dumps(vecchio), encoding="utf-8")
 
     store.load()
-    assert [t.categoria for t in store.timers.values()] == ["MvP"]
-    assert store.history["categoria"] == ["MvP", "Quest"]
-    assert store.presets["atroce"].categoria == "MvP"
-    assert store.archive[0]["categoria"] == "MvP"
+    assert [t.categoria for t in store.timers.values()] == ["MVP"]
+    assert store.history["categoria"] == ["MVP", "Quest"]
+    assert store.presets["atroce"].categoria == "MVP"
+    assert store.archive[0]["categoria"] == "MVP"
+
+
+def test_categoria_mvp_minuscola_migrata(store):
+    """Fino alla versione 4 dei dati la categoria predefinita era MvP, con la v minuscola."""
+    vecchio = {
+        "version": 4,
+        "timers": [
+            {"name": "Atroce", "categoria": "MvP", "start": now_local().isoformat(),
+             "duration_min_minutes": 190, "duration_max_minutes": 370},
+        ],
+        "history": {"nome": ["Atroce"], "mappa": [], "categoria": ["MvP", "Quest"]},
+        "presets": {"atroce": {"nome": "Atroce", "mappa": "", "categoria": "MvP",
+                               "min": 190, "max": 370}},
+        "archive": [],
+    }
+    store.path.write_text(json.dumps(vecchio), encoding="utf-8")
+
+    store.load()
+    assert [t.categoria for t in store.timers.values()] == ["MVP"]
+    assert store.history["categoria"] == ["MVP", "Quest"]
+    assert store.presets["atroce"].categoria == "MVP"
 
 
 def test_categoria_non_migrata_sui_file_gia_aggiornati(store):

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.6.1] - 2026-10-23
+
+- MVP si scrive tutto in maiuscolo: la categoria predefinita e' `MVP`, e i timer, lo storico e i preset salvati con `MvP` diventano `MVP` all'apertura. Il colore della riga non cambia. Vale per la versione web e per l'applicazione Windows
+
 ## [1.6.0] - 2026-10-23
 
 Nuova versione dell'applicazione per Windows, la prima dalla 1.0.0: ora fa quello che fa la versione web, in italiano o in inglese.
