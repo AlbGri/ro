@@ -2,6 +2,11 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.11] - 2026-10-23
+
+- Mano sinistra: la voce senza seconda arma si chiama "(nessuna arma)", come nella mano destra,
+  invece di "(pugno o scudo)". Lo scudo si sceglie sempre nella sua voce
+
 ## [1.10] - 2026-10-23
 
 - Il pulsante della lingua esce dal menu ⚙ e sta in alto, subito prima dell'ingranaggio, con la

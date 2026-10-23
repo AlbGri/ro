@@ -229,7 +229,6 @@ const PEZZI = [
   [/^\(no shield\)$/, "(nessuno scudo)"],
   [/^\(nothing\)$/, "(niente)"],
   [/^\(none\)$/, "(nessuno)"],
-  [/^\(Fist or Shield\)$/, "(pugno o scudo)"],
   [/ \[active\]$/, ""],
 ];
 

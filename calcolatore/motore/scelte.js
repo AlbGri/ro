@@ -1116,7 +1116,7 @@ function WeaponSetLeft(l) {
         ClickB_Item(this.value);
         restrictCardslot(1);
       },
-      opzioni: [["0", "(Fist or Shield)"]],
+      opzioni: [["0", "(no weapon)"]],
     },
   ]);
   svuotaSinistra();
