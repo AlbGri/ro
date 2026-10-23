@@ -6,12 +6,12 @@
  *   1) HP/Devo/Clown/Sniper
  *   2) Prete
  *   3) Bragi
- *   Jolly Gilda1: Clown
+ *   Account Gilda Gilda1: Clown
  *
  * Una riga con un nome e' un giocatore; una riga che comincia con un numero o un
  * trattino e' un suo account, con le classi separate da / , + o "e". Va bene anche
  * il messaggio copiato da Discord, "[19:40]Efreeet: 1) HP/...": l'ora si toglie e
- * quello che segue il nome e' il primo account. "Jolly nome: classi" e' un jolly.
+ * quello che segue il nome e' il primo account. "Account Gilda nome: classi" e' un jolly.
  * Le parole valgono nelle due lingue, qualunque sia quella della pagina (Alberto,
  * 22/10/2026): "Guild Account nome: classi", "HP and Sniper", "Other".
  * Solo le classi, niente nomi dei personaggi: "basta la classe" (Alberto).
@@ -119,10 +119,11 @@ export const breve = (classe) => BREVE[classe] ?? classe;
 
 const ORA = /^\[\d{1,2}:\d{2}(?::\d{2})?\]\s*/;
 const ACCOUNT = /^(?:\d+\s*[).:-]|[-*•])\s*(.*)$/;
-const JOLLY = /^(?:jolly|guild account)\b([^:]*):(.*)$/i;
+// "Jolly" era il nome fino alla 1.11: lo hanno gli elenchi esportati prima
+const JOLLY = /^(?:account gilda|jolly|guild account)\b([^:]*):(.*)$/i;
 const SEPARATORI = /\s*(?:[/,+;&]|\s+(?:e|and)\s+)\s*/i;
-// "Jolly" e "Guild Account": la parola che apre la riga di un jolly, e il suo nome predefinito
-const JOLLY_PAROLA = tr("Jolly", "Guild Account");
+// "Account Gilda" e "Guild Account": la parola che apre la riga di un jolly, e il suo nome predefinito
+const JOLLY_PAROLA = tr("Account Gilda", "Guild Account");
 
 const parole = (testo) => testo.split(SEPARATORI).filter((p) => chiave(p));
 

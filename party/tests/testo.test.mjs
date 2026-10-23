@@ -37,8 +37,8 @@ describe("elenco della gilda", () => {
     assert.deepEqual(letto, { giocatori: [{ nome: "Efreeet", account: ["HP/Paladin/Clown/Sniper", "Priest", "Clown"] }], jolly: [], errori: [] });
   });
 
-  it("piu' giocatori, separatori diversi, trattini, jolly, commenti e parole sconosciute", () => {
-    const letto = leggiElenco("# gilda\nMario\n1. Bio, Champ\n- HW + gypsy\n\nAnna:\n1 - Prof e Stalker\nJolly Gilda1: Clown/Sniper\nJolly: HP\n");
+  it("piu' giocatori, separatori diversi, trattini, Account Gilda (anche come Jolly), commenti e parole sconosciute", () => {
+    const letto = leggiElenco("# gilda\nMario\n1. Bio, Champ\n- HW + gypsy\n\nAnna:\n1 - Prof e Stalker\nAccount Gilda Gilda1: Clown/Sniper\nJolly: HP\n");
     assert.deepEqual(letto.errori, []);
     assert.deepEqual(letto.giocatori, [
       { nome: "Mario", account: ["Creator/Champ", "HW/Gypsy"] },
@@ -46,7 +46,7 @@ describe("elenco della gilda", () => {
     ]);
     assert.deepEqual(letto.jolly, [
       { nome: "Gilda1", classi: "Clown/Sniper" },
-      { nome: "Jolly 2", classi: "HP" },
+      { nome: "Account Gilda 2", classi: "HP" },
     ]);
   });
 
@@ -56,7 +56,7 @@ describe("elenco della gilda", () => {
     assert.deepEqual(letto.giocatori, [{ nome: "Mary", account: ["HP/Sniper", "Other"] }]);
     assert.deepEqual(letto.jolly, [
       { nome: "Guild1", classi: "Clown" },
-      { nome: "Jolly 2", classi: "HP" },
+      { nome: "Account Gilda 2", classi: "HP" },
     ]);
     assert.deepEqual(leggiClassi("Other/Prof").classi, ["Altro", "Professor"]);
   });
@@ -81,6 +81,7 @@ describe("elenco della gilda", () => {
     };
     const testo = scriviElenco(stato);
     assert.match(testo, /Efreeet\n1\) HP\/Paladin\/Clown\/Sniper\n2\) Clown/);
+    assert.match(testo, /Account Gilda Gilda 1: Gypsy\/Altro/);
     assert.deepEqual(leggiElenco(testo), {
       giocatori: [
         { nome: "Efreeet", account: ["HP/Paladin/Clown/Sniper", "Clown"] },

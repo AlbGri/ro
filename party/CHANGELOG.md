@@ -2,6 +2,12 @@
 
 Le versioni della pagina `party/`.
 
+## [1.12] - 2026-10-23
+
+- I jolly si chiamano Account Gilda, come Guild Account nella versione inglese. Nell'elenco della
+  gilda la riga e' `Account Gilda nome: classi`; `Jolly nome: classi` vale ancora, quindi gli
+  elenchi esportati prima si rileggono. Dati salvati e backup restano validi
+
 ## [1.11] - 2026-10-23
 
 - Menu ⚙: "Ricomincia da zero", come nel calcolatore e nei livelli, toglie tutti i giocatori e i

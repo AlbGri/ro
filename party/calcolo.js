@@ -434,7 +434,7 @@ function spiega(giocatori, jolly, gruppo, run, servono, ci, copre) {
   }
   jolly.forEach((j, ji) => {
     if (!copre(j, gruppo)) return;
-    elenco.push(`${tr("jolly", "Guild Account")} ${j.nome ?? ji + 1}`);
+    elenco.push(`${tr("Account Gilda", "Guild Account")} ${j.nome ?? ji + 1}`);
     n++;
   });
   const posti = elenca(gruppo.map((p) => `${p.quanti * run} ${p.nome}`));
@@ -457,7 +457,7 @@ function spiega(giocatori, jolly, gruppo, run, servono, ci, copre) {
   // run, o jolly senza chi li giochi, ne conta meno di quanti ne elenca.
   if (n !== ci) {
     const conJolly = jolly.some((j) => copre(j, gruppo));
-    frase += tr(` Un giocatore entra una volta per run${conJolly ? ", anche con un jolly" : ""}, quindi ne contano ${ci}.`,
+    frase += tr(` Un giocatore entra una volta per run${conJolly ? ", anche con un Account Gilda" : ""}, quindi ne contano ${ci}.`,
       ` A player enters once per run${conJolly ? ", also with a Guild Account" : ""}, so ${ci} of them count.`);
   }
   return frase;

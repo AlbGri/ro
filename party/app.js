@@ -15,7 +15,7 @@ import { breve, leggiClassi, leggiElenco, pulisci, scriviElenco } from "./testo.
 const STORAGE_KEY = "ragnarok-party/stato";
 const LOCALE = tr("it-IT", "en-GB");
 const NOME_GIOCATORE = tr("Giocatore", "Player");
-const NOME_JOLLY = tr("Jolly", "Guild Account");
+const NOME_JOLLY = tr("Account Gilda", "Guild Account");
 
 const giocatoriEl = document.getElementById("giocatori");
 const jollyEl = document.getElementById("jolly");
@@ -162,12 +162,12 @@ function disegnaJolly() {
   const righe = stato.jolly.map(
     (j, ji) => `<div class="riga jolly${j.disponibile ? "" : " spento"}">
       <input type="checkbox" data-j="${ji}" data-campo="disponibile"${j.disponibile ? " checked" : ""} aria-label="${tr("Disponibile", "Available")}">
-      <input type="text" class="nome" value="${escape(j.nome)}" placeholder="${NOME_JOLLY} ${ji + 1}" data-j="${ji}" data-campo="nome" aria-label="${tr("Nome del jolly", "Guild Account name")}">
+      <input type="text" class="nome" value="${escape(j.nome)}" placeholder="${NOME_JOLLY} ${ji + 1}" data-j="${ji}" data-campo="nome" aria-label="${tr("Nome dell'Account Gilda", "Guild Account name")}">
       ${campoClassi(j.classi, `data-j="${ji}" data-campo="classi"`, tr("Classi", "Classes"))}
-      <button class="btn small danger" type="button" data-j="${ji}" data-azione="togli-jolly" title="${tr("Togli il jolly", "Remove the Guild Account")}" aria-label="${tr("Togli il jolly", "Remove the Guild Account")}">✕</button>
+      <button class="btn small danger" type="button" data-j="${ji}" data-azione="togli-jolly" title="${tr("Togli l'Account Gilda", "Remove the Guild Account")}" aria-label="${tr("Togli l'Account Gilda", "Remove the Guild Account")}">✕</button>
     </div>`,
   );
-  jollyEl.innerHTML = stato.jolly.length ? intestazione + righe.join("") : `<p class="hint">${tr("Nessun jolly.", "No Guild Accounts.")}</p>`;
+  jollyEl.innerHTML = stato.jolly.length ? intestazione + righe.join("") : `<p class="hint">${tr("Nessun Account Gilda.", "No Guild Accounts.")}</p>`;
 }
 
 /** Le parole che la pagina non riconosce, con il menu per sceglierne la classe, e i soprannomi imparati. */
@@ -181,7 +181,7 @@ function disegnaDubbi() {
     }
   };
   stato.giocatori.forEach((g, i) => g.account.forEach((a) => raccogli(a, g.nome || `${NOME_GIOCATORE} ${i + 1}`)));
-  stato.jolly.forEach((j, i) => raccogli(j.classi, `${tr("jolly", "Guild Account")} ${j.nome || i + 1}`));
+  stato.jolly.forEach((j, i) => raccogli(j.classi, `${tr("Account Gilda", "Guild Account")} ${j.nome || i + 1}`));
 
   const html = [];
   if (dubbi.size) {
@@ -240,7 +240,7 @@ const riepilogo = (esito) => [
   plurale(esito.run.length, "run", tr("run", "runs")),
   plurale(esito.entrate, tr("entrata", "entry"), tr("entrate", "entries")),
   ...contoPreferiti(esito.preferiti),
-  ...(esito.jolly ? [plurale(esito.jolly, tr("jolly usato", "Guild Account used"), tr("jolly usati", "Guild Accounts used"))] : []),
+  ...(esito.jolly ? [plurale(esito.jolly, tr("Account Gilda usato", "Guild Account used"), tr("Account Gilda usati", "Guild Accounts used"))] : []),
 ];
 const nessunaRun = (esito) =>
   esito.mancano.length
@@ -254,7 +254,7 @@ const nonGiocano = (presenti, esito) =>
     const perche = {
       piena: tr(`le altre run sono piene (${istanza().maxParty} persone)`, `the other runs are full (${istanza().maxParty} people)`),
       posti: tr("per i personaggi dei suoi altri account non c'è posto", "there is no slot for the characters of their other accounts"),
-      account: tr("non ha altri account e i jolly sono finiti", "they have no other accounts and the Guild Accounts are used up"),
+      account: tr("non ha altri account e gli Account Gilda sono finiti", "they have no other accounts and the Guild Accounts are used up"),
     }[f.motivo];
     return tr(
       `${presenti[f.giocatore].nome}: ${f.entrate} run su ${esito.run.length}, ${perche}`,
@@ -288,7 +288,7 @@ function aggiorna() {
   esito.run.forEach((run, i) => {
     const righe = run.membri.map((m) => {
       const { giocatore, p, jolly: nomeJolly } = membro(presenti, jolly, m);
-      const etichetta = nomeJolly === null ? "" : `<span class="tag">${tr("jolly", "Guild Account")}: ${escape(nomeJolly)}</span>`;
+      const etichetta = nomeJolly === null ? "" : `<span class="tag">${tr("Account Gilda", "Guild Account")}: ${escape(nomeJolly)}</span>`;
       return `<tr>
         <td class="${m.posto ? "" : "libero"}">${m.posto ? escape(m.posto) : tr("libero", "free")}</td>
         <td>${escape(giocatore)}</td>
@@ -332,7 +332,7 @@ function testoRun({ presenti, jolly, esito }) {
       return (
         `${m.posto ?? tr("Libero", "Free")}: ${giocatore}` +
         (m.posto ? "" : ` (${classe})`) +
-        (nomeJolly === null ? "" : `, ${tr("jolly", "Guild Account")} ${nomeJolly}`)
+        (nomeJolly === null ? "" : `, ${tr("Account Gilda", "Guild Account")} ${nomeJolly}`)
       );
     });
     elenco(`Run ${i + 1}, ${[plurale(run.membri.length, tr("persona", "person"), tr("persone", "people")), ...contoPreferiti(run.preferiti)].join(", ")}`, voci);
@@ -435,7 +435,7 @@ document.addEventListener("click", (event) => {
       jollyEl.querySelector(".riga:last-child .nome").focus();
       return;
     case "togli-jolly":
-      if (!confirm(tr(`Togliere ${stato.jolly[d.j].nome || "il jolly"}?`, `Remove ${stato.jolly[d.j].nome || "the Guild Account"}?`))) return;
+      if (!confirm(tr(`Togliere ${stato.jolly[d.j].nome || "l'Account Gilda"}?`, `Remove ${stato.jolly[d.j].nome || "the Guild Account"}?`))) return;
       stato.jolly.splice(d.j, 1);
       break;
     case "dimentica":
@@ -443,7 +443,7 @@ document.addEventListener("click", (event) => {
       break;
     // Svuota giocatori e jolly; istanza e soprannomi imparati restano, perche' l'elenco in txt non li ha.
     case "ricomincia":
-      if (!confirm(tr("Togliere tutti i giocatori e i jolly? I soprannomi imparati restano. Prima puoi salvarli con Backup dei dati o Esporta l'elenco.", "Remove all players and Guild Accounts? The learned nicknames stay. You can save them first with Data backup or Export the list."))) return;
+      if (!confirm(tr("Togliere tutti i giocatori e gli Account Gilda? I soprannomi imparati restano. Prima puoi salvarli con Backup dei dati o Esporta l'elenco.", "Remove all players and Guild Accounts? The learned nicknames stay. You can save them first with Data backup or Export the list."))) return;
       stato.giocatori = [];
       stato.jolly = [];
       minimoColonne = 3;
@@ -535,7 +535,7 @@ function disegnaAnteprima() {
     const parti = [
       plurale(letto.giocatori.length - gia, tr("giocatore nuovo", "new player"), tr("giocatori nuovi", "new players")),
       ...(gia ? [tr(`${gia} da aggiornare`, `${gia} to update`)] : []),
-      ...(letto.jolly.length ? [plurale(letto.jolly.length, tr("jolly", "Guild Account"), tr("jolly", "Guild Accounts"))] : []),
+      ...(letto.jolly.length ? [plurale(letto.jolly.length, tr("Account Gilda", "Guild Account"), tr("Account Gilda", "Guild Accounts"))] : []),
     ];
     anteprimaEl.innerHTML = `<p class="hint">${tr("Trovati", "Found")}: ${escape(parti.join(", "))}.</p>`;
   }

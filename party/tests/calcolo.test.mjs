@@ -251,9 +251,9 @@ describe("casi di Alberto", () => {
     assert.equal(esito.run.length, 2);
     assert.deepEqual(esito.mancano, [
       "Per 3 run servono 6 High Priest e 3 Clown/Bard, 9 personaggi su account diversi. Gli account che hanno almeno uno dei due sono 8: " +
-        "Alberto (1, 2), Efreeet (1, 3), Pastafarian (1), Negaz (1), Mario (1) e jolly Clown Gilda. Ogni account entra con un solo personaggio.",
+        "Alberto (1, 2), Efreeet (1, 3), Pastafarian (1), Negaz (1), Mario (1) e Account Gilda Clown Gilda. Ogni account entra con un solo personaggio.",
       "Per 3 run servono 6 High Priest e 3 Professor, 9 personaggi su account diversi. Gli account che hanno almeno uno dei due sono 8: " +
-        "Alberto (1, 2), Efreeet (1), Pastafarian (1), Johnny (1), Negaz (1), Mario (1) e jolly Prof Gilda. Ogni account entra con un solo personaggio.",
+        "Alberto (1, 2), Efreeet (1), Pastafarian (1), Johnny (1), Negaz (1), Mario (1) e Account Gilda Prof Gilda. Ogni account entra con un solo personaggio.",
     ]);
   });
 });

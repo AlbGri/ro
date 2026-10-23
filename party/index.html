@@ -212,12 +212,12 @@ input[type="text"], select {
 <main>
   <section class="hero">
     <h1>Party</h1>
-    <p class="lead" data-en="Choose the instance and enter the players with the classes of their accounts, and the Guild Accounts: the page finds the best runs.">Scegli l'istanza e inserisci i giocatori con le classi dei loro account, e i jolly della gilda: la pagina trova le run migliori.</p>
+    <p class="lead" data-en="Choose the instance and enter the players with the classes of their accounts, and the Guild Accounts: the page finds the best runs.">Scegli l'istanza e inserisci i giocatori con le classi dei loro account, e gli Account Gilda: la pagina trova le run migliori.</p>
     <label class="istanza"><span data-en="Instance">Istanza</span><select id="istanza"></select></label>
     <ul>
       <li id="composizione"></li>
-      <li data-en="Each player enters at most once per run (one client at a time). Each account, Guild Accounts included, enters only once.">Ogni giocatore entra al massimo una volta per run (un client alla volta). Ogni account, jolly compresi, entra una volta sola.</li>
-      <li data-en="A Guild Account is an account of the guild: whoever needs it plays it, instead of one of their own accounts.">Un jolly è un account della gilda: lo gioca chi ne ha bisogno, al posto di un suo account.</li>
+      <li data-en="Each player enters at most once per run (one client at a time). Each account, Guild Accounts included, enters only once.">Ogni giocatore entra al massimo una volta per run (un client alla volta). Ogni account, Account Gilda compresi, entra una volta sola.</li>
+      <li data-en="A Guild Account is an account of the guild: whoever needs it plays it, instead of one of their own accounts.">Un Account Gilda è un account della gilda: lo gioca chi ne ha bisogno, al posto di un suo account.</li>
       <li data-en="Accounts are written as on Discord, for example HP/Devo/Clown: the page recognizes nicknames and fixes typos. Classes that do not count for the instance enter only the free slots, if the instance leaves them to any class.">Gli account si scrivono come su Discord, per esempio HP/Devo/Clown: la pagina riconosce i soprannomi e corregge gli errori di battitura. Le classi che non contano per l'istanza entrano solo nei posti liberi, se l'istanza li lascia a qualsiasi classe.</li>
       <li id="ordine"></li>
       <li data-en="To enter many players at once: under Players, Paste the guild list, with the accounts and classes as they write them on Discord.">Per inserire tanti giocatori insieme: sotto Giocatori, Incolla l'elenco della gilda, con gli account e le classi come li scrivono su Discord.</li>
@@ -237,8 +237,8 @@ input[type="text"], select {
     <button class="btn" type="button" data-azione="esporta-elenco" data-en="Export the list">Esporta l'elenco</button>
   </div>
   <div class="card incolla" id="incolla" hidden>
-    <p class="hint" data-en="A player by name, under them their accounts, one per line with a number in front and the classes separated by /, as they write them on Discord. Nicknames are fine (HP, Devo, Prete, Bragi, Bio…) and so are messages copied with the time. The Guild Accounts: &lt;code&gt;Guild Account name: classes&lt;/code&gt;. Whoever has the same name as a player already in the table gets the accounts of the list, the others are added. The words work in both languages: Jolly or Guild Account, e or and, Altro or Other.">Un giocatore per nome, sotto i suoi account, uno per riga con un numero davanti e le classi separate da /, come li scrivono su Discord. Vanno bene i soprannomi (HP, Devo, Prete, Bragi, Bio…) e i messaggi copiati con l'ora. I jolly: <code>Jolly nome: classi</code>. Chi ha lo stesso nome di un giocatore già nella tabella prende gli account dell'elenco, gli altri si aggiungono. Le parole valgono nelle due lingue: Jolly o Guild Account, e o and, Altro o Other.</p>
-    <textarea id="elenco" rows="9" spellcheck="false" aria-label="Elenco della gilda" placeholder="Efreeet&#10;1) HP/Devo/Clown/Sniper&#10;2) Prete&#10;3) Bragi&#10;&#10;Jolly Gilda1: Clown" data-en-aria-label="Guild list" data-en-placeholder="Efreeet&#10;1) HP/Devo/Clown/Sniper&#10;2) Priest&#10;3) Bragi&#10;&#10;Guild Account Guild1: Clown"></textarea>
+    <p class="hint" data-en="A player by name, under them their accounts, one per line with a number in front and the classes separated by /, as they write them on Discord. Nicknames are fine (HP, Devo, Prete, Bragi, Bio…) and so are messages copied with the time. The Guild Accounts: &lt;code&gt;Guild Account name: classes&lt;/code&gt;. Whoever has the same name as a player already in the table gets the accounts of the list, the others are added. The words work in both languages: Account Gilda or Guild Account (Jolly works too), e or and, Altro or Other.">Un giocatore per nome, sotto i suoi account, uno per riga con un numero davanti e le classi separate da /, come li scrivono su Discord. Vanno bene i soprannomi (HP, Devo, Prete, Bragi, Bio…) e i messaggi copiati con l'ora. Gli Account Gilda: <code>Account Gilda nome: classi</code>. Chi ha lo stesso nome di un giocatore già nella tabella prende gli account dell'elenco, gli altri si aggiungono. Le parole valgono nelle due lingue: Account Gilda o Guild Account (va bene anche Jolly), e o and, Altro o Other.</p>
+    <textarea id="elenco" rows="9" spellcheck="false" aria-label="Elenco della gilda" placeholder="Efreeet&#10;1) HP/Devo/Clown/Sniper&#10;2) Prete&#10;3) Bragi&#10;&#10;Account Gilda Gilda1: Clown" data-en-aria-label="Guild list" data-en-placeholder="Efreeet&#10;1) HP/Devo/Clown/Sniper&#10;2) Priest&#10;3) Bragi&#10;&#10;Guild Account Guild1: Clown"></textarea>
     <div id="anteprima"></div>
     <div class="toolbar">
       <button class="btn" type="button" id="aggiungi" data-azione="aggiungi-elenco" disabled data-en="Add to the page">Aggiungi alla pagina</button>
@@ -249,10 +249,10 @@ input[type="text"], select {
   <div class="toolbar azioni"><button class="btn" type="button" data-azione="nuovo-giocatore" data-en="Add player">Aggiungi giocatore</button></div>
   <div id="dubbi"></div>
 
-  <h2 data-en="Guild Accounts">Jolly della gilda</h2>
-  <p class="hint" data-en="A Guild Account is an account of the guild: in the box, the classes of its characters, separated by /. Uncheck the Guild Accounts already used or not available.">Un jolly è un account della gilda: nella casella le classi dei suoi personaggi, separate da /. Togli la spunta ai jolly già usati o non disponibili.</p>
+  <h2 data-en="Guild Accounts">Account Gilda</h2>
+  <p class="hint" data-en="A Guild Account is an account of the guild: in the box, the classes of its characters, separated by /. Uncheck the Guild Accounts already used or not available.">Un Account Gilda è un account della gilda: nella casella le classi dei suoi personaggi, separate da /. Togli la spunta agli Account Gilda già usati o non disponibili.</p>
   <div class="tabella" id="jolly"></div>
-  <div class="toolbar"><button class="btn" type="button" data-azione="nuovo-jolly" data-en="Add Guild Account">Aggiungi jolly</button></div>
+  <div class="toolbar"><button class="btn" type="button" data-azione="nuovo-jolly" data-en="Add Guild Account">Aggiungi Account Gilda</button></div>
 </main>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
