@@ -56,8 +56,9 @@ function usiAccount(account, istanza) {
 /**
  * Le run migliori con i giocatori presenti e i jolly disponibili.
  *
- * @param {Array<{nome: string, capace?: boolean, account: Array<{personaggi: Array<{classe: string}>}>}>} giocatori
- *   solo i presenti; `capace`: copre i posti `capaci` con i suoi account (non con i jolly)
+ * @param {Array<{nome: string, capace?: boolean, run?: number, account: Array<{personaggi: Array<{classe: string}>}>}>} giocatori
+ *   solo i presenti; `capace`: copre i posti `capaci` con i suoi account (non con i jolly);
+ *   `run`: quante ne fa al massimo
  * @param {Array<{personaggi: Array<{classe: string}>}>} jolly solo i disponibili
  * @param {object} [istanza] una di `ISTANZE`, la prima se non si indica
  * @returns {{run: Array<{membri: Array<object>, preferiti: number[]}>, entrate: number, preferiti: number[],
@@ -174,7 +175,7 @@ function cerca(giocatori, jolly, istanza, nRun) {
   giocatori.forEach((g, gi) => {
     const n = nodo();
     // La k-esima entrata costa 2k - 1 quadrati: in tutto entrate al quadrato.
-    for (let k = 1; k <= nRun; k++) arco(0, n, 1, -pesi.entrate + (2 * k - 1) * pesi.quadrati);
+    for (let k = 1; k <= Math.min(nRun, g.run ?? nRun); k++) arco(0, n, 1, -pesi.entrate + (2 * k - 1) * pesi.quadrati);
     g.account.forEach((a, ai) => {
       const n2 = nodo();
       arco(n, n2, 1, 0, { giocatore: gi, account: ai });
@@ -430,7 +431,8 @@ function componi(giocatori, jolly, istanza, membri) {
   const fuori = [];
   giocatori.forEach((_, g) => {
     const dentro = run.filter((r) => r.membri.some((m) => m.giocatore === g));
-    if (run.length === 0 || dentro.length === run.length) return;
+    // Chi fa meno run per scelta sua non e' fra quelli che restano fuori.
+    if (run.length === 0 || dentro.length >= Math.min(run.length, giocatori[g].run ?? run.length)) return;
     const assenti = run.filter((r) => !dentro.includes(r));
     const piene = assenti.every((r) => r.membri.length >= istanza.maxParty);
     const propri = giocatori[g].account.filter((a) => a.personaggi.length > 0).length;
@@ -504,8 +506,11 @@ function spiega(giocatori, jolly, gruppo, run, servono, ci, copre) {
   // run, o jolly senza chi li giochi, ne conta meno di quanti ne elenca.
   if (n !== ci) {
     const conJolly = jolly.some((j) => copre(j, gruppo));
-    frase += tr(` Un giocatore entra una volta per run${conJolly ? ", anche con un Account Gilda" : ""}, quindi ne contano ${ci}.`,
-      ` A player enters once per run${conJolly ? ", also with a Guild Account" : ""}, so ${ci} of them count.`);
+    const limitati = giocatori.some((g) => (g.run ?? run) < run && g.account.some((a) => copre(a, gruppo, g.capace)));
+    frase += tr(
+      ` Un giocatore entra una volta per run${conJolly ? ", anche con un Account Gilda" : ""}${limitati ? `, e qualcuno fa meno di ${run} run` : ""}, quindi ne contano ${ci}.`,
+      ` A player enters once per run${conJolly ? ", also with a Guild Account" : ""}${limitati ? `, and some play fewer than ${run} runs` : ""}, so ${ci} of them count.`,
+    );
   }
   return frase;
 }
@@ -522,7 +527,16 @@ function spiega(giocatori, jolly, gruppo, run, servono, ci, copre) {
 function cosaManca(giocatori, jolly, istanza, run) {
   const mancano = [];
   const minimo = istanza.posti.reduce((n, p) => n + p.quanti, 0);
+  // Le run che un giocatore puo' fare: tutte, o meno se ha un limite.
+  const quante = (g) => Math.min(run, g.run ?? run);
+  const entrate = giocatori.reduce((n, g) => n + quante(g), 0);
   if (giocatori.length < minimo) mancano.push(tr(`Servono almeno ${minimo} giocatori presenti, ce ne sono ${giocatori.length}.`, `At least ${minimo} players present are needed, there are ${giocatori.length}.`));
+  else if (entrate < minimo * run) {
+    mancano.push(tr(
+      `Per ${run} run servono ${minimo * run} entrate, i giocatori presenti ne fanno ${entrate}: qualcuno fa meno di ${run} run.`,
+      `${run} runs need ${minimo * run} entries, the players present make ${entrate}: some play fewer than ${run} runs.`,
+    ));
+  }
   // I posti dei capaci sono un posto in piu', contato da solo o con gli altri, ma non insieme al suo
   // posto: `quanti` li comprende gia'.
   const posti = istanza.posti
@@ -536,14 +550,14 @@ function cosaManca(giocatori, jolly, istanza, run) {
     const gruppo = posti.filter((_, i) => maschera & (1 << i));
     if (gruppo.some((p) => gruppo.includes(p.di))) continue;
     const servono = run * gruppo.reduce((n, p) => n + p.quanti, 0);
-    // Piu' posti per run che giocatori presenti: lo dice gia' la riga dei giocatori.
-    if (servono > run * giocatori.length) continue;
+    // Piu' posti che entrate dei giocatori presenti: lo dice gia' la riga dei giocatori o delle entrate.
+    if (servono > entrate) continue;
     let propri = 0;
     let liberi = 0;
     for (const g of giocatori) {
-      const usati = Math.min(run, g.account.filter((a) => copre(a, gruppo, g.capace)).length);
+      const usati = Math.min(quante(g), g.account.filter((a) => copre(a, gruppo, g.capace)).length);
       propri += usati;
-      liberi += run - usati;
+      liberi += quante(g) - usati;
     }
     const ci = propri + Math.min(liberi, jolly.filter((a) => copre(a, gruppo)).length);
     if (ci >= servono) continue;

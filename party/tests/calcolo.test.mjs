@@ -107,6 +107,7 @@ function forzaBruta(giocatori, jolly, istanza) {
       if (r === istanza.maxRun) return perGiocatore(g + 1);
       perRun(r + 1);
       if (run[r].length >= istanza.maxParty) return;
+      if (run.slice(0, r).filter((m) => m.some((x) => x.giocatore === g)).length >= (giocatori[g].run ?? Infinity)) return;
       const scelte = [
         ...giocatori[g].account.map((a, i) => ({ a, id: `a${i}`, account: i, jolly: null })),
         ...jolly.map((a, j) => ({ a, id: `j${j}`, account: null, jolly: j })),
@@ -299,6 +300,19 @@ describe("HP capaci e Soul Linker (Alberto, 23/10/2026)", () => {
     ]);
   });
 
+  it("chi fa meno run non entra in piu' run, non e' fra chi resta fuori, e lo dice se manca", () => {
+    const giocatori = ["High Priest", "High Priest", ...altri].map((c) => giocatore(c, account(c), account(c), account(c)));
+    giocatori[2].run = 2;
+    const esito = calcolaRun(giocatori, []);
+    verifica(giocatori, [], ISTANZA, esito);
+    assert.equal(esito.run.length, 2);
+    assert.deepEqual(esito.fuori, []);
+    assert.deepEqual(esito.mancano, [
+      "Per 3 run servono 15 entrate, i giocatori presenti ne fanno 14: qualcuno fa meno di 3 run.",
+      "Per 3 run servono 3 Sniper. Gli account che lo hanno sono 3: Sniper (1, 2, 3). Un giocatore entra una volta per run, e qualcuno fa meno di 3 run, quindi ne contano 2.",
+    ]);
+  });
+
   it("il Soul Linker prende il posto della Gypsy/Dancer solo se manca", () => {
     const minimo = ["High Priest", "High Priest", "Sniper", "Clown/Bard", "Professor"].map((c, i) => giocatore(`M${i}`, account(c)));
     const sniper = [...Array(6)].map((_, i) => giocatore(`S${i}`, account("Sniper")));
@@ -420,7 +434,7 @@ describe("confronto con la ricerca esaustiva", () => {
     }
   });
 
-  it("300 casi casuali con posti dei capaci e un'alternativa al posto desiderato, come la Horror Toy Factory", () => {
+  it("300 casi casuali con posti dei capaci, un'alternativa al posto desiderato e giocatori con meno run", () => {
     for (let n = 0; n < 300; n++) {
       const istanza = {
         ...piccola,
@@ -432,12 +446,14 @@ describe("confronto con la ricerca esaustiva", () => {
         ],
       };
       const nGiocatori = istanza.maxRun === 3 ? 2 + intero(2) : 2 + intero(3);
-      const giocatori = [...Array(nGiocatori)].map((_, g) =>
-        (intero(2) ? giocatore : scarso)(
+      const giocatori = [...Array(nGiocatori)].map((_, g) => ({
+        ...(intero(2) ? giocatore : scarso)(
           `G${g}`,
           ...[...Array(intero(3))].map(() => account(...[...Array(1 + intero(2))].map(() => classi[intero(4)]))),
         ),
-      );
+        // Un giocatore su tre fa al massimo una o due run.
+        ...(intero(3) === 0 ? { run: 1 + intero(2) } : {}),
+      }));
       const jolly = [...Array(intero(2))].map(() => account(classi[intero(4)]));
       const esito = calcolaRun(giocatori, jolly, istanza);
       const atteso = forzaBruta(giocatori, jolly, istanza);

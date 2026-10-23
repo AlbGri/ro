@@ -7,7 +7,11 @@ Le versioni della pagina `party/`.
 - Horror Toy Factory: nuova colonna `HP capace` per i giocatori che la reggono da High Priest.
   Dei due High Priest di ogni run almeno uno deve essere di un giocatore con la spunta, con uno
   qualsiasi dei suoi account (l'equipaggiamento si passa); un Account Gilda non conta come capace.
-  Se ne mancano, `Per la run N` lo dice. Nell'elenco della gilda: `Nome (HP capace)`
+  Se ne mancano, `Per la run N` lo dice. Nell'elenco della gilda: `Nome (HP capace)`; in
+  inglese Tanker HP
+- Nuova colonna `Run`: quante run puo' fare al massimo un giocatore, 3 se non si cambia. Chi ne
+  fa meno per scelta non e' fra quelli che "non giocano tutte le run". Nell'elenco della gilda:
+  `Nome (2 run)`, anche insieme alla spunta: `Nome (HP capace, 2 run)`
 - Soul Linker riconosciuto (anche `SL`): con il link il Clown usa la canzone degli SP, quindi in
   una run senza Gypsy/Dancer prende il suo posto fra i liberi
 - Nell'elenco della gilda e nelle caselle `Snip` vale come Sniper, e le classi separate solo da

@@ -20,7 +20,7 @@ export const tr = globalThis.tr ?? ((it) => it);
 export const nomeClasse = (classe) => (classe === ALTRO ? tr("Altro", "Other") : classe);
 
 /** La spunta dei giocatori che reggono la Horror Toy Factory da High Priest (`capaci` di un posto). */
-export const CAPACE = tr("HP capace", "Skilled HP");
+export const CAPACE = tr("HP capace", "Tanker HP");
 
 export const ISTANZE = [
   {
@@ -103,6 +103,9 @@ export const ISTANZE = [
     ],
   },
 ];
+
+/** Le run al massimo in un'istanza: quante ne fa un giocatore senza limite. */
+export const MAX_RUN = Math.max(...ISTANZE.map((i) => i.maxRun));
 
 /** Le classi di tutte le istanze, senza doppioni: quelle che il modulo txt riconosce. */
 export const CLASSI = [...new Set(ISTANZE.flatMap((i) => i.classi.map((c) => c.nome)))];
