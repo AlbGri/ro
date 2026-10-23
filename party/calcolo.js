@@ -768,10 +768,13 @@ function cosaMancaCon(giocatori, jolly, istanza, posti, run) {
     ));
   }
   // I posti `forti` sono un posto in piu', contato da solo o con gli altri, ma non insieme al suo
-  // posto: `quanti` li comprende gia'.
+  // posto: `quanti` li comprende gia'. Se sono tutti forti (lo Sniper Incubus) il posto e' solo quello.
+  const forti = (p, nome) => ({ ruoli: ruoliDi(p), nome, quanti: p.forti, di: p });
   const gruppi = posti
     .filter((p) => p.quanti > 0)
-    .flatMap((p) => [p, ...(p.forti ? [{ ruoli: ruoliDi(p), nome: `${p.nome} (${classeForte(istanza, p.ruolo)})`, quanti: p.forti, di: p }] : [])]);
+    .flatMap((p) =>
+      p.forti === p.quanti ? [forti(p, p.nome)] : [p, ...(p.forti ? [forti(p, `${p.nome} (${classeForte(istanza, p.ruolo)})`)] : [])],
+    );
   const copreAccount = (account, gruppo) =>
     account.personaggi.some((p) => gruppo.some((posto) => ruoliDi(posto).includes(ruoloDi(istanza, p.classe)) && (!posto.di || eForte(istanza, p.classe))));
   const scarsi = [];

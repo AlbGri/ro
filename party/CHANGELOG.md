@@ -2,6 +2,11 @@
 
 Le versioni della pagina `party/`.
 
+## [1.21] - 2026-10-23
+
+- Nella run Sniper Incubus il posto dello Sniper si chiama `Sniper Incubus`: li' serve proprio lui.
+  Nelle run complete uno Sniper Incubus occupa il posto `Sniper`, come uno Sniper qualsiasi
+
 ## [1.20] - 2026-10-23
 
 - Horror Toy Factory: nuova run da 4 senza Professor, con 2 High Priest (almeno un HP Tanker),

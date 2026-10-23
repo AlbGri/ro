@@ -83,7 +83,9 @@ export const ISTANZE = [
         nome: SNIPER_INCUBUS,
         posti: [
           { ruolo: "hp", nome: "High Priest", quanti: 2, forti: 1, tank: true },
-          { ruolo: "sniper", nome: "Sniper", quanti: 1, forti: 1 },
+          // Il posto si chiama come la classe che chiede (Alberto, 23/10/2026): in una run completa uno
+          // Sniper Incubus occupa il posto Sniper, qui serve proprio lui.
+          { ruolo: "sniper", nome: SNIPER_INCUBUS, quanti: 1, forti: 1 },
         ],
       },
     ],

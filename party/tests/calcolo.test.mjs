@@ -426,9 +426,12 @@ describe("HP Tanker e Soul Linker (Alberto, 23/10/2026)", () => {
     const esito = calcolaRun(giocatori, []);
     verifica(giocatori, [], ISTANZA, esito);
     assert.deepEqual(esito.run.map((r) => [r.tipo, r.membri.length]), [[2, 4]]);
+    assert.deepEqual(esito.run[0].membri.map((m) => m.posto), ["High Priest", "High Priest", "Sniper Incubus", "Clown o Bard"]);
     // Lo Sniper normale non basta, e "Per la run 1" lo spiega.
     const normale = [...giocatori.slice(0, 2), scarso("S", account("Sniper")), giocatori[3]];
-    assert.equal(calcolaRun(normale, []).run.length, 0);
+    const senza = calcolaRun(normale, []);
+    assert.equal(senza.run.length, 0);
+    assert.ok(senza.mancano.includes("Con Sniper Incubus: Per 1 run serve 1 Sniper Incubus. Nessun account ha un Sniper Incubus."), senza.mancano.join(" | "));
     const conProf = [...giocatori, scarso("P", account("Professor"))];
     const completa = calcolaRun(conProf, []);
     verifica(conProf, [], ISTANZA, completa);
