@@ -9,7 +9,7 @@
  */
 
 import { calcolaRun } from "./calcolo.js";
-import { ALTRO, CAPACE, CLASSI, ISTANZE, MAX_RUN, nomeClasse, tr } from "./dati.js";
+import { ALTRO, CLASSI, ISTANZE, MAX_RUN, nomeClasse, TANKER, tr } from "./dati.js";
 import { breve, leggiClassi, leggiElenco, pulisci, scriviElenco } from "./testo.js";
 
 const STORAGE_KEY = "ragnarok-party/stato";
@@ -49,7 +49,7 @@ function normalizza(dati) {
     giocatori: dati.giocatori.map((g) => ({
       nome: String(g?.nome ?? ""),
       presente: g?.presente !== false,
-      capace: g?.capace === true,
+      tanker: g?.tanker === true,
       run: Number.isInteger(g?.run) && g.run >= 1 && g.run <= MAX_RUN ? g.run : MAX_RUN,
       account: (Array.isArray(g?.account) ? g.account : []).map(testo),
     })),
@@ -103,7 +103,7 @@ function disegnaIstanza() {
   const quanti = (n, p) => `${n} ${p.nome}`;
   const obbligatorio = (p) =>
     quanti(p.quanti, p) +
-    (p.capaci ? tr(` (almeno ${p.capaci} di un giocatore con la spunta ${CAPACE})`, ` (at least ${p.capaci} from a player with ${CAPACE} checked)`) : "");
+    (p.tanker ? tr(` (almeno ${p.tanker} di un giocatore con la spunta ${TANKER})`, ` (at least ${p.tanker} from a player with ${TANKER} checked)`) : "");
   const desiderato = (p) =>
     `${quanti(p.desiderati, p)} per run` +
     (p.alternativa ? tr(` (se manca, ${quanti(p.desiderati, p.alternativa)})`, ` (or, if there is none, ${quanti(p.desiderati, p.alternativa)})`) : "");
@@ -150,11 +150,11 @@ function campoClassi(testo, attributi, segnaposto) {
 function disegnaGiocatori() {
   const n = colonne();
   const stile = `style="--colonne: ${n}"`;
-  // La spunta HP capace solo nelle istanze che la usano: resta salvata anche nelle altre.
-  const conCapaci = istanza().posti.some((p) => p.capaci);
-  const classe = conCapaci ? "riga capaci" : "riga";
+  // La spunta HP Tanker solo nelle istanze che la usano: resta salvata anche nelle altre.
+  const conTanker = istanza().posti.some((p) => p.tanker);
+  const classe = conTanker ? "riga con-tanker" : "riga";
   const intestazione = `<div class="${classe} intestazione" ${stile}>
-    <span>${tr("Presente", "Present")}</span><span>${NOME_GIOCATORE}</span><span>Run</span>${conCapaci ? `<span>${CAPACE}</span>` : ""}${[...Array(n)].map((_, i) => `<span>Account ${i + 1}</span>`).join("")}
+    <span>${tr("Presente", "Present")}</span><span>${NOME_GIOCATORE}</span><span>Run</span>${conTanker ? `<span>${TANKER}</span>` : ""}${[...Array(n)].map((_, i) => `<span>Account ${i + 1}</span>`).join("")}
     <button class="btn small" type="button" data-azione="nuova-colonna" title="${tr("Una colonna di account in più", "One more account column")}" aria-label="${tr("Una colonna di account in più", "One more account column")}">+</button>
   </div>`;
   const righe = stato.giocatori.map(
@@ -164,7 +164,7 @@ function disegnaGiocatori() {
       <label class="quante"><span>${tr("Run al massimo", "Runs at most")}</span><select data-g="${gi}" data-campo="run" aria-label="${tr("Run al massimo", "Runs at most")}">
         ${[...Array(istanza().maxRun)].map((_, k) => `<option value="${k + 1}"${Math.min(g.run, istanza().maxRun) === k + 1 ? " selected" : ""}>${k + 1}</option>`).join("")}
       </select></label>
-      ${conCapaci ? `<label class="capace"><input type="checkbox" data-g="${gi}" data-campo="capace"${g.capace ? " checked" : ""} aria-label="${CAPACE}"><span>${CAPACE}</span></label>` : ""}
+      ${conTanker ? `<label class="tanker"><input type="checkbox" data-g="${gi}" data-campo="tanker"${g.tanker ? " checked" : ""} aria-label="${TANKER}"><span>${TANKER}</span></label>` : ""}
       ${[...Array(n)].map((_, ai) => campoClassi(g.account[ai] ?? "", `data-g="${gi}" data-a="${ai}" data-campo="account"`, `Account ${ai + 1}`)).join("")}
       <button class="btn small danger" type="button" data-g="${gi}" data-azione="togli-giocatore" title="${tr("Togli il giocatore", "Remove the player")}" aria-label="${tr("Togli il giocatore", "Remove the player")}">✕</button>
     </div>`,
@@ -226,7 +226,7 @@ function disegnaDubbi() {
 function datiCalcolo() {
   const personaggi = (testo) => leggiClassi(testo, stato.soprannomi).classi.map((classe) => ({ classe }));
   const presenti = stato.giocatori
-    .map((g, indice) => ({ nome: g.nome || `${NOME_GIOCATORE} ${indice + 1}`, presente: g.presente, capace: g.capace, run: g.run, account: g.account }))
+    .map((g, indice) => ({ nome: g.nome || `${NOME_GIOCATORE} ${indice + 1}`, presente: g.presente, tanker: g.tanker, run: g.run, account: g.account }))
     .filter((g) => g.presente)
     .map((g) => ({
       ...g,
@@ -383,8 +383,8 @@ document.addEventListener("input", (event) => {
   if (campo === "presente" || campo === "disponibile") {
     oggetto[campo] = el.checked;
     el.closest(".riga").classList.toggle("spento", !el.checked);
-  } else if (campo === "capace") {
-    oggetto.capace = el.checked;
+  } else if (campo === "tanker") {
+    oggetto.tanker = el.checked;
   } else if (campo === "run") {
     oggetto.run = Number(el.value);
   } else if (campo === "account") {
@@ -577,9 +577,9 @@ function aggiungiElenco() {
   ))) return;
   for (const g of letto.giocatori) {
     const esistente = stato.giocatori.find((x) => stessoNome(x.nome, g.nome));
-    // Spunta HP capace e limite di run li mette l'elenco, ma non li toglie: i messaggi di Discord non li hanno.
-    if (esistente) Object.assign(esistente, { account: g.account, capace: esistente.capace || g.capace, run: g.run ?? esistente.run });
-    else stato.giocatori.push({ nome: g.nome, presente: true, capace: g.capace, run: g.run ?? MAX_RUN, account: g.account });
+    // Spunta HP Tanker e limite di run li mette l'elenco, ma non li toglie: i messaggi di Discord non li hanno.
+    if (esistente) Object.assign(esistente, { account: g.account, tanker: esistente.tanker || g.tanker, run: g.run ?? esistente.run });
+    else stato.giocatori.push({ nome: g.nome, presente: true, tanker: g.tanker, run: g.run ?? MAX_RUN, account: g.account });
   }
   for (const j of letto.jolly) {
     const esistente = stato.jolly.find((x) => stessoNome(x.nome, j.nome));

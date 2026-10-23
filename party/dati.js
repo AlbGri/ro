@@ -19,8 +19,8 @@ export const tr = globalThis.tr ?? ((it) => it);
 /** Come si mostra una classe: Altro e' "Other" in inglese, le altre sono nomi del gioco. */
 export const nomeClasse = (classe) => (classe === ALTRO ? tr("Altro", "Other") : classe);
 
-/** La spunta dei giocatori che reggono la Horror Toy Factory da High Priest (`capaci` di un posto). */
-export const CAPACE = tr("HP capace", "Tanker HP");
+/** La spunta dei giocatori che reggono la Horror Toy Factory da High Priest (`tanker` di un posto). */
+export const TANKER = tr("HP Tanker", "Tanker HP");
 
 export const ISTANZE = [
   {
@@ -32,12 +32,12 @@ export const ISTANZE = [
     // `quanti`: posti obbligatori per run. `desiderati`: posti non obbligatori ma i primi fra i
     // liberi, fino a tanti per run. Il party minimo e' fisso, di 5 (Alberto, 19/10/2026): la
     // Gypsy/Dancer non serve, ma se c'e' e' "la prima nella lista delle priorita'".
-    // `capaci`: quanti dei posti li gioca un giocatore con la spunta CAPACE. Due High Priest
+    // `tanker`: quanti dei posti li gioca un giocatore con la spunta TANKER. Due High Priest
     // "scarsi" non la completano, ne basta uno che ci riesce (Alberto, 23/10/2026).
     // `alternativa`: il ruolo che copre un posto desiderato se manca il suo: il Soul Linker fa il
     // link al Clown, che cosi' usa la canzone degli SP; con una Gypsy nella run non serve.
     posti: [
-      { ruolo: "hp", nome: "High Priest", quanti: 2, capaci: 1 },
+      { ruolo: "hp", nome: "High Priest", quanti: 2, tanker: 1 },
       { ruolo: "sniper", nome: "Sniper", quanti: 1 },
       { ruolo: "bard", nome: "Clown/Bard", quanti: 1 },
       { ruolo: "prof", nome: "Professor", quanti: 1 },

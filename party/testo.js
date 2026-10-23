@@ -12,13 +12,13 @@
  * trattino e' un suo account, con le classi separate da / , + o "e". Va bene anche
  * il messaggio copiato da Discord, "[19:40]Efreeet: 1) HP/...": l'ora si toglie e
  * quello che segue il nome e' il primo account. "Account Gilda nome: classi" e' un jolly.
- * Fra parentesi dopo il nome la spunta HP capace e il limite di run: "Efreeet (HP capace, 2 run)".
+ * Fra parentesi dopo il nome la spunta HP Tanker e il limite di run: "Efreeet (HP Tanker, 2 run)".
  * Le parole valgono nelle due lingue, qualunque sia quella della pagina (Alberto,
  * 22/10/2026): "Guild Account nome: classi", "HP and Sniper", "Other".
  * Solo le classi, niente nomi dei personaggi: "basta la classe" (Alberto).
  */
 
-import { ALTRO, CAPACE, CLASSI, MAX_RUN, tr } from "./dati.js";
+import { ALTRO, CLASSI, MAX_RUN, TANKER, tr } from "./dati.js";
 
 // I soprannomi che si usano in gilda (Alberto, 22/10/2026: "non e' tanto standard").
 // SP Song e Bragi sono le canzoni di Dancer e Bard. Gli altri li impara la pagina, quando chi
@@ -130,21 +130,21 @@ const SEPARATORI = /\s*(?:[/,+;&]|\s+(?:e|and)\s+)\s*/i;
 const JOLLY_PAROLA = tr("Account Gilda", "Guild Account");
 
 const PARENTESI = /\s*\(([^)]*)\)\s*$/;
-const CAPACI = ["hp capace", "tanker hp", "hp tanker"];
+const PAROLE_TANKER = ["hp tanker", "tanker hp"];
 
 /**
- * Nome, spunta HP capace e limite di run di una riga di giocatore: "Efreeet (HP capace, 2 run)".
+ * Nome, spunta HP Tanker e limite di run di una riga di giocatore: "Efreeet (HP Tanker, 2 run)".
  * Una parentesi con altre parole resta nel nome. `run` e' null se la riga non lo dice.
  */
 function segni(riga) {
   const trovata = riga.match(PARENTESI);
-  const esito = { nome: riga, capace: false, run: null };
+  const esito = { nome: riga, tanker: false, run: null };
   if (!trovata) return esito;
   for (const parte of trovata[1].split(",").map(chiave)) {
     const run = parte.match(/^(\d+) runs?$/);
-    if (CAPACI.includes(parte)) esito.capace = true;
+    if (PAROLE_TANKER.includes(parte)) esito.tanker = true;
     else if (run) esito.run = Math.min(Math.max(Number(run[1]), 1), MAX_RUN);
-    else return { nome: riga, capace: false, run: null };
+    else return { nome: riga, tanker: false, run: null };
   }
   return { ...esito, nome: riga.replace(PARENTESI, "") };
 }
@@ -219,7 +219,7 @@ export function pulisci(testo, imparati = {}) {
  *
  * @param {string} testo
  * @param {Object<string, string>} imparati i soprannomi imparati, chiave -> classe
- * @returns {{giocatori: Array<{nome: string, capace: boolean, run: number | null, account: string[]}>, jolly: Array<{nome: string, classi: string}>,
+ * @returns {{giocatori: Array<{nome: string, tanker: boolean, run: number | null, account: string[]}>, jolly: Array<{nome: string, classi: string}>,
  *   errori: string[]}} gli account e le classi dei jolly gia' riscritti con `pulisci`
  */
 export function leggiElenco(testo, imparati = {}) {
@@ -247,7 +247,7 @@ export function leggiElenco(testo, imparati = {}) {
       return;
     }
     const dueP = testoRiga.indexOf(":");
-    const { nome, capace, run } = segni((dueP < 0 ? testoRiga : testoRiga.slice(0, dueP)).trim());
+    const { nome, tanker, run } = segni((dueP < 0 ? testoRiga : testoRiga.slice(0, dueP)).trim());
     const resto = dueP < 0 ? "" : testoRiga.slice(dueP + 1).trim();
     // "HP/Sniper" senza numero davanti sembrerebbe un giocatore che si chiama cosi'.
     const scritte = parole(nome, imparati);
@@ -258,7 +258,7 @@ export function leggiElenco(testo, imparati = {}) {
       ));
       return;
     }
-    giocatore = { nome, capace, run, account: [] };
+    giocatore = { nome, tanker, run, account: [] };
     esito.giocatori.push(giocatore);
     if (resto) aggiungiAccount(resto.match(ACCOUNT)?.[1] ?? resto);
   });
@@ -273,7 +273,7 @@ export function scriviElenco(stato) {
   stato.giocatori.forEach((g, i) => {
     const account = g.account.filter((a) => a.trim());
     const parentesi = [
-      ...(g.capace ? [CAPACE] : []),
+      ...(g.tanker ? [TANKER] : []),
       ...(g.run < MAX_RUN ? [`${g.run} ${tr("run", g.run === 1 ? "run" : "runs")}`] : []),
     ];
     const nome = (g.nome || `${tr("Giocatore", "Player")} ${i + 1}`) + (parentesi.length ? ` (${parentesi.join(", ")})` : "");

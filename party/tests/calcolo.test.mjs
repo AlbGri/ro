@@ -12,9 +12,9 @@ import { ISTANZE, ruoloDi } from "../dati.js";
 const ISTANZA = ISTANZE[0];
 
 const account = (...classi) => ({ personaggi: classi.map((classe) => ({ classe })) });
-// Nei casi che non riguardano gli HP capaci tutti i giocatori lo sono, come prima della spunta.
-const giocatore = (nome, ...accounts) => ({ nome, capace: true, account: accounts });
-const scarso = (nome, ...accounts) => ({ nome, capace: false, account: accounts });
+// Nei casi che non riguardano gli HP tanker tutti i giocatori lo sono, come prima della spunta.
+const giocatore = (nome, ...accounts) => ({ nome, tanker: true, account: accounts });
+const scarso = (nome, ...accounts) => ({ nome, tanker: false, account: accounts });
 
 /** Il personaggio di un membro del risultato. */
 function personaggio(giocatori, jolly, m) {
@@ -28,7 +28,7 @@ function runValida(membri, istanza) {
   for (const p of istanza.posti) {
     const ci = membri.filter((m) => m.ruolo === p.ruolo).length;
     if (ci < p.quanti || ci > (p.massimo ?? Infinity)) return false;
-    if (membri.filter((m) => m.ruolo === p.ruolo && m.capace).length < (p.capaci ?? 0)) return false;
+    if (membri.filter((m) => m.ruolo === p.ruolo && m.tanker).length < (p.tanker ?? 0)) return false;
     if (istanza.liberi && !istanza.liberi.includes(p.ruolo) && ci > p.quanti) return false;
   }
   return !istanza.liberi || membri.every((m) => istanza.posti.some((p) => p.ruolo === m.ruolo));
@@ -47,7 +47,7 @@ function verifica(giocatori, jolly, istanza, esito) {
       assert.ok(!accountUsati.has(id), "un account in due run");
       accountUsati.add(id);
       assert.equal(ruoloDi(istanza, personaggio(giocatori, jolly, m).classe), m.ruolo);
-      if (m.capace) assert.ok(m.jolly === null && giocatori[m.giocatore].capace, "capace senza la spunta");
+      if (m.tanker) assert.ok(m.jolly === null && giocatori[m.giocatore].tanker, "tanker senza la spunta");
     }
   }
   return punteggio(esito.run.map((r) => r.membri.map((m) => ({ ...m }))), istanza);
@@ -117,7 +117,7 @@ function forzaBruta(giocatori, jolly, istanza) {
         usati.add(s.id);
         if (s.jolly !== null) jollyUsati.add(s.jolly);
         for (const p of s.a.personaggi) {
-          run[r].push({ giocatore: g, jolly: s.jolly, ruolo: ruolo(p), capace: s.jolly === null && giocatori[g].capace });
+          run[r].push({ giocatore: g, jolly: s.jolly, ruolo: ruolo(p), tanker: s.jolly === null && giocatori[g].tanker });
           perRun(r + 1);
           run[r].pop();
         }
@@ -266,24 +266,24 @@ describe("casi di Alberto", () => {
   });
 });
 
-describe("HP capaci e Soul Linker (Alberto, 23/10/2026)", () => {
+describe("HP tanker e Soul Linker (Alberto, 23/10/2026)", () => {
   const altri = ["Sniper", "Clown/Bard", "Professor"];
 
   it("due High Priest scarsi non bastano, e lo dice", () => {
     const giocatori = [scarso("A", account("High Priest")), scarso("B", account("High Priest")), ...altri.map((c) => giocatore(c, account(c)))];
     const esito = calcolaRun(giocatori, [account("High Priest")]);
     assert.equal(esito.run.length, 0);
-    assert.deepEqual(esito.mancano, ["Per 1 run serve 1 High Priest (HP capace). Nessun account ha un High Priest (HP capace)."]);
-    giocatori[0].capace = true;
-    const conCapace = calcolaRun(giocatori, []);
-    verifica(giocatori, [], ISTANZA, conCapace);
-    assert.equal(conCapace.run.length, 1);
-    assert.deepEqual(conCapace.run[0].membri.filter((m) => m.ruolo === "hp").map((m) => [m.giocatore, m.capace ?? false]), [[0, true], [1, false]]);
+    assert.deepEqual(esito.mancano, ["Per 1 run serve 1 High Priest (HP Tanker). Nessun account ha un High Priest (HP Tanker)."]);
+    giocatori[0].tanker = true;
+    const conTanker = calcolaRun(giocatori, []);
+    verifica(giocatori, [], ISTANZA, conTanker);
+    assert.equal(conTanker.run.length, 1);
+    assert.deepEqual(conTanker.run[0].membri.filter((m) => m.ruolo === "hp").map((m) => [m.giocatore, m.tanker ?? false]), [[0, true], [1, false]]);
   });
 
-  it("un capace con tre account High Priest ne gioca uno per run, gli scarsi fanno il secondo", () => {
+  it("un tanker con tre account High Priest ne gioca uno per run, gli scarsi fanno il secondo", () => {
     const giocatori = [
-      giocatore("Capace", account("High Priest"), account("High Priest"), account("High Priest")),
+      giocatore("Tanker", account("High Priest"), account("High Priest"), account("High Priest")),
       scarso("S1", account("High Priest"), account("High Priest")),
       scarso("S2", account("High Priest"), account("High Priest")),
       ...altri.map((c) => giocatore(c, account(c), account(c), account(c))),
@@ -296,7 +296,7 @@ describe("HP capaci e Soul Linker (Alberto, 23/10/2026)", () => {
     const due = calcolaRun(giocatori, []);
     assert.equal(due.run.length, 2);
     assert.deepEqual(due.mancano, [
-      "Per 3 run servono 3 High Priest (HP capace). Gli account che lo hanno sono 2: Capace (1, 2).",
+      "Per 3 run servono 3 High Priest (HP Tanker). Gli account che lo hanno sono 2: Tanker (1, 2).",
     ]);
   });
 
@@ -434,14 +434,14 @@ describe("confronto con la ricerca esaustiva", () => {
     }
   });
 
-  it("300 casi casuali con posti dei capaci, un'alternativa al posto desiderato e giocatori con meno run", () => {
+  it("300 casi casuali con posti dei tanker, un'alternativa al posto desiderato e giocatori con meno run", () => {
     for (let n = 0; n < 300; n++) {
       const istanza = {
         ...piccola,
         maxParty: 2 + intero(3),
         maxRun: 1 + intero(3),
         posti: [
-          { ruolo: "hp", nome: "High Priest", quanti: 1 + intero(2), capaci: 1 },
+          { ruolo: "hp", nome: "High Priest", quanti: 1 + intero(2), tanker: 1 },
           { ruolo: "sniper", nome: "Sniper", quanti: 0, desiderati: 1, alternativa: { ruolo: "priest", nome: "Priest" } },
         ],
       };

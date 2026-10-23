@@ -44,15 +44,15 @@ describe("caselle degli account", () => {
 describe("elenco della gilda", () => {
   it("il messaggio di Efreeet copiato da Discord, con l'ora e il primo account sulla riga del nome", () => {
     const letto = leggiElenco("[19:40]Efreeet: 1) HP/Devo/Clown/Sniper\n2) Prete\n3) Bragi\n");
-    assert.deepEqual(letto, { giocatori: [{ nome: "Efreeet", capace: false, run: null, account: ["HP/Paladin/Clown/Sniper", "Priest", "Clown"] }], jolly: [], errori: [] });
+    assert.deepEqual(letto, { giocatori: [{ nome: "Efreeet", tanker: false, run: null, account: ["HP/Paladin/Clown/Sniper", "Priest", "Clown"] }], jolly: [], errori: [] });
   });
 
   it("piu' giocatori, separatori diversi, trattini, Account Gilda (anche come Jolly), commenti e parole sconosciute", () => {
     const letto = leggiElenco("# gilda\nMario\n1. Bio, Champ\n- HW + gypsy\n\nAnna:\n1 - Prof e Stalker\nAccount Gilda Gilda1: Clown/Sniper\nJolly: HP\n");
     assert.deepEqual(letto.errori, []);
     assert.deepEqual(letto.giocatori, [
-      { nome: "Mario", capace: false, run: null, account: ["Creator/Champ", "HW/Gypsy"] },
-      { nome: "Anna", capace: false, run: null, account: ["Prof/Stalker"] },
+      { nome: "Mario", tanker: false, run: null, account: ["Creator/Champ", "HW/Gypsy"] },
+      { nome: "Anna", tanker: false, run: null, account: ["Prof/Stalker"] },
     ]);
     assert.deepEqual(letto.jolly, [
       { nome: "Gilda1", classi: "Clown/Sniper" },
@@ -63,7 +63,7 @@ describe("elenco della gilda", () => {
   it("le parole inglesi valgono come le italiane: Guild Account, and, Other", () => {
     const letto = leggiElenco("Mary\n1) HP and Sniper\n2) Other\nGuild Account Guild1: Clown\nguild account: HP\n");
     assert.deepEqual(letto.errori, []);
-    assert.deepEqual(letto.giocatori, [{ nome: "Mary", capace: false, run: null, account: ["HP/Sniper", "Other"] }]);
+    assert.deepEqual(letto.giocatori, [{ nome: "Mary", tanker: false, run: null, account: ["HP/Sniper", "Other"] }]);
     assert.deepEqual(letto.jolly, [
       { nome: "Guild1", classi: "Clown" },
       { nome: "Account Gilda 2", classi: "HP" },
@@ -80,11 +80,11 @@ describe("elenco della gilda", () => {
     ]);
   });
 
-  it("fra parentesi dopo il nome la spunta HP capace e il limite di run, anche in inglese", () => {
+  it("fra parentesi dopo il nome la spunta HP Tanker e il limite di run, anche in inglese", () => {
     const letto = leggiElenco(
-      "[19:40]Alby (HP capace, 2 run): 1) HP\nMary (tanker HP)\n1) HP\nJo (1 run)\n1) HP\nMario (Rossi)\n1) HP\nPasta\n1) HP\n",
+      "[19:40]Alby (HP Tanker, 2 run): 1) HP\nMary (tanker HP)\n1) HP\nJo (1 run)\n1) HP\nMario (Rossi)\n1) HP\nPasta\n1) HP\n",
     );
-    assert.deepEqual(letto.giocatori.map((g) => [g.nome, g.capace, g.run]), [
+    assert.deepEqual(letto.giocatori.map((g) => [g.nome, g.tanker, g.run]), [
       ["Alby", true, 2], ["Mary", true, null], ["Jo", false, 1], ["Mario (Rossi)", false, null], ["Pasta", false, null],
     ]);
   });
@@ -92,19 +92,19 @@ describe("elenco della gilda", () => {
   it("l'elenco esportato si rilegge uguale", () => {
     const stato = {
       giocatori: [
-        { nome: "Efreeet", capace: true, run: 2, account: ["HP/Paladin/Clown/Sniper", "", "Clown"] },
-        { nome: "", capace: false, run: 3, account: ["Stalker"] },
-        { nome: "Senza", capace: false, run: 3, account: [""] },
+        { nome: "Efreeet", tanker: true, run: 2, account: ["HP/Paladin/Clown/Sniper", "", "Clown"] },
+        { nome: "", tanker: false, run: 3, account: ["Stalker"] },
+        { nome: "Senza", tanker: false, run: 3, account: [""] },
       ],
       jolly: [{ nome: "Gilda 1", classi: "Gypsy/Altro" }, { nome: "Vuoto", classi: "" }],
     };
     const testo = scriviElenco(stato);
-    assert.match(testo, /Efreeet \(HP capace, 2 run\)\n1\) HP\/Paladin\/Clown\/Sniper\n2\) Clown/);
+    assert.match(testo, /Efreeet \(HP Tanker, 2 run\)\n1\) HP\/Paladin\/Clown\/Sniper\n2\) Clown/);
     assert.match(testo, /Account Gilda Gilda 1: Gypsy\/Altro/);
     assert.deepEqual(leggiElenco(testo), {
       giocatori: [
-        { nome: "Efreeet", capace: true, run: 2, account: ["HP/Paladin/Clown/Sniper", "Clown"] },
-        { nome: "Giocatore 2", capace: false, run: null, account: ["Stalker"] },
+        { nome: "Efreeet", tanker: true, run: 2, account: ["HP/Paladin/Clown/Sniper", "Clown"] },
+        { nome: "Giocatore 2", tanker: false, run: null, account: ["Stalker"] },
       ],
       jolly: [{ nome: "Gilda 1", classi: "Gypsy/Altro" }],
       errori: [],
