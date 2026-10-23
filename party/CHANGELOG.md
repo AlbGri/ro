@@ -2,6 +2,11 @@
 
 Le versioni della pagina `party/`.
 
+## [1.16] - 2026-10-23
+
+- Le caselle vuote degli account sono vuote, senza la scritta `Account N`: la dice gia'
+  l'intestazione. Sul telefono, dove l'intestazione non c'e', la scritta resta
+
 ## [1.15] - 2026-10-23
 
 - La colonna `Run` non dice piu' quante run fa un giocatore ma in quali c'e', per chi arriva

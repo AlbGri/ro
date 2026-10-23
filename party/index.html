@@ -144,6 +144,11 @@ input[type="text"], select {
 .riga input[type="text"] { height: 2.25em; padding: 4px 8px; width: 100%; }
 .riga .nome { font-weight: 700; }
 .riga .classi.ignoto { border-color: var(--warn); color: var(--warn); }
+/* Le caselle vuote degli account senza scritta: la dice l'intestazione (Alberto, "piu' pulita").
+   Sul telefono l'intestazione non c'e', e la scritta resta. */
+@media (min-width: 641px) {
+  .riga [data-campo="account"]::placeholder { color: transparent; }
+}
 .riga > .btn { justify-self: center; }
 #dubbi { display: grid; gap: 8px; margin-bottom: 12px; }
 #dubbi:empty { display: none; }
