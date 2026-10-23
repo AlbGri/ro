@@ -94,6 +94,8 @@ function forzaBruta(giocatori, jolly, istanza) {
   };
   const foglia = () => {
     const piene = run.filter((m) => m.length > 0);
+    // Le run fatte sono sempre le prime.
+    if (run.some((m, r) => m.length > 0 && r > 0 && run[r - 1].length === 0)) return;
     if (!piene.every((m) => runValida(m, istanza))) return;
     const p = punteggio(piene, istanza);
     if (!migliore || meglio(p, migliore)) migliore = p;
@@ -106,7 +108,7 @@ function forzaBruta(giocatori, jolly, istanza) {
       if (r === istanza.maxRun) return perGiocatore(g + 1);
       perRun(r + 1);
       if (run[r].length >= istanza.maxParty) return;
-      if (run.slice(0, r).filter((m) => m.some((x) => x.giocatore === g)).length >= (giocatori[g].run ?? Infinity)) return;
+      if (giocatori[g].run && !giocatori[g].run.includes(r + 1)) return;
       const scelte = [
         ...giocatori[g].account.map((a, i) => ({ a, id: `a${i}`, account: i, jolly: null })),
         ...jolly.map((a, j) => ({ a, id: `j${j}`, account: null, jolly: j })),
@@ -301,7 +303,7 @@ describe("HP tanker e Soul Linker (Alberto, 23/10/2026)", () => {
 
   it("chi fa meno run non entra in piu' run, non e' fra chi resta fuori, e lo dice se manca", () => {
     const giocatori = ["High Priest", "High Priest", ...altri].map((c) => giocatore(c, account(c), account(c), account(c)));
-    giocatori[2].run = 2;
+    giocatori[2].run = [1, 2];
     const esito = calcolaRun(giocatori, []);
     verifica(giocatori, [], ISTANZA, esito);
     assert.equal(esito.run.length, 2);
@@ -368,6 +370,26 @@ describe("HP tanker e Soul Linker (Alberto, 23/10/2026)", () => {
     assert.ok(performance.now() - inizio < 5000);
     assert.equal(esito.run.length, 3);
     assert.equal(new Set(esito.run.map((r) => r.tipo)).size, 2);
+  });
+
+  it("chi c'e' solo in alcune run entra solo in quelle: il Champion delle prime due, lo Sniper della terza", () => {
+    const tre = (c) => [account(c), account(c), account(c)];
+    const giocatori = [
+      giocatore("T", ...tre("High Priest")),
+      scarso("H", ...tre("High Priest")),
+      ...altri.map((c) => giocatore(c, ...tre(c))),
+      { ...scarso("Asimo", account("Champion"), account("Priest")), run: [1, 2] },
+      { ...scarso("Tardi", account("Sniper")), run: [3] },
+    ];
+    const esito = calcolaRun(giocatori, []);
+    verifica(giocatori, [], ISTANZA, esito);
+    assert.equal(esito.run.length, 3);
+    const dove = (nome) => esito.run.flatMap((r, i) => (r.membri.some((m) => giocatori[m.giocatore].nome === nome) ? [i + 1] : []));
+    assert.deepEqual(dove("Asimo"), [1, 2]);
+    assert.deepEqual(dove("Tardi"), [3]);
+    // Asimo fa il Champion in una delle due: e' la run col Champion.
+    assert.ok(esito.run.every((r, i) => r.tipo !== 0 || i < 2));
+    assert.deepEqual(esito.fuori, []);
   });
 
   it("il Soul Linker prende il posto della Gypsy/Dancer solo se manca", () => {
@@ -508,8 +530,8 @@ describe("confronto con la ricerca esaustiva", () => {
           `G${g}`,
           ...[...Array(intero(3))].map(() => account(...[...Array(1 + intero(2))].map(() => classi[intero(4)]))),
         ),
-        // Un giocatore su tre fa al massimo una o due run.
-        ...(intero(3) === 0 ? { run: 1 + intero(2) } : {}),
+        // Un giocatore su tre c'e' solo in alcune run.
+        ...(intero(3) === 0 ? { run: [[1], [2], [3], [1, 2], [2, 3], [1, 3]][intero(6)] } : {}),
       }));
       const jolly = [...Array(intero(2))].map(() => account(classi[intero(4)]));
       const esito = calcolaRun(giocatori, jolly, istanza);

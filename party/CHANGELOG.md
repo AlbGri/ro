@@ -2,6 +2,15 @@
 
 Le versioni della pagina `party/`.
 
+## [1.15] - 2026-10-23
+
+- La colonna `Run` non dice piu' quante run fa un giocatore ma in quali c'e', per chi arriva
+  tardi o va via prima: tre pulsanti 1 2 3, tutti accesi; un clic spegne la run in cui manca.
+  Le run fatte sono sempre le prime della serata, e il calcolo mette ognuno solo nelle sue
+- Nell'elenco della gilda: `Nome (run 1-2)`, `(run 3)`, `(run 1+3)` o `(run 1, 3)`, anche con la
+  spunta: `Nome (HP Tanker, run 2-3)`. Il vecchio `(2 run)` vale come le prime due, e cosi' i
+  dati salvati con la 1.13 e la 1.14
+
 ## [1.14] - 2026-10-23
 
 - Nelle run, accanto alla classe di chi tanka (il Champion o l'HP Tanker), l'etichetta `Tanker`,

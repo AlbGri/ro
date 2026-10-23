@@ -27,14 +27,15 @@
  *    grafo. I posti liberi sono nodi da K archi riempiti prima con i preferiti,
  *    nel loro ordine, cosi' persone e Sniper vengono divisi fra le run al meglio
  *    (al piu' uno di differenza).
- * Con run di tipi diversi i conti possono tornare senza che una divisione
- * esista (il Champion e il Priest del suo tipo sono di due giocatori che
- * servono anche altrove). Il passo 2 sceglie allora il tipo di run di ogni
- * contributo con un altro flusso (`dividiMisto`), esatto per i personaggi
- * scelti; se non si possono dividere, si passa alla ripartizione successiva.
- * Scelta di Alberto (23/10/2026) fra questa e una ricerca esatta su tutto,
- * piu' lenta: il risultato e' sempre valido, ma in casi rari potrebbe non
- * essere il migliore (su 3.000 casi di prova con run miste non e' successo).
+ * Con run diverse fra loro, di tipi diversi o con giocatori che ci sono solo
+ * in alcune (chi arriva tardi o va via prima), i conti possono tornare senza
+ * che una divisione esista (il Champion e il Priest del suo tipo sono di due
+ * giocatori che servono anche altrove). Il passo 2 stacca allora una run dalle
+ * altre con un altro flusso (`separa`), esatto per i personaggi scelti, finche'
+ * restano gruppi di run uguali; se non si possono dividere, si passa alla
+ * ripartizione successiva. Scelta di Alberto (23/10/2026) fra questa e una
+ * ricerca esatta su tutto, piu' lenta: il risultato e' sempre valido, ma in
+ * casi rari potrebbe non essere il migliore.
  *
  * Fino alla 1.4 il passo 1 era una programmazione dinamica sui giocatori, con
  * stato i posti coperti in tutto: con i nove ruoli dell'Endless Cellar 14
@@ -69,12 +70,21 @@ function ripartizioni(tipi, n) {
   return [...Array(n + 1).keys()].flatMap((k) => ripartizioni(tipi - 1, n - k).map((resto) => [k, ...resto]));
 }
 
+/** Ogni ordine diverso degli elementi di `lista`: i tipi delle run, dalla prima all'ultima. */
+function ordini(lista) {
+  if (lista.length <= 1) return [lista];
+  return [...new Set(lista)].flatMap((x) => ordini(lista.filter((_, i) => i !== lista.indexOf(x))).map((resto) => [x, ...resto]));
+}
+
+/** Le run, fra le prime `n`, che un giocatore puo' fare: tutte, o quelle di `run` (numeri da 1). */
+const runDi = (giocatore, n) => (giocatore.run ? giocatore.run.filter((r) => r <= n).length : n);
+
 /**
  * Le run migliori con i giocatori presenti e i jolly disponibili.
  *
  * @param {Array<{nome: string, tanker?: boolean, run?: number, account: Array<{personaggi: Array<{classe: string}>}>}>} giocatori
  *   solo i presenti; `tanker`: copre i posti `tanker` con i suoi account (non con i jolly);
- *   `run`: quante ne fa al massimo
+ *   `run`: le run in cui c'e', con i numeri da 1 (senza, tutte); le run fatte sono sempre le prime
  * @param {Array<{personaggi: Array<{classe: string}>}>} jolly solo i disponibili
  * @param {object} [istanza] una di `ISTANZE`, la prima se non si indica
  * @returns {{run: Array<{membri: Array<object>, preferiti: number[], tipo: number | null}>, entrate: number,
@@ -93,15 +103,22 @@ export function calcolaRun(giocatori, jolly, istanza = ISTANZE[0]) {
         const postiRun = tipoRun.map((t) => tipi[t]);
         const trovato = cerca(giocatori, jolly, istanza, postiRun);
         // Piu' run del primo tipo: vale meno delle entrate e piu' di tutto il resto.
-        return trovato && { ...trovato, costo: trovato.costo - quante[0] * trovato.pesi.tipo, quante, tipoRun, postiRun, misto: quante.filter((n) => n > 0).length > 1 };
+        return trovato && { ...trovato, costo: trovato.costo - quante[0] * trovato.pesi.tipo, tipoRun };
       })
       .filter(Boolean)
       .sort((a, b) => a.costo - b.costo);
+    // Le run fatte sono sempre le prime (Alberto, 23/10/2026): run r vuol dire la r-esima della serata.
+    const puo = (g, r) => !giocatori[g].run || giocatori[g].run.includes(r + 1);
+    const limitati = giocatori.some((g) => runDi(g, nRun) < nRun);
     for (const c of candidate) {
-      const run = c.misto ? dividiMisto(c.scelti, istanza, c.quante, tipi) : dividi(c.scelti, istanza, c.postiRun[0], nRun);
-      if (!run) continue;
-      pareggia(run, istanza, c.postiRun);
-      return componi(giocatori, jolly, istanza, run, c.tipoRun);
+      // Con chi non c'e' in tutte le run conta quale run e' di quale tipo: si provano tutti gli ordini.
+      for (const tipoRun of limitati ? ordini(c.tipoRun) : [c.tipoRun]) {
+        const postiRun = tipoRun.map((t) => tipi[t]);
+        const run = dividiGruppo(c.scelti, istanza, postiRun.map((_, r) => r), postiRun, puo);
+        if (!run) continue;
+        pareggia(run, istanza, postiRun, puo);
+        return componi(giocatori, jolly, istanza, run, tipoRun);
+      }
     }
   }
   return componi(giocatori, jolly, istanza, [], []);
@@ -241,7 +258,7 @@ function cerca(giocatori, jolly, istanza, postiRun) {
   giocatori.forEach((g, gi) => {
     const n = nodo();
     // La k-esima entrata costa 2k - 1 quadrati: in tutto entrate al quadrato.
-    for (let k = 1; k <= Math.min(nRun, g.run ?? nRun); k++) arco(0, n, 1, -pesi.entrate + (2 * k - 1) * pesi.quadrati);
+    for (let k = 1; k <= runDi(g, nRun); k++) arco(0, n, 1, -pesi.entrate + (2 * k - 1) * pesi.quadrati);
     g.account.forEach((a, ai) => {
       const n2 = nodo();
       arco(n, n2, 1, 0, { giocatore: gi, account: ai });
@@ -434,30 +451,65 @@ function dividi(scelti, istanza, posti, nRun) {
 }
 
 /**
- * Passo 2 con run di due tipi: prima si sceglie per ogni contributo il gruppo,
- * le run del primo tipo o quelle del secondo, poi ogni gruppo si divide con
- * `dividi`, esatto perche' le sue run sono tutte uguali. La scelta del gruppo e'
- * un flusso con limiti minimi e massimi, esatto anche lui: un contributo e' un
- * arco dal suo giocatore all'insieme di ruoli piu' stretto che lo contiene
- * (HP Tanker dentro High Priest dentro "High Priest o Priest": sono annidati),
- * e passa se va nel primo gruppo. Un giocatore ne manda al primo gruppo al piu'
- * tante quante le sue run, e al secondo al piu' tante quante le altre; un
- * insieme di ruoli ne riceve almeno quanti ne chiede il primo gruppo e ne lascia
- * almeno quanti ne chiede il secondo. Null se i contributi scelti non si
- * possono dividere cosi'.
+ * Passo 2 con run diverse fra loro, per tipo o per chi ci puo' stare
+ * (`puo(giocatore, run)`): si separa una run dalle altre con `separa`, e si
+ * ripete finche' ogni gruppo ha run uguali, che si dividono con `dividi`
+ * (esatto, perche' le sue run sono tutte uguali). Si prova a staccare ogni run
+ * in turno. Rende le run nell'ordine di `gruppo`, o null.
  */
-function dividiMisto(scelti, istanza, quante, tipi) {
-  const [n0, n1] = quante;
-  // Gli insiemi di ruoli chiesti dai due tipi, dal piu' stretto, con quanti ne servono a ogni gruppo.
+function dividiGruppo(scelti, istanza, gruppo, postiRun, puo) {
+  const uguali = gruppo.every((r) => postiRun[r] === postiRun[gruppo[0]]) && scelti.every((c) => gruppo.every((r) => puo(c.giocatore, r)));
+  if (uguali) return dividi(scelti, istanza, postiRun[gruppo[0]], gruppo.length);
+  if (gruppo.length === 1) return null;
+  for (const sola of gruppo) {
+    const altre = gruppo.filter((r) => r !== sola);
+    const parti = separa(scelti, istanza, [[sola], altre], postiRun, puo);
+    const prima = parti && dividiGruppo(parti[0], istanza, [sola], postiRun, puo);
+    const resto = prima && dividiGruppo(parti[1], istanza, altre, postiRun, puo);
+    if (resto) return gruppo.map((r) => (r === sola ? prima[0] : resto[altre.indexOf(r)]));
+  }
+  return null;
+}
+
+/**
+ * Divide i contributi fra due gruppi di run con un flusso con limiti minimi e
+ * massimi, esatto: un contributo e' un arco dal suo giocatore all'insieme di
+ * ruoli piu' stretto che lo contiene (HP Tanker dentro High Priest dentro "High
+ * Priest o Priest": sono annidati), e passa se va nel primo gruppo. Un giocatore
+ * ne manda a ogni gruppo al piu' tante quante le run del gruppo in cui puo'
+ * stare; un insieme di ruoli ne riceve almeno quanti ne chiede il primo gruppo
+ * e ne lascia almeno quanti ne chiede il secondo, e nessuno piu' dei massimi
+ * (`massimo`, o i posti stessi se i liberi non ammettono quei ruoli). Rende i
+ * contributi dei due gruppi, o null.
+ */
+function separa(scelti, istanza, gruppi, postiRun, puo) {
+  // Gli insiemi di ruoli chiesti dalle run, dal piu' stretto, con minimi e massimi di ogni gruppo.
   const insiemi = [];
-  const aggiungi = (q, gruppo, volte) => {
-    const chiave = `${[...q.ruoli].sort().join("+")}${q.tanker ? "+tanker" : ""}`;
-    let s = insiemi.find((x) => x.chiave === chiave);
-    if (!s) insiemi.push((s = { chiave, ruoli: q.ruoli, tanker: q.tanker === true, chiesti: [0, 0] }));
-    s.chiesti[gruppo] = Math.max(s.chiesti[gruppo], q.quanti * volte);
-  };
-  richieste(tipi[0]).forEach((q) => aggiungi(q, 0, n0));
-  richieste(tipi[1]).forEach((q) => aggiungi(q, 1, n1));
+  gruppi.forEach((runGruppo, g) => {
+    for (const r of runGruppo) {
+      const qui = new Map();
+      for (const q of richieste(postiRun[r])) {
+        const chiave = `${[...q.ruoli].sort().join("+")}${q.tanker ? "+tanker" : ""}`;
+        const fuoriLiberi = istanza.liberi && !q.ruoli.some((x) => istanza.liberi.includes(x));
+        const tetto = q.massimo ?? (fuoriLiberi ? q.quanti : Infinity);
+        const prima = qui.get(chiave);
+        qui.set(chiave, { q, chiesti: Math.max(prima?.chiesti ?? 0, q.quanti), tetto: Math.min(prima?.tetto ?? Infinity, tetto) });
+      }
+      for (const [chiave, { q, chiesti, tetto }] of qui) {
+        let s = insiemi.find((x) => x.chiave === chiave);
+        if (!s) insiemi.push((s = { chiave, ruoli: q.ruoli, tanker: q.tanker === true, chiesti: [0, 0], tetto: [0, 0] }));
+        s.chiesti[g] += chiesti;
+        s.tetto[g] += tetto;
+      }
+    }
+  });
+  // Un insieme chiesto solo da un gruppo non ha massimi nell'altro.
+  for (const s of insiemi) {
+    gruppi.forEach((runGruppo, g) => {
+      const chiedono = runGruppo.filter((r) => richieste(postiRun[r]).some((q) => `${[...q.ruoli].sort().join("+")}${q.tanker ? "+tanker" : ""}` === s.chiave)).length;
+      if (chiedono < runGruppo.length) s.tetto[g] = Infinity;
+    });
+  }
   insiemi.sort((x, y) => x.ruoli.length * 2 - x.tanker - (y.ruoli.length * 2 - y.tanker));
   const dentro = (x, y) => x !== y && x.ruoli.every((r) => y.ruoli.includes(r)) && (!y.tanker || x.tanker);
 
@@ -477,14 +529,15 @@ function dividiMisto(scelti, istanza, quante, tipi) {
     eccesso.push(0);
     return nNodi++;
   };
-  let ok = arco(3, 2, Math.max(0, scelti.length - n1 * istanza.maxParty), n0 * istanza.maxParty);
+  const [n0, n1] = gruppi.map((g) => g.length);
+  let ok = arco(3, 2, Math.max(0, scelti.length - n1 * istanza.maxParty), Math.min(scelti.length, n0 * istanza.maxParty));
   for (const s of insiemi) {
     s.nodo = nuovo();
     s.quanti = scelti.filter((c) => soddisfa(c, s)).length;
   }
   for (const s of insiemi) {
     const padre = insiemi.find((y) => dentro(s, y));
-    ok &&= arco(s.nodo, padre ? padre.nodo : 3, s.chiesti[0], s.quanti - s.chiesti[1]);
+    ok &&= arco(s.nodo, padre ? padre.nodo : 3, Math.max(s.chiesti[0], s.quanti - s.tetto[1]), Math.min(s.quanti - s.chiesti[1], s.tetto[0]));
   }
   const giocatori = new Map();
   scelti.forEach((c, i) => {
@@ -494,7 +547,10 @@ function dividiMisto(scelti, istanza, quante, tipi) {
     const foglia = insiemi.find((s) => soddisfa(c, s));
     arco(g.nodo, foglia ? foglia.nodo : 3, 0, 1, { contributo: i });
   });
-  for (const g of giocatori.values()) ok &&= arco(2, g.nodo, Math.max(0, g.quanti - n1), Math.min(n0, g.quanti));
+  for (const [giocatore, g] of giocatori) {
+    const [puo0, puo1] = gruppi.map((runGruppo) => runGruppo.filter((r) => puo(giocatore, r)).length);
+    ok &&= arco(2, g.nodo, Math.max(0, g.quanti - puo1), Math.min(puo0, g.quanti));
+  }
   if (!ok) return null;
 
   // I minimi sono rispettati se il flusso massimo dalla sorgente nuova la satura: costo -1 sui suoi archi.
@@ -509,18 +565,17 @@ function dividiMisto(scelti, istanza, quante, tipi) {
   if (archi.reduce((s, e, i) => s + (e.da === 0 ? flusso[i] : 0), 0) < dovuti) return null;
 
   const primo = new Set(archi.flatMap((e, i) => (e.contributo !== undefined && flusso[i] > 0 ? [e.contributo] : [])));
-  const gruppi = [scelti.filter((_, i) => primo.has(i)), scelti.filter((_, i) => !primo.has(i))];
-  return gruppi.flatMap((g, t) => (quante[t] > 0 ? dividi(g, istanza, tipi[t], quante[t]) : []));
+  return [scelti.filter((_, i) => primo.has(i)), scelti.filter((_, i) => !primo.has(i))];
 }
 
 /**
  * Migliora la divisione scambiando due membri di run diverse, o spostandone uno
  * se una run ci guadagna un posto desiderato, finche' serve. Uno scambio vale
- * solo se le due run tengono i loro posti. Conta prima i posti desiderati (con
- * run di tipi diversi la ricerca non li guarda), poi il primo preferito (lo
- * Sniper), poi gli altri nel loro ordine.
+ * solo se le due run tengono i loro posti e chi si sposta ci puo' stare. Conta
+ * prima i posti desiderati (con run diverse fra loro la divisione non li
+ * guarda), poi il primo preferito (lo Sniper), poi gli altri nel loro ordine.
  */
-function pareggia(run, istanza, postiRun) {
+function pareggia(run, istanza, postiRun, puo = () => true) {
   const conta = (membri, ruolo) => membri.filter((m) => m.ruolo === ruolo).length;
   // I posti desiderati coperti in una run, e quanti dal loro ruolo e non dall'alternativa.
   const desiderati = (membri) =>
@@ -552,7 +607,7 @@ function pareggia(run, istanza, postiRun) {
           if (!run[a].includes(x)) continue;
           const prima = valore();
           // Spostamento: solo per un posto desiderato in piu', perche' cambia le persone per run.
-          if (run[b].length < istanza.maxParty && !presente(run[b], x.giocatore)) {
+          if (run[b].length < istanza.maxParty && puo(x.giocatore, b) && !presente(run[b], x.giocatore)) {
             run[a].splice(run[a].indexOf(x), 1);
             run[b].push(x);
             const dopo = valore();
@@ -566,6 +621,7 @@ function pareggia(run, istanza, postiRun) {
           if (b < a) continue;
           for (const y of [...run[b]]) {
             if (x.ruolo === y.ruolo || !run[a].includes(x)) continue;
+            if (!puo(x.giocatore, b) || !puo(y.giocatore, a)) continue;
             if (presente(run[b], x.giocatore, y) || presente(run[a], y.giocatore, x)) continue;
             run[a][run[a].indexOf(x)] = y;
             run[b][run[b].indexOf(y)] = x;
@@ -596,7 +652,7 @@ function componi(giocatori, jolly, istanza, membri, tipoRun) {
   giocatori.forEach((_, g) => {
     const dentro = run.filter((r) => r.membri.some((m) => m.giocatore === g));
     // Chi fa meno run per scelta sua non e' fra quelli che restano fuori.
-    if (run.length === 0 || dentro.length >= Math.min(run.length, giocatori[g].run ?? run.length)) return;
+    if (run.length === 0 || dentro.length >= runDi(giocatori[g], run.length)) return;
     const assenti = run.filter((r) => !dentro.includes(r));
     const piene = assenti.every((r) => r.membri.length >= istanza.maxParty);
     const propri = giocatori[g].account.filter((a) => a.personaggi.length > 0).length;
@@ -672,7 +728,7 @@ function spiega(giocatori, jolly, gruppo, run, servono, ci, copreAccount) {
   // run, o jolly senza chi li giochi, ne conta meno di quanti ne elenca.
   if (n !== ci) {
     const conJolly = jolly.some((j) => copreAccount(j, gruppo));
-    const limitati = giocatori.some((g) => (g.run ?? run) < run && g.account.some((a) => copreAccount(a, gruppo, g.tanker)));
+    const limitati = giocatori.some((g) => runDi(g, run) < run && g.account.some((a) => copreAccount(a, gruppo, g.tanker)));
     frase += tr(
       ` Un giocatore entra una volta per run${conJolly ? ", anche con un Account Gilda" : ""}${limitati ? `, e qualcuno fa meno di ${run} run` : ""}, quindi ne contano ${ci}.`,
       ` A player enters once per run${conJolly ? ", also with a Guild Account" : ""}${limitati ? `, and some play fewer than ${run} runs` : ""}, so ${ci} of them count.`,
@@ -695,7 +751,7 @@ function cosaMancaCon(giocatori, jolly, istanza, posti, run) {
   const mancano = [];
   const minimo = posti.reduce((n, p) => n + p.quanti, 0);
   // Le run che un giocatore puo' fare: tutte, o meno se ha un limite.
-  const quante = (g) => Math.min(run, g.run ?? run);
+  const quante = (g) => runDi(g, run);
   const entrate = giocatori.reduce((n, g) => n + quante(g), 0);
   if (giocatori.length < minimo) mancano.push(tr(`Servono almeno ${minimo} giocatori presenti, ce ne sono ${giocatori.length}.`, `At least ${minimo} players present are needed, there are ${giocatori.length}.`));
   else if (entrate < minimo * run) {

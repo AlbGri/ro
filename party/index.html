@@ -128,14 +128,16 @@ input[type="text"], select {
 .tabella { display: grid; gap: 4px; margin-bottom: 12px; }
 .riga {
   display: grid; gap: 6px; align-items: center;
-  grid-template-columns: 5rem minmax(7rem, 11rem) 3.6rem repeat(var(--colonne, 3), minmax(0, 1fr)) 2.4rem;
+  grid-template-columns: 5rem minmax(7rem, 11rem) 6.4rem repeat(var(--colonne, 3), minmax(0, 1fr)) 2.4rem;
 }
-.riga.con-tanker { grid-template-columns: 5rem minmax(7rem, 11rem) 3.6rem 5.5rem repeat(var(--colonne, 3), minmax(0, 1fr)) 2.4rem; }
+.riga.con-tanker { grid-template-columns: 5rem minmax(7rem, 11rem) 6.4rem 5.5rem repeat(var(--colonne, 3), minmax(0, 1fr)) 2.4rem; }
 .riga.jolly { grid-template-columns: 5rem minmax(7rem, 11rem) minmax(0, 1fr) 2.4rem; }
 .riga .tanker { justify-self: center; display: flex; align-items: center; gap: 6px; cursor: pointer; }
 .riga .tanker span, .riga .quante span { display: none; }
-.riga .quante { display: flex; align-items: center; gap: 6px; }
-.riga select { height: 2.25em; padding: 4px 6px; width: 100%; }
+.riga .quante { display: flex; align-items: center; gap: 3px; }
+.riga .quante .btn { min-width: 1.9rem; padding: 3px 0; text-align: center; }
+.riga .quante .btn[aria-pressed="true"] { border-color: var(--bradium); background: color-mix(in srgb, var(--bradium) 16%, var(--surface)); font-weight: 700; }
+.riga .quante .btn[aria-pressed="false"] { color: var(--muted); text-decoration: line-through; }
 .riga.spento > input[type="text"] { opacity: .55; }
 .intestazione { font-size: .82rem; color: var(--muted); }
 .riga input[type="checkbox"] { justify-self: center; width: 18px; height: 18px; margin: 0; accent-color: var(--bradium); cursor: pointer; }
@@ -183,8 +185,7 @@ input[type="text"], select {
   .riga, .riga.con-tanker, .riga.jolly { grid-template-columns: auto minmax(0, 1fr) auto; }
   .riga .tanker { grid-column: 1 / -1; justify-self: start; font-size: .9rem; }
   .riga .tanker span, .riga .quante span { display: inline; }
-  .riga .quante { grid-column: 1 / -1; font-size: .9rem; }
-  .riga .quante select { width: auto; }
+  .riga .quante { grid-column: 1 / -1; font-size: .9rem; gap: 6px; }
   .riga > .btn { grid-row: 1; grid-column: 3; }
   .riga .classi { grid-column: 1 / -1; }
   .riga:not(.intestazione) { padding-bottom: 8px; border-bottom: 1px solid var(--line); }
@@ -240,13 +241,13 @@ input[type="text"], select {
   <div class="toolbar azioni"><button class="btn" type="button" data-azione="esporta-run" data-en="Export the runs">Esporta le run</button></div>
 
   <h2 data-en="Players">Giocatori</h2>
-  <p class="hint" data-en="One row per player, one box per account: write the classes of that account's characters separated by /, as on Discord (HP/Devo/Clown/Sniper). When you leave the box the page rewrites them as it understood them; the words it does not know stay red. The account enters only once, with one of its classes. Uncheck whoever is not there. Run: the most runs the player can play.">Una riga per giocatore, una casella per account: scrivi le classi dei personaggi di quell'account separate da /, come su Discord (HP/Devo/Clown/Sniper). Uscendo dalla casella la pagina le riscrive come le ha capite; le parole che non conosce restano in rosso. L'account entra una volta sola, con una delle sue classi. Togli la spunta a chi non c'è. Run: quante run può fare al massimo.</p>
+  <p class="hint" data-en="One row per player, one box per account: write the classes of that account's characters separated by /, as on Discord (HP/Devo/Clown/Sniper). When you leave the box the page rewrites them as it understood them; the words it does not know stay red. The account enters only once, with one of its classes. Uncheck whoever is not there. Run: the runs the player is in, counting from the first of the evening; a click turns off the ones they miss.">Una riga per giocatore, una casella per account: scrivi le classi dei personaggi di quell'account separate da /, come su Discord (HP/Devo/Clown/Sniper). Uscendo dalla casella la pagina le riscrive come le ha capite; le parole che non conosce restano in rosso. L'account entra una volta sola, con una delle sue classi. Togli la spunta a chi non c'è. Run: le run in cui c'è, contando dalla prima della serata; un clic spegne quelle in cui manca.</p>
   <div class="toolbar azioni">
     <button class="btn" type="button" data-azione="apri-elenco" data-en="Paste the guild list">Incolla l'elenco della gilda</button>
     <button class="btn" type="button" data-azione="esporta-elenco" data-en="Export the list">Esporta l'elenco</button>
   </div>
   <div class="card incolla" id="incolla" hidden>
-    <p class="hint" data-en="A player by name, under them their accounts, one per line with a number in front and the classes separated by /, as they write them on Discord. Nicknames are fine (HP, Devo, Prete, Bragi, Bio…) and so are messages copied with the time. After the name, in brackets, Tanker HP and the most runs the player plays, if fewer than 3: &lt;code&gt;Name (Tanker HP, 2 runs)&lt;/code&gt;. The Guild Accounts: &lt;code&gt;Guild Account name: classes&lt;/code&gt;. Whoever has the same name as a player already in the table gets the accounts of the list, the others are added. The words work in both languages: Account Gilda or Guild Account (Jolly works too), e or and, Altro or Other, HP Tanker or Tanker HP.">Un giocatore per nome, sotto i suoi account, uno per riga con un numero davanti e le classi separate da /, come li scrivono su Discord. Vanno bene i soprannomi (HP, Devo, Prete, Bragi, Bio…) e i messaggi copiati con l'ora. Dopo il nome, fra parentesi, la spunta HP Tanker e quante run fa al massimo, se meno di 3: <code>Nome (HP Tanker, 2 run)</code>. Gli Account Gilda: <code>Account Gilda nome: classi</code>. Chi ha lo stesso nome di un giocatore già nella tabella prende gli account dell'elenco, gli altri si aggiungono. Le parole valgono nelle due lingue: Account Gilda o Guild Account (va bene anche Jolly), e o and, Altro o Other, HP Tanker o Tanker HP.</p>
+    <p class="hint" data-en="A player by name, under them their accounts, one per line with a number in front and the classes separated by /, as they write them on Discord. Nicknames are fine (HP, Devo, Prete, Bragi, Bio…) and so are messages copied with the time. After the name, in brackets, Tanker HP and the runs the player is in, if not all of them: &lt;code&gt;Name (Tanker HP, run 1-2)&lt;/code&gt;. The Guild Accounts: &lt;code&gt;Guild Account name: classes&lt;/code&gt;. Whoever has the same name as a player already in the table gets the accounts of the list, the others are added. The words work in both languages: Account Gilda or Guild Account (Jolly works too), e or and, Altro or Other, HP Tanker or Tanker HP.">Un giocatore per nome, sotto i suoi account, uno per riga con un numero davanti e le classi separate da /, come li scrivono su Discord. Vanno bene i soprannomi (HP, Devo, Prete, Bragi, Bio…) e i messaggi copiati con l'ora. Dopo il nome, fra parentesi, la spunta HP Tanker e le run in cui c'è, se non tutte: <code>Nome (HP Tanker, run 1-2)</code>. Gli Account Gilda: <code>Account Gilda nome: classi</code>. Chi ha lo stesso nome di un giocatore già nella tabella prende gli account dell'elenco, gli altri si aggiungono. Le parole valgono nelle due lingue: Account Gilda o Guild Account (va bene anche Jolly), e o and, Altro o Other, HP Tanker o Tanker HP.</p>
     <textarea id="elenco" rows="9" spellcheck="false" aria-label="Elenco della gilda" placeholder="Efreeet&#10;1) HP/Devo/Clown/Sniper&#10;2) Prete&#10;3) Bragi&#10;&#10;Account Gilda Gilda1: Clown" data-en-aria-label="Guild list" data-en-placeholder="Efreeet&#10;1) HP/Devo/Clown/Sniper&#10;2) Priest&#10;3) Bragi&#10;&#10;Guild Account Guild1: Clown"></textarea>
     <div id="anteprima"></div>
     <div class="toolbar">

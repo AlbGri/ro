@@ -31,6 +31,18 @@ const escape = (s) =>
 let stato = { istanza: ISTANZE[0].id, giocatori: [], jolly: [], soprannomi: {} };
 const istanza = () => ISTANZE.find((i) => i.id === stato.istanza);
 
+const TUTTE_LE_RUN = [...Array(MAX_RUN).keys()].map((r) => r + 1);
+
+/**
+ * Le run in cui c'e' un giocatore, salvate come numeri da 1. Fino alla 1.14 era quante ne faceva:
+ * diventano le prime, perche' le run fatte sono sempre le prime.
+ */
+function runSalvate(run) {
+  if (Number.isInteger(run)) return TUTTE_LE_RUN.slice(0, Math.min(Math.max(run, 1), MAX_RUN));
+  const valide = Array.isArray(run) ? TUTTE_LE_RUN.filter((r) => run.includes(r)) : [];
+  return valide.length > 0 ? valide : TUTTE_LE_RUN;
+}
+
 /**
  * Lo stato da un oggetto letto (localStorage o file), con i campi mancanti a posto.
  * I dati fino alla 1.5 avevano gli account come elenchi di personaggi: diventano testo.
@@ -50,7 +62,7 @@ function normalizza(dati) {
       nome: String(g?.nome ?? ""),
       presente: g?.presente !== false,
       tanker: g?.tanker === true,
-      run: Number.isInteger(g?.run) && g.run >= 1 && g.run <= MAX_RUN ? g.run : MAX_RUN,
+      run: runSalvate(g?.run),
       account: (Array.isArray(g?.account) ? g.account : []).map(testo),
     })),
     jolly: dati.jolly.map((j) => ({
@@ -168,9 +180,10 @@ function disegnaGiocatori() {
     (g, gi) => `<div class="${classe}${g.presente ? "" : " spento"}" ${stile}>
       <input type="checkbox" data-g="${gi}" data-campo="presente"${g.presente ? " checked" : ""} aria-label="${tr("Presente", "Present")}">
       <input type="text" class="nome" value="${escape(g.nome)}" placeholder="${NOME_GIOCATORE} ${gi + 1}" data-g="${gi}" data-campo="nome" aria-label="${tr("Nome del giocatore", "Player name")}">
-      <label class="quante"><span>${tr("Run al massimo", "Runs at most")}</span><select data-g="${gi}" data-campo="run" aria-label="${tr("Run al massimo", "Runs at most")}">
-        ${[...Array(istanza().maxRun)].map((_, k) => `<option value="${k + 1}"${Math.min(g.run, istanza().maxRun) === k + 1 ? " selected" : ""}>${k + 1}</option>`).join("")}
-      </select></label>
+      <span class="quante"><span>Run</span>${[...Array(istanza().maxRun)].map((_, k) => {
+        const titolo = tr(`C'è nella run ${k + 1}`, `Present in run ${k + 1}`);
+        return `<button class="btn small" type="button" data-g="${gi}" data-r="${k + 1}" data-azione="run" aria-pressed="${g.run.includes(k + 1)}" title="${titolo}" aria-label="${titolo}">${k + 1}</button>`;
+      }).join("")}</span>
       ${conTanker ? `<label class="tanker"><input type="checkbox" data-g="${gi}" data-campo="tanker"${g.tanker ? " checked" : ""} aria-label="${TANKER}"><span>${TANKER}</span></label>` : ""}
       ${[...Array(n)].map((_, ai) => campoClassi(g.account[ai] ?? "", `data-g="${gi}" data-a="${ai}" data-campo="account"`, `Account ${ai + 1}`)).join("")}
       <button class="btn small danger" type="button" data-g="${gi}" data-azione="togli-giocatore" title="${tr("Togli il giocatore", "Remove the player")}" aria-label="${tr("Togli il giocatore", "Remove the player")}">✕</button>
@@ -403,8 +416,6 @@ document.addEventListener("input", (event) => {
     el.closest(".riga").classList.toggle("spento", !el.checked);
   } else if (campo === "tanker") {
     oggetto.tanker = el.checked;
-  } else if (campo === "run") {
-    oggetto.run = Number(el.value);
   } else if (campo === "account") {
     while (oggetto.account.length <= el.dataset.a) oggetto.account.push("");
     oggetto.account[el.dataset.a] = el.value;
@@ -462,6 +473,15 @@ document.addEventListener("click", (event) => {
       if (!confirm(tr(`Togliere ${stato.giocatori[d.g].nome || "il giocatore"}?`, `Remove ${stato.giocatori[d.g].nome || "the player"}?`))) return;
       stato.giocatori.splice(d.g, 1);
       break;
+    case "run": {
+      // Una run accesa o spenta; almeno una resta accesa, se no il giocatore non c'e' e basta togliere Presente.
+      const g = stato.giocatori[d.g];
+      const r = Number(d.r);
+      const altre = g.run.filter((x) => x !== r);
+      if (altre.length === 0) return;
+      g.run = g.run.includes(r) ? altre : [...g.run, r].sort();
+      break;
+    }
     case "nuova-colonna":
       minimoColonne = colonne() + 1;
       disegnaGiocatori();
@@ -595,9 +615,9 @@ function aggiungiElenco() {
   ))) return;
   for (const g of letto.giocatori) {
     const esistente = stato.giocatori.find((x) => stessoNome(x.nome, g.nome));
-    // Spunta HP Tanker e limite di run li mette l'elenco, ma non li toglie: i messaggi di Discord non li hanno.
+    // Spunta HP Tanker e run li mette l'elenco, ma non li toglie: i messaggi di Discord non li hanno.
     if (esistente) Object.assign(esistente, { account: g.account, tanker: esistente.tanker || g.tanker, run: g.run ?? esistente.run });
-    else stato.giocatori.push({ nome: g.nome, presente: true, tanker: g.tanker, run: g.run ?? MAX_RUN, account: g.account });
+    else stato.giocatori.push({ nome: g.nome, presente: true, tanker: g.tanker, run: g.run ?? TUTTE_LE_RUN, account: g.account });
   }
   for (const j of letto.jolly) {
     const esistente = stato.jolly.find((x) => stessoNome(x.nome, j.nome));

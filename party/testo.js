@@ -12,7 +12,7 @@
  * trattino e' un suo account, con le classi separate da / , + o "e". Va bene anche
  * il messaggio copiato da Discord, "[19:40]Efreeet: 1) HP/...": l'ora si toglie e
  * quello che segue il nome e' il primo account. "Account Gilda nome: classi" e' un jolly.
- * Fra parentesi dopo il nome la spunta HP Tanker e il limite di run: "Efreeet (HP Tanker, 2 run)".
+ * Fra parentesi dopo il nome la spunta HP Tanker e le run in cui c'e': "Efreeet (HP Tanker, run 1-2)".
  * Le parole valgono nelle due lingue, qualunque sia quella della pagina (Alberto,
  * 22/10/2026): "Guild Account nome: classi", "HP and Sniper", "Other".
  * Solo le classi, niente nomi dei personaggi: "basta la classe" (Alberto).
@@ -133,17 +133,44 @@ const PARENTESI = /\s*\(([^)]*)\)\s*$/;
 const PAROLE_TANKER = ["hp tanker", "tanker hp"];
 
 /**
- * Nome, spunta HP Tanker e limite di run di una riga di giocatore: "Efreeet (HP Tanker, 2 run)".
+ * Le run di "run 1-2", "run 2", "run 1+3", o di "2 run" (fino alla 1.14: quante run, che si
+ * leggono come le prime). Null se non e' una scritta cosi'.
+ */
+function leggiRun(parte) {
+  const vecchia = parte.match(/^(\d)\s*runs?$/i);
+  if (vecchia) return [...Array(Math.min(Number(vecchia[1]), MAX_RUN)).keys()].map((r) => r + 1);
+  const nuova = parte.match(/^runs?\s+([1-9](?:\s*[-+]\s*[1-9])*)$/i);
+  if (!nuova) return null;
+  const run = new Set();
+  for (const pezzo of nuova[1].replace(/\s/g, "").split("+")) {
+    const [da, a = da] = pezzo.split("-").map(Number);
+    for (let r = da; r <= a; r++) run.add(r);
+  }
+  const esito = [...run].filter((r) => r <= MAX_RUN).sort();
+  return esito.length > 0 ? esito : null;
+}
+
+/** "run 1-2", "run 2" o "run 1+3": come `leggiRun` le rilegge. */
+function scriviRun(run) {
+  const consecutive = run.every((r, i) => i === 0 || r === run[i - 1] + 1);
+  if (run.length === 1) return `run ${run[0]}`;
+  return consecutive ? `run ${run[0]}-${run.at(-1)}` : `run ${run.join("+")}`;
+}
+
+/**
+ * Nome, spunta HP Tanker e run in cui c'e' un giocatore: "Efreeet (HP Tanker, run 1-2)".
  * Una parentesi con altre parole resta nel nome. `run` e' null se la riga non lo dice.
  */
 function segni(riga) {
   const trovata = riga.match(PARENTESI);
   const esito = { nome: riga, tanker: false, run: null };
   if (!trovata) return esito;
-  for (const parte of trovata[1].split(",").map(chiave)) {
-    const run = parte.match(/^(\d+) runs?$/);
-    if (PAROLE_TANKER.includes(parte)) esito.tanker = true;
-    else if (run) esito.run = Math.min(Math.max(Number(run[1]), 1), MAX_RUN);
+  for (const parte of trovata[1].split(",").map((p) => p.trim())) {
+    const run = leggiRun(parte);
+    if (PAROLE_TANKER.includes(chiave(parte))) esito.tanker = true;
+    else if (run) esito.run = run;
+    // "run 1, 2": la virgola separa anche le voci, quindi un numero da solo dopo le run e' un'altra run.
+    else if (esito.run && /^[1-9]$/.test(parte) && Number(parte) <= MAX_RUN) esito.run = [...new Set([...esito.run, Number(parte)])].sort();
     else return { nome: riga, tanker: false, run: null };
   }
   return { ...esito, nome: riga.replace(PARENTESI, "") };
@@ -219,7 +246,7 @@ export function pulisci(testo, imparati = {}) {
  *
  * @param {string} testo
  * @param {Object<string, string>} imparati i soprannomi imparati, chiave -> classe
- * @returns {{giocatori: Array<{nome: string, tanker: boolean, run: number | null, account: string[]}>, jolly: Array<{nome: string, classi: string}>,
+ * @returns {{giocatori: Array<{nome: string, tanker: boolean, run: number[] | null, account: string[]}>, jolly: Array<{nome: string, classi: string}>,
  *   errori: string[]}} gli account e le classi dei jolly gia' riscritti con `pulisci`
  */
 export function leggiElenco(testo, imparati = {}) {
@@ -274,7 +301,7 @@ export function scriviElenco(stato) {
     const account = g.account.filter((a) => a.trim());
     const parentesi = [
       ...(g.tanker ? [TANKER] : []),
-      ...(g.run < MAX_RUN ? [`${g.run} ${tr("run", g.run === 1 ? "run" : "runs")}`] : []),
+      ...(g.run && g.run.length < MAX_RUN ? [scriviRun(g.run)] : []),
     ];
     const nome = (g.nome || `${tr("Giocatore", "Player")} ${i + 1}`) + (parentesi.length ? ` (${parentesi.join(", ")})` : "");
     if (account.length > 0) blocchi.push([nome, ...account.map((a, k) => `${k + 1}) ${a}`)].join("\n"));

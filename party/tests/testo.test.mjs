@@ -80,31 +80,37 @@ describe("elenco della gilda", () => {
     ]);
   });
 
-  it("fra parentesi dopo il nome la spunta HP Tanker e il limite di run, anche in inglese", () => {
+  it("fra parentesi dopo il nome la spunta HP Tanker e le run in cui c'e', anche in inglese", () => {
     const letto = leggiElenco(
-      "[19:40]Alby (HP Tanker, 2 run): 1) HP\nMary (tanker HP)\n1) HP\nJo (1 run)\n1) HP\nMario (Rossi)\n1) HP\nPasta\n1) HP\n",
+      "[19:40]Alby (HP Tanker, run 2-3): 1) HP\nMary (tanker HP)\n1) HP\nJo (run 1+3)\n1) HP\nLia (run 1, 2)\n1) HP\nEd (runs 2)\n1) HP\n" +
+        "Asimo (2 run)\n1) HP\nMario (Rossi)\n1) HP\nPasta\n1) HP\n",
     );
     assert.deepEqual(letto.giocatori.map((g) => [g.nome, g.tanker, g.run]), [
-      ["Alby", true, 2], ["Mary", true, null], ["Jo", false, 1], ["Mario (Rossi)", false, null], ["Pasta", false, null],
+      ["Alby", true, [2, 3]], ["Mary", true, null], ["Jo", false, [1, 3]], ["Lia", false, [1, 2]], ["Ed", false, [2]],
+      // Fino alla 1.14 "2 run" era quante: sono le prime due.
+      ["Asimo", false, [1, 2]], ["Mario (Rossi)", false, null], ["Pasta", false, null],
     ]);
   });
 
   it("l'elenco esportato si rilegge uguale", () => {
     const stato = {
       giocatori: [
-        { nome: "Efreeet", tanker: true, run: 2, account: ["HP/Paladin/Clown/Sniper", "", "Clown"] },
-        { nome: "", tanker: false, run: 3, account: ["Stalker"] },
-        { nome: "Senza", tanker: false, run: 3, account: [""] },
+        { nome: "Efreeet", tanker: true, run: [1, 2], account: ["HP/Paladin/Clown/Sniper", "", "Clown"] },
+        { nome: "", tanker: false, run: [1, 2, 3], account: ["Stalker"] },
+        { nome: "Senza", tanker: false, run: [1, 2, 3], account: [""] },
+        { nome: "Tardi", tanker: false, run: [1, 3], account: ["HP"] },
       ],
       jolly: [{ nome: "Gilda 1", classi: "Gypsy/Altro" }, { nome: "Vuoto", classi: "" }],
     };
     const testo = scriviElenco(stato);
-    assert.match(testo, /Efreeet \(HP Tanker, 2 run\)\n1\) HP\/Paladin\/Clown\/Sniper\n2\) Clown/);
+    assert.match(testo, /Efreeet \(HP Tanker, run 1-2\)\n1\) HP\/Paladin\/Clown\/Sniper\n2\) Clown/);
+    assert.match(testo, /Tardi \(run 1\+3\)/);
     assert.match(testo, /Account Gilda Gilda 1: Gypsy\/Altro/);
     assert.deepEqual(leggiElenco(testo), {
       giocatori: [
-        { nome: "Efreeet", tanker: true, run: 2, account: ["HP/Paladin/Clown/Sniper", "Clown"] },
+        { nome: "Efreeet", tanker: true, run: [1, 2], account: ["HP/Paladin/Clown/Sniper", "Clown"] },
         { nome: "Giocatore 2", tanker: false, run: null, account: ["Stalker"] },
+        { nome: "Tardi", tanker: false, run: [1, 3], account: ["HP"] },
       ],
       jolly: [{ nome: "Gilda 1", classi: "Gypsy/Altro" }],
       errori: [],
