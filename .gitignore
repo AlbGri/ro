@@ -39,6 +39,8 @@ ragnarok_timers.log*
 
 # Archivi di distribuzione
 *.zip
+# Zip dei timer estratti per l'uso personale di Alberto, con i suoi dati
+timers/desktop/RagnarokTimers-v*-windows/
 
 # Fonti della guida: copie di script rAthena e cache delle mappe, solo in locale
 guide/fonti/
