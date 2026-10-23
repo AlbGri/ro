@@ -219,3 +219,22 @@ test("Grimtooth a distanza dal livello 4; Kiel D-01 +5% solo in mischia; Baphome
   assert.equal(sp(), Math.floor((spSenza * 107) / 100));
   assert.equal(m.bonusValues[25], 5);
 });
+
+test("manuali di uaRO: Battle Manual +50% base e job, Field Manual solo base; niente Job Manual", () => {
+  const m = creaMotore();
+  scegli(m, "B_Enemy", 1);
+  m.Buf6SW(1);
+  assert.deepEqual([...m.c.A8_Skill1.elenco()].map((o) => Number(o.value)), [0, 2, 3, 4]);
+  assert.equal(m.c.A8_Skill2, undefined);
+  const exp = (manuale) => {
+    scegli(m, "A8_Skill1", manuale);
+    m.A6(1);
+    m.StAllCalc();
+    m.calc();
+    return [numero(m, "B_16"), numero(m, "B_17")];
+  };
+  const [base, job] = exp(0);
+  assert.deepEqual(exp(2), [Math.floor(base * 1.5), Math.floor(job * 1.5)]);
+  assert.deepEqual(exp(3), [Math.floor(base * 1.5), job]);
+  assert.deepEqual(exp(4), [base * 2, job]);
+});

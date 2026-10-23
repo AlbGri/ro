@@ -72,7 +72,7 @@ var SEZIONI_BUILD = {
   ] },
   buf8: { array: "n_A_Buf8", presenza: 12, campi: [
     L(0, 2), L(3, 2), L(7, 2), L(8, 2), L(9, 2), L(10, 2), L(11, 2), 5, 6, C(1, null),
-    B(2, null, null, null, null),
+    B(null, null, null, null, null),
   ] },
   // incantamenti aggiuntivi e modifiche manuali al personaggio
   buf9: { array: "n_A_Buf9", presenza: 60, campi: [

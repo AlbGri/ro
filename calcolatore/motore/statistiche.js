@@ -298,7 +298,7 @@ function leggiPannelli() {
   if (n_Skill6SW) {
     leggiCampi(n_A_Buf6, 0, ["A6_Skill0", "A6_Skill1"]);
     leggiCampi(n_A_Buf6, 3, serieCampi("A6_Skill", 3, 18).concat(serieCampi("A_debuf", 0, 3)));
-    leggiCampi(n_A_Buf8, 0, serieCampi("A8_Skill", 0, 3));
+    leggiCampi(n_A_Buf8, 0, ["A8_Skill0", "A8_Skill1", 0, "A8_Skill3"]);
     leggiCampi(n_A_Buf8, 5, serieCampi("A8_Skill", 5, 11));
   }
   if (n_Skill7SW) {

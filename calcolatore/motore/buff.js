@@ -982,18 +982,13 @@ function Buf6SW(e) {
             },
             {
               campo: "A8_Skill1",
-              etichetta: "Battle Manual ",
+              etichetta: "Manual ",
             },
             {
               campo: "A6_Skill10",
               tipo: "checkbox",
               id: "EN72_1",
               etichetta: "All Stats +1 [SuperNovice wife Undying Love bonus]",
-            },
-            {
-              campo: "A8_Skill2",
-              tipo: "checkbox",
-              etichetta: "Job Manual 50",
             },
           ],
         },
@@ -1015,9 +1010,9 @@ function Buf6SW(e) {
     opzioni(c.A8_Skill11, effetti);
     opzioni(c.A8_Skill1, [
       [0, "None"],
-      [1, "25"],
-      [2, "50"],
-      [4, "100"],
+      [2, "Battle Manual (50%, Base and Job EXP)"],
+      [3, "Field Manual (50%, Base EXP)"],
+      [4, "Field Manual 100% (Base EXP)"],
     ]);
     opzioni(c.A8_Skill3, [[0, "1x"]]);
     opzioni(
@@ -1051,7 +1046,6 @@ function Buf6SW(e) {
     );
     c.A8_Skill0.value = n_A_Buf8[0];
     c.A8_Skill1.value = n_A_Buf8[1];
-    c.A8_Skill2.checked = n_A_Buf8[2];
     c.A8_Skill3.value = n_A_Buf8[3];
     c.A8_Skill5.value = n_A_Buf8[5];
     c.A8_Skill6.value = n_A_Buf8[6];

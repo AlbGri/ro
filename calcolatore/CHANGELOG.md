@@ -2,6 +2,15 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.13] - 2026-10-23
+
+- Buff, esperienza: la voce "Battle Manual" (25, 50, 100% a EXP base e job) diventa "Manuale"
+  con i manuali di uaRO (wiki, Server Info): Battle Manual (50% a base e job), Field Manual
+  (50%, solo base) e Field Manual 100% (solo base). Tolta la casella "Job Manual 50", che su
+  uaRO non c'e'
+- Le build salvate con le voci vecchie si aprono cosi': 50% come Battle Manual, 100% come
+  Field Manual 100% (la job non ha piu' il +100%), 25% e Job Manual 50 senza manuale
+
 ## [1.12] - 2026-10-23
 
 - Grimtooth: a distanza solo ai livelli 4 e 5, come su uaRO (prima dal livello 3)

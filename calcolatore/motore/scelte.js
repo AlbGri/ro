@@ -953,22 +953,25 @@ function ClickB_Enemy() {
   var t = 100;
   t += StPlusCard(120 + targetData[2]);
   t += StPlusCalc2(120 + targetData[2]);
-  var A = 0;
+  var soloBase = 0;
   t +=
     5 * (EquipNumSearch(EQUIPID.AUMDURAS_BENEFIT_B) + EquipNumSearch(EQUIPID.AUMDURAS_BENEFIT_C));
   if (n_A_JobClass() == 3 && CardNumSearch(452) && (targetData[2] == 1 || targetData[2] == 6))
     t += 5;
   if (targetData[2] == 2 && n_A_JobClass() == 4 && CardNumSearch(453)) t += 5;
-  if (n_A_Buf8[1]) t += 25 * n_A_Buf8[1];
-  if (n_A_Buf8[2]) A += 50;
+  // manuali di uaRO (wiki, Server Info): 2 Battle Manual, +50% base e job; 3 Field Manual, +50%
+  // base; 4 Field Manual 100%, +100% base. 1 (+25%) delle build vecchie non c'e' su uaRO
+  if (n_A_Buf8[1] == 2) t += 50;
+  if (n_A_Buf8[1] == 3) soloBase += 50;
+  if (n_A_Buf8[1] == 4) soloBase += 100;
   if (n_A_Buf6[2]) t += 100;
   if (c.A8_Skill14.value == 3 || n_A_Buf6[2]) {
     t *= 2;
-    A *= 2;
+    soloBase *= 2;
   }
-  if (t != 0 || A != 0) {
-    targetData[16] = Math.floor((targetData[16] * t) / 100);
-    targetData[17] = Math.floor((targetData[17] * (t + A)) / 100);
+  if (t != 0 || soloBase != 0) {
+    targetData[16] = Math.floor((targetData[16] * (t + soloBase)) / 100);
+    targetData[17] = Math.floor((targetData[17] * t) / 100);
   }
   if (n_A_Buf8[5]) {
     targetData[16] = Math.floor(targetData[16] / (1 + n_A_Buf8[5]) + 1);
