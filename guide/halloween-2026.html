@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="it" data-bilingual>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title data-en="uaRO – Halloween 2026">uaRO – Halloween 2026</title>
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#F5F7F1">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1B2420">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<script src="../gate.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Colori e caratteri sono quelli della guida Nuovo Mondo. */
+:root {
+  --bg: #E6EBE2;
+  --surface: #F5F7F1;
+  --surface-2: #EDF1E8;
+  --ink: #1D2821;
+  --muted: #56655B;
+  --line: #C6D0C1;
+  --common: #3C7C4C;
+  --bradium: #6A4C9C;
+  --verify: #9A5C00;
+  --warn: #A3402C;
+  --tip: #4E6B3A;
+  --focus: #6A4C9C;
+  --serif: "Alegreya", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: "Atkinson Hyperlegible", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131A16; --surface: #1B2420; --surface-2: #212C27; --ink: #E3EAE2; --muted: #9DAA9F; --line: #33413A;
+    --common: #63A471; --bradium: #B79CEB; --verify: #E8A93C; --warn: #F08A72; --tip: #8DB36F; --focus: #B79CEB;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131A16; --surface: #1B2420; --surface-2: #212C27; --ink: #E3EAE2; --muted: #9DAA9F; --line: #33413A;
+  --common: #63A471; --bradium: #B79CEB; --verify: #E8A93C; --warn: #F08A72; --tip: #8DB36F; --focus: #B79CEB;
+  color-scheme: dark;
+}
+:root { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--sans); font-size: 16px; line-height: 1.5;
+}
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+
+/* Intestazione, come nella guida */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  padding-top: env(safe-area-inset-top, 0px);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-inner {
+  max-width: 960px; margin: 0 auto; min-height: 64px;
+  display: flex; align-items: center; gap: 16px; padding: 8px 20px; flex-wrap: wrap;
+}
+.brand { font-family: var(--serif); font-weight: 700; font-size: 1.15rem; white-space: nowrap; flex: 1; }
+.btn {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 8px;
+  padding: 7px 12px; cursor: pointer; font-size: .92rem; line-height: 1.2;
+}
+.btn:hover { border-color: var(--muted); }
+a.btn { text-decoration: none; }
+/* Menu ⚙, copiato dalla guida */
+.more { position: relative; }
+.more > summary { list-style: none; }
+.more > summary::-webkit-details-marker { display: none; }
+.more > summary.gear { padding-left: 9px; padding-right: 9px; font-size: 1.05rem; }
+.more-menu {
+  position: absolute; right: 0; top: calc(100% + 6px); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 10px; padding: 6px; display: grid; gap: 4px; min-width: 220px;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--ink) 18%, transparent);
+}
+.more-menu .btn { text-align: left; border-color: transparent; }
+.more-menu .btn:hover { background: var(--surface-2); }
+
+main { max-width: 960px; margin: 0 auto; padding: 28px 20px 80px; }
+.hero { padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.hero h1 { font-family: var(--serif); font-size: clamp(2.1rem, 4.5vw, 3.2rem); line-height: 1.05; margin: 0 0 12px; font-weight: 700; letter-spacing: -.01em; }
+.lead { font-size: 1.12rem; margin: 0 0 16px; color: var(--muted); }
+.hero ul { margin: 0; padding-left: 1.1em; }
+.hero li { margin-bottom: 6px; }
+h2 { font-family: var(--serif); font-size: 1.55rem; line-height: 1.15; margin: 36px 0 12px; font-weight: 700; }
+p { margin: 0 0 10px; }
+ol.route { margin: 0; padding-left: 1.4em; }
+ol.route li { margin-bottom: 8px; }
+
+/* Un capitolo o una caccia per riga, come le tappe dei livelli */
+.stage { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 16px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.stage-num { font-family: var(--serif); font-size: 2.2rem; line-height: .9; font-weight: 700; color: var(--common); min-width: 1.4ch; }
+.stage-title { font-weight: 700; font-size: 1.08rem; margin: 0; }
+.stage-sub { font-size: .9rem; color: var(--muted); }
+.stage p { margin: 6px 0 0; }
+.stage.unknown .stage-num { color: var(--muted); }
+.stage.unknown p.todo { color: var(--muted); font-style: italic; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.chip {
+  font-family: var(--mono); font-size: .86rem; cursor: pointer; line-height: 1.3;
+  border: 1px solid color-mix(in srgb, var(--bradium) 45%, transparent);
+  background: color-mix(in srgb, var(--bradium) 10%, var(--surface));
+  color: var(--ink); border-radius: 6px; padding: 5px 9px;
+}
+.chip:hover { background: color-mix(in srgb, var(--bradium) 20%, var(--surface)); border-color: var(--bradium); }
+.chip-label { font-size: .82rem; color: var(--muted); margin-right: 2px; align-self: center; }
+.note-line { margin: 10px 0 0; padding: 7px 12px; border-left: 3px solid; border-radius: 0 6px 6px 0; font-size: .95rem; background: var(--surface); }
+.note-line.tip { border-color: var(--tip); }
+.note-line.warn { border-color: var(--warn); }
+.note-line.verify { border-color: var(--verify); }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px);
+  background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; font-size: .92rem;
+  opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; z-index: 50; max-width: calc(100vw - 32px);
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+@media (max-width: 640px) {
+  .topbar-inner { gap: 10px; padding: 8px 16px; }
+  main { padding-left: 16px; padding-right: 16px; }
+  .btn { padding: 6px 10px; font-size: .86rem; }
+  .brand { font-size: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="btn" href="../index.html" title="Torna alla scelta dei servizi" data-en-title="Back to the list of services">Home</a>
+    <span class="brand">Halloween 2026</span>
+    <!-- Lingua prima del menu ⚙, come in ogni pagina: la bandiera la disegna gate.js. -->
+    <button class="btn" type="button" onclick="toggleLang()" data-lang><span data-en="IT">EN</span></button>
+    <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, tema. Lo chiude gate.js. -->
+    <details class="more">
+      <summary class="btn gear" title="Menu" aria-label="Menu">&#9881;</summary>
+      <div class="more-menu">
+        <button class="btn" type="button" onclick="toggleTheme()" data-en="Switch light/dark theme">Cambia tema chiaro/scuro</button>
+      </div>
+    </details>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Halloween 2026</h1>
+    <p class="lead" data-en="uaRO event from 21/10/2026, for about a month. Here only the fastest way to the Scatleton Egg, one per account, and the hunts of Old Man Barnaby.">Evento di uaRO dal 21/10/2026, per circa un mese. Qui solo la strada più veloce per lo Scatleton Egg, uno per account, e le cacce di Old Man Barnaby.</p>
+    <ul>
+      <li data-en="Halloween Coins and Pumpkin Cakes are bound to the account: they move between your characters through the Kafra storage.">Halloween Coin e Pumpkin Cake sono legati all'account: si spostano fra i tuoi personaggi con lo storage della Kafra.</li>
+      <li data-en="Daily limits reset at midnight server time: check it with <code>@time</code>.">I limiti giornalieri ripartono a mezzanotte del server: l'ora la vedi con <code>@time</code>.</li>
+      <li data-en="Click a /navi: it is copied, and you paste it in the game chat.">Clicca un /navi: viene copiato, e lo incolli nella chat del gioco.</li>
+    </ul>
+    <div class="chips">
+      <span class="chip-label" data-en="Prontera → Niflheim, free">Prontera → Niflheim, gratis</span>
+      <span class="chip-label">Watchful Anes</span><button class="chip" type="button" data-copy="/navi prontera 54/214">/navi prontera 54/214</button>
+    </div>
+    <div class="chips">
+      <span class="chip-label" data-en="Niflheim → Prontera">Niflheim → Prontera</span>
+      <span class="chip-label">Anes</span><button class="chip" type="button" data-copy="/navi niflheim 188/201">/navi niflheim 188/201</button>
+    </div>
+  </section>
+
+  <h2>Scatleton Egg</h2>
+  <ol class="route">
+    <li data-en="Finish the 7 chapters of <strong>Spooky Memories</strong>: one a day, the next one opens after midnight server time. Each skipped day moves the egg back by one day. The quest is done once per account: do it all with the same character.">Finisci i 7 capitoli di <strong>Spooky Memories</strong>: uno al giorno, il successivo si apre dopo la mezzanotte del server. Ogni giorno saltato sposta l'uovo di un giorno. La quest si fa una volta per account: falla tutta con lo stesso personaggio.</li>
+    <li data-en="Collect the <strong>Skelion Bone Fragments</strong>: 10 per attempt, dropped by Skelions. Chapter 2 also asks for 10 Skelions: farm the fragments together with it.">Raccogli gli <strong>Skelion Bone Fragments</strong>: 10 per tentativo, li lasciano gli Skelion. Anche il capitolo 2 chiede 10 Skelion: fai i frammenti insieme.</li>
+    <li data-en="After chapter 7, the ritual at the <strong>Halloween Magician</strong> in Niflheim gives the Scatleton Egg.">Dopo il capitolo 7 il rituale dall'<strong>Halloween Magician</strong> a Niflheim dà lo Scatleton Egg.</li>
+  </ol>
+  <p class="note-line verify" data-en="The wiki speaks of 10 fragments for “each try”: the ritual may fail. Bring 20-30, so you do not have to go back for more.">Il wiki parla di 10 frammenti per “each try”: il rituale potrebbe fallire. Portane 20-30, così non devi tornare a farne altri.</p>
+  <p class="note-line tip" data-en="The Skelions live in <strong>The Hollow beneath Niflheim</strong>: talk to Old Man Barnaby and choose “Where's that dungeon?”. Inside, Teleport, Fly Wing and memo do not work and you cannot save; Butterfly Wing does.">Gli Skelion stanno in <strong>The Hollow beneath Niflheim</strong>: parla con Old Man Barnaby e scegli “Where's that dungeon?”. Dentro non funzionano Teleport, Fly Wing e memo e non si salva; la Butterfly Wing sì.</p>
+  <div class="chips">
+    <span class="chip-label">Old Man Barnaby</span><button class="chip" type="button" data-copy="/navi niflheim 149/117">/navi niflheim 149/117</button>
+  </div>
+
+  <h2>Spooky Memories</h2>
+  <p data-en="Each chapter tells you where to go for the next one. Reward in Halloween Coins and Pumpkin Cakes.">Ogni capitolo ti dice dove andare per il successivo. Premio in Halloween Coin e Pumpkin Cake.</p>
+
+  <div class="stage">
+    <div class="stage-num">1</div>
+    <div>
+      <p class="stage-title">The Investigation</p>
+      <span class="stage-sub" data-en="Niflheim · 30 coins, 10 cakes">Niflheim · 30 monete, 10 torte</span>
+      <p data-en="Kill 40 Quve, 15 Dullahan and 5 Bloody Murderer.">Uccidi 40 Quve, 15 Dullahan e 5 Bloody Murderer.</p>
+      <div class="chips"><span class="chip-label">Grave-Herald</span><button class="chip" type="button" data-copy="/navi niflheim 288/269">/navi niflheim 288/269</button></div>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="stage-num">2</div>
+    <div>
+      <p class="stage-title">The Field Cleansing</p>
+      <span class="stage-sub" data-en="Niflheim fields · 35 coins, 10 cakes">Campi di Niflheim · 35 monete, 10 torte</span>
+      <p data-en="Kill 12 Garling, 10 Skelion and 45 among Quve, Lude, Disguise and Hylozoist.">Uccidi 12 Garling, 10 Skelion e 45 fra Quve, Lude, Disguise e Hylozoist.</p>
+      <div class="chips"><button class="chip" type="button" data-copy="/navi nif_fild01 234/249">/navi nif_fild01 234/249</button></div>
+    </div>
+  </div>
+  <div class="stage unknown">
+    <div class="stage-num">3</div>
+    <div>
+      <p class="stage-title">Scatelon's Secret</p>
+      <span class="stage-sub" data-en="Alberta · 40 coins, 10 cakes">Alberta · 40 monete, 10 torte</span>
+      <p class="todo" data-en="Not known yet.">Ancora da scoprire.</p>
+    </div>
+  </div>
+  <div class="stage unknown">
+    <div class="stage-num">4</div>
+    <div>
+      <p class="stage-title">Trick, Treat &amp; the Pumpkin Shortage</p>
+      <span class="stage-sub" data-en="Prontera · 42 coins, 10 cakes">Prontera · 42 monete, 10 torte</span>
+      <p class="todo" data-en="Not known yet.">Ancora da scoprire.</p>
+    </div>
+  </div>
+  <div class="stage unknown">
+    <div class="stage-num">5</div>
+    <div>
+      <p class="stage-title">The Forgotten Enchanter</p>
+      <span class="stage-sub" data-en="Niflheim · 45 coins, 15 cakes">Niflheim · 45 monete, 15 torte</span>
+      <p class="todo" data-en="Not known yet.">Ancora da scoprire.</p>
+    </div>
+  </div>
+  <div class="stage unknown">
+    <div class="stage-num">6</div>
+    <div>
+      <p class="stage-title">Jack's Lost Mojo</p>
+      <span class="stage-sub" data-en="Izlude · 50 coins, 20 cakes">Izlude · 50 monete, 20 torte</span>
+      <p class="todo" data-en="Not known yet.">Ancora da scoprire.</p>
+    </div>
+  </div>
+  <div class="stage unknown">
+    <div class="stage-num">7</div>
+    <div>
+      <p class="stage-title">Night of the Zombies</p>
+      <span class="stage-sub" data-en="Payon · 70 coins, 30 cakes">Payon · 70 monete, 30 torte</span>
+      <p class="todo" data-en="Not known yet. Afterwards, the ritual for the Scatleton Egg.">Ancora da scoprire. Dopo, il rituale per lo Scatleton Egg.</p>
+    </div>
+  </div>
+
+  <h2>Noisy Guests</h2>
+  <p data-en="Daily hunt of Old Man Barnaby, once a day per account. Choose Easy or Hard and you get a random hunt; the kills count on any map and the progress is in the quest log. A new hunt costs 5 Poring Coins.">Caccia giornaliera di Old Man Barnaby, una al giorno per account. Scegli Easy o Hard e ricevi una caccia a caso; le uccisioni contano su qualsiasi mappa e i progressi sono nel quest log. Una caccia nuova costa 5 Poring Coin.</p>
+  <div class="chips">
+    <span class="chip-label">Old Man Barnaby</span><button class="chip" type="button" data-copy="/navi niflheim 149/117">/navi niflheim 149/117</button>
+  </div>
+  <div class="stage">
+    <div class="stage-num">E</div>
+    <div>
+      <p class="stage-title">Easy</p>
+      <span class="stage-sub" data-en="35-49 coins, 7-11 cakes">35-49 monete, 7-11 torte</span>
+      <p data-en="Hunts seen so far: 50 Sohee and 40 Nightmare.">Cacce viste finora: 50 Sohee e 40 Nightmare.</p>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="stage-num">H</div>
+    <div>
+      <p class="stage-title">Hard</p>
+      <span class="stage-sub" data-en="50-70 coins, 12-17 cakes · better in a party">50-70 monete, 12-17 torte · meglio in party</span>
+      <p data-en="Hunts seen so far: 10 Flame Skull and 40 Skeleton Prisoner.">Cacce viste finora: 10 Flame Skull e 40 Skeleton Prisoner.</p>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+// Copia del /navi, come nei livelli.
+const toast = document.getElementById("toast");
+let toastTimer;
+function avvisa(testo) {
+  toast.textContent = testo;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 1800);
+}
+document.addEventListener("click", async (event) => {
+  const bottone = event.target.closest("[data-copy]");
+  if (!bottone) return;
+  try {
+    await navigator.clipboard.writeText(bottone.dataset.copy);
+    avvisa(`${tr("Copiato", "Copied")}: ${bottone.dataset.copy}`);
+  } catch {
+    avvisa(tr("Non riesco a copiare: selezionalo a mano.", "Cannot copy: select it by hand."));
+  }
+});
+</script>
+</body>
+</html>
