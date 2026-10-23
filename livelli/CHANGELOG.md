@@ -2,6 +2,11 @@
 
 Le versioni della pagina `livelli/`.
 
+## [1.17] - 2026-10-23
+
+- Menu ⚙: "Ricomincia da zero", come nel calcolatore, rimette tutti i campi ai valori iniziali
+  (chiede conferma; prima si puo' fare il Backup dei dati)
+
 ## [1.16] - 2026-10-23
 
 - I manuali si chiamano come nel gioco, con le loro differenze (wiki di uaRO, Server Info): nelle

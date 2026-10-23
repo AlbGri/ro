@@ -443,6 +443,18 @@ pianoEl.addEventListener("click", async (event) => {
   }
 });
 
+// Ricomincia da zero, come nel calcolatore: il modulo torna ai valori della pagina.
+document.getElementById("btnNuovo").addEventListener("click", () => {
+  if (!confirm(tr("Rimettere tutti i campi ai valori iniziali? Prima puoi salvarli con Backup dei dati.", "Reset all fields to their initial values? You can save them first with Data backup."))) return;
+  form.reset();
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // Senza localStorage non c'e' niente da togliere.
+  }
+  aggiorna();
+});
+
 // Backup e ripristino in un file, dal menu ⚙ come nelle altre pagine.
 document.getElementById("btnBackup").addEventListener("click", () => {
   salva();
