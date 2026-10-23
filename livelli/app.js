@@ -127,7 +127,9 @@ function leggi() {
     percentuale,
     obiettivo: intero(f.obiettivo.value, 2, 99, 84),
     weekend: f.weekend.checked,
-    manuale: Number(f.manuale.value),
+    manuale: f.manuale.value === "battle" ? 50 : Number(f.manuale.value),
+    // il Battle Manual da' anche job EXP, il Field Manual solo base
+    manualeJob: f.manuale.value === "battle",
     cacce: Object.fromEntries(CACCE.map((c) => [c.id, Number(f[`caccia-${c.id}`].value)])),
     rabbocco: f.rabbocchi.checked ? intero(f.soglia.value, 1, 50, 10) : null,
     cambio: intero(f.cambio.value, 0, 1e9, 0),
@@ -316,8 +318,9 @@ function disegnaManuali(scelte) {
     return { manuale, oggetti: piano.zeny, costo, totale: piano.zeny + costo, nota };
   });
   const possibili = righe.filter((r) => !r.nota).sort((a, b) => a.totale - b.totale);
-  const conviene = (m) => (m === 0 ? tr("non usare manuali", "no Battle Manual") : tr(`il manuale al ${m}%`, `the Battle Manual (${m}%)`));
-  const rispetto = (m) => (m === 0 ? tr("a nessun manuale", "no Battle Manual") : tr(`al manuale al ${m}%`, `the Battle Manual (${m}%)`));
+  const nome = (m) => (m === 100 ? "the Field Manual 100%" : "a 50% manual");
+  const conviene = (m) => (m === 0 ? tr("non usare manuali", "no manual") : tr(`il manuale al ${m}%`, nome(m)));
+  const rispetto = (m) => (m === 0 ? tr("a nessun manuale", "no manual") : tr(`al manuale al ${m}%`, nome(m)));
   const migliore = possibili[0];
   const tabella = righe.map(
     (r) => `<tr class="${r === migliore ? "best" : ""}">
@@ -334,7 +337,7 @@ function disegnaManuali(scelte) {
         `Best choice: ${conviene(migliore.manuale)}. Compared with ${rispetto(secondo.manuale)} you save ${numero(secondo.totale - migliore.totale)} zeny.`,
       )
     : tr(`Conviene ${conviene(migliore.manuale)}.`, `Best choice: ${conviene(migliore.manuale)}.`);
-  return `<table><thead><tr><th>${tr("Manuale", "Battle Manual")}</th><th>${tr("Oggetti", "Items")}</th><th>${tr("Manuali", "Battle Manuals")}</th><th>${tr("Totale", "Total")}</th></tr></thead><tbody>${tabella.join("")}</tbody></table>
+  return `<table><thead><tr><th>${tr("Manuale", "Manual")}</th><th>${tr("Oggetti", "Items")}</th><th>${tr("Manuali", "Manuals")}</th><th>${tr("Totale", "Total")}</th></tr></thead><tbody>${tabella.join("")}</tbody></table>
     <p class="verdetto">${verdetto}</p>`;
 }
 
@@ -350,8 +353,10 @@ function aggiorna() {
     riga.hidden = q.max < scelte.livello || q.min >= scelte.obiettivo;
   }
   const molt = moltiplicatore(scelte.weekend, scelte.manuale);
+  const moltJob = moltiplicatore(scelte.weekend, scelte.manualeJob ? scelte.manuale : 0);
   document.getElementById("moltiplicatore").textContent =
-    `${tr("EXP delle quest", "Quest EXP")}: ×${molt.toLocaleString(LOCALE)}`;
+    `${tr("EXP delle quest", "Quest EXP")}: ×${molt.toLocaleString(LOCALE)}` +
+    (moltJob === molt ? "" : `, job ×${moltJob.toLocaleString(LOCALE)}`);
 
   const tabella = scelte.rinato ? EXP_RINATO : EXP_NORMALE;
   const confronto = document.getElementById("confrontoManuali");

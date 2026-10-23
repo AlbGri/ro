@@ -2,6 +2,16 @@
 
 Le versioni della pagina `livelli/`.
 
+## [1.16] - 2026-10-23
+
+- I manuali si chiamano come nel gioco, con le loro differenze (wiki di uaRO, Server Info): nelle
+  Opzioni si sceglie fra Battle Manual (50% a EXP base e job), Field Manual (50%, solo base) e
+  Field Manual 100% (solo base). Prima il manuale aumentava sempre anche la job EXP
+- Sotto il manuale scelto, la job EXP ha un suo moltiplicatore quando e' diverso da quello
+  delle quest
+- Manuale: 50% o 100%?: i manuali al 50% gratis sono i 3 Battle Manual dell'inizio e i Field
+  Manual delle Attendance Rewards
+
 ## [1.15] - 2026-10-23
 
 - Il pulsante della lingua esce dal menu ⚙ e sta in alto, subito prima dell'ingranaggio, con la
