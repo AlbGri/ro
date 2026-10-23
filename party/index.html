@@ -117,7 +117,8 @@ h2 { font-family: var(--serif); font-size: 1.55rem; line-height: 1.15; margin: 3
 .imparati summary { cursor: pointer; color: var(--muted); font-size: .9rem; }
 .btn:disabled { opacity: .5; cursor: default; }
 
-/* Giocatori e jolly: una riga a testa, una casella per account */
+/* Giocatori e jolly: una riga a testa, una casella per account. Colonne fisse strette (nome a
+   6.6rem, Alberto 23/10/2026): lo spazio va agli account */
 .card {
   border: 1px solid var(--line); border-radius: 12px; background: var(--surface);
   padding: 12px 16px 14px; display: grid; gap: 10px;
@@ -128,10 +129,10 @@ input[type="text"], select {
 .tabella { display: grid; gap: 4px; margin-bottom: 12px; }
 .riga {
   display: grid; gap: 6px; align-items: center;
-  grid-template-columns: 5rem minmax(7rem, 11rem) 6.4rem repeat(var(--colonne, 3), minmax(0, 1fr)) 2.4rem;
+  grid-template-columns: 4.4rem minmax(5rem, 6.6rem) 6.4rem var(--account, repeat(3, minmax(0, 1fr))) 2.4rem;
 }
-.riga.con-tanker { grid-template-columns: 5rem minmax(7rem, 11rem) 6.4rem 5.5rem repeat(var(--colonne, 3), minmax(0, 1fr)) 2.4rem; }
-.riga.jolly { grid-template-columns: 5rem minmax(7rem, 11rem) minmax(0, 1fr) 2.4rem; }
+.riga.con-tanker { grid-template-columns: 4.4rem minmax(5rem, 6.6rem) 6.4rem 4.2rem var(--account, repeat(3, minmax(0, 1fr))) 2.4rem; }
+.riga.jolly { grid-template-columns: 4.4rem minmax(5rem, 6.6rem) minmax(0, 1fr) 2.4rem; }
 .riga .tanker { justify-self: center; display: flex; align-items: center; gap: 6px; cursor: pointer; }
 .riga .tanker span, .riga .quante span { display: none; }
 .riga .quante { display: flex; align-items: center; gap: 3px; }
@@ -141,7 +142,7 @@ input[type="text"], select {
 .riga.spento > input[type="text"] { opacity: .55; }
 .intestazione { font-size: .82rem; color: var(--muted); }
 .riga input[type="checkbox"] { justify-self: center; width: 18px; height: 18px; margin: 0; accent-color: var(--bradium); cursor: pointer; }
-.riga input[type="text"] { height: 2.25em; padding: 4px 8px; width: 100%; }
+.riga input[type="text"] { height: 2.25em; padding: 4px 6px; width: 100%; }
 .riga .nome { font-weight: 700; }
 .riga .classi.ignoto { border-color: var(--warn); color: var(--warn); }
 /* Le caselle vuote degli account senza scritta: la dice l'intestazione (Alberto, "piu' pulita").

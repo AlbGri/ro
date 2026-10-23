@@ -2,6 +2,14 @@
 
 Le versioni della pagina `party/`.
 
+## [1.17] - 2026-10-23
+
+- Tabella dei giocatori: le colonne del nome, di Presente e di HP Tanker sono piu' strette, e lo
+  spazio va agli account
+- Ogni colonna di account e' larga in proporzione al testo piu' lungo che contiene: le colonne
+  quasi vuote (account 4, 5, 6) lasciano spazio alla prima, di solito la piu' piena
+- Il testo intero di un account si legge passandoci sopra con il mouse
+
 ## [1.16] - 2026-10-23
 
 - Le caselle vuote degli account sono vuote, senza la scritta `Account N`: la dice gia'

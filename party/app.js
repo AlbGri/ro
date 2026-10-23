@@ -158,26 +158,38 @@ function disegnaIstanza() {
 // Colonne di account nella tabella: almeno 3, o quante ne ha chi ne ha di piu'; "+" ne aggiunge una.
 let minimoColonne = 3;
 const colonne = () => Math.max(minimoColonne, ...stato.giocatori.map((g) => g.account.length));
+// Ogni colonna di account larga in proporzione al testo piu' lungo che contiene (fra 7 e 18
+// caratteri, piu' 3 per il margine della casella): le colonne quasi vuote lasciano spazio a
+// quelle piene (Alberto, 23/10/2026).
+const modelloAccount = () =>
+  [...Array(colonne())]
+    .map((_, ai) => {
+      const piuLungo = Math.max(0, ...stato.giocatori.map((g) => (g.account[ai] ?? "").length));
+      return `minmax(0, ${Math.min(18, Math.max(7, piuLungo)) + 3}fr)`;
+    })
+    .join(" ");
+const aggiornaColonne = () => giocatoriEl.style.setProperty("--account", modelloAccount());
 
-/** Il campo di un account: rosso se contiene parole che la pagina non riconosce. */
+/** Il campo di un account: rosso se contiene parole che la pagina non riconosce. Il testo intero
+ *  sta anche nel suggerimento, per le caselle troppo strette. */
 function campoClassi(testo, attributi, segnaposto) {
   const ignoto = leggiClassi(testo, stato.soprannomi).ignote.length > 0;
-  return `<input type="text" class="classi${ignoto ? " ignoto" : ""}" value="${escape(testo)}" placeholder="${segnaposto}"
+  return `<input type="text" class="classi${ignoto ? " ignoto" : ""}" value="${escape(testo)}" title="${escape(testo)}" placeholder="${segnaposto}"
     ${attributi} spellcheck="false" autocomplete="off" aria-label="${segnaposto}">`;
 }
 
 function disegnaGiocatori() {
   const n = colonne();
-  const stile = `style="--colonne: ${n}"`;
+  aggiornaColonne();
   // La spunta HP Tanker solo nelle istanze che la usano: resta salvata anche nelle altre.
   const conTanker = composizioni(istanza()).flat().some((p) => p.tanker);
   const classe = conTanker ? "riga con-tanker" : "riga";
-  const intestazione = `<div class="${classe} intestazione" ${stile}>
+  const intestazione = `<div class="${classe} intestazione">
     <span>${tr("Presente", "Present")}</span><span>${NOME_GIOCATORE}</span><span>Run</span>${conTanker ? `<span>${TANKER}</span>` : ""}${[...Array(n)].map((_, i) => `<span>Account ${i + 1}</span>`).join("")}
     <button class="btn small" type="button" data-azione="nuova-colonna" title="${tr("Una colonna di account in più", "One more account column")}" aria-label="${tr("Una colonna di account in più", "One more account column")}">+</button>
   </div>`;
   const righe = stato.giocatori.map(
-    (g, gi) => `<div class="${classe}${g.presente ? "" : " spento"}" ${stile}>
+    (g, gi) => `<div class="${classe}${g.presente ? "" : " spento"}">
       <input type="checkbox" data-g="${gi}" data-campo="presente"${g.presente ? " checked" : ""} aria-label="${tr("Presente", "Present")}">
       <input type="text" class="nome" value="${escape(g.nome)}" placeholder="${NOME_GIOCATORE} ${gi + 1}" data-g="${gi}" data-campo="nome" aria-label="${tr("Nome del giocatore", "Player name")}">
       <span class="quante"><span>Run</span>${[...Array(istanza().maxRun)].map((_, k) => {
@@ -422,6 +434,7 @@ document.addEventListener("input", (event) => {
   } else oggetto[campo] = el.value;
   if (campo === "account" || campo === "classi") {
     el.classList.toggle("ignoto", leggiClassi(el.value, stato.soprannomi).ignote.length > 0);
+    el.title = el.value;
   }
   cambiato(false);
 });
@@ -433,11 +446,12 @@ document.addEventListener("change", (event) => {
   if (campo !== "account" && campo !== "classi") return;
   const oggetto = proprietario(el);
   const pulito = pulisci(el.value, stato.soprannomi);
-  el.value = pulito;
+  el.value = el.title = pulito;
   if (campo === "classi") oggetto.classi = pulito;
   else {
     oggetto.account[el.dataset.a] = pulito;
     while (oggetto.account.length && !oggetto.account.at(-1)) oggetto.account.pop();
+    aggiornaColonne();
   }
   salva();
   disegnaDubbi();
