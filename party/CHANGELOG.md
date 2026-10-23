@@ -2,6 +2,11 @@
 
 Le versioni della pagina `party/`.
 
+## [1.11] - 2026-10-23
+
+- Menu ⚙: "Ricomincia da zero", come nel calcolatore e nei livelli, toglie tutti i giocatori e i
+  jolly (chiede conferma). Istanza e soprannomi imparati restano: l'elenco esportato non li ha
+
 ## [1.10] - 2026-10-23
 
 - `Per la run N` dice quanti personaggi servono e quali account potrebbero coprirli, con il

@@ -441,6 +441,13 @@ document.addEventListener("click", (event) => {
     case "dimentica":
       delete stato.soprannomi[d.chiave];
       break;
+    // Svuota giocatori e jolly; istanza e soprannomi imparati restano, perche' l'elenco in txt non li ha.
+    case "ricomincia":
+      if (!confirm(tr("Togliere tutti i giocatori e i jolly? I soprannomi imparati restano. Prima puoi salvarli con Backup dei dati o Esporta l'elenco.", "Remove all players and Guild Accounts? The learned nicknames stay. You can save them first with Data backup or Export the list."))) return;
+      stato.giocatori = [];
+      stato.jolly = [];
+      minimoColonne = 3;
+      break;
     case "esporta":
       esporta();
       return;
