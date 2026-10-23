@@ -776,9 +776,10 @@ var ALTRE_INFO = {
       F_M5 = 1 + F_M5 / 100;
       F_M6 = 1 + bonusValues[25] / 100;
       F_M7 = 1 + bonusValues[70] / 100;
-      F_MOD = Math.round(F_M1 * F_M2 * F_M3 * F_M4 * F_M5 * 100);
+      var mischia = 1 + bonusValues[BONUSID.MELEE_DMG_PERCENT] / 100;
+      F_MOD = Math.round(F_M1 * F_M2 * F_M3 * F_M4 * F_M5 * mischia * 100);
       F_MOD2 = Math.round(F_M1 * F_M2 * F_M3 * F_M4 * F_M5 * F_M6 * 100);
-      F_MOD3 = Math.round(F_M1 * F_M2 * F_M3 * F_M4 * F_M5 * F_M7 * 100);
+      F_MOD3 = Math.round(F_M1 * F_M2 * F_M3 * F_M4 * F_M5 * F_M7 * mischia * 100);
       F_MOD4 = Math.round(F_M1 * F_M2 * F_M3 * F_M4 * F_M5 * F_M6 * F_M7 * 100);
       r = "<table>";
       r +=
@@ -899,8 +900,8 @@ var ALTRE_INFO = {
         "</td>";
       r +=
         "<td class='right'><b>+" +
-        bonusValues[25] +
-        "</b>%</td><td><b>long-range dmg</b></td></tr>";
+        bonusValues[BONUSID.MELEE_DMG_PERCENT] +
+        "</b>%</td><td><b>melee dmg</b></td></tr>";
       r +=
         "<tr><td class='right'><b>+" +
         bonusValues[49] +
@@ -915,6 +916,10 @@ var ALTRE_INFO = {
         "</td>";
       r +=
         "<td class='right'><b>+" +
+        bonusValues[25] +
+        "</b>%</td><td><b>long-range dmg</b></td></tr>";
+      r +=
+        "<tr><td colspan='4'></td><td class='right'><b>+" +
         bonusValues[70] +
         "</b>%</td><td><b>critical damage</b></td></tr>";
       r +=

@@ -2,6 +2,16 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.12] - 2026-10-23
+
+- Grimtooth: a distanza solo ai livelli 4 e 5, come su uaRO (prima dal livello 3)
+- Pet Kiel D-01: il +5% di danno vale solo per gli attacchi fisici in mischia, come dice la
+  descrizione; prima valeva anche a distanza, per esempio con Grimtooth 4 e 5
+- Pet Baphomet: MaxSP +7%, come dice la descrizione; prima al suo posto c'era un altro +7% al
+  danno a distanza (+12% in tutto invece di +5%)
+- Altre informazioni, +% ATK based Damage Modifiers: c'e' anche il bonus al danno corpo a corpo,
+  contato nei modificatori finali in mischia
+
 ## [1.11] - 2026-10-23
 
 - Mano sinistra: la voce senza seconda arma si chiama "(nessuna arma)", come nella mano destra,

@@ -350,7 +350,7 @@ function elementoDelCorpo() {
 function sommaBonus() {
   var gruppi = [
     [1, BONUSID.WEAPON_SIZE_PENALTY],
-    [BONUSID.DMG_NEUTRAL_PHYSICAL_MAGIC_PERCENT, BONUSID.WATER_MAGIC_DMG_PERCENT],
+    [BONUSID.DMG_NEUTRAL_PHYSICAL_MAGIC_PERCENT, BONUSID.MELEE_DMG_PERCENT],
     [290, 339],
   ];
   for (const [da, a] of gruppi)

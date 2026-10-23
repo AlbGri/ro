@@ -189,3 +189,33 @@ test("menu Classe: 6 sezioni, ogni classe una volta, scelta per valore", () => {
   assert.equal(m.n_A_JOB, 20);
   assert.equal(v.elenco()[v.selectedIndex].text, "Super Novice");
 });
+
+test("Grimtooth a distanza dal livello 4; Kiel D-01 +5% solo in mischia; Baphomet MaxSP +7%", () => {
+  const m = creaMotore();
+  scegli(m, "A_JOB", 8); // Assassin
+  scegli(m, "A_weapon1", id(m, "Jur"));
+  scegli(m, "A_ActiveSkill", 84); // Grimtooth
+  scegli(m, "B_Enemy", 1);
+  m.Buf6SW(1);
+  const danni = (pet) => {
+    scegli(m, "A8_Skill0", pet);
+    m.A6(1); // il pannello legge i suoi campi
+    m.StAllCalc();
+    return [3, 4].map((lv) => (scegli(m, "A_ActiveSkillLV", lv), [m.n_rangedAtk, m.Last_DMG_A[2]]));
+  };
+  const senza = danni(0);
+  const kiel = danni(100);
+  assert.deepEqual(senza.map((d) => d[0]), [0, 1]);
+  assert.equal(kiel[0][1], Math.floor((senza[0][1] * 105) / 100));
+  assert.equal(kiel[1][1], senza[1][1]);
+  scegli(m, "A_Kakutyou", 14); // +% ATK based Damage Modifiers
+  assert.match(testo(m, "A_KakutyouData"), /\+5%\s*melee dmg/);
+  scegli(m, "A_BaseLV", 99);
+  m.Buf6SW(1);
+  const sp = () => (m.A6(1), m.StAllCalc(), m.n_A_MaxSP);
+  scegli(m, "A8_Skill0", 0);
+  const spSenza = sp();
+  scegli(m, "A8_Skill0", 102); // Baphomet: MaxSP +7%, danno a distanza +5%
+  assert.equal(sp(), Math.floor((spSenza * 107) / 100));
+  assert.equal(m.bonusValues[25], 5);
+});

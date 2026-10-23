@@ -326,7 +326,7 @@ var SKILL_FISICHE = {
     n_rangedAtk = 1;
   },
   [SKILLID.GRIMTOOTH]: function (s, lv) {
-    if (lv >= 3) n_rangedAtk = 1;
+    if (lv >= 4) n_rangedAtk = 1;
     s.mod += 0.2 * lv;
   },
   [SKILLID.SMITE]: function (s, lv) {
@@ -2336,7 +2336,7 @@ var SKILL_NEMICO = {
     s.mod *= 2;
   },
   [SKILLID.GRIMTOOTH]: function (s, lv) {
-    if (lv >= 3) n_B_rangedAtk = 1;
+    if (lv >= 4) n_B_rangedAtk = 1;
     s.mod += 20 * lv;
   },
   [SKILLID.VENOM_SPLASHER]: function (s, lv) {
@@ -3168,6 +3168,10 @@ function bonusContro(danno) {
   danno = Math.floor((danno * (100 + bonus)) / 100);
   if (n_rangedAtk == 1 && TyouEnkakuSousa3dan != -1) {
     bonus = bonusValues[25];
+    danno = Math.floor((danno * (100 + bonus)) / 100);
+  }
+  if (n_rangedAtk == 0) {
+    bonus = bonusValues[BONUSID.MELEE_DMG_PERCENT];
     danno = Math.floor((danno * (100 + bonus)) / 100);
   }
   bonus = 0;
