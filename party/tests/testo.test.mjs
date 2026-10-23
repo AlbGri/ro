@@ -56,15 +56,15 @@ describe("caselle degli account", () => {
 describe("elenco della gilda", () => {
   it("il messaggio di Efreeet copiato da Discord, con l'ora e il primo account sulla riga del nome", () => {
     const letto = leggiElenco("[19:40]Efreeet: 1) HP/Devo/Clown/Sniper\n2) Prete\n3) Bragi\n");
-    assert.deepEqual(letto, { giocatori: [{ nome: "Efreeet", run: null, account: ["HP/Paladin/Clown/Sniper", "Priest", "Clown"] }], jolly: [], errori: [] });
+    assert.deepEqual(letto, { giocatori: [{ nome: "Efreeet", presente: true, run: null, account: ["HP/Paladin/Clown/Sniper", "Priest", "Clown"] }], jolly: [], errori: [] });
   });
 
   it("piu' giocatori, separatori diversi, trattini, Account Gilda (anche come Jolly), commenti e parole sconosciute", () => {
     const letto = leggiElenco("# gilda\nMario\n1. Bio, Champ\n- HW + gypsy\n\nAnna:\n1 - Prof e Stalker\nAccount Gilda Gilda1: Clown/Sniper\nJolly: HP\n");
     assert.deepEqual(letto.errori, []);
     assert.deepEqual(letto.giocatori, [
-      { nome: "Mario", run: null, account: ["Creator/Champ", "HW/Gypsy"] },
-      { nome: "Anna", run: null, account: ["Prof/Stalker"] },
+      { nome: "Mario", presente: true, run: null, account: ["Creator/Champ", "HW/Gypsy"] },
+      { nome: "Anna", presente: true, run: null, account: ["Prof/Stalker"] },
     ]);
     assert.deepEqual(letto.jolly, [
       { nome: "Gilda1", classi: "Clown/Sniper" },
@@ -75,7 +75,7 @@ describe("elenco della gilda", () => {
   it("le parole inglesi valgono come le italiane: Guild Account, and, Other", () => {
     const letto = leggiElenco("Mary\n1) HP and Sniper\n2) Other\nGuild Account Guild1: Clown\nguild account: HP\n");
     assert.deepEqual(letto.errori, []);
-    assert.deepEqual(letto.giocatori, [{ nome: "Mary", run: null, account: ["HP/Sniper", "Other"] }]);
+    assert.deepEqual(letto.giocatori, [{ nome: "Mary", presente: true, run: null, account: ["HP/Sniper", "Other"] }]);
     assert.deepEqual(letto.jolly, [
       { nome: "Guild1", classi: "Clown" },
       { nome: "Account Gilda 2", classi: "HP" },
@@ -104,25 +104,30 @@ describe("elenco della gilda", () => {
     ]);
   });
 
+  it("assente fra parentesi, anche in inglese e insieme alle run", () => {
+    const letto = leggiElenco("Jo (assente)\n1) HP\nMary (Absent, run 2)\n1) HP\nLia (run 1)\n1) HP\n");
+    assert.deepEqual(letto.giocatori.map((g) => [g.nome, g.presente, g.run]), [["Jo", false, null], ["Mary", false, [2]], ["Lia", true, [1]]]);
+  });
+
   it("l'elenco esportato si rilegge uguale", () => {
     const stato = {
       giocatori: [
-        { nome: "Efreeet", run: [1, 2], account: ["HP Tanker/Paladin/Clown/Sniper", "", "Bard"] },
-        { nome: "", run: [1, 2, 3], account: ["Stalker"] },
-        { nome: "Senza", run: [1, 2, 3], account: [""] },
-        { nome: "Tardi", run: [1, 3], account: ["HP"] },
+        { nome: "Efreeet", presente: true, run: [1, 2], account: ["HP Tanker/Paladin/Clown/Sniper", "", "Bard"] },
+        { nome: "", presente: true, run: [1, 2, 3], account: ["Stalker"] },
+        { nome: "Senza", presente: true, run: [1, 2, 3], account: [""] },
+        { nome: "Tardi", presente: false, run: [1, 3], account: ["HP"] },
       ],
       jolly: [{ nome: "Gilda 1", classi: "Gypsy/Altro" }, { nome: "Vuoto", classi: "" }],
     };
     const testo = scriviElenco(stato);
     assert.match(testo, /Efreeet \(run 1-2\)\n1\) HP Tanker\/Paladin\/Clown\/Sniper\n2\) Bard/);
-    assert.match(testo, /Tardi \(run 1\+3\)/);
+    assert.match(testo, /Tardi \(assente, run 1\+3\)/);
     assert.match(testo, /Account Gilda Gilda 1: Gypsy\/Altro/);
     assert.deepEqual(leggiElenco(testo), {
       giocatori: [
-        { nome: "Efreeet", run: [1, 2], account: ["HP Tanker/Paladin/Clown/Sniper", "Bard"] },
-        { nome: "Giocatore 2", run: null, account: ["Stalker"] },
-        { nome: "Tardi", run: [1, 3], account: ["HP"] },
+        { nome: "Efreeet", presente: true, run: [1, 2], account: ["HP Tanker/Paladin/Clown/Sniper", "Bard"] },
+        { nome: "Giocatore 2", presente: true, run: null, account: ["Stalker"] },
+        { nome: "Tardi", presente: false, run: [1, 3], account: ["HP"] },
       ],
       jolly: [{ nome: "Gilda 1", classi: "Gypsy/Altro" }],
       errori: [],

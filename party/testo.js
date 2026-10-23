@@ -12,7 +12,7 @@
  * trattino e' un suo account, con le classi separate da / , + o "e". Va bene anche
  * il messaggio copiato da Discord, "[19:40]Efreeet: 1) HP/...": l'ora si toglie e
  * quello che segue il nome e' il primo account. "Account Gilda nome: classi" e' un jolly.
- * Fra parentesi dopo il nome le run in cui c'e': "Efreeet (run 1-2)". Fino alla 1.17 anche la spunta
+ * Fra parentesi dopo il nome chi non c'e' e le run in cui c'e': "Efreeet (assente, run 1-2)". Fino alla 1.17 anche la spunta
  * HP Tanker del giocatore, che diventa HP Tanker nei suoi High Priest.
  * Le parole valgono nelle due lingue, qualunque sia quella della pagina (Alberto,
  * 22/10/2026): "Guild Account nome: classi", "HP and Sniper", "Other".
@@ -129,6 +129,9 @@ const JOLLY_PAROLA = tr("Account Gilda", "Guild Account");
 
 const PARENTESI = /\s*\(([^)]*)\)\s*$/;
 const PAROLE_TANKER = ["hp tanker", "tanker hp"];
+// Chi non c'e' (Alberto, 23/10/2026: incollato, l'elenco li rimetteva tutti presenti).
+const PAROLE_ASSENTE = ["assente", "absent"];
+const ASSENTE = tr("assente", "absent");
 
 /**
  * Le run di "run 1-2", "run 2", "run 1+3", o di "2 run" (fino alla 1.14: quante run, che si
@@ -156,20 +159,23 @@ function scriviRun(run) {
 }
 
 /**
- * Nome, spunta HP Tanker (fino alla 1.17) e run in cui c'e' un giocatore: "Efreeet (HP Tanker, run 1-2)".
- * Una parentesi con altre parole resta nel nome. `run` e' null se la riga non lo dice.
+ * Nome, assenza, spunta HP Tanker (fino alla 1.17) e run in cui c'e' un giocatore:
+ * "Efreeet (assente, run 1-2)". Una parentesi con altre parole resta nel nome. `run` e' null se
+ * la riga non lo dice.
  */
 function segni(riga) {
   const trovata = riga.match(PARENTESI);
-  const esito = { nome: riga, tanker: false, run: null };
-  if (!trovata) return esito;
+  const nessuno = { nome: riga, presente: true, tanker: false, run: null };
+  if (!trovata) return nessuno;
+  const esito = { ...nessuno };
   for (const parte of trovata[1].split(",").map((p) => p.trim())) {
     const run = leggiRun(parte);
     if (PAROLE_TANKER.includes(chiave(parte))) esito.tanker = true;
+    else if (PAROLE_ASSENTE.includes(chiave(parte))) esito.presente = false;
     else if (run) esito.run = run;
     // "run 1, 2": la virgola separa anche le voci, quindi un numero da solo dopo le run e' un'altra run.
     else if (esito.run && /^[1-9]$/.test(parte) && Number(parte) <= MAX_RUN) esito.run = [...new Set([...esito.run, Number(parte)])].sort();
-    else return { nome: riga, tanker: false, run: null };
+    else return nessuno;
   }
   return { ...esito, nome: riga.replace(PARENTESI, "") };
 }
@@ -254,7 +260,7 @@ export function conTanker(testo, imparati = {}) {
  *
  * @param {string} testo
  * @param {Object<string, string>} imparati i soprannomi imparati, chiave -> classe
- * @returns {{giocatori: Array<{nome: string, run: number[] | null, account: string[]}>, jolly: Array<{nome: string, classi: string}>,
+ * @returns {{giocatori: Array<{nome: string, presente: boolean, run: number[] | null, account: string[]}>, jolly: Array<{nome: string, classi: string}>,
  *   errori: string[]}} gli account e le classi dei jolly gia' riscritti con `pulisci`
  */
 export function leggiElenco(testo, imparati = {}) {
@@ -282,7 +288,7 @@ export function leggiElenco(testo, imparati = {}) {
       return;
     }
     const dueP = testoRiga.indexOf(":");
-    const { nome, tanker, run } = segni((dueP < 0 ? testoRiga : testoRiga.slice(0, dueP)).trim());
+    const { nome, presente, tanker, run } = segni((dueP < 0 ? testoRiga : testoRiga.slice(0, dueP)).trim());
     const resto = dueP < 0 ? "" : testoRiga.slice(dueP + 1).trim();
     // "HP/Sniper" senza numero davanti sembrerebbe un giocatore che si chiama cosi'.
     const scritte = parole(nome, imparati);
@@ -293,7 +299,7 @@ export function leggiElenco(testo, imparati = {}) {
       ));
       return;
     }
-    giocatore = { nome, tanker, run, account: [] };
+    giocatore = { nome, presente, tanker, run, account: [] };
     esito.giocatori.push(giocatore);
     if (resto) aggiungiAccount(resto.match(ACCOUNT)?.[1] ?? resto);
   });
@@ -308,8 +314,8 @@ export function scriviElenco(stato) {
   const blocchi = [];
   stato.giocatori.forEach((g, i) => {
     const account = g.account.filter((a) => a.trim());
-    const run = g.run && g.run.length < MAX_RUN ? ` (${scriviRun(g.run)})` : "";
-    const nome = (g.nome || `${tr("Giocatore", "Player")} ${i + 1}`) + run;
+    const parentesi = [...(g.presente === false ? [ASSENTE] : []), ...(g.run && g.run.length < MAX_RUN ? [scriviRun(g.run)] : [])];
+    const nome = (g.nome || `${tr("Giocatore", "Player")} ${i + 1}`) + (parentesi.length ? ` (${parentesi.join(", ")})` : "");
     if (account.length > 0) blocchi.push([nome, ...account.map((a, k) => `${k + 1}) ${a}`)].join("\n"));
   });
   const jolly = stato.jolly

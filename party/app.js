@@ -630,13 +630,13 @@ function aggiungiElenco() {
   ))) return;
   for (const g of letto.giocatori) {
     const esistente = stato.giocatori.find((x) => stessoNome(x.nome, g.nome));
-    // Run e HP Tanker li mette l'elenco, ma non li toglie: i messaggi di Discord non li hanno. Un
+    // Run, assenza e HP Tanker li mette l'elenco, ma non li toglie: i messaggi di Discord non li hanno. Un
     // account che nella tabella ha un HP Tanker lo tiene, se nell'elenco ha un High Priest.
     const tanker = (testo) => leggiClassi(testo ?? "", stato.soprannomi).classi.includes(HP_TANKER);
     const tieni = (a, i) => (tanker(esistente.account[i]) ? pulisci(conTanker(a, stato.soprannomi), stato.soprannomi) : a);
     const account = esistente ? g.account.map(tieni) : g.account;
-    if (esistente) Object.assign(esistente, { account, run: g.run ?? esistente.run });
-    else stato.giocatori.push({ nome: g.nome, presente: true, run: g.run ?? TUTTE_LE_RUN, account });
+    if (esistente) Object.assign(esistente, { account, run: g.run ?? esistente.run, presente: g.presente && esistente.presente });
+    else stato.giocatori.push({ nome: g.nome, presente: g.presente, run: g.run ?? TUTTE_LE_RUN, account });
   }
   for (const j of letto.jolly) {
     const esistente = stato.jolly.find((x) => stessoNome(x.nome, j.nome));

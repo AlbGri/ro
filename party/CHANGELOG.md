@@ -2,6 +2,13 @@
 
 Le versioni della pagina `party/`.
 
+## [1.19] - 2026-10-23
+
+- L'elenco esportato scrive chi non e' presente: `Nome (assente)`, anche con le run,
+  `Nome (assente, run 1-2)`; in inglese `absent`. Incollato, quei giocatori restano senza la
+  spunta Presente invece di tornare tutti presenti. Un giocatore gia' nella tabella diventa
+  assente se l'elenco lo dice, ma non torna presente da solo
+
 ## [1.18] - 2026-10-23
 
 - HP Tanker non e' piu' una spunta del giocatore ma una classe del personaggio: si scrive nella
