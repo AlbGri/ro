@@ -2,6 +2,10 @@
 
 Le versioni della pagina `party/`.
 
+## [1.24] - 2026-10-24
+
+- `Incolla l'elenco della gilda` si chiama `Modifica l'elenco`: il campo si apre con l'elenco della pagina
+
 ## [1.23] - 2026-10-24
 
 - `Incolla l'elenco della gilda` si apre con l'elenco della pagina: si corregge, si cancella chi non

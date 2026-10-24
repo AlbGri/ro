@@ -344,8 +344,8 @@ export function scriviElenco(stato, intestazione = true) {
   if (jolly.length > 0) blocchi.push(jolly.join("\n"));
   if (!intestazione) return blocchi.length > 0 ? `${blocchi.join("\n\n")}\n` : "";
   const testa = tr(
-    "# Elenco della gilda per la pagina Party: si incolla in \"Incolla l'elenco della gilda\".",
-    "# Guild list for the Party page: paste it in \"Paste the guild list\".",
+    "# Elenco della gilda per la pagina Party: si incolla in \"Modifica l'elenco\".",
+    "# Guild list for the Party page: paste it in \"Edit the list\".",
   );
   return `${testa}\n\n${blocchi.join("\n\n")}\n`;
 }
