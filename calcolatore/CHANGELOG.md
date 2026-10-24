@@ -2,6 +2,21 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.18] - 2026-10-24
+
+- Menu ⚙, "Importa da esterno": si incolla il link di una build fatta nel calcolatore di Bish
+  (rocalc-temp.web.app) o in quello di Thrice (uaro-calc.xdthrice.workers.dev) e la build si
+  apre qui, nel formato di questa pagina. Oggetti, carte e mostri si riconoscono per nome. Cio'
+  che qui non c'e' (per esempio i copricapi solo estetici, le armi "(rental)" e le varianti
+  "(aRO)" o "(Custom)" di Bish) o che qui non si puo' usare (come gli incantamenti El Dicastes
+  oltre +2) non si carica, e la finestra lo elenca prima di aprire la build
+- I link degli altri due calcolatori incollati nella barra dell'indirizzo continuano a non aprirsi:
+  si importano dal menu
+- Corretto: una skill data da una pergamena, dalla Yggdrasil Leaf, da una carta o da un oggetto
+  (per esempio Fire Bolt (scroll)) si perdeva riaprendo una build salvata o un link, e tornava
+  l'attacco normale. Difetto ereditato dal calcolatore di Thrice
+- Corretto: Magical Bullet del Gunslinger fermava il calcolo in una pagina appena aperta
+
 ## [1.17] - 2026-10-23
 
 - Nuovo mostro, Garling (evento Halloween 2026), con i dati di @mi nel gioco: livello 48, Undead

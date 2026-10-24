@@ -26,6 +26,9 @@
   (n_TAKA_DMG = 0),
   (TyouEnkakuSousa3dan = 0),
   (not_use_card = 0));
+// indice dell'ATK magico (minimo, medio, massimo) per Magical Bullet; lo assegna skillFisica, ma
+// l'attacco critico lo legge anche prima
+var w_MagiclBulet = 1;
 var n_B_AtkSkill = 0,
   n_B_rangedAtk = 0,
   n_B_rangedMAtk = 0,

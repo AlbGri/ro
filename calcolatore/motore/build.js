@@ -249,14 +249,18 @@ function buildValida(build) {
 
 // Carica una build nel motore; una build di un altro formato non si carica e la funzione
 // restituisce false. I gestori dei campi (ClickJob, ClickWeaponType...) si chiamano nello stesso
-// ordine dell'originale, perche' ognuno prepara gli elenchi che servono ai campi seguenti
-function leggiBuild(build) {
+// ordine dell'originale, perche' ognuno prepara gli elenchi che servono ai campi seguenti.
+// esterno: la build e' di un altro calcolatore (importa.js), con la sua versione e la funzione
+// che traduce i valori dei campi nei nostri
+function leggiBuild(build, esterno) {
   if (!build) return false;
   // "undefined" lo scriveva l'originale al posto di un valore che non ci stava
   build = String(build)
     .replace(/undefined/g, "i")
     .replace(/%(24|26|27|2B|2C|3A|3B|3D)/g, decodeURIComponent);
-  if (!buildValida(build)) return false;
+  if (esterno ? CIFRE_BUILD.indexOf(build.charAt(0)) != esterno.versione : !buildValida(build))
+    return false;
+  var traduci = esterno ? esterno.traduci : (tipo, valore) => valore;
   var t = build.replace(/[0-9]/g, (d) => "i".repeat(d <= 3 ? +d + 10 : +d));
   var x = (pos, larghezza) => {
     for (var n = 0, k = 0; k < (larghezza || 1); k++)
@@ -315,36 +319,39 @@ function leggiBuild(build) {
   );
   n_A_Buf7[35] = Math.floor(x(19) / 10);
   c.A_Weapon_element.value = x(19) % 10;
-  var arma = x(23, 2);
+  var arma = traduci("oggetto", x(23, 2), "A_weapon1");
   c.A_weapon1.value = arma;
-  n_A_WeaponType = x(20);
+  n_A_WeaponType = traduci("tipoArma", x(20));
   ClickWeaponType(n_A_WeaponType);
   // Assassin e Assassin Cross possono avere due armi
   if ((c.A_JOB.value == 8 || c.A_JOB.value == 22) && n_A_WeaponType != 11) {
-    n_A_Weapon2Type = x(21);
+    n_A_Weapon2Type = traduci("tipoArma2", x(21));
     ClickWeaponType2(n_A_Weapon2Type);
   }
   n_A_JobSet();
   if (n_A_JobClass() == 2 || n_A_JobClass() == 4 || (n_A_JOB == 45 && n_A_WeaponType != 0))
-    c.A_Arrow.value = x(22);
+    c.A_Arrow.value = traduci("freccia", x(22), "A_Arrow");
   ClickB_Item(arma);
   c.A_Weapon_refine.value = x(25);
-  for (var k = 1; k <= 4; k++) c["A_weapon1_card" + k].value = x(24 + 2 * k, 2);
+  var carta = (campo, pos) => (c[campo].value = traduci("carta", x(pos, 2), campo));
+  for (var k = 1; k <= 4; k++) carta("A_weapon1_card" + k, 24 + 2 * k);
   if (n_Nitou) {
-    c.A_weapon2.value = x(34, 2);
+    c.A_weapon2.value = traduci("oggetto", x(34, 2), "A_weapon2");
     c.A_Weapon2_refine.value = x(36);
-    for (k = 1; k <= 4; k++) c["A_weapon2_card" + k].value = x(35 + 2 * k, 2);
+    for (k = 1; k <= 4; k++) carta("A_weapon2_card" + k, 35 + 2 * k);
     c.A_left.value = 305;
     c.A_LEFT_REFINE.value = 0;
     c.A_left_card.value = 0;
   } else {
-    c.A_left.value = x(34, 2);
+    c.A_left.value = traduci("oggetto", x(34, 2), "A_left");
     c.A_LEFT_REFINE.value = x(36);
-    c.A_left_card.value = x(37, 2);
+    carta("A_left_card", 37);
   }
   var pos = 45;
   for (var [campo, larghezza] of EQUIP_BUILD) {
     var valore = x(pos, larghezza);
+    if (!/_REFINE$/.test(campo))
+      valore = traduci(/_card$/.test(campo) ? "carta" : "oggetto", valore, campo);
     // Pecopeco Wing Ears: la 1.6 l'aveva al posto 3003, doppione di 805 (vedi uaro.js)
     c[campo].value = campo == "A_head2" && valore == 3003 ? 805 : valore;
     pos += larghezza;
@@ -353,11 +360,12 @@ function leggiBuild(build) {
   // WeaponSet2) torna alla voce vuota
   for (campo of ELENCHI_ARMATURE) if (c[campo].selectedIndex < 0) c[campo].selectedIndex = 0;
   c.A_adopted.checked = bit(x(79))[0];
-  c.A_HSE.value = x(80, 2);
-  c.A_HSE_HEAD1.value = x(82, 2);
-  c.A_BASTION_HEAD.value = Math.floor(x(84, 2) / 8);
-  c.A_BASTION_SHOES.value = x(84, 2) % 8;
-  for (k = 0; k < x(88); k++) c["A_skill" + k].value = x(89 + k);
+  c.A_HSE.value = traduci("incantamento", x(80, 2), "A_HSE");
+  c.A_HSE_HEAD1.value = traduci("incantamento", x(82, 2), "A_HSE_HEAD1");
+  var bastion = traduci("bastion", x(84, 2));
+  c.A_BASTION_HEAD.value = Math.floor(bastion / 8);
+  c.A_BASTION_SHOES.value = bastion % 8;
+  for (k = 0; k < x(88); k++) c["A_skill" + k].value = traduci("passiva", x(89 + k), "A_skill" + k);
 
   // sezioni dei buff, in sequenza dalla posizione 110
   var p = 110;
@@ -409,7 +417,7 @@ function leggiBuild(build) {
   c.A8_Skill15.value = x(p + 4, 2);
   StCalc(1);
   ActiveSkillSetPlus();
-  c.A_ActiveSkill.value = baseSkillId(x(p + 7, 2));
+  c.A_ActiveSkill.value = traduci("skill", baseSkillId(x(p + 7, 2)), "A_ActiveSkill");
   ClickActiveSkill();
   c.A_ActiveSkillLV.value = x(p + 9);
   var valoreSkill = x(p + 10, 3);
@@ -435,19 +443,25 @@ function leggiBuild(build) {
     ]);
     c.SkillSubNum.value = valoreSkill;
   }
-  var mostro = normalizeSavedMonsterId(x(p + 13, 2));
+  var mostro = normalizeSavedMonsterId(traduci("mostro", x(p + 13, 2), "B_Enemy"));
   targetData[0] = mostro;
   c.B_Enemy.value = mostro;
   calc();
   Bskill();
-  c.B_AtkSkill.value = x(p + 15, 2);
+  c.B_AtkSkill.value = traduci("skill", x(p + 15, 2), "B_AtkSkill");
+  // una skill che il mostro non ha (da una build importata) lascerebbe il campo vuoto e fermerebbe
+  // il calcolo
+  if (c.B_AtkSkill.selectedIndex < 0) c.B_AtkSkill.value = 0;
   BClickAtkSkill();
   n_B_AtkSkill = 1 * c.B_AtkSkill.value;
   if (SKILL_NEMICO_CON_VALORE.includes(n_B_AtkSkill)) c.BSkillSubNum.value = x(p + 17, 3);
   c.B_AtkRange.value = x(p + 20);
   c.B_AtkElem.value = x(p + 21);
   c.maxASPD.value = x(p + 24);
-  CODA_DICASTES.forEach((nome, k) => (c["A_DICASTES_" + nome].value = x(p + 25 + k)));
+  CODA_DICASTES.forEach(
+    (nome, k) =>
+      (c["A_DICASTES_" + nome].value = traduci("dicastes", x(p + 25 + k), "A_DICASTES_" + nome)),
+  );
   refreshFields();
   calc();
   return true;

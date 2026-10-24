@@ -1338,6 +1338,9 @@ function ActiveSkillSetPlus() {
   w_ASSPch = 0;
   for (n = 0; n < 20; n++) if (w_ASSP0bk[n] != w_ASSP0[n]) w_ASSPch = 1;
   if (w_ASSPch) {
+    // la skill scelta resta, se c'e' ancora: prima una skill di carte o equipaggiamento si perdeva
+    // quando l'elenco si rifaceva, per esempio riaprendo una build salvata
+    var scelta = c.A_ActiveSkill.value;
     if (c.all_dmgSkills.checked) k = c.A_ActiveSkill.length;
     else for (k = 0; m_JobAtkSkill[n_A_JOB][k] != 999; k++);
     for (n = k + 20; n >= k; n--) togliOpzione(c.A_ActiveSkill, n);
@@ -1355,6 +1358,7 @@ function ActiveSkillSetPlus() {
                 : null;
       if (tipo) opzioni(c.A_ActiveSkill, [[w_ASSP9[j], m_Skill[w_ASSP0[j]][2] + tipo]], n);
     }
+    if (c.A_ActiveSkill.elenco().some((o) => o.value === scelta)) c.A_ActiveSkill.value = scelta;
   }
   for (n = 0; n < 20; n++) w_ASSP0bk[n] = w_ASSP0[n];
   if (1 * c.A_ActiveSkill.value == 0) c.A_ActiveSkillLV.style.visibility = "hidden";

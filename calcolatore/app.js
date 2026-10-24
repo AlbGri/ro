@@ -864,11 +864,88 @@ document.addEventListener("click", async (e) => {
     stato.corrente = a;
     salva();
     apriBuild(a);
+  } else if (azione === "esterno") {
+    apriEsterno();
+  } else if (azione === "importa-link") {
+    importaLink();
+  } else if (azione === "chiudi-esterno" || azione === "apri-importata") {
+    esterno.close();
   } else if (azione === "esporta") {
     esporta();
   } else if (azione === "importa") {
     file.click();
   }
+});
+
+// ---------- Importa da esterno ----------
+
+const esterno = document.getElementById("esterno");
+const esternoLink = document.getElementById("esterno-link");
+const esternoErrore = document.getElementById("esterno-errore");
+// la build importata, gia' nel motore: chiudendo la finestra si apre
+let importata = null;
+function apriEsterno() {
+  importata = null;
+  document.getElementById("esterno-chiedi").hidden = false;
+  document.getElementById("esterno-esito").hidden = true;
+  esternoErrore.hidden = true;
+  esternoLink.value = "";
+  esterno.showModal();
+  esternoLink.focus();
+}
+const TIPI_NON_CARICATI = {
+  oggetto: ["Oggetto", "Item"],
+  carta: ["Carta", "Card"],
+  mostro: ["Mostro", "Monster"],
+  skill: ["Skill", "Skill"],
+  passiva: ["Skill passiva", "Passive skill"],
+  freccia: ["Freccia", "Arrow"],
+  incantamento: ["Incantamento", "Enchant"],
+  dicastes: ["Incantamento El Dicastes", "El Dicastes enchant"],
+  manuale: ["Manuale dell'EXP", "EXP manual"],
+};
+function voceNonCaricata(x) {
+  let tipo = tr(...(TIPI_NON_CARICATI[x.tipo] || [x.tipo, x.tipo]));
+  if (x.campo === "B_AtkSkill") tipo = tr("Skill del nemico", "Enemy skill");
+  // lo slot dell'equipaggiamento, con il nome che ha nella pagina
+  const slot = /^A_weapon2/.test(x.campo)
+    ? tr("seconda arma", "second weapon")
+    : document.querySelector(`[data-campo="${x.campo}"]`)?.closest(".slot")?.querySelector(".slot-nome")?.textContent;
+  if (slot) tipo += ` (${slot})`;
+  const motivo = x.motivo === "assente" ? tr("non c'è in questo calcolatore", "not in this calculator") : tr("non si può usare in questa build", "cannot be used in this build");
+  return `${tipo}: ${x.nome}, ${motivo}`;
+}
+function importaLink() {
+  let r;
+  try {
+    r = window.importaBuild(esternoLink.value);
+  } catch (e) {
+    // il motore si e' fermato a meta' della build: si torna a quella di prima
+    console.error(e);
+    location.reload();
+    return;
+  }
+  if (!r) {
+    esternoErrore.textContent = tr("Il link non è di rocalc-temp.web.app né di uaro-calc.xdthrice.workers.dev, o non contiene una build.", "The link is not from rocalc-temp.web.app or uaro-calc.xdthrice.workers.dev, or it does not contain a build.");
+    esternoErrore.hidden = false;
+    return;
+  }
+  clearTimeout(timerSalva);
+  stato.corrente = r.build;
+  salva();
+  if (!r.nonCaricati.length) return apriBuild(r.build);
+  importata = r.build;
+  document.getElementById("esterno-sintesi").textContent = tr(`Build importata da ${r.calcolatore}. Non sono stati caricati:`, `Build imported from ${r.calcolatore}. These were not loaded:`);
+  const elenco = document.getElementById("esterno-elenco");
+  elenco.replaceChildren(...r.nonCaricati.map((x) => Object.assign(document.createElement("li"), { textContent: voceNonCaricata(x) })));
+  document.getElementById("esterno-chiedi").hidden = true;
+  document.getElementById("esterno-esito").hidden = false;
+}
+esternoLink.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") importaLink();
+});
+esterno.addEventListener("close", () => {
+  if (importata) apriBuild(importata);
 });
 
 const file = document.getElementById("file");

@@ -218,6 +218,19 @@ dialog.ricerca button.opz[aria-current="true"] { font-weight: 700; color: var(--
 /* ricerca negli effetti: pulsante acceso e, sotto il nome, le righe degli effetti trovate */
 #ricerca-effetti[aria-pressed="true"] { border-color: var(--bradium); color: var(--bradium); font-weight: 700; }
 dialog.ricerca .effetto { display: block; font-size: .82rem; font-weight: 400; color: var(--muted); }
+/* Importa da esterno */
+dialog.finestra {
+  border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink);
+  padding: 16px; width: min(560px, calc(100vw - 24px)); max-height: calc(100vh - 40px); overflow: auto;
+}
+dialog.finestra::backdrop { background: color-mix(in srgb, var(--ink) 35%, transparent); }
+dialog.finestra h3 { margin-bottom: 8px; }
+dialog.finestra p { margin: 0 0 10px; }
+dialog.finestra input { width: 100%; box-sizing: border-box; }
+dialog.finestra ul { margin: 0; padding-left: 1.2em; }
+dialog.finestra .azioni { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; margin-top: 12px; }
+dialog.finestra .avviso { color: var(--warn); }
+dialog.finestra .sito { white-space: nowrap; }
 
 /* pannelli dei buff */
 details.pannello { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); margin-bottom: 10px; }
@@ -319,6 +332,8 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
 <script defer src="motore/mappe.js"></script>
 <script defer src="motore/card.js"></script>
 <script defer src="motore/uaro.js"></script>
+<script defer src="motore/esterni.js"></script>
+<script defer src="motore/importa.js"></script>
 <script defer src="motore/inizio.js"></script>
 </head>
 <body>
@@ -334,6 +349,7 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
       <summary class="btn gear" title="Menu" aria-label="Menu">&#9881;</summary>
       <div class="more-menu">
         <button class="btn" type="button" data-azione="nuova" data-en="Start over">Ricomincia da zero</button>
+        <button class="btn" type="button" data-azione="esterno" data-en="Import from external">Importa da esterno</button>
         <button class="btn" type="button" data-azione="esporta" data-en="Data backup">Backup dei dati</button>
         <button class="btn" type="button" data-azione="importa" data-en="Restore from backup">Ripristina da backup</button>
         <button class="btn" type="button" onclick="toggleTheme()" data-en="Switch light/dark theme">Cambia tema chiaro/scuro</button>
@@ -682,6 +698,26 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
     <button class="btn" type="button" data-azione="chiudi-ricerca" data-en="Close">Chiudi</button>
   </div>
   <ul id="ricerca-lista"></ul>
+</dialog>
+
+<dialog class="finestra" id="esterno" aria-labelledby="esterno-titolo">
+  <h3 id="esterno-titolo" data-en="Import from external">Importa da esterno</h3>
+  <div id="esterno-chiedi">
+    <p data-en="Paste the link of a build made in &lt;span class=&quot;sito&quot;&gt;rocalc-temp.web.app&lt;/span&gt; (Bish) or in &lt;span class=&quot;sito&quot;&gt;uaro-calc.xdthrice.workers.dev&lt;/span&gt; (Thrice). It replaces the current build; the saved builds stay.">Incolla il link di una build fatta in <span class="sito">rocalc-temp.web.app</span> (Bish) o in <span class="sito">uaro-calc.xdthrice.workers.dev</span> (Thrice). Prende il posto della build in corso; le build salvate restano.</p>
+    <input type="text" id="esterno-link" aria-label="Link della build" data-en-aria-label="Link of the build" placeholder="https://..." autocomplete="off" spellcheck="false">
+    <p class="avviso" id="esterno-errore" hidden></p>
+    <div class="azioni">
+      <button class="btn" type="button" data-azione="importa-link" data-en="Import">Importa</button>
+      <button class="btn" type="button" data-azione="chiudi-esterno" data-en="Close">Chiudi</button>
+    </div>
+  </div>
+  <div id="esterno-esito" hidden>
+    <p id="esterno-sintesi"></p>
+    <ul id="esterno-elenco"></ul>
+    <div class="azioni">
+      <button class="btn" type="button" data-azione="apri-importata" data-en="Open the build">Apri la build</button>
+    </div>
+  </div>
 </dialog>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
