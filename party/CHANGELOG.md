@@ -2,6 +2,13 @@
 
 Le versioni della pagina `party/`.
 
+## [1.26] - 2026-10-24
+
+- Sopra le run `‹ Combinazione 1 di 1 ›`: spesso piu' combinazioni danno lo stesso risultato (stesse
+  run, stesse entrate, stesse regole), e `›` ne cerca un'altra, per esempio con altri giocatori in
+  un'altra run. Con `‹` si torna a quelle gia' viste; la 1 e' quella della pagina. `Esporta le
+  run` esporta quella mostrata. Se i dati cambiano, o si ricarica la pagina, si riparte dalla 1
+
 ## [1.25] - 2026-10-24
 
 - Horror Toy Factory: la run preferita e' quella con l'HP Tanker e un secondo High Priest. Il

@@ -8,7 +8,7 @@
  * da `testo.js` con i soprannomi imparati (`soprannomi` dello stato).
  */
 
-import { calcolaRun, suggerisci } from "./calcolo.js";
+import { altraCombinazione, calcolaRun, firmaRun, suggerisci } from "./calcolo.js";
 import { ALTRO, CLASSI, classeForte, ISTANZE, MAX_RUN, nomeClasse, tr } from "./dati.js";
 import { breve, conTanker, leggiClassi, leggiElenco, pulisci, scriviElenco } from "./testo.js";
 
@@ -286,11 +286,43 @@ function datiCalcolo() {
 
 const plurale = (n, uno, molti) => `${n} ${n === 1 ? uno : molti}`;
 
-/** Il calcolo con i dati della pagina, o null senza giocatori presenti. */
+// Le combinazioni di run trovate con gli stessi dati (Alberto, 24/10/2026): la prima e' quella del
+// calcolo, le altre le aggiunge `›`, e le frecce le scorrono. Si riparte quando i dati cambiano.
+let combinazioni = { chiave: null, lista: [], mostrata: 0 };
+
+/** Il calcolo con i dati della pagina nella combinazione mostrata, o null senza giocatori presenti. */
 function calcola() {
   const { presenti, jolly } = datiCalcolo();
-  if (presenti.length === 0) return null;
-  return { presenti, jolly, esito: calcolaRun(presenti, jolly, istanza()) };
+  const chiave = JSON.stringify([stato.istanza, presenti, jolly]);
+  if (chiave !== combinazioni.chiave) {
+    const lista = presenti.length > 0 ? [{ presenti, jolly, esito: calcolaRun(presenti, jolly, istanza()) }] : [];
+    combinazioni = { chiave, lista, mostrata: 0 };
+  }
+  return combinazioni.lista[combinazioni.mostrata] ?? null;
+}
+
+/** Ridisegna le run e rimette il fuoco sulla freccia premuta, che il disegno ha sostituito. */
+function mostraCombinazione(azione) {
+  disegnaRun(calcola());
+  const freccia = risultatoEl.querySelector(`[data-azione="${azione}"]`);
+  (freccia.disabled ? risultatoEl.querySelector("[data-azione=\"combinazione-dopo\"]") : freccia).focus();
+}
+
+/** Cerca una combinazione diversa da quelle gia' trovate; falso se non ne trova. */
+function nuovaCombinazione() {
+  const [base] = combinazioni.lista;
+  const viste = new Set(combinazioni.lista.map((c) => firmaRun(c.esito)));
+  const inizio = performance.now();
+  // Dieci tentativi bastano quasi sempre; il tempo e' un limite per le gilde grandi.
+  for (let tentativo = 0; tentativo < 10 && performance.now() - inizio < 1500; tentativo++) {
+    const esito = altraCombinazione(base.presenti, base.jolly, istanza(), base.esito);
+    if (esito && !viste.has(firmaRun(esito))) {
+      combinazioni.lista.push({ ...base, esito });
+      combinazioni.mostrata = combinazioni.lista.length - 1;
+      return true;
+    }
+  }
+  return false;
 }
 
 // Le scritte del risultato, uguali nella pagina e nel txt delle run.
@@ -336,9 +368,8 @@ function membro(presenti, jolly, m) {
 }
 
 function aggiorna() {
-  const calcolo = calcola();
-  disegnaRun(calcolo);
-  disegnaSuggerimenti(calcolo);
+  disegnaRun(calcola());
+  disegnaSuggerimenti(combinazioni.lista[0] ?? null);
 }
 
 function disegnaRun(calcolo) {
@@ -357,6 +388,12 @@ function disegnaRun(calcolo) {
 
   const [quanteRun, ...resto] = riepilogo(esito);
   html.push(`<p class="summary"><strong>${quanteRun}</strong>, ${escape(resto.join(", "))}.</p>`);
+  const { lista: trovate, mostrata } = combinazioni;
+  html.push(`<div class="combinazioni">
+    <button class="btn small" type="button" data-azione="combinazione-prima"${mostrata === 0 ? " disabled" : ""} aria-label="${tr("Combinazione precedente", "Previous arrangement")}" title="${tr("Combinazione precedente", "Previous arrangement")}">‹</button>
+    <span>${tr(`Combinazione ${mostrata + 1} di ${trovate.length}`, `Arrangement ${mostrata + 1} of ${trovate.length}`)}</span>
+    <button class="btn small" type="button" data-azione="combinazione-dopo" aria-label="${mostrata < trovate.length - 1 ? tr("Combinazione successiva", "Next arrangement") : tr("Cerca un'altra combinazione", "Find another arrangement")}" title="${mostrata < trovate.length - 1 ? tr("Combinazione successiva", "Next arrangement") : tr("Cerca un'altra combinazione con lo stesso risultato", "Find another arrangement with the same result")}">›</button>
+  </div>`);
 
   esito.run.forEach((run, i) => {
     const righe = run.membri.map((m) => {
@@ -618,6 +655,18 @@ document.addEventListener("click", (event) => {
       return;
     case "esporta-elenco":
       scarica(`party-elenco-${oggi()}.txt`, scriviElenco(stato));
+      return;
+    case "combinazione-prima":
+      combinazioni.mostrata = Math.max(combinazioni.mostrata - 1, 0);
+      mostraCombinazione("combinazione-prima");
+      return;
+    case "combinazione-dopo":
+      if (combinazioni.mostrata < combinazioni.lista.length - 1) combinazioni.mostrata++;
+      else if (!nuovaCombinazione()) {
+        avvisa(tr("Non ho trovato altre combinazioni con lo stesso risultato.", "No other arrangement with the same result found."));
+        return;
+      }
+      mostraCombinazione("combinazione-dopo");
       return;
     case "esporta-run": {
       const calcolo = calcola();

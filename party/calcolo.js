@@ -104,9 +104,11 @@ const runDi = (giocatore, n) => (giocatore.run ? giocatore.run.filter((r) => r <
  *   `nuovi`: per `suggerisci`, account e personaggi `nuovo` da creare e quanto contano (vedi `cerca`)
  * @returns {{run: Array<{membri: Array<object>, preferiti: number[], tipo: number | null}>, entrate: number,
  *   preferiti: number[], jolly: number, fuori: Array<{giocatore: number, entrate: number, motivo: string}>,
- *   mancano: string[]}}
+ *   mancano: string[], punteggio: number[]}}
  *   Ogni membro: `giocatore`, `account` o `jolly` (indici), `personaggio`, `ruolo`, `posto` (null se libero),
- *   `forte` se copre un posto `forti`, `tank` se e' lui a tankare. `tipo`: l'indice in `istanza.tipi`
+ *   `forte` se copre un posto `forti`, `tank` se e' lui a tankare. `tipo`: l'indice in `istanza.tipi`.
+ *   `punteggio`: run, entrate, tipi e costo, piu' alto e' meglio (confrontati in ordine), per dire
+ *   se un calcolo con i giocatori in un altro ordine e' buono quanto questo
  */
 export function calcolaRun(giocatori, jolly, istanza = ISTANZE[0], { run: maxRun = istanza.maxRun, nuovi } = {}) {
   const tipi = composizioni(istanza);
@@ -140,12 +142,65 @@ export function calcolaRun(giocatori, jolly, istanza = ISTANZE[0], { run: maxRun
         const run = dividiGruppo(c.scelti, istanza, postiRun.map((_, r) => r), postiRun, puo);
         if (!run) continue;
         pareggia(run, istanza, postiRun, puo);
-        return componi(giocatori, jolly, istanza, run, tipoRun, !nuovi);
+        return { ...componi(giocatori, jolly, istanza, run, tipoRun, !nuovi), punteggio: [nRun, c.scelti.length, -c.tipo, -c.costo] };
       }
     }
   }
-  return componi(giocatori, jolly, istanza, [], [], !nuovi);
+  return { ...componi(giocatori, jolly, istanza, [], [], !nuovi), punteggio: [0] };
 }
+
+/** Vero se il punteggio `a` e' peggiore di `b`: il primo valore diverso e' piu' basso. */
+const peggiore = (a, b) => {
+  const i = a.findIndex((x, k) => x !== b[k]);
+  return i >= 0 && a[i] < b[i];
+};
+
+/**
+ * Un'altra combinazione di run buona quanto `base` (Alberto, 24/10/2026: le soluzioni "non sono
+ * sempre e solo una, magari con shuffle qualcun altro la preferisce"). A parita' di punteggio il
+ * calcolo sceglie per l'ordine della tabella: qui giocatori, loro account e jolly sono in ordine
+ * casuale, e gli indici del risultato tornano quelli di `giocatori` e `jolly`. Null se il calcolo
+ * esce peggiore, cosa che con run di tipi diversi puo' succedere (vedi in cima al file).
+ *
+ * @param {object} base il risultato di `calcolaRun` con gli stessi dati, di cui tiene `mancano`
+ * @param {() => number} [casuale] numeri fra 0 e 1, per i test
+ */
+export function altraCombinazione(giocatori, jolly, istanza, base, casuale = Math.random) {
+  const ordine = (n) => {
+    const o = [...Array(n).keys()];
+    for (let i = n - 1; i > 0; i--) {
+      const k = Math.floor(casuale() * (i + 1));
+      [o[i], o[k]] = [o[k], o[i]];
+    }
+    return o;
+  };
+  const ordineG = ordine(giocatori.length);
+  const ordineA = ordineG.map((g) => ordine(giocatori[g].account.length));
+  const ordineJ = ordine(jolly.length);
+  const mescolati = ordineG.map((g, i) => ({ ...giocatori[g], account: ordineA[i].map((a) => giocatori[g].account[a]) }));
+  const esito = calcolaRun(mescolati, ordineJ.map((j) => jolly[j]), istanza);
+  if (peggiore(esito.punteggio, base.punteggio)) return null;
+  const membro = (m) => ({
+    ...m,
+    giocatore: ordineG[m.giocatore],
+    ...(m.jolly === null ? { account: ordineA[m.giocatore][m.account] } : { jolly: ordineJ[m.jolly] }),
+  });
+  // I liberi nell'ordine della tabella, come nel calcolo di partenza.
+  const membri = (lista) => [...lista.filter((m) => m.posto !== null), ...lista.filter((m) => m.posto === null).sort((a, b) => a.giocatore - b.giocatore)];
+  return {
+    ...esito,
+    run: esito.run.map((r) => ({ ...r, membri: membri(r.membri.map(membro)) })),
+    fuori: esito.fuori.map((f) => ({ ...f, giocatore: ordineG[f.giocatore] })).sort((a, b) => a.giocatore - b.giocatore),
+    mancano: base.mancano,
+  };
+}
+
+/** Le run come testo, per riconoscere due combinazioni uguali: l'ordine delle run non conta. */
+export const firmaRun = (esito) =>
+  esito.run
+    .map((r) => r.membri.map((m) => [m.giocatore, m.account, m.jolly, m.personaggio, m.posto, Boolean(m.tank)].join(":")).sort().join(";"))
+    .sort()
+    .join("/");
 
 /**
  * Le classi che si possono proporre, una per ruolo (e per classe forte), con il nome che dice

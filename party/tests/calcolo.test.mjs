@@ -6,7 +6,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { calcolaRun } from "../calcolo.js";
+import { altraCombinazione, calcolaRun, firmaRun } from "../calcolo.js";
 import { composizioni, copre, eForte, ISTANZE, ruoliDi, ruoloDi } from "../dati.js";
 
 const ISTANZA = ISTANZE[0];
@@ -471,6 +471,41 @@ describe("HP Tanker e Soul Linker (Alberto, 23/10/2026)", () => {
     const conLaGypsy = calcolaRun(conGypsy, []);
     verifica(conGypsy, [], ISTANZA, conLaGypsy);
     assert.deepEqual(conLaGypsy.fuori.map((f) => conGypsy[f.giocatore].nome).sort(), ["S6", "SL"]);
+  });
+});
+
+describe("altre combinazioni (Alberto, 24/10/2026)", () => {
+  it("in ordine casuale: run valide, stesso punteggio, indici della tabella, e spesso diverse", () => {
+    let seme = 7;
+    const casuale = () => (seme = (seme * 1103515245 + 12345) % 2147483648) / 2147483648;
+    const giocatori = [
+      giocatore("Alberto", account("High Priest", "Professor"), account("Priest"), account("Priest")),
+      scarso("Marco", account("High Priest"), account("High Priest"), account("Sniper")),
+      scarso("Giulia", account("Gypsy"), account("Gypsy"), account("High Priest")),
+      scarso("Luca", account("Sniper"), account("Sniper"), account("Lord Knight")),
+      scarso("Sara", account("Clown"), account("Clown")),
+      giocatore("Paolo", account("Professor"), account("Professor"), account("High Priest")),
+      { ...giocatore("Elena", account("High Priest"), account("Champion")), run: [1, 2] },
+    ];
+    const jolly = [account("Clown"), account("Sniper")];
+    const base = calcolaRun(giocatori, jolly, ISTANZA);
+    const migliore = verifica(giocatori, jolly, ISTANZA, base);
+    const viste = new Set([firmaRun(base)]);
+    for (let i = 0; i < 20; i++) {
+      const altra = altraCombinazione(giocatori, jolly, ISTANZA, base, casuale);
+      assert.ok(altra);
+      assert.deepEqual(verifica(giocatori, jolly, ISTANZA, altra), migliore);
+      assert.deepEqual(altra.punteggio, base.punteggio);
+      assert.deepEqual(altra.mancano, base.mancano);
+      viste.add(firmaRun(altra));
+    }
+    assert.ok(viste.size > 5, `solo ${viste.size} combinazioni diverse`);
+  });
+
+  it("un altro ordine delle run e' la stessa combinazione", () => {
+    const run = (nome) => ({ membri: [{ giocatore: nome, account: 0, jolly: null, personaggio: 0, posto: null }] });
+    assert.equal(firmaRun({ run: [run(0), run(1)] }), firmaRun({ run: [run(1), run(0)] }));
+    assert.notEqual(firmaRun({ run: [run(0)] }), firmaRun({ run: [run(1)] }));
   });
 });
 
