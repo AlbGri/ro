@@ -2,6 +2,10 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.19] - 2026-10-24
+
+- Golden Trinket (in gioco "Sapha Wise Golden Trinket"): peso 1, come nel gioco (prima 10)
+
 ## [1.18] - 2026-10-24
 
 - Menu ⚙, "Importa da esterno": si incolla il link di una build fatta nel calcolatore di Bish

@@ -69,6 +69,10 @@ function applyUaroHeadgearBonuses() {
   correggi(1434, { slots: 2 }); // Alca Bringer [2]
   correggi(1196, { slots: 2 }); // Two-Handed Chrome Metal Sword [2]
 
+  // Golden Trinket (in gioco "Sapha Wise Golden Trinket"): peso 1, screen del gioco del 24/10/2026.
+  // Il MATK +1% dello screen e' un incantamento Dicastes di livello 1, non dell'oggetto
+  correggi(1897, { weight: 1 });
+
   // Defolty Doll Hat: niente STR (Item Changes)
   correggi(891, { bonuses: senzaBonus(891, BONUSID.STR) });
   // Satanic Bone Helm: livello richiesto 1 (Item Changes)
