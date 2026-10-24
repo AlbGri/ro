@@ -268,12 +268,12 @@ describe("job", () => {
     for (const t of tappe) if (t.tipo === "quest" || t.tipo === "caccia") assert.ok(t.consegne > 0);
   });
 
-  it("il Field Manual non cambia la job EXP, Battle Manual e weekend si'", () => {
+  it("il manuale senza manualeJob non cambia la job EXP, con manualeJob e il weekend si'", () => {
     const fine = (opzioni) => {
       const { finale, persa } = seguiJob(piano(), { rinato: false, job: 1, cambio: 50, ...opzioni });
       return { finale, persa };
     };
-    assert.deepEqual(fine({ manuale: 100 }), fine({}));
+    assert.deepEqual(fine({ manuale: 50 }), fine({}));
     assert.notDeepEqual(fine({ weekend: true }), fine({}));
     assert.notDeepEqual(fine({ manuale: 50, manualeJob: true }), fine({}));
   });

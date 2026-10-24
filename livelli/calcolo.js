@@ -536,13 +536,13 @@ export function aggiungiJob(tabella, livello, exp, guadagno) {
  * @param {number} [opzioni.cambio=50] Job della prima classe a cui si cambia classe.
  * @param {boolean} [opzioni.weekend=false] Bonus del weekend.
  * @param {number} [opzioni.manuale=0] Manuale attivo: 0, 50 o 100.
- * @param {boolean} [opzioni.manualeJob=false] Il manuale vale anche per la job EXP (Battle Manual).
+ * @param {boolean} [opzioni.manualeJob=false] Il manuale vale anche per la job EXP (Battle Manual,
+ *   Field Manual 100%).
  * @returns {{tappe: object[], finale: {classe: number, livello: number, exp: number}, persa: number}}
  *   Le tappe con il job in ogni passo, il job alla fine e la job EXP persa in tutto.
  */
 export function seguiJob(piano, opzioni) {
   const { rinato, seconda = false, job, cambio = 50, weekend = false, manuale = 0, manualeJob = false } = opzioni;
-  // il Field Manual da' solo EXP base, il Battle Manual anche job (wiki di uaRO, Server Info)
   const molt = moltiplicatore(weekend, manualeJob ? manuale : 0);
   const tabelle = tabelleJob(rinato);
   let stato = { classe: seconda ? 2 : 1, livello: job, exp: 0 };

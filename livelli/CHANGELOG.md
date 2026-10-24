@@ -2,6 +2,12 @@
 
 Le versioni della pagina `livelli/`.
 
+## [1.18] - 2026-10-24
+
+- Il Field Manual 100% aumenta anche la job EXP, come visto in gioco (Sharp Leaf nel weekend:
+  x3 sia base sia job). Prima la pagina lo contava solo per la base e prevedeva un livello job
+  piu' basso. Il Field Manual (50%) resta solo base finche' non e' verificato
+
 ## [1.17] - 2026-10-23
 
 - Menu ⚙: "Ricomincia da zero", come nel calcolatore, rimette tutti i campi ai valori iniziali

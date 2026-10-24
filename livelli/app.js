@@ -128,8 +128,8 @@ function leggi() {
     obiettivo: intero(f.obiettivo.value, 2, 99, 84),
     weekend: f.weekend.checked,
     manuale: f.manuale.value === "battle" ? 50 : Number(f.manuale.value),
-    // il Battle Manual da' anche job EXP, il Field Manual solo base
-    manualeJob: f.manuale.value === "battle",
+    // Battle Manual e Field Manual 100% danno anche job EXP (visto in gioco), il Field Manual 50% solo base
+    manualeJob: f.manuale.value !== "50",
     cacce: Object.fromEntries(CACCE.map((c) => [c.id, Number(f[`caccia-${c.id}`].value)])),
     rabbocco: f.rabbocchi.checked ? intero(f.soglia.value, 1, 50, 10) : null,
     cambio: intero(f.cambio.value, 0, 1e9, 0),
