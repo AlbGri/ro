@@ -2,6 +2,19 @@
 
 Le versioni della pagina `party/`.
 
+## [1.22] - 2026-10-24
+
+- Nuova sezione `Personaggi da creare`, in fondo alla pagina: quali personaggi creare, e a chi, per fare
+  piu' run (`Per la run N`, un passo per ogni run in piu') e poi per far giocare piu' persone.
+  Propone meno personaggi possibile, HP Tanker e Sniper Incubus solo dove servono, quando si puo'
+  negli account che ci sono gia' (per esempio un Creator nell'account del Priest, che
+  nell'Endless Cellar non serve), e divide gli account nuovi fra i giocatori. Ogni passo si
+  aggiunge ai precedenti; gli Account Gilda restano come sono
+- `Classi da proporre`: pulsanti come quelli delle run, un clic spegne una classe da non
+  suggerire, per esempio una difficile da fare. Se servono proprio quelle, o se servono piu' giocatori, la pagina lo dice. Le classi spuntate restano nel
+  browser e nel backup
+- Ripristinando un backup si aggiorna anche la scelta dell'istanza
+
 ## [1.21] - 2026-10-23
 
 - Nella run Sniper Incubus il posto dello Sniper si chiama `Sniper Incubus`: li' serve proprio lui.

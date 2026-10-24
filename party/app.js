@@ -8,7 +8,7 @@
  * da `testo.js` con i soprannomi imparati (`soprannomi` dello stato).
  */
 
-import { calcolaRun } from "./calcolo.js";
+import { calcolaRun, suggerisci } from "./calcolo.js";
 import { ALTRO, CLASSI, classeForte, HP_TANKER, ISTANZE, MAX_RUN, nomeClasse, tr } from "./dati.js";
 import { breve, conTanker, leggiClassi, leggiElenco, pulisci, scriviElenco } from "./testo.js";
 
@@ -21,6 +21,8 @@ const giocatoriEl = document.getElementById("giocatori");
 const jollyEl = document.getElementById("jolly");
 const dubbiEl = document.getElementById("dubbi");
 const risultatoEl = document.getElementById("risultato");
+const esclusiEl = document.getElementById("escluse");
+const suggerimentiEl = document.getElementById("suggerimenti");
 const istanzaEl = document.getElementById("istanza");
 
 const escape = (s) =>
@@ -28,7 +30,8 @@ const escape = (s) =>
 
 // ----------------------------------------------------------------- stato ---
 
-let stato = { istanza: ISTANZE[0].id, giocatori: [], jolly: [], soprannomi: {} };
+// `escluse`: le classi da non proporre fra i personaggi da creare.
+let stato = { istanza: ISTANZE[0].id, giocatori: [], jolly: [], soprannomi: {}, escluse: [] };
 const istanza = () => ISTANZE.find((i) => i.id === stato.istanza);
 
 const TUTTE_LE_RUN = [...Array(MAX_RUN).keys()].map((r) => r + 1);
@@ -80,6 +83,7 @@ function normalizza(dati) {
       classi: typeof j?.classi === "string" ? j.classi : testo(j),
     })),
     soprannomi,
+    escluse: Array.isArray(dati.escluse) ? dati.escluse.filter((c) => typeof c === "string").map(rinominata) : [],
   };
 }
 
@@ -165,6 +169,7 @@ function disegnaIstanza() {
     desiderati.map((p) => tr(`poi ${desiderato(p)}, `, `then ${desiderato(p)}, `)).join("") +
     i.preferiti.map((p) => `${tr("poi più", "then more")} ${p.nome}${p.perche ? ` (${p.perche})` : ""}, `).join("") +
     tr("poi run equilibrate.", "then balanced runs.");
+  disegnaEscluse();
 }
 
 // Colonne di account nella tabella: almeno 3, o quante ne ha chi ne ha di piu'; "+" ne aggiunge una.
@@ -332,6 +337,11 @@ function membro(presenti, jolly, m) {
 
 function aggiorna() {
   const calcolo = calcola();
+  disegnaRun(calcolo);
+  disegnaSuggerimenti(calcolo);
+}
+
+function disegnaRun(calcolo) {
   if (!calcolo) {
     risultatoEl.innerHTML = `<p class="empty">${tr("Nessun giocatore presente.", "No players present.")}</p>`;
     return;
@@ -378,6 +388,64 @@ function aggiorna() {
     html.push(`<div class="note-line"><strong>${tr(`Per la run ${esito.run.length + 1}:`, `For run ${esito.run.length + 1}:`)}</strong>${lista(esito.mancano)}</div>`);
   }
   risultatoEl.innerHTML = html.join("");
+}
+
+/** Le classi dell'istanza da proporre, come i pulsanti delle run: accese le proposte, spente le escluse. */
+function disegnaEscluse() {
+  esclusiEl.innerHTML =
+    `<span>${tr("Classi da proporre:", "Classes to suggest:")}</span>` +
+    istanza()
+      .classi.map((c) => {
+        const proposta = !stato.escluse.includes(c.nome);
+        const titolo = proposta ? tr("Proposta: un clic la esclude", "Suggested: click to exclude it") : tr("Esclusa: un clic la propone", "Excluded: click to suggest it");
+        return `<button class="btn small" type="button" data-esclusa="${escape(c.nome)}" aria-pressed="${proposta}" title="${titolo}">${escape(nomeClasse(c.nome))}</button>`;
+      })
+      .join("");
+}
+
+/** I personaggi da creare, un passo dopo l'altro (`suggerisci`). */
+function disegnaSuggerimenti(calcolo) {
+  if (!calcolo) {
+    suggerimentiEl.innerHTML = "";
+    return;
+  }
+  const { presenti, jolly } = calcolo;
+  const esito = suggerisci(presenti, jolly, istanza(), stato.escluse);
+  const voce = (n) => {
+    const nome = presenti[n.giocatore].nome;
+    return n.nuovo
+      ? tr(`${nome}: ${n.classe}, account ${n.numero} nuovo`, `${nome}: ${n.classe}, new account ${n.numero}`)
+      : tr(`${nome}: ${n.classe} nell'account ${n.numero}`, `${nome}: ${n.classe} in account ${n.numero}`);
+  };
+  const blocco = (titolo, righe) =>
+    `<div class="note-line"><strong>${escape(titolo)}</strong>${righe.length ? `<ul>${righe.map((r) => `<li>${escape(r)}</li>`).join("")}</ul>` : ""}</div>`;
+  const html = [];
+  let entrate = esito.entrate;
+  for (const passo of esito.passi) {
+    const titolo =
+      passo.run !== null
+        ? tr(`Per la run ${passo.run}:`, `For run ${passo.run}:`)
+        : tr(
+            `Per far giocare più persone, ${passo.entrate} entrate invece di ${entrate}:`,
+            `To let more people play, ${passo.entrate} entries instead of ${entrate}:`,
+          );
+    html.push(blocco(titolo, passo.nuovi.map(voce)));
+    entrate = passo.entrate;
+  }
+  if (esito.bloccate) {
+    const { run, escluse } = esito.bloccate;
+    html.push(
+      blocco(
+        escluse.length
+          ? tr(`Per la run ${run} servono classi escluse: ${escluse.join(", ")}.`, `Run ${run} needs excluded classes: ${escluse.join(", ")}.`)
+          : tr(`Per la run ${run} non bastano personaggi nuovi: servono più giocatori.`, `New characters are not enough for run ${run}: more players are needed.`),
+        [],
+      ),
+    );
+  }
+  suggerimentiEl.innerHTML = html.length
+    ? html.join("")
+    : `<p class="summary">${tr("Nessun personaggio nuovo aggiunge run o fa giocare più persone.", "No new character adds runs or lets more people play.")}</p>`;
 }
 
 /** Le run calcolate in un testo da girare alla gilda. */
@@ -469,6 +537,14 @@ dubbiEl.addEventListener("change", (event) => {
   stato.soprannomi[k] = event.target.value;
   pulisciTutto();
   cambiato(true);
+});
+
+esclusiEl.addEventListener("click", (event) => {
+  const classe = event.target.closest("[data-esclusa]")?.dataset.esclusa;
+  if (classe === undefined) return;
+  stato.escluse = stato.escluse.includes(classe) ? stato.escluse.filter((c) => c !== classe) : [...stato.escluse, classe];
+  disegnaEscluse();
+  cambiato(false);
 });
 
 const file = document.getElementById("file");
@@ -581,6 +657,7 @@ file.addEventListener("change", async () => {
     const nuovo = normalizza(JSON.parse(await scelto.text()));
     if (!confirm(tr("Sostituire i dati della pagina con quelli del file?", "Replace the page's data with those in the file?"))) return;
     stato = nuovo;
+    disegnaIstanza();
     cambiato(true);
     avvisa(tr("Dati importati.", "Data restored."));
   } catch {

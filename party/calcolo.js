@@ -42,7 +42,7 @@
  * giocatori chiedevano 13 secondi.
  */
 
-import { classeForte, composizioni, copre, eForte, ISTANZE, richieste, ruoliDi, ruoloDi, soddisfa, tr } from "./dati.js";
+import { classeForte, composizioni, copre, eForte, ISTANZE, nomeClasse, richieste, ruoliDi, ruoloDi, soddisfa, tr } from "./dati.js";
 
 /**
  * I modi di usare un account: uno per ruolo che conta (posti obbligatori e
@@ -58,7 +58,7 @@ function usiAccount(account, istanza) {
   const usi = [];
   account.personaggi.forEach((p, indice) => {
     const ruolo = ruoloDi(istanza, p.classe);
-    if (!contano.has(ruolo)) return;
+    if (p.nuovo || !contano.has(ruolo)) return;
     const forte = eForte(istanza, p.classe);
     const uso = { ruolo, personaggio: indice, ...(forte ? { forte } : {}) };
     const gia = usi.findIndex((u) => u.ruolo === ruolo);
@@ -66,7 +66,14 @@ function usiAccount(account, istanza) {
     if (gia < 0) usi.push(uso);
     else if (forte && !usi[gia].forte) usi[gia] = uso;
   });
-  if (usi.length === 0 && account.personaggi.length > 0 && !istanza.liberi) usi.push({ ruolo: "altro", personaggio: 0 });
+  if (usi.length === 0 && account.personaggi.some((p) => !p.nuovo) && !istanza.liberi) usi.push({ ruolo: "altro", personaggio: 0 });
+  // I personaggi da creare (`suggerisci`): ognuno e' un uso a parte, se l'account non ha gia' di meglio.
+  account.personaggi.forEach((p, indice) => {
+    const ruolo = ruoloDi(istanza, p.classe);
+    const forte = eForte(istanza, p.classe);
+    if (!p.nuovo || !contano.has(ruolo) || usi.some((u) => !u.nuovo && u.ruolo === ruolo && (u.forte || !forte))) return;
+    usi.push({ ruolo, personaggio: indice, nuovo: true, ...(forte ? { forte } : {}) });
+  });
   return usi;
 }
 
@@ -93,29 +100,36 @@ const runDi = (giocatore, n) => (giocatore.run ? giocatore.run.filter((r) => r <
  *   sempre le prime. I posti `forti` li coprono i personaggi di una classe `forte` (HP Tanker, Sniper Incubus)
  * @param {Array<{personaggi: Array<{classe: string}>}>} jolly solo i disponibili
  * @param {object} [istanza] una di `ISTANZE`, la prima se non si indica
+ * @param {{run?: number, nuovi?: "run" | "entrate"}} [opzioni] `run`: quante run provare al piu';
+ *   `nuovi`: per `suggerisci`, account e personaggi `nuovo` da creare e quanto contano (vedi `cerca`)
  * @returns {{run: Array<{membri: Array<object>, preferiti: number[], tipo: number | null}>, entrate: number,
  *   preferiti: number[], jolly: number, fuori: Array<{giocatore: number, entrate: number, motivo: string}>,
  *   mancano: string[]}}
  *   Ogni membro: `giocatore`, `account` o `jolly` (indici), `personaggio`, `ruolo`, `posto` (null se libero),
  *   `forte` se copre un posto `forti`, `tank` se e' lui a tankare. `tipo`: l'indice in `istanza.tipi`
  */
-export function calcolaRun(giocatori, jolly, istanza = ISTANZE[0]) {
+export function calcolaRun(giocatori, jolly, istanza = ISTANZE[0], { run: maxRun = istanza.maxRun, nuovi } = {}) {
   const tipi = composizioni(istanza);
-  for (let nRun = istanza.maxRun; nRun > 0; nRun--) {
+  for (let nRun = maxRun; nRun > 0; nRun--) {
     // Prima il passo 1 per ogni ripartizione, che e' veloce; poi si divide dalla migliore in giu'.
     const candidate = ripartizioni(tipi.length, nRun)
       .map((quante) => {
         const tipoRun = quante.flatMap((n, t) => Array(n).fill(t));
         const postiRun = tipoRun.map((t) => tipi[t]);
-        const trovato = cerca(giocatori, jolly, istanza, postiRun);
+        const trovato = cerca(giocatori, jolly, istanza, postiRun, nuovi);
         // Meno run dell'ultimo tipo, poi del penultimo: la run del tipo t costa (nRun + 1)^t.
         const tipo = quante.reduce((s, q, t) => s + q * (nRun + 1) ** t, 0);
         return trovato && { ...trovato, tipo, tipoRun };
       })
       .filter(Boolean)
       // Il tipo vale meno delle entrate e piu' del resto del costo. Fuori dai pesi del flusso, dove
-      // e' fisso per ogni ripartizione: con tre tipi i pesi supererebbero 2^53.
-      .sort((a, b) => b.scelti.length - a.scelti.length || a.tipo - b.tipo || a.costo - b.costo);
+      // e' fisso per ogni ripartizione: con tre tipi i pesi supererebbero 2^53. I personaggi da
+      // creare vengono prima delle entrate o subito dopo, come nei pesi.
+      .sort((a, b) => {
+        const entrate = b.scelti.length - a.scelti.length;
+        const daCreare = a.daCreare - b.daCreare;
+        return (nuovi === "run" ? daCreare || entrate : entrate || daCreare) || a.tipo - b.tipo || a.costo - b.costo;
+      });
     // Le run fatte sono sempre le prime (Alberto, 23/10/2026): run r vuol dire la r-esima della serata.
     const puo = (g, r) => !giocatori[g].run || giocatori[g].run.includes(r + 1);
     const limitati = giocatori.some((g) => runDi(g, nRun) < nRun);
@@ -126,11 +140,134 @@ export function calcolaRun(giocatori, jolly, istanza = ISTANZE[0]) {
         const run = dividiGruppo(c.scelti, istanza, postiRun.map((_, r) => r), postiRun, puo);
         if (!run) continue;
         pareggia(run, istanza, postiRun, puo);
-        return componi(giocatori, jolly, istanza, run, tipoRun);
+        return componi(giocatori, jolly, istanza, run, tipoRun, !nuovi);
       }
     }
   }
-  return componi(giocatori, jolly, istanza, [], []);
+  return componi(giocatori, jolly, istanza, [], [], !nuovi);
+}
+
+/**
+ * Le classi che si possono proporre, una per ruolo (e per classe forte), con il nome che dice
+ * tutte quelle ammesse: "Clown o Bard". Fuori dalla Horror Toy Factory HP Tanker e Sniper Incubus
+ * sono un High Priest e uno Sniper qualsiasi: non si nominano.
+ */
+function classiDaCreare(istanza, escluse) {
+  const gruppi = new Map();
+  for (const c of istanza.classi.filter((c) => !escluse.includes(c.nome))) {
+    const chiave = `${c.ruolo}:${eForte(istanza, c.nome)}`;
+    if (!gruppi.has(chiave)) gruppi.set(chiave, []);
+    gruppi.get(chiave).push(c.nome);
+  }
+  const nomi = new Map();
+  for (const classi of gruppi.values()) {
+    const semplici = classi.filter((c) => !ISTANZE.some((i) => eForte(i, c)));
+    const mostrate = (eForte(istanza, classi[0]) || semplici.length === 0 ? classi : semplici).map(nomeClasse);
+    nomi.set(classi[0], mostrate.join(tr(" o ", " or ")));
+  }
+  return nomi;
+}
+
+/**
+ * I personaggi da creare (Alberto, 24/10/2026): i meno personaggi nuovi che fanno piu' run, poi
+ * quelli che fanno giocare piu' persone. Ogni account ha in piu' un personaggio da creare per
+ * classe, ogni giocatore tanti account nuovi quante sono le sue run, e il calcolo delle run sceglie
+ * quali servono: prima i meno personaggi, poi le classi forti solo dove servono, poi gli account
+ * che ci sono gia'. Gli Account Gilda restano come sono.
+ *
+ * Le run in piu' si contano una alla volta, ognuna con quelli della precedente; ma i personaggi
+ * vengono tutti dall'insieme minimo per il massimo delle run: una run per volta, scegliendo ogni
+ * volta i meno, nell'Endless Cellar della gilda ne servivano 8 invece di 7.
+ *
+ * @param {Array} giocatori come per `calcolaRun`, con `numero` negli account (la colonna)
+ * @param {Array} jolly come per `calcolaRun`
+ * @param {object} istanza una di `ISTANZE`
+ * @param {string[]} escluse le classi da non proporre
+ * @returns {{run: number, entrate: number, passi: Array<{run: number | null, entrate: number, nuovi: Array}>,
+ *   bloccate: {run: number, escluse: string[]} | null}} `run` ed `entrate` di oggi. Un passo ha le run
+ *   (null se fa solo giocare piu' persone) e le entrate a cui arriva. `bloccate`: le prime run che
+ *   nessun personaggio nuovo rende possibili, con le classi escluse che servirebbero (vuoto se
+ *   servono piu' giocatori). Un personaggio nuovo: `{giocatore, numero, nuovo, classe}`, `nuovo`
+ *   se e' in un account da creare
+ */
+export function suggerisci(giocatori, jolly, istanza, escluse = []) {
+  const oggi = calcolaRun(giocatori, jolly, istanza);
+  const nomi = classiDaCreare(istanza, escluse);
+  // I giocatori con i personaggi gia' proposti, come se ci fossero.
+  const fatti = giocatori.map((g) => ({ ...g, account: g.account.map((a, i) => ({ numero: i + 1, ...a, personaggi: [...a.personaggi] })) }));
+  const daCreare = (classi) => [...classi.keys()].map((classe) => ({ classe, nuovo: true }));
+  // Ogni classe su ogni account, e account nuovi con ogni classe.
+  const conTutti = (classi) =>
+    fatti.map((g) => ({
+      ...g,
+      account: [
+        ...g.account.map((a) => ({ ...a, personaggi: [...a.personaggi, ...daCreare(classi)] })),
+        ...Array.from({ length: runDi(g, istanza.maxRun) }, () => ({ personaggi: daCreare(classi), nuovo: true })),
+      ],
+    }));
+  // Solo i personaggi ancora da proporre fra quelli scelti (`scelta`): ognuno sta su un account diverso.
+  const conScelta = (scelta) =>
+    fatti.map((g, gi) => {
+      const suoi = scelta.filter((s) => s.giocatore === gi);
+      return {
+        ...g,
+        account: [
+          ...g.account.map((a, ai) => ({ ...a, personaggi: [...a.personaggi, ...suoi.filter((s) => s.account === ai).map((s) => ({ classe: s.classe, nuovo: true, s }))] })),
+          ...suoi.filter((s) => s.account === null).map((s) => ({ personaggi: [{ classe: s.classe, nuovo: true, s }], nuovo: true })),
+        ],
+      };
+    });
+  const nuoviDi = (con, esito) =>
+    esito.run
+      .flatMap((r) => r.membri)
+      .filter((m) => m.nuovo)
+      .map((m) => {
+        const p = con[m.giocatore].account[m.account].personaggi[m.personaggio];
+        return { giocatore: m.giocatore, account: m.account < fatti[m.giocatore].account.length ? m.account : null, classe: p.classe, s: p.s };
+      });
+  // I personaggi scelti diventano veri: un account nuovo prende la colonna dopo l'ultima.
+  const aggiungi = (scelti) =>
+    scelti
+      .map(({ giocatore, account, classe }) => {
+        const g = fatti[giocatore];
+        if (account === null) g.account.push({ numero: Math.max(0, ...g.account.map((a) => a.numero)) + 1, personaggi: [], creato: true });
+        const a = account === null ? g.account.at(-1) : g.account[account];
+        a.personaggi.push({ classe });
+        return { giocatore, numero: a.numero, nuovo: a.creato === true, classe: nomi.get(classe) };
+      })
+      .sort((x, y) => x.giocatore - y.giocatore || x.numero - y.numero);
+
+  const passi = [];
+  let ultimo = oggi;
+  const con = conTutti(nomi);
+  const massimo = calcolaRun(con, jolly, istanza, { nuovi: "run" });
+  let scelta = massimo.run.length > oggi.run.length ? nuoviDi(con, massimo) : [];
+  for (let n = oggi.run.length + 1; n <= massimo.run.length; n++) {
+    const conN = conScelta(scelta);
+    const esito = calcolaRun(conN, jolly, istanza, { run: n, nuovi: "run" });
+    if (esito.run.length < n) break;
+    const scelti = nuoviDi(conN, esito);
+    scelta = scelta.filter((s) => !scelti.some((x) => x.s === s));
+    passi.push({ run: n, entrate: esito.entrate, nuovi: aggiungi(scelti) });
+    ultimo = esito;
+  }
+
+  let bloccate = null;
+  if (massimo.run.length < istanza.maxRun) {
+    // Se basterebbero le classi escluse, si dice quali; se no servono piu' giocatori.
+    const tutte = classiDaCreare(istanza, []);
+    const conT = conTutti(tutte);
+    const senza = escluse.length ? calcolaRun(conT, jolly, istanza, { run: massimo.run.length + 1, nuovi: "run" }) : massimo;
+    const servono = senza.run.length > massimo.run.length ? nuoviDi(conT, senza).map((x) => x.classe).filter((c) => escluse.includes(c)) : [];
+    bloccate = { run: massimo.run.length + 1, escluse: [...new Set(servono)].map(nomeClasse) };
+  }
+
+  if (ultimo.run.length > 0) {
+    const conE = conTutti(nomi);
+    const esito = calcolaRun(conE, jolly, istanza, { run: ultimo.run.length, nuovi: "entrate" });
+    if (esito.entrate > ultimo.entrate) passi.push({ run: null, entrate: esito.entrate, nuovi: aggiungi(nuoviDi(conE, esito)) });
+  }
+  return { run: oggi.run.length, entrate: oggi.entrate, passi, bloccate };
 }
 
 /**
@@ -146,24 +283,38 @@ export function calcolaRun(giocatori, jolly, istanza = ISTANZE[0]) {
  * quello che vale meno: i posti obbligatori coperti valgono piu' di ogni altra
  * cosa, quindi le run sono possibili (con un tipo solo: se e solo se) quando il
  * flusso migliore li copre tutti.
+ *
+ * Con `nuovi` (`suggerisci`) gli account e i personaggi segnati `nuovo` sono da
+ * creare e costano: "run" li conta prima delle entrate (i meno possibili per fare
+ * le run), "entrate" subito dopo (i meno possibili per far giocare tutti). Prima il
+ * numero di personaggi, poi quanti di una classe forte, poi gli account nuovi al
+ * quadrato per giocatore, come le entrate: due account nuovi a due giocatori, non
+ * due a uno. Per stare nei 2^53 non contano jolly e quadrati delle entrate, e dei
+ * preferiti solo i primi due: fra i personaggi da creare decide quasi sempre il primo.
  */
-function cerca(giocatori, jolly, istanza, postiRun) {
+function cerca(giocatori, jolly, istanza, postiRun, nuovi) {
   const nRun = postiRun.length;
   const maxEntrate = istanza.maxParty * nRun;
   const liberiRun = postiRun.map((posti) => istanza.maxParty - posti.reduce((n, p) => n + p.quanti, 0));
   if (liberiRun.some((l) => l < 0)) return null;
 
   // Pesi dal criterio meno importante: ogni criterio e' un intero fra 0 e il suo massimo.
-  const pesi = {};
+  const pesi = { jolly: 0, quadrati: 0, pg: 0, forti: 0, account: 0 };
   let peso = 1;
+  const criteriNuovi = [
+    ["account", maxEntrate * nRun],
+    ["forti", maxEntrate],
+    ["pg", maxEntrate],
+  ];
   const criteri = [
-    ["jolly", maxEntrate],
-    ["quadrati", maxEntrate * nRun],
-    ...istanza.preferiti.map((p) => [`preferito:${p.ruolo}`, maxEntrate]).reverse(),
+    ...(nuovi ? [] : [["jolly", maxEntrate], ["quadrati", maxEntrate * nRun]]),
+    ...istanza.preferiti.slice(0, nuovi ? 2 : undefined).map((p) => [`preferito:${p.ruolo}`, maxEntrate]).reverse(),
     // Un posto desiderato coperto dal suo ruolo e non dall'alternativa: la Gypsy prima del Soul Linker.
     ["principali", maxEntrate],
     ["desiderati", maxEntrate],
+    ...(nuovi === "entrate" ? criteriNuovi : []),
     ["entrate", maxEntrate],
+    ...(nuovi === "run" ? criteriNuovi : []),
     ["posti", maxEntrate],
   ];
   for (const [nome, massimo] of criteri) {
@@ -246,9 +397,10 @@ function cerca(giocatori, jolly, istanza, postiRun) {
   const versoRuoli = (n, account) => {
     for (const { forte, ...uso } of usiAccount(account, istanza)) {
       const preferito = pesi[`preferito:${uso.ruolo}`] ?? 0;
+      const costo = uso.nuovo ? pesi.pg + (forte ? pesi.forti : 0) : 0;
       const verso = nodoRuolo(uso.ruolo);
-      if (forte && nodiForti.has(uso.ruolo)) arco(n, nodiForti.get(uso.ruolo), 1, -preferito, { uso: { ...uso, forte: true } });
-      else arco(n, verso, 1, -preferito, { uso });
+      if (forte && nodiForti.has(uso.ruolo)) arco(n, nodiForti.get(uso.ruolo), 1, costo - preferito, { uso: { ...uso, forte: true } });
+      else arco(n, verso, 1, costo - preferito, { uso });
     }
   };
   arco(2, 1, liberiRun.reduce((a, b) => a + b, 0), 0);
@@ -266,9 +418,11 @@ function cerca(giocatori, jolly, istanza, postiRun) {
     const n = nodo();
     // La k-esima entrata costa 2k - 1 quadrati: in tutto entrate al quadrato.
     for (let k = 1; k <= runDi(g, nRun); k++) arco(0, n, 1, -pesi.entrate + (2 * k - 1) * pesi.quadrati);
+    // Il k-esimo account nuovo costa 2k - 1: in tutto account nuovi al quadrato.
+    let nuoviPrima = 0;
     g.account.forEach((a, ai) => {
       const n2 = nodo();
-      arco(n, n2, 1, 0, { giocatore: gi, account: ai });
+      arco(n, n2, 1, a.nuovo ? (2 * nuoviPrima++ + 1) * pesi.account : 0, { giocatore: gi, account: ai });
       versoRuoli(n2, a);
     });
     nodiJolly.forEach((nj, ji) => arco(n, nj, 1, pesi.jolly, { giocatore: gi, jolly: ji }));
@@ -291,7 +445,11 @@ function cerca(giocatori, jolly, istanza, postiRun) {
   });
   // Senza i posti obbligatori, che cambiano con la ripartizione: cosi' i costi si confrontano.
   const costo = archi.reduce((s, e, i) => s + flusso[i] * e.costo, 0) + obbligatori * pesi.posti;
-  return { scelti, costo };
+  // Quanto c'e' da creare, nello stesso ordine dei pesi, per confrontare le ripartizioni.
+  const nuoviPg = scelti.filter((c) => c.nuovo);
+  const nuoviAccount = giocatori.reduce((s, _, g) => s + scelti.filter((c) => c.giocatore === g && c.jolly === null && giocatori[g].account[c.account].nuovo).length ** 2, 0);
+  const daCreare = (nuoviPg.length * (maxEntrate + 1) + nuoviPg.filter((c) => c.forte).length) * (maxEntrate * nRun + 1) + nuoviAccount;
+  return { scelti, costo, daCreare };
 }
 
 /**
@@ -646,7 +804,7 @@ function pareggia(run, istanza, postiRun, puo = () => true) {
 }
 
 /** Le run nel formato del risultato, con chi resta fuori e perche'. */
-function componi(giocatori, jolly, istanza, membri, tipoRun) {
+function componi(giocatori, jolly, istanza, membri, tipoRun, spiegaMancano = true) {
   const tipi = composizioni(istanza);
   const run = membri.map((m, i) => ({
     membri: assegnaPosti(m, tipi[tipoRun[i]]),
@@ -675,7 +833,7 @@ function componi(giocatori, jolly, istanza, membri, tipoRun) {
     preferiti: istanza.preferiti.map((p) => tutti.filter((m) => m.ruolo === p.ruolo).length),
     jolly: tutti.filter((m) => m.jolly !== null).length,
     fuori,
-    mancano: run.length < istanza.maxRun ? cosaManca(giocatori, jolly, istanza, run.length + 1) : [],
+    mancano: spiegaMancano && run.length < istanza.maxRun ? cosaManca(giocatori, jolly, istanza, run.length + 1) : [],
   };
 }
 

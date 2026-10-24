@@ -172,6 +172,12 @@ input[type="text"], select {
 .tag { font-size: .78rem; color: var(--bradium); border: 1px solid color-mix(in srgb, var(--bradium) 45%, transparent); border-radius: 5px; padding: 0 5px; margin-left: 4px; display: inline-block; max-width: 100%; }
 .note-line { margin: 12px 0 0; padding: 7px 12px; border-left: 3px solid var(--verify); border-radius: 0 6px 6px 0; font-size: .95rem; background: var(--surface); }
 .note-line strong { color: var(--verify); }
+/* Come i pulsanti delle run nella tabella: acceso = proposta, spento e barrato = esclusa. */
+.escluse { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 12px; font-size: .95rem; }
+.escluse span { flex-basis: 100%; }
+.escluse .btn[aria-pressed="true"] { border-color: var(--bradium); background: color-mix(in srgb, var(--bradium) 16%, var(--surface)); font-weight: 700; }
+.escluse .btn[aria-pressed="false"] { color: var(--muted); text-decoration: line-through; }
+#suggerimenti .note-line:first-child { margin-top: 0; }
 
 .toast {
   position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px);
@@ -266,6 +272,11 @@ input[type="text"], select {
   <p class="hint" data-en="A Guild Account is an account of the guild: in the box, the classes of its characters, separated by /. Uncheck the Guild Accounts already used or not available.">Un Account Gilda è un account della gilda: nella casella le classi dei suoi personaggi, separate da /. Togli la spunta agli Account Gilda già usati o non disponibili.</p>
   <div class="tabella" id="jolly"></div>
   <div class="toolbar"><button class="btn" type="button" data-azione="nuovo-jolly" data-en="Add Guild Account">Aggiungi Account Gilda</button></div>
+
+  <h2 data-en="Characters to create">Personaggi da creare</h2>
+  <p class="hint" data-en="Which characters to create, and who should create them, to make more runs, and then to let more people play: as few characters as possible, the strong classes (Tanker HP, Sniper Incubus) only where they are needed, in the accounts that already exist when possible, and new accounts shared among the players. Each step adds to the previous ones. Guild Accounts stay as they are. Click a class to stop suggesting it, for example one that is hard to make.">Quali personaggi creare, e a chi, per fare più run e poi per far giocare più persone: meno personaggi possibile, le classi forti (HP Tanker, Sniper Incubus) solo dove servono, quando si può negli account che ci sono già, e gli account nuovi divisi fra i giocatori. Ogni passo si aggiunge ai precedenti. Gli Account Gilda restano come sono. Un clic su una classe smette di proporla, per esempio se è difficile da fare.</p>
+  <div class="escluse" id="escluse"></div>
+  <div id="suggerimenti"></div>
 </main>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
