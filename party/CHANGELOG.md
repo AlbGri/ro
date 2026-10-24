@@ -2,6 +2,12 @@
 
 Le versioni della pagina `party/`.
 
+## [1.25] - 2026-10-24
+
+- Horror Toy Factory: la run preferita e' quella con l'HP Tanker e un secondo High Priest. Il
+  Champion fa il tank solo se senza di lui si perde una run o qualcuno non gioca; prima era la run
+  preferita. Fra una run col Champion e una con lo Sniper Incubus resta meglio quella col Champion
+
 ## [1.24] - 2026-10-24
 
 - `Incolla l'elenco della gilda` si chiama `Modifica l'elenco`: il campo si apre con l'elenco della pagina

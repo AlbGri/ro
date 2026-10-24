@@ -51,10 +51,12 @@ export const ISTANZE = [
     ],
     // I tipi di run (Alberto, 23/10/2026), con i loro posti in piu' ai `posti`, in ordine di
     // preferenza: a parita' di run ed entrate prima meno run dell'ultimo tipo, poi del penultimo.
+    // - HP Tanker: due High Priest "scarsi" non la completano, ne basta uno che ci riesce. Dal
+    //   24/10/2026 e' la preferita (Alberto: "se si puo' evitare il champ come tanker lo preferirei");
+    //   fino alla 1.24 lo era il Champion
     // - Champion: un Champion con Steel Body tanka, chiunque lo giochi; non puo' usare Safety Wall,
-    //   quindi servono un High Priest di supporto e un secondo High Priest o un Priest (`ruoli`)
-    // - HP Tanker: due High Priest "scarsi" non la completano, ne basta uno che ci riesce. Il
-    //   Champion e' preferito: "la prima se ci sono poche persone, la seconda se ce ne sono di piu'"
+    //   quindi servono un High Priest di supporto e un secondo High Priest o un Priest (`ruoli`). Solo
+    //   se l'HP Tanker costa run o entrate; prima dello Sniper Incubus
     // - Sniper Incubus: la run da 4 senza Professor, con lo Sniper Incubus e l'HP Tanker; in
     //   qualsiasi run, ma solo se una run completa costa run o entrate
     // `forti`: quanti dei posti li gioca un personaggio della classe `forte` del ruolo, anche di un
@@ -62,19 +64,19 @@ export const ISTANZE = [
     // Tanker nelle run.
     tipi: [
       {
-        nome: "Champion",
+        nome: TANKER,
         posti: [
-          { ruolo: "champion", nome: "Champion", quanti: 1, tank: true },
-          { ruolo: "hp", nome: "High Priest", quanti: 1 },
-          { ruoli: ["hp", "priest"], nome: tr("High Priest o Priest", "High Priest or Priest"), quanti: 1 },
+          { ruolo: "hp", nome: "High Priest", quanti: 2, forti: 1, tank: true },
           { ruolo: "sniper", nome: "Sniper", quanti: 1 },
           { ruolo: "prof", nome: "Professor", quanti: 1 },
         ],
       },
       {
-        nome: TANKER,
+        nome: "Champion",
         posti: [
-          { ruolo: "hp", nome: "High Priest", quanti: 2, forti: 1, tank: true },
+          { ruolo: "champion", nome: "Champion", quanti: 1, tank: true },
+          { ruolo: "hp", nome: "High Priest", quanti: 1 },
+          { ruoli: ["hp", "priest"], nome: tr("High Priest o Priest", "High Priest or Priest"), quanti: 1 },
           { ruolo: "sniper", nome: "Sniper", quanti: 1 },
           { ruolo: "prof", nome: "Professor", quanti: 1 },
         ],

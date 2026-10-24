@@ -343,7 +343,7 @@ describe("HP Tanker e Soul Linker (Alberto, 23/10/2026)", () => {
     ]);
   });
 
-  it("a parita' di run ed entrate la run col Champion; senza secondo High Priest o Priest l'HP Tanker", () => {
+  it("a parita' di run ed entrate la run con l'HP Tanker; il Champion tanka solo se serve (Alberto, 24/10/2026)", () => {
     const giocatori = [
       giocatore("T", account("High Priest")),
       scarso("H", account("High Priest")),
@@ -352,20 +352,26 @@ describe("HP Tanker e Soul Linker (Alberto, 23/10/2026)", () => {
     ];
     const esito = calcolaRun(giocatori, []);
     verifica(giocatori, [], ISTANZA, esito);
+    // Il Champion entra lo stesso, in un posto libero: la run ha le stesse entrate.
     assert.equal(esito.run[0].tipo, 0);
-    assert.deepEqual(esito.run[0].membri.slice(0, 3).map((m) => [m.posto, giocatori[m.giocatore].nome]), [
+    assert.equal(esito.run[0].membri.length, 6);
+    assert.deepEqual(esito.run[0].membri.filter((m) => m.tank).map((m) => giocatori[m.giocatore].nome), ["T"]);
+    // Senza HP Tanker tanka il Champion, con un High Priest e un secondo High Priest o Priest.
+    const senzaTanker = [scarso("T", account("High Priest")), ...giocatori.slice(1)];
+    const champion = calcolaRun(senzaTanker, []);
+    verifica(senzaTanker, [], ISTANZA, champion);
+    assert.equal(champion.run[0].tipo, 1);
+    assert.deepEqual(champion.run[0].membri.slice(0, 3).map((m) => [m.posto, senzaTanker[m.giocatore].nome]), [
       ["Champion", "C"], ["High Priest", "T"], ["High Priest o Priest", "H"],
     ]);
-    // Se il Champion e l'HP Tanker sono lo stesso account, il Champion non ha il secondo High Priest.
+    // Se il Champion e l'HP Tanker sono lo stesso account tanka l'HP Tanker, non l'altro High Priest.
     const soloTanker = calcolaRun([giocatore("T", account("High Priest", "Champion")), scarso("H", account("High Priest")), ...altri.map((c) => giocatore(c, account(c)))], []);
     assert.equal(soloTanker.run.length, 1);
-    assert.equal(soloTanker.run[0].tipo, 1);
-    // Chi tanka: il Champion nella prima, l'HP Tanker (non l'altro High Priest) nella seconda.
-    assert.deepEqual(esito.run[0].membri.filter((m) => m.tank).map((m) => giocatori[m.giocatore].nome), ["C"]);
+    assert.equal(soloTanker.run[0].tipo, 0);
     assert.deepEqual(soloTanker.run[0].membri.filter((m) => m.tank).map((m) => m.giocatore), [0]);
   });
 
-  it("un solo HP Tanker e due Champion: tre run, due col Champion e una con l'HP Tanker", () => {
+  it("un solo HP Tanker e due Champion: tre run, una con l'HP Tanker e due col Champion", () => {
     const tre = (c) => [account(c), account(c), account(c)];
     const giocatori = [
       giocatore("T", account("High Priest")),
@@ -377,8 +383,8 @@ describe("HP Tanker e Soul Linker (Alberto, 23/10/2026)", () => {
     const esito = calcolaRun(giocatori, []);
     verifica(giocatori, [], ISTANZA, esito);
     assert.equal(esito.run.length, 3);
-    assert.deepEqual(esito.run.map((r) => r.tipo).sort(), [0, 0, 1]);
-    assert.ok(esito.run.filter((r) => r.tipo === 1).every((r) => r.membri.some((m) => m.giocatore === 0 && m.forte)));
+    assert.deepEqual(esito.run.map((r) => r.tipo).sort(), [0, 1, 1]);
+    assert.ok(esito.run.filter((r) => r.tipo === 0).every((r) => r.membri.some((m) => m.giocatore === 0 && m.forte)));
   });
 
   it("20 giocatori con tre account, pochi Champion e HP Tanker: run miste, e risponde in fretta", () => {
@@ -416,8 +422,8 @@ describe("HP Tanker e Soul Linker (Alberto, 23/10/2026)", () => {
     const dove = (nome) => esito.run.flatMap((r, i) => (r.membri.some((m) => giocatori[m.giocatore].nome === nome) ? [i + 1] : []));
     assert.deepEqual(dove("Asimo"), [1, 2]);
     assert.deepEqual(dove("Tardi"), [3]);
-    // Asimo fa il Champion in una delle due: e' la run col Champion.
-    assert.ok(esito.run.every((r, i) => r.tipo !== 0 || i < 2));
+    // Una run col Champion, se c'e', e' una delle prime due, quelle di Asimo.
+    assert.ok(esito.run.every((r, i) => r.tipo !== 1 || i < 2));
     assert.deepEqual(esito.fuori, []);
   });
 
@@ -435,7 +441,7 @@ describe("HP Tanker e Soul Linker (Alberto, 23/10/2026)", () => {
     const conProf = [...giocatori, scarso("P", account("Professor"))];
     const completa = calcolaRun(conProf, []);
     verifica(conProf, [], ISTANZA, completa);
-    assert.deepEqual(completa.run.map((r) => r.tipo), [1]);
+    assert.deepEqual(completa.run.map((r) => r.tipo), [0]);
   });
 
   it("Sniper Incubus in qualsiasi run: un solo Professor, due run, una completa e una senza", () => {
@@ -449,7 +455,7 @@ describe("HP Tanker e Soul Linker (Alberto, 23/10/2026)", () => {
     ];
     const esito = calcolaRun(giocatori, []);
     verifica(giocatori, [], ISTANZA, esito);
-    assert.deepEqual(esito.run.map((r) => r.tipo).sort(), [1, 2]);
+    assert.deepEqual(esito.run.map((r) => r.tipo).sort(), [0, 2]);
     assert.ok(esito.run.find((r) => r.tipo === 2).membri.some((m) => m.ruolo === "sniper" && m.forte && !m.tank));
   });
 
