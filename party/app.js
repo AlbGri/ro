@@ -9,7 +9,7 @@
  */
 
 import { calcolaRun, suggerisci } from "./calcolo.js";
-import { ALTRO, CLASSI, classeForte, HP_TANKER, ISTANZE, MAX_RUN, nomeClasse, tr } from "./dati.js";
+import { ALTRO, CLASSI, classeForte, ISTANZE, MAX_RUN, nomeClasse, tr } from "./dati.js";
 import { breve, conTanker, leggiClassi, leggiElenco, pulisci, scriviElenco } from "./testo.js";
 
 const STORAGE_KEY = "ragnarok-party/stato";
@@ -608,15 +608,13 @@ document.addEventListener("click", (event) => {
       file.click();
       return;
     case "apri-elenco":
-      incollaEl.hidden = false;
-      disegnaAnteprima();
-      elencoEl.focus();
+      apriElenco();
       return;
     case "chiudi-elenco":
       incollaEl.hidden = true;
       return;
-    case "aggiungi-elenco":
-      aggiungiElenco();
+    case "applica-elenco":
+      applicaElenco();
       return;
     case "esporta-elenco":
       scarica(`party-elenco-${oggi()}.txt`, scriviElenco(stato));
@@ -670,68 +668,83 @@ file.addEventListener("change", async () => {
 const incollaEl = document.getElementById("incolla");
 const elencoEl = document.getElementById("elenco");
 const anteprimaEl = document.getElementById("anteprima");
-const aggiungiEl = document.getElementById("aggiungi");
-const stessoNome = (a, b) => a.trim().toLowerCase() === b.trim().toLowerCase();
+const applicaEl = document.getElementById("applica");
 
 /** L'elenco letto con i soprannomi imparati; null se il campo e' vuoto. */
 const elencoLetto = () => (elencoEl.value.trim() ? leggiElenco(elencoEl.value, stato.soprannomi) : null);
 
-/** Chi ha trovato la pagina nel testo incollato, o cosa va corretto. */
+/** Il campo si apre con l'elenco della pagina, per correggerlo e scrivere i nuovi in fondo (Alberto, 24/10/2026). */
+function apriElenco() {
+  const testo = scriviElenco(stato, false);
+  elencoEl.value = testo ? `${testo}\n` : "";
+  elencoEl.rows = Math.min(Math.max(elencoEl.value.split("\n").length, 9), 24);
+  incollaEl.hidden = false;
+  disegnaAnteprima();
+  elencoEl.focus();
+  elencoEl.setSelectionRange(elencoEl.value.length, elencoEl.value.length);
+  elencoEl.scrollTop = elencoEl.scrollHeight;
+}
+
+/**
+ * Cosa cambia nella tabella con l'elenco del campo, per nome (maiuscole a parte). La tabella si
+ * confronta riletta dal suo elenco, cosi' le due parti hanno la stessa forma.
+ */
+function cambiamenti(letto) {
+  const prima = leggiElenco(scriviElenco(stato, false), stato.soprannomi);
+  const esito = { nuovi: [], modificati: [], tolti: [] };
+  for (const lista of ["giocatori", "jolly"]) {
+    const vecchi = new Map(prima[lista].map((x) => [x.nome.toLowerCase(), x]));
+    for (const x of letto[lista]) {
+      const vecchio = vecchi.get(x.nome.toLowerCase());
+      if (!vecchio) esito.nuovi.push(x.nome);
+      else if (JSON.stringify(vecchio) !== JSON.stringify(x)) esito.modificati.push(x.nome);
+      vecchi.delete(x.nome.toLowerCase());
+    }
+    esito.tolti.push(...[...vecchi.values()].map((x) => x.nome));
+  }
+  // Le righe senza account (o un Account Gilda senza classi) non sono nell'elenco: si tolgono anche loro.
+  const vuoti = [...stato.giocatori.filter((g) => !g.account.some((a) => a.trim())), ...stato.jolly.filter((j) => !j.classi.trim())];
+  esito.tolti.push(...vuoti.map((x) => x.nome.trim()).filter(Boolean));
+  return esito;
+}
+
+/** Cosa cambia nella tabella con il testo del campo, o cosa va corretto. */
 function disegnaAnteprima() {
   const letto = elencoLetto();
-  aggiungiEl.disabled = !letto || letto.errori.length > 0 || letto.giocatori.length + letto.jolly.length === 0;
+  applicaEl.disabled = !letto || letto.errori.length > 0 || letto.giocatori.length + letto.jolly.length === 0;
   if (!letto) {
     anteprimaEl.innerHTML = "";
   } else if (letto.errori.length) {
     anteprimaEl.innerHTML = `<div class="empty"><strong>${tr("Da correggere nel testo:", "To fix in the text:")}</strong><ul>${letto.errori.map((e) => `<li>${escape(e)}</li>`).join("")}</ul></div>`;
   } else {
-    const gia = letto.giocatori.filter((g) => stato.giocatori.some((x) => stessoNome(x.nome, g.nome))).length;
+    const { nuovi, modificati, tolti } = cambiamenti(letto);
     const parti = [
-      plurale(letto.giocatori.length - gia, tr("giocatore nuovo", "new player"), tr("giocatori nuovi", "new players")),
-      ...(gia ? [tr(`${gia} da aggiornare`, `${gia} to update`)] : []),
-      ...(letto.jolly.length ? [plurale(letto.jolly.length, tr("Account Gilda", "Guild Account"), tr("Account Gilda", "Guild Accounts"))] : []),
-    ];
-    anteprimaEl.innerHTML = `<p class="hint">${tr("Trovati", "Found")}: ${escape(parti.join(", "))}.</p>`;
+      [tr("Nuovi", "New"), nuovi],
+      [tr("Modificati", "Changed"), modificati],
+      [tr("Da togliere", "To remove"), tolti],
+    ].filter(([, nomi]) => nomi.length > 0);
+    anteprimaEl.innerHTML = `<p class="hint">${parti.length
+      ? parti.map(([titolo, nomi]) => `${titolo}: ${escape(nomi.join(", "))}.`).join(" ")
+      : tr("Nessuna modifica alla tabella.", "No changes to the table.")}</p>`;
   }
 }
 
-/**
- * Aggiunge l'elenco alla tabella: chi ha lo stesso nome di un giocatore o di un jolly
- * gia' presente prende gli account dell'elenco, gli altri si aggiungono.
- */
-function aggiungiElenco() {
+/** La tabella diventa l'elenco del campo: chi non c'e' piu' si toglie, dopo una conferma. */
+function applicaElenco() {
   const letto = elencoLetto();
   if (!letto) return;
-  const aggiornati = [
-    ...letto.giocatori.filter((g) => stato.giocatori.some((x) => stessoNome(x.nome, g.nome))),
-    ...letto.jolly.filter((j) => stato.jolly.some((x) => stessoNome(x.nome, j.nome))),
-  ].map((x) => x.nome);
-  if (aggiornati.length && !confirm(tr(
-    `Sono già nella tabella: ${aggiornati.join(", ")}. Sostituire i loro account con quelli dell'elenco?`,
-    `Already in the table: ${aggiornati.join(", ")}. Replace their accounts with those in the list?`,
+  const { nuovi, modificati, tolti } = cambiamenti(letto);
+  if (tolti.length && !confirm(tr(
+    `Togliere dalla tabella ${tolti.join(", ")}? Non sono nell'elenco.`,
+    `Remove ${tolti.join(", ")} from the table? They are not in the list.`,
   ))) return;
-  for (const g of letto.giocatori) {
-    const esistente = stato.giocatori.find((x) => stessoNome(x.nome, g.nome));
-    // Run, assenza e HP Tanker li mette l'elenco, ma non li toglie: i messaggi di Discord non li hanno. Un
-    // account che nella tabella ha un HP Tanker lo tiene, se nell'elenco ha un High Priest.
-    const tanker = (testo) => leggiClassi(testo ?? "", stato.soprannomi).classi.includes(HP_TANKER);
-    const tieni = (a, i) => (tanker(esistente.account[i]) ? pulisci(conTanker(a, stato.soprannomi), stato.soprannomi) : a);
-    const account = esistente ? g.account.map(tieni) : g.account;
-    if (esistente) Object.assign(esistente, { account, run: g.run ?? esistente.run, presente: g.presente && esistente.presente });
-    else stato.giocatori.push({ nome: g.nome, presente: g.presente, run: g.run ?? TUTTE_LE_RUN, account });
-  }
-  for (const j of letto.jolly) {
-    const esistente = stato.jolly.find((x) => stessoNome(x.nome, j.nome));
-    if (esistente) esistente.classi = j.classi;
-    else stato.jolly.push({ nome: j.nome, disponibile: true, classi: j.classi });
-  }
+  stato.giocatori = letto.giocatori.map((g) => ({ nome: g.nome, presente: g.presente, run: g.run ?? TUTTE_LE_RUN, account: g.account }));
+  stato.jolly = letto.jolly.map((j) => ({ nome: j.nome, disponibile: j.disponibile, classi: j.classi }));
   cambiato(true);
-  elencoEl.value = "";
   incollaEl.hidden = true;
-  const nuovi = letto.giocatori.length + letto.jolly.length - aggiornati.length;
   avvisa(tr(
-    `Elenco aggiunto: ${plurale(nuovi, "nuovo", "nuovi")}, ${plurale(aggiornati.length, "aggiornato", "aggiornati")}.`,
-    `List added: ${nuovi} new, ${aggiornati.length} updated.`,
+    `Elenco applicato: ${plurale(nuovi.length, "nuovo", "nuovi")}, ${plurale(modificati.length, "modificato", "modificati")}, ${plurale(tolti.length, "tolto", "tolti")}.`,
+    `List applied: ${nuovi.length} new, ${modificati.length} changed, ${tolti.length} removed.`,
   ));
 }
 

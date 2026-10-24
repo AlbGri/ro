@@ -72,8 +72,8 @@ describe("elenco della gilda", () => {
       { nome: "Anna", presente: true, run: null, account: ["Prof/Stalker"] },
     ]);
     assert.deepEqual(letto.jolly, [
-      { nome: "Gilda1", classi: "Clown/Sniper" },
-      { nome: "Account Gilda 2", classi: "HP" },
+      { nome: "Gilda1", disponibile: true, classi: "Clown/Sniper" },
+      { nome: "Account Gilda 2", disponibile: true, classi: "HP" },
     ]);
   });
 
@@ -82,8 +82,8 @@ describe("elenco della gilda", () => {
     assert.deepEqual(letto.errori, []);
     assert.deepEqual(letto.giocatori, [{ nome: "Mary", presente: true, run: null, account: ["HP/Sniper", "Other"] }]);
     assert.deepEqual(letto.jolly, [
-      { nome: "Guild1", classi: "Clown" },
-      { nome: "Account Gilda 2", classi: "HP" },
+      { nome: "Guild1", disponibile: true, classi: "Clown" },
+      { nome: "Account Gilda 2", disponibile: true, classi: "HP" },
     ]);
     assert.deepEqual(leggiClassi("Other/Prof").classi, ["Altro", "Professor"]);
   });
@@ -122,20 +122,30 @@ describe("elenco della gilda", () => {
         { nome: "Senza", presente: true, run: [1, 2, 3], account: [""] },
         { nome: "Tardi", presente: false, run: [1, 3], account: ["HP"] },
       ],
-      jolly: [{ nome: "Gilda 1", classi: "Gypsy/Altro" }, { nome: "Vuoto", classi: "" }],
+      jolly: [{ nome: "Gilda 1", classi: "Gypsy/Altro" }, { nome: "Vuoto", classi: "" }, { nome: "Usato", disponibile: false, classi: "HP" }],
     };
     const testo = scriviElenco(stato);
     assert.match(testo, /Efreeet \(run 1-2\)\n1\) HP Tanker\/Paladin\/Clown\/Sniper\n2\) Bard/);
     assert.match(testo, /Tardi \(assente, run 1\+3\)/);
     assert.match(testo, /Account Gilda Gilda 1: Gypsy\/Altro/);
+    assert.match(testo, /Account Gilda Usato \(non disponibile\): HP/);
     assert.deepEqual(leggiElenco(testo), {
       giocatori: [
         { nome: "Efreeet", presente: true, run: [1, 2], account: ["HP Tanker/Paladin/Clown/Sniper", "Bard"] },
         { nome: "Giocatore 2", presente: true, run: null, account: ["Stalker"] },
         { nome: "Tardi", presente: false, run: [1, 3], account: ["HP"] },
       ],
-      jolly: [{ nome: "Gilda 1", classi: "Gypsy/Altro" }],
+      jolly: [{ nome: "Gilda 1", disponibile: true, classi: "Gypsy/Altro" }, { nome: "Usato", disponibile: false, classi: "HP" }],
       errori: [],
     });
+    // Il campo dell'elenco si apre senza intestazione, vuoto se non c'e' nessuno.
+    assert.equal(scriviElenco(stato, false), testo.slice(testo.indexOf("\n\n") + 2));
+    assert.equal(scriviElenco({ giocatori: [], jolly: [] }, false), "");
+  });
+
+  it("un nome due volte e' un errore, maiuscole a parte", () => {
+    const letto = leggiElenco("Jo\n1) HP\nMary\n1) Prof\njo\n1) Sniper\nAccount Gilda G1: HP\nGuild Account g1 (unavailable): Clown\n");
+    assert.deepEqual(letto.errori, ["jo compare due volte", "g1 compare due volte"]);
+    assert.deepEqual(letto.jolly.map((j) => [j.nome, j.disponibile]), [["G1", true], ["g1", false]]);
   });
 });

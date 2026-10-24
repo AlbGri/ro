@@ -2,6 +2,16 @@
 
 Le versioni della pagina `party/`.
 
+## [1.23] - 2026-10-24
+
+- `Incolla l'elenco della gilda` si apre con l'elenco della pagina: si corregge, si cancella chi non
+  c'e' piu' e si scrivono i nuovi in fondo. Il pulsante `Applica` (prima `Aggiungi alla pagina`)
+  sostituisce la tabella con il testo, comprese assenza e run, che prima si potevano mettere ma non
+  togliere. Sotto il testo la pagina dice chi e' nuovo, modificato e da togliere, e chiede conferma
+  prima di togliere qualcuno. Un nome scritto due volte va corretto
+- Nell'elenco l'Account Gilda non disponibile si scrive `Account Gilda nome (non disponibile): classi`
+  (`unavailable` in inglese), anche in `Esporta l'elenco`
+
 ## [1.22] - 2026-10-24
 
 - Nuova sezione `Personaggi da creare`, in fondo alla pagina: quali personaggi creare, e a chi, per fare

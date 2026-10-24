@@ -14,6 +14,7 @@
  * quello che segue il nome e' il primo account. "Account Gilda nome: classi" e' un jolly.
  * Fra parentesi dopo il nome chi non c'e' e le run in cui c'e': "Efreeet (assente, run 1-2)". Fino alla 1.17 anche la spunta
  * HP Tanker del giocatore, che diventa HP Tanker nei suoi High Priest.
+ * "Account Gilda nome (non disponibile): classi" e' un jolly gia' usato o che non c'e'.
  * Le parole valgono nelle due lingue, qualunque sia quella della pagina (Alberto,
  * 22/10/2026): "Guild Account nome: classi", "HP and Sniper", "Other".
  * Solo le classi, niente nomi dei personaggi: "basta la classe" (Alberto).
@@ -134,6 +135,9 @@ const PAROLE_TANKER = ["hp tanker", "tanker hp"];
 // Chi non c'e' (Alberto, 23/10/2026: incollato, l'elenco li rimetteva tutti presenti).
 const PAROLE_ASSENTE = ["assente", "absent"];
 const ASSENTE = tr("assente", "absent");
+// L'Account Gilda gia' usato o non disponibile: dalla 1.23 il testo dell'elenco sostituisce la tabella.
+const PAROLE_NON_DISPONIBILE = ["non disponibile", "unavailable", "not available"];
+const NON_DISPONIBILE = tr("non disponibile", "unavailable");
 
 /**
  * Le run di "run 1-2", "run 2", "run 1+3", o di "2 run" (fino alla 1.14: quante run, che si
@@ -262,7 +266,7 @@ export function conTanker(testo, imparati = {}) {
  *
  * @param {string} testo
  * @param {Object<string, string>} imparati i soprannomi imparati, chiave -> classe
- * @returns {{giocatori: Array<{nome: string, presente: boolean, run: number[] | null, account: string[]}>, jolly: Array<{nome: string, classi: string}>,
+ * @returns {{giocatori: Array<{nome: string, presente: boolean, run: number[] | null, account: string[]}>, jolly: Array<{nome: string, disponibile: boolean, classi: string}>,
  *   errori: string[]}} gli account e le classi dei jolly gia' riscritti con `pulisci`
  */
 export function leggiElenco(testo, imparati = {}) {
@@ -280,7 +284,10 @@ export function leggiElenco(testo, imparati = {}) {
 
     const jolly = testoRiga.match(JOLLY);
     if (jolly) {
-      esito.jolly.push({ nome: jolly[1].trim() || `${JOLLY_PAROLA} ${esito.jolly.length + 1}`, classi: pulisci(jolly[2], imparati) });
+      const parentesi = jolly[1].match(PARENTESI);
+      const spento = Boolean(parentesi) && PAROLE_NON_DISPONIBILE.includes(chiave(parentesi[1]));
+      const nome = (spento ? jolly[1].replace(PARENTESI, "") : jolly[1]).trim();
+      esito.jolly.push({ nome: nome || `${JOLLY_PAROLA} ${esito.jolly.length + 1}`, disponibile: !spento, classi: pulisci(jolly[2], imparati) });
       return;
     }
     const account = testoRiga.match(ACCOUNT);
@@ -308,11 +315,22 @@ export function leggiElenco(testo, imparati = {}) {
   esito.giocatori = esito.giocatori.map(({ tanker, ...g }) => g);
 
   for (const g of esito.giocatori) if (g.account.length === 0) esito.errori.push(tr(`${g.nome} non ha account`, `${g.nome} has no accounts`));
+  // Il testo diventa la tabella: un nome doppio e' quasi sempre un giocatore gia' nell'elenco, incollato di nuovo in fondo.
+  for (const lista of [esito.giocatori, esito.jolly]) {
+    const visti = new Set();
+    for (const { nome } of lista) {
+      if (visti.has(nome.toLowerCase())) esito.errori.push(tr(`${nome} compare due volte`, `${nome} appears twice`));
+      visti.add(nome.toLowerCase());
+    }
+  }
   return esito;
 }
 
-/** Tutti i giocatori e i jolly in un testo che `leggiElenco` rilegge. */
-export function scriviElenco(stato) {
+/**
+ * Tutti i giocatori e i jolly in un testo che `leggiElenco` rilegge. Senza intestazione e' il
+ * testo con cui si apre il campo dell'elenco, vuoto se non c'e' nessuno.
+ */
+export function scriviElenco(stato, intestazione = true) {
   const blocchi = [];
   stato.giocatori.forEach((g, i) => {
     const account = g.account.filter((a) => a.trim());
@@ -322,8 +340,9 @@ export function scriviElenco(stato) {
   });
   const jolly = stato.jolly
     .filter((j) => j.classi.trim())
-    .map((j, i) => `${JOLLY_PAROLA} ${j.nome || `${JOLLY_PAROLA} ${i + 1}`}: ${j.classi}`);
+    .map((j, i) => `${JOLLY_PAROLA} ${j.nome || `${JOLLY_PAROLA} ${i + 1}`}${j.disponibile === false ? ` (${NON_DISPONIBILE})` : ""}: ${j.classi}`);
   if (jolly.length > 0) blocchi.push(jolly.join("\n"));
+  if (!intestazione) return blocchi.length > 0 ? `${blocchi.join("\n\n")}\n` : "";
   const testa = tr(
     "# Elenco della gilda per la pagina Party: si incolla in \"Incolla l'elenco della gilda\".",
     "# Guild list for the Party page: paste it in \"Paste the guild list\".",
