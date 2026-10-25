@@ -2,6 +2,12 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.20] - 2026-10-25
+
+- Le carte si possono mettere solo negli slot dell'oggetto: la casella "Limitare le carte agli
+  slot dell'oggetto" e' attiva di partenza. Le build salvate e i link gia' condivisi tengono la
+  loro scelta
+
 ## [1.19] - 2026-10-24
 
 - Golden Trinket (in gioco "Sapha Wise Golden Trinket"): peso 1, come nel gioco (prima 10)
