@@ -123,6 +123,18 @@ main > ul li { margin-bottom: 8px; }
 .note-line.warn { border-color: var(--warn); }
 .note-line.verify { border-color: var(--verify); }
 
+/* Copia per Discord: con il mouse compare passando sul titolo, con il dito si vede sempre. */
+.copy-md {
+  border: 1px solid transparent; background: none; border-radius: 6px; padding: 3px 5px; margin-left: 8px;
+  cursor: pointer; color: var(--muted); vertical-align: middle; line-height: 0;
+}
+.copy-md svg { width: 18px; height: 18px; }
+.copy-md:hover { color: var(--ink); border-color: var(--line); background: var(--surface); }
+@media (hover: hover) {
+  .copy-md { opacity: 0; }
+  h1:hover .copy-md, h2:hover .copy-md, .stage:hover .copy-md, .copy-md:focus-visible { opacity: 1; }
+}
+
 .toast {
   position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px);
   background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; font-size: .92rem;
@@ -315,24 +327,106 @@ main > ul li { margin-bottom: 8px; }
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-// Copia del /navi, come nei livelli.
+// Copia del /navi, come nei livelli, e di una sezione o di un capitolo in markdown per Discord.
 const toast = document.getElementById("toast");
 let toastTimer;
-function avvisa(testo) {
+function avvisa(testo, durata = 1800) {
   toast.textContent = testo;
   toast.classList.add("show");
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove("show"), 1800);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), durata);
 }
-document.addEventListener("click", async (event) => {
-  const bottone = event.target.closest("[data-copy]");
-  if (!bottone) return;
+
+// Oltre questo Discord non manda il messaggio: propone un file, spesso vietato dove lo sono le immagini.
+const LIMITE_DISCORD = 2000;
+const pulisci = (testo) => testo.replace(/\s+/g, " ").trim();
+
+function inLinea(nodo) {
+  let testo = "";
+  for (const figlio of nodo.childNodes) {
+    if (figlio.nodeType === Node.TEXT_NODE) testo += figlio.textContent;
+    else if (figlio.nodeType !== Node.ELEMENT_NODE || figlio.matches(".copy-md")) continue;
+    else if (figlio.tagName === "STRONG") testo += `**${inLinea(figlio)}**`;
+    else if (figlio.tagName === "CODE") testo += `\`${figlio.textContent}\``;
+    else testo += inLinea(figlio);
+  }
+  return testo;
+}
+
+function blocco(el) {
+  if (el.matches(".stage")) return capitolo(el);
+  if (el.matches(".chips")) {
+    const etichette = [...el.querySelectorAll(".chip-label")].map((e) => pulisci(e.textContent));
+    const navi = [...el.querySelectorAll(".chip")].map((c) => `\`${c.dataset.copy}\``).join(" ");
+    return etichette.length ? `${etichette.join(" · ")}: ${navi}` : navi;
+  }
+  if (el.matches("ul, ol")) {
+    return [...el.children]
+      .map((li, i) => `${el.tagName === "OL" ? `${i + 1}.` : "-"} ${pulisci(inLinea(li))}`)
+      .join("\n");
+  }
+  if (el.matches(".note-line")) return `> ${pulisci(inLinea(el))}`;
+  if (el.matches("h1")) return `# ${pulisci(inLinea(el))}`;
+  if (el.matches("h2")) return `## ${pulisci(inLinea(el))}`;
+  return pulisci(inLinea(el));
+}
+
+function capitolo(stage) {
+  const numero = pulisci(stage.querySelector(".stage-num").textContent);
+  const titolo = pulisci(inLinea(stage.querySelector(".stage-title")));
+  const sotto = pulisci(stage.querySelector(".stage-sub").textContent);
+  const righe = [`**${numero} · ${titolo}** (${sotto})`];
+  for (const el of stage.querySelector(".stage-num").nextElementSibling.children) {
+    if (!el.matches(".stage-title, .stage-sub")) righe.push(blocco(el));
+  }
+  return righe.join("\n");
+}
+
+// Una sezione e' il titolo e cio' che lo segue fino al titolo successivo; i capitoli staccati da una riga vuota.
+function sezione(titolo) {
+  const elementi = [titolo];
+  if (titolo.matches("h1")) elementi.push(...[...titolo.parentElement.children].slice(1));
+  else for (let el = titolo.nextElementSibling; el && !el.matches("h2"); el = el.nextElementSibling) elementi.push(el);
+  return elementi.map((el) => (el.matches(".stage") ? `\n${blocco(el)}` : blocco(el))).join("\n");
+}
+
+// Dopo DOMContentLoaded, quando gate.js ha gia' messo l'inglese: un titolo con data-en perderebbe il pulsante.
+document.addEventListener("DOMContentLoaded", () => {
+  const titoli = [...document.querySelectorAll("main h1, main h2, .stage-title")];
+  for (const titolo of titoli) {
+    const bottone = document.createElement("button");
+    bottone.type = "button";
+    bottone.className = "copy-md";
+    bottone.title = tr("Copia per Discord", "Copy for Discord");
+    bottone.setAttribute("aria-label", bottone.title);
+    bottone.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>';
+    titolo.append(bottone);
+  }
+});
+
+async function copia(testo, conferma, durata) {
   try {
-    await navigator.clipboard.writeText(bottone.dataset.copy);
-    avvisa(`${tr("Copiato", "Copied")}: ${bottone.dataset.copy}`);
+    await navigator.clipboard.writeText(testo);
+    avvisa(conferma, durata);
   } catch {
     avvisa(tr("Non riesco a copiare: selezionalo a mano.", "Cannot copy: select it by hand."));
   }
+}
+
+document.addEventListener("click", (event) => {
+  const markdown = event.target.closest(".copy-md");
+  if (markdown) {
+    const titolo = markdown.parentElement;
+    const testo = titolo.matches(".stage-title") ? capitolo(titolo.closest(".stage")) : sezione(titolo);
+    if (testo.length <= LIMITE_DISCORD) copia(testo, tr("Copiato per Discord", "Copied for Discord"));
+    else copia(testo, tr(
+      `Copiato, ma sono ${testo.length} caratteri: Discord ne accetta ${LIMITE_DISCORD} per messaggio, incollalo in due volte.`,
+      `Copied, but it is ${testo.length} characters: Discord takes ${LIMITE_DISCORD} per message, paste it in two parts.`,
+    ), 5000);
+    return;
+  }
+  const bottone = event.target.closest("[data-copy]");
+  if (bottone) copia(bottone.dataset.copy, `${tr("Copiato", "Copied")}: ${bottone.dataset.copy}`);
 });
 </script>
 </body>
