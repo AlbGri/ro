@@ -2,6 +2,11 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.23] - 2026-10-25
+
+- "Ricomincia da zero" dopo aver caricato una build svuota anche il campo del nome: prima il
+  browser, ricaricando la pagina, poteva rimetterci il nome della build caricata
+
 ## [1.22] - 2026-10-25
 
 - Nuove armi dell'evento Halloween 2026, come nel gioco, tutte con 1 slot:

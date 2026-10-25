@@ -1029,10 +1029,10 @@ function avvia() {
   calcola();
   sincronizza();
   disegnaSalvate();
-  if (stato.nome) {
-    nomeBuild.value = stato.nome;
-    selSalvate.value = String(stato.salvate.indexOf(modificata));
-  }
+  // sempre, anche vuoto: dopo un ricaricamento (Ricomincia da zero) il browser rimette nel campo
+  // il testo di prima
+  nomeBuild.value = stato.nome;
+  if (stato.nome) selSalvate.value = String(stato.salvate.indexOf(modificata));
   salvaPresto();
   document.getElementById("caricamento").remove();
   document.getElementById("app").hidden = false;
