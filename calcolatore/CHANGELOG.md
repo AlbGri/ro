@@ -2,6 +2,18 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.22] - 2026-10-25
+
+- Nuove armi dell'evento Halloween 2026, come nel gioco, tutte con 1 slot:
+  - The Ripper (katar, Assassin): STR +2, Sonic Blow +5%, +10% a +5 e altri +10% a +9, danno
+    critico +5% a +7, ASPD +5% a +10
+  - Witch's Broom (bastone a una mano, Mage, Acolyte e Soul Linker): INT +2, MATK +15%, danno
+    magico contro i Formless +5% e altri +5% a +9, tempo di lancio -5% a +7
+  - Jack O' Rush (mazza, Novice e Super Novice): Bash +20%, ATK +10 e Bash +5% ogni 3
+    raffinamenti, Bash +15% a +7, danno fisico contro Undead e Demon +10% a +9
+- La possibilita' di causare Curse (The Ripper) e di lanciare Quagmire quando si e' colpiti
+  (Witch's Broom) e' indicata nella scheda dell'oggetto, ma non entra nel calcolo
+
 ## [1.21] - 2026-10-25
 
 - Il sito conta in forma anonima, senza cookie, le visite e alcune azioni (build salvate, caricate e importate, link copiati, confronto, backup e ripristino), per sapere quanto si usa

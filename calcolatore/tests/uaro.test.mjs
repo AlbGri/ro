@@ -278,3 +278,46 @@ test("Garling: mostro dell'evento Halloween 2026 con i dati di @mi", () => {
   scegli(m, "B_Enemy", garling);
   assert.deepEqual(["B_6", "B_12", "B_13", "B_14", "B_16", "B_17"].map((id) => testo(m, id)), ["5800", "420", "620", "22", "2300", "1600"]);
 });
+
+test("armi di Halloween 2026: The Ripper, Witch's Broom, Jack O' Rush", () => {
+  const m = creaMotore();
+  const bonus = (nome) => costante(m, "bonusValues")[costante(m, "BONUSID")[nome]];
+  const skill = (s) => (scegli(m, "A_ActiveSkill", s), costante(m, "bonusSkill")(s));
+  const arma = (job, nome) => {
+    scegli(m, "A_JOB", job);
+    const i = id(m, nome);
+    assert.ok(m.c.A_weapon1.elenco().some((o) => o.value == i), `${nome} fra le armi`);
+    scegli(m, "A_weapon1", i);
+    assert.equal(costante(m, "itemData")[i].slots, 1);
+  };
+  const raff = (r) => scegli(m, "A_Weapon_refine", r);
+
+  arma(8, "The Ripper"); // Assassin
+  raff(0);
+  const [critico, aspd] = [bonus("CRIT_DMG_PERCENT"), bonus("ASPD")];
+  assert.equal(skill(83), 0); // Sonic Blow: il +5% base e' nei bonus dell'oggetto (5083)
+  raff(5);
+  assert.equal(skill(83), 10);
+  raff(7);
+  assert.equal(bonus("CRIT_DMG_PERCENT"), critico + 5);
+  raff(10);
+  assert.deepEqual([skill(83), bonus("CRIT_DMG_PERCENT"), bonus("ASPD")], [20, critico + 5, aspd + 5]);
+
+  arma(5, "Witch's Broom"); // Magician
+  raff(0);
+  const [lancio, formless] = [bonus("CAST_TIME_PERCENT"), costante(m, "bonusValues")[170]];
+  assert.equal(formless, 5);
+  raff(9);
+  assert.deepEqual([bonus("CAST_TIME_PERCENT"), costante(m, "bonusValues")[170]], [lancio - 5, 10]);
+  assert.match(m.descrizioneOggetto(id(m, "Witch's Broom")), /3% chance to cast \[Quagmire\] Lvl 1/);
+
+  arma(20, "Jack O' Rush"); // Super Novice
+  raff(0);
+  const [atk, undead] = [bonus("ATK"), bonus("DMG_UNDEAD_PERCENT")];
+  assert.equal(skill(6), 0); // Bash: il +20% base e' nei bonus dell'oggetto (5006)
+  raff(6);
+  assert.deepEqual([skill(6), bonus("ATK")], [10, atk + 20]);
+  raff(9);
+  assert.deepEqual([skill(6), bonus("ATK"), bonus("DMG_UNDEAD_PERCENT"), bonus("DMG_DEMON_PERCENT")], [30, atk + 30, undead + 10, 10]);
+  arma(0, "Jack O' Rush"); // Novice
+});

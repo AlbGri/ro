@@ -3326,6 +3326,15 @@ function bonusSkill(skillBase) {
     EquipNumSearch(EQUIPID.CANNON_SPEAR)
   )
     bonus += 3 * n_A_Weapon_refine;
+  // uaRO: The Ripper, Sonic Blow +10% a +5 e +10% a +9 (screen del gioco, evento Halloween 2026)
+  if (
+    (n_A_ActiveSkill == SKILLID.SONIC_BLOW || n_A_ActiveSkill == SKILLID.SONIC_BLOW_SOUL_LINKED) &&
+    n_A_Equip[0] == THE_RIPPER_UARO
+  )
+    bonus += (n_A_Weapon_refine >= 5 ? 10 : 0) + (n_A_Weapon_refine >= 9 ? 10 : 0);
+  // uaRO: Jack O' Rush, Bash +5% ogni 3 raffinamenti e +15% a +7 (screen del gioco)
+  if (n_A_ActiveSkill == SKILLID.BASH && n_A_Equip[0] == JACK_O_RUSH_UARO)
+    bonus += 5 * Math.floor(n_A_Weapon_refine / 3) + (n_A_Weapon_refine >= 7 ? 15 : 0);
   return bonus;
 }
 // danno medio dell'attacco normale da quello di un colpo: media pesata di Raging Trifecta Blow,

@@ -9,9 +9,13 @@ var GIGANTIC_GOAT_UARO = [];
 var BOITATA_HAT_UARO = 0;
 var OLD_MINSTREL_HAT_UARO = 0;
 var GARLING_CARD_UARO = 0;
+var THE_RIPPER_UARO = 0;
+var WITCHS_BROOM_UARO = 0;
+var JACK_O_RUSH_UARO = 0;
 
 // Chiamata da StAllCalc (statistiche.js) dopo la somma dei bonus dell'equipaggiamento; oltre ai
-// copricapi, le carte i cui bonus dipendono dal raffinamento
+// copricapi, le carte e le armi i cui bonus dipendono dal raffinamento. I bonus delle skill per
+// raffinamento sono in bonusSkill (danni.js)
 function applyUaroHeadgearBonuses() {
   // Mitra: MATK +10 con INT base almeno 90 (Item Changes, Dimonka)
   if (n_A_Equip[2] == 1876 && SU_INT >= 90) bonusValues[BONUSID.MATK] += 10;
@@ -35,6 +39,23 @@ function applyUaroHeadgearBonuses() {
   // Garling Card: CRI +1 ogni 2 raffinamenti delle calzature (screen del gioco)
   if (GARLING_CARD_UARO && n_A_card[13] == GARLING_CARD_UARO)
     bonusValues[BONUSID.CRIT] += Math.floor(n_A_SHOES_REFINE / 2);
+  // Armi dell'evento Halloween 2026 (screen del gioco)
+  if (THE_RIPPER_UARO && n_A_Equip[0] == THE_RIPPER_UARO) {
+    if (n_A_Weapon_refine >= 7) bonusValues[BONUSID.CRIT_DMG_PERCENT] += 5;
+    if (n_A_Weapon_refine >= 10) bonusValues[BONUSID.ASPD] += 5;
+  }
+  if (WITCHS_BROOM_UARO && n_A_Equip[0] == WITCHS_BROOM_UARO) {
+    if (n_A_Weapon_refine >= 7) bonusValues[BONUSID.CAST_TIME_PERCENT] -= 5;
+    // 170 + razza: danno magico contro la razza (0 = Formless)
+    if (n_A_Weapon_refine >= 9) bonusValues[170] += 5;
+  }
+  if (JACK_O_RUSH_UARO && n_A_Equip[0] == JACK_O_RUSH_UARO) {
+    bonusValues[BONUSID.ATK] += 10 * Math.floor(n_A_Weapon_refine / 3);
+    if (n_A_Weapon_refine >= 9) {
+      bonusValues[BONUSID.DMG_UNDEAD_PERCENT] += 10;
+      bonusValues[BONUSID.DMG_DEMON_PERCENT] += 10;
+    }
+  }
 }
 
 (function () {
@@ -209,6 +230,30 @@ function applyUaroHeadgearBonuses() {
   // Garling Card (calzature, evento Halloween 2026, id 300557 nel gioco): CRI +2, danno critico
   // +5%; CRI +1 ogni 2 raffinamenti delle calzature in applyUaroHeadgearBonuses
   GARLING_CARD_UARO = aggiungiCarta(6, "Garling", "<b>For every 2 refine levels of the footgear:</b><br>CRIT +1", [BONUSID.CRIT, 2, BONUSID.CRIT_DMG_PERCENT, 5]);
+
+  // Armi dell'evento Halloween 2026, dagli screen del gioco di Alberto (25/10/2026). In rAthena gli
+  // stessi id (610044, 26140, 590112) sono armi diverse per la quarta classe. I bonus per
+  // raffinamento sono in applyUaroHeadgearBonuses e in bonusSkill (danni.js); Curse e Quagmire
+  // sono solo nella descrizione. 133: Curse al bersaglio (130 + v_Effect); 5083 e 5388: Sonic
+  // Blow e Sonic Blow con l'anima, come gli altri oggetti del motore; 5006: Bash; 194:
+  // Indestructible. jobMask 108: Assassin; 77: Mage, Acolyte e Soul Linker; 50: Novice e Super Novice
+  THE_RIPPER_UARO = nuovo({
+    equipType: 11, attackOrDefense: 150, weaponLevel: 4, slots: 1, weight: 110, requiredLevel: 70, name: "The Ripper", jobMask: 108,
+    description: "<b>[Refine Rate 5~10]</b><br>[Sonic Blow] skill damage +10%<br><b>[Refine Rate 7~10]</b><br>Critical damage +5%<br><b>[Refine Rate 9~10]</b><br>[Sonic Blow] skill damage +10%<br><b>[Refine Rate 10]</b><br>ASPD +5%",
+    bonuses: [{ id: BONUSID.STR, value: 2 }, { id: 5083, value: 5 }, { id: 5388, value: 5 }, { id: 133, value: 2 }],
+  });
+  // autospell: Quagmire Lv 1, 3%, quando si ricevono danni fisici (6); 0 = non si sceglie come skill
+  m_AutoSpellSkill.push([m_AutoSpellSkill.length, 0, SKILLID.QUAGMIRE, 1, 3, 6]);
+  WITCHS_BROOM_UARO = nuovo({
+    equipType: 9, attackOrDefense: 50, weaponLevel: 3, slots: 1, weight: 40, requiredLevel: 60, name: "Witch's Broom", jobMask: 77,
+    description: "<b>[Refine Rate 7~10]</b><br>Casting Time -5%<br><b>[Refine Rate 9~10]</b><br>Deal +5% MATK based damage against [Formless] race monsters.",
+    bonuses: [{ id: BONUSID.INT, value: 2 }, { id: BONUSID.MATK_PERCENT, value: 15 }, { id: 170, value: 5 }, { id: 221, value: m_AutoSpellSkill.length - 1 }],
+  });
+  JACK_O_RUSH_UARO = nuovo({
+    equipType: 8, attackOrDefense: 140, weaponLevel: 3, slots: 1, weight: 150, requiredLevel: 50, name: "Jack O' Rush", jobMask: 50,
+    description: "<b>For every 3 refine levels:</b><br>ATK +10<br>[Bash] skill damage +5%<br><b>[Refine Rate 7~10]</b><br>[Bash] skill damage +15%<br><b>[Refine Rate 9~10]</b><br>Deal +10% ATK based damage against [Undead] and [Demon] race monsters.",
+    bonuses: [{ id: 5006, value: 20 }, { id: 194, value: 1 }],
+  });
 
   // Garling (evento Halloween 2026), da @mi nel gioco. EXP divisa per 5, come quella degli altri
   // mostri del motore (rAthena): @mi la mostra gia' moltiplicata per i rate del server (Alligator
