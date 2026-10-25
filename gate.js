@@ -376,4 +376,28 @@
 
   /** Si risolve quando l'accesso e' consentito: la attende chi non deve partire prima. */
   window.accessGranted = requireAccess();
+
+  // ---------------------------------------------------------- statistiche ---
+
+  // Visite contate con GoatCounter, senza cookie ne' dati personali (Alberto,
+  // 25/10/2026): pannello in rotools.goatcounter.com. La richiesta la manda
+  // questo codice e non il loro count.js, per non eseguire script di terzi e
+  // perche' i filtri pubblicitari bloccano soprattutto quello. Solo dopo il
+  // codice, per contare chi usa il sito e non chi si ferma alla schermata, e
+  // solo in https: le prove da localhost o da file non contano.
+  const count = () => {
+    const query = new URLSearchParams({
+      p: location.pathname,
+      t: document.title,
+      r: document.referrer,
+      rnd: Math.random().toString(36).slice(2),
+    });
+    new Image().src = "https://rotools.goatcounter.com/count?" + query;
+  };
+  window.accessGranted.then(() => {
+    if (location.protocol !== "https:") return;
+    // il titolo c'e' solo quando la pagina e' stata letta
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", count);
+    else count();
+  });
 })();
