@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="it" data-bilingual>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>ro-tools – Statistiche</title>
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#F5F7F1">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1B2420">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<script src="../gate.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Colori e caratteri sono quelli della guida Nuovo Mondo. */
+:root {
+  --bg: #E6EBE2;
+  --surface: #F5F7F1;
+  --surface-2: #EDF1E8;
+  --ink: #1D2821;
+  --muted: #56655B;
+  --line: #C6D0C1;
+  --accent: #6A4C9C;
+  --warn: #A3402C;
+  --focus: #6A4C9C;
+  --serif: "Alegreya", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: "Atkinson Hyperlegible", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131A16; --surface: #1B2420; --surface-2: #212C27; --ink: #E3EAE2; --muted: #9DAA9F; --line: #33413A;
+    --accent: #B79CEB; --warn: #F08A72; --focus: #B79CEB;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131A16; --surface: #1B2420; --surface-2: #212C27; --ink: #E3EAE2; --muted: #9DAA9F; --line: #33413A;
+  --accent: #B79CEB; --warn: #F08A72; --focus: #B79CEB;
+  color-scheme: dark;
+}
+:root { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--sans); font-size: 16px; line-height: 1.5;
+}
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+
+/* Intestazione, come nella guida */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  padding-top: env(safe-area-inset-top, 0px);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-inner {
+  max-width: 960px; margin: 0 auto; min-height: 64px;
+  display: flex; align-items: center; gap: 16px; padding: 8px 20px; flex-wrap: wrap;
+}
+.brand { font-family: var(--serif); font-weight: 700; font-size: 1.15rem; white-space: nowrap; flex: 1; }
+.btn {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 8px;
+  padding: 7px 12px; cursor: pointer; font-size: .92rem; line-height: 1.2;
+}
+.btn:hover { border-color: var(--muted); }
+a.btn { text-decoration: none; }
+/* Menu ⚙, copiato dalla guida */
+.more { position: relative; }
+.more > summary { list-style: none; }
+.more > summary::-webkit-details-marker { display: none; }
+.more > summary.gear { padding-left: 9px; padding-right: 9px; font-size: 1.05rem; }
+.more-menu {
+  position: absolute; right: 0; top: calc(100% + 6px); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 10px; padding: 6px; display: grid; gap: 4px; min-width: 220px;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--ink) 18%, transparent);
+}
+.more-menu .btn { text-align: left; border-color: transparent; }
+.more-menu .btn:hover { background: var(--surface-2); }
+
+main { max-width: 960px; margin: 0 auto; padding: 28px 20px 40px; }
+.hero { padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.hero h1 { font-family: var(--serif); font-size: clamp(2.1rem, 4.5vw, 3.2rem); line-height: 1.05; margin: 0 0 12px; font-weight: 700; letter-spacing: -.01em; }
+.lead { font-size: 1.12rem; margin: 0 0 8px; color: var(--muted); }
+.hint { font-size: .88rem; color: var(--muted); margin: 0; }
+h2 { font-family: var(--serif); font-size: 1.4rem; line-height: 1.15; margin: 0 0 12px; font-weight: 700; }
+
+/* Il periodo vale per tutto cio' che sta sotto */
+.periodi { display: flex; gap: 8px; flex-wrap: wrap; margin: 20px 0; }
+.periodi .btn[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 16%, var(--surface)); font-weight: 700; }
+#contenuto.carica { opacity: .5; }
+.errore { margin: 0 0 16px; padding: 12px 16px; border-left: 4px solid var(--warn); background: var(--surface); border-radius: 0 8px 8px 0; }
+.errore[hidden] { display: none; }
+
+.card { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 16px 18px; min-width: 0; }
+.numeri { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 12px; }
+.numero .etichetta { color: var(--muted); font-size: .9rem; }
+.numero .valore { font-size: 2rem; font-weight: 700; line-height: 1.15; }
+.numero.principale .valore { font-size: 3rem; }
+.sezioni { display: grid; gap: 12px; }
+.griglia { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+
+/* Andamento: una linea, l'area appena accennata, griglia sottile */
+.grafico { position: relative; height: 220px; }
+.grafico svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.grafico svg:focus-visible { outline-offset: 4px; }
+.grafico .griglia-y { stroke: var(--line); stroke-width: 1; }
+.grafico .testo-asse { fill: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.grafico .area { fill: var(--accent); fill-opacity: .1; }
+.grafico .linea { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.grafico .punto { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+.grafico .mirino { stroke: var(--muted); stroke-width: 1; }
+.suggerimento {
+  position: absolute; top: 0; pointer-events: none; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 8px; padding: 6px 10px; font-size: .88rem; line-height: 1.3; white-space: nowrap;
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--ink) 14%, transparent);
+}
+.suggerimento strong { display: block; font-size: 1rem; }
+.suggerimento span { color: var(--muted); }
+.suggerimento[hidden] { display: none; }
+.numeri-giorni { margin-top: 10px; font-size: .9rem; }
+.numeri-giorni summary { cursor: pointer; color: var(--muted); }
+.numeri-giorni table { border-collapse: collapse; margin-top: 8px; font-variant-numeric: tabular-nums; }
+.numeri-giorni td, .numeri-giorni th { padding: 2px 16px 2px 0; text-align: left; font-weight: 400; }
+.numeri-giorni th { color: var(--muted); }
+
+/* Classifiche: nome, barra, valore. Il colore e' della barra, mai del testo */
+.barre { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.barre li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; align-items: baseline; }
+.barre .nome { overflow-wrap: anywhere; }
+.barre .valore { font-variant-numeric: tabular-nums; font-weight: 700; text-align: right; }
+.barre .valore span { color: var(--muted); font-weight: 400; margin-left: 6px; }
+.barre .binario { grid-column: 1 / -1; height: 10px; }
+.barre .barra { height: 100%; min-width: 2px; background: var(--accent); border-radius: 0 4px 4px 0; }
+.vuoto { color: var(--muted); margin: 0; }
+
+@media (max-width: 640px) {
+  .topbar-inner { gap: 10px; padding: 8px 16px; }
+  main { padding-left: 16px; padding-right: 16px; }
+  .btn { padding: 6px 10px; font-size: .86rem; }
+  .brand { font-size: 1rem; }
+  .card { padding: 14px; }
+  .numeri { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .numero.principale { grid-column: 1 / -1; }
+  .griglia { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="btn" href="../index.html" title="Torna alla scelta dei servizi" data-en-title="Back to the list of services">Home</a>
+    <span class="brand" data-en="Statistics">Statistiche</span>
+    <!-- Lingua prima del menu ⚙, come in ogni pagina: la bandiera la disegna gate.js. -->
+    <button class="btn" type="button" onclick="toggleLang()" data-lang><span data-en="IT">EN</span></button>
+    <!-- Menu ⚙, uguale in ogni pagina: qui solo il tema, la pagina non ha dati da salvare. -->
+    <details class="more">
+      <summary class="btn gear" title="Menu" aria-label="Menu">&#9881;</summary>
+      <div class="more-menu">
+        <button class="btn" type="button" onclick="toggleTheme()" data-en="Switch light/dark theme">Cambia tema chiaro/scuro</button>
+      </div>
+    </details>
+  </div>
+</header>
+<main>
+  <section class="hero">
+    <h1 data-en="Statistics">Statistiche</h1>
+    <p class="lead" data-en="How many people use ro-tools and what they do with it, counted anonymously and without cookies.">Quante persone usano ro-tools e cosa ci fanno, contate in forma anonima e senza cookie.</p>
+    <p class="hint" id="aggiornato"></p>
+  </section>
+
+  <div class="periodi" role="group" aria-label="Periodo" data-en-aria-label="Period">
+    <button class="btn" type="button" data-periodo="7" data-en="Last 7 days">Ultimi 7 giorni</button>
+    <button class="btn" type="button" data-periodo="30" data-en="Last 30 days">Ultimi 30 giorni</button>
+    <button class="btn" type="button" data-periodo="tutto" data-en="All time">Da sempre</button>
+  </div>
+  <p class="errore" id="errore" hidden></p>
+
+  <div id="contenuto" class="carica">
+    <div class="numeri">
+      <div class="card numero principale"><div class="etichetta" data-en="Visits">Visite</div><div class="valore" id="visite">–</div></div>
+      <div class="card numero"><div class="etichetta" data-en="Visits per day">Visite al giorno</div><div class="valore" id="media">–</div></div>
+      <div class="card numero"><div class="etichetta" data-en="Actions">Azioni</div><div class="valore" id="azioni-totale">–</div></div>
+    </div>
+    <div class="sezioni">
+      <section class="card">
+        <h2 data-en="Visits by day">Visite giorno per giorno</h2>
+        <div class="grafico" id="grafico"><div class="suggerimento" id="suggerimento" hidden></div></div>
+        <details class="numeri-giorni">
+          <summary data-en="Show the numbers">Mostra i numeri</summary>
+          <table><tbody id="tabella-giorni"></tbody></table>
+        </details>
+      </section>
+      <section class="card">
+        <h2 data-en="Pages">Pagine</h2>
+        <ol class="barre" id="pagine"></ol>
+      </section>
+      <section class="card">
+        <h2 data-en="Actions">Azioni</h2>
+        <ol class="barre" id="azioni"></ol>
+      </section>
+      <div class="griglia">
+        <section class="card"><h2 data-en="Devices">Dispositivi</h2><ol class="barre" id="schermi"></ol></section>
+        <section class="card"><h2 data-en="Countries">Paesi</h2><ol class="barre" id="paesi"></ol></section>
+        <section class="card"><h2 data-en="Languages">Lingue</h2><ol class="barre" id="lingue"></ol></section>
+        <section class="card"><h2 data-en="Coming from">Provenienza</h2><ol class="barre" id="provenienze"></ol></section>
+        <section class="card"><h2>Browser</h2><ol class="barre" id="browser"></ol></section>
+        <section class="card"><h2 data-en="Operating systems">Sistemi operativi</h2><ol class="barre" id="sistemi"></ol></section>
+      </div>
+    </div>
+  </div>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>
