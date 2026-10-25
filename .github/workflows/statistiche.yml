@@ -18,7 +18,7 @@ jobs:
   aggiorna:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Scarica le statistiche
         run: node tools/statistiche.mjs "$RUNNER_TEMP/statistiche.json"
         env:
