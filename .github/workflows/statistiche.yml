@@ -1,0 +1,38 @@
+# Ogni ora scarica le statistiche da GoatCounter (tools/statistiche.mjs) e le scrive nel ramo
+# "statistiche", che contiene solo statistiche.json e un solo commit, riscritto ogni volta: la
+# storia di main resta pulita e Pages non ripubblica. La pagina statistiche/ legge il file da
+# raw.githubusercontent.com.
+name: Statistiche
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency: statistiche
+
+jobs:
+  aggiorna:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scarica le statistiche
+        run: node tools/statistiche.mjs "$RUNNER_TEMP/statistiche.json"
+        env:
+          GOATCOUNTER_TOKEN: ${{ secrets.GOATCOUNTER_TOKEN }}
+      - name: Scrivi il ramo statistiche
+        run: |
+          mkdir "$RUNNER_TEMP/ramo"
+          mv "$RUNNER_TEMP/statistiche.json" "$RUNNER_TEMP/ramo/"
+          cd "$RUNNER_TEMP/ramo"
+          git init -q -b statistiche
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add statistiche.json
+          git commit -q -m "chore: statistiche aggiornate"
+          git push -q -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" statistiche
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

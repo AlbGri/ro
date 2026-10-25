@@ -387,6 +387,9 @@
   // codice, per contare chi usa il sito e non chi si ferma alla schermata, e
   // solo in https: le prove da localhost o da file non contano.
   let counting = false;
+  // la cartella del sito, dove sta questo script: chi arriva da un'altra pagina del sito non
+  // ha una provenienza
+  const site = new URL(".", document.currentScript.src).href;
 
   const send = (params) => {
     if (!counting) return;
@@ -407,7 +410,7 @@
     send({
       p: location.pathname,
       t: document.title,
-      r: document.referrer,
+      r: document.referrer.startsWith(site) ? "" : document.referrer,
       s: [screen.width, screen.height, devicePixelRatio || 1].join(","),
     });
 
