@@ -13,7 +13,8 @@ const LUNGO = 40;
 
 // ---------- stato salvato: build corrente e build con nome ----------
 
-let stato = { corrente: "", salvate: [], confronto: null };
+// nome: la build salvata che si sta modificando (caricata o salvata per ultima), "" se nessuna
+let stato = { corrente: "", nome: "", salvate: [], confronto: null };
 
 function normalizza(dati) {
   const salvate = Array.isArray(dati?.salvate)
@@ -22,7 +23,12 @@ function normalizza(dati) {
   // confronto: la build A del confronto e quando e' stata fissata
   const a = dati?.confronto;
   const confronto = typeof a?.build === "string" && typeof a?.quando === "number" ? { build: a.build, quando: a.quando } : null;
-  return { corrente: typeof dati?.corrente === "string" ? dati.corrente : "", salvate, confronto };
+  return {
+    corrente: typeof dati?.corrente === "string" ? dati.corrente : "",
+    nome: typeof dati?.nome === "string" ? dati.nome : "",
+    salvate,
+    confronto,
+  };
 }
 function salva() {
   try {
@@ -825,6 +831,7 @@ document.addEventListener("click", async (e) => {
       if (!confirm(tr(`Sostituire la build salvata "${nome}"?`, `Replace the saved build "${nome}"?`))) return;
       esistente.build = build;
     } else stato.salvate.push({ nome, build });
+    stato.nome = nome;
     stato.salvate.sort((a, b) => a.nome.localeCompare(b.nome, "it"));
     salva();
     disegnaSalvate();
@@ -834,6 +841,7 @@ document.addEventListener("click", async (e) => {
     const s = stato.salvate[Number(selSalvate.value)];
     if (!s) return;
     stato.corrente = s.build;
+    stato.nome = s.nome;
     salva();
     apriBuild(s.build);
   } else if (azione === "elimina") {
@@ -846,6 +854,7 @@ document.addEventListener("click", async (e) => {
   } else if (azione === "nuova") {
     if (!confirm(tr("Ricominciare da un personaggio nuovo? Le build salvate restano.", "Start over with a new character? The saved builds stay."))) return;
     stato.corrente = "";
+    stato.nome = "";
     salva();
     history.replaceState(null, "", location.pathname);
     location.reload();
@@ -993,6 +1002,10 @@ function avvia() {
   // l'ultima volta
   const daLink = location.hash.length > 1;
   const estranea = daLink && !window.buildValida(location.hash.slice(1));
+  // il nome resta se la build con quel nome c'e' ancora e, aperta da un link, e' proprio quella
+  // (Carica apre cosi'); il link di un altro non deve proporre di sovrascriverla
+  const modificata = stato.salvate.find((s) => s.nome === stato.nome);
+  if (!modificata || (daLink && location.hash.slice(1) !== modificata.build)) stato.nome = "";
   if (daLink) history.replaceState(null, "", location.pathname);
   if ((!daLink || estranea) && stato.corrente) {
     try {
@@ -1008,6 +1021,10 @@ function avvia() {
   calcola();
   sincronizza();
   disegnaSalvate();
+  if (stato.nome) {
+    nomeBuild.value = stato.nome;
+    selSalvate.value = String(stato.salvate.indexOf(modificata));
+  }
   salvaPresto();
   document.getElementById("caricamento").remove();
   document.getElementById("app").hidden = false;

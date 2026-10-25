@@ -7,6 +7,8 @@ Le versioni della pagina `calcolatore/`.
 - Le carte si possono mettere solo negli slot dell'oggetto: la casella "Limitare le carte agli
   slot dell'oggetto" e' attiva di partenza. Le build salvate e i link gia' condivisi tengono la
   loro scelta
+- Build salvate: dopo Carica il nome della build e' gia' nel campo, e Salva la sostituisce senza
+  riscriverlo. Per farne una copia si cambia il nome prima di salvare
 
 ## [1.19] - 2026-10-24
 
