@@ -2,6 +2,10 @@
 
 Le versioni della pagina `party/`.
 
+## [1.27] - 2026-10-25
+
+- Il sito conta in forma anonima, senza cookie, le visite e alcune azioni (run ed elenco esportati, backup e ripristino), per sapere quanto si usa
+
 ## [1.26] - 2026-10-24
 
 - Sopra le run `‹ Combinazione 1 di 1 ›`: spesso piu' combinazioni danno lo stesso risultato (stesse

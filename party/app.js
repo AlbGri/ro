@@ -655,6 +655,7 @@ document.addEventListener("click", (event) => {
       return;
     case "esporta-elenco":
       scarica(`party-elenco-${oggi()}.txt`, scriviElenco(stato));
+      window.conta?.("party-elenco-esportato");
       return;
     case "combinazione-prima":
       combinazioni.mostrata = Math.max(combinazioni.mostrata - 1, 0);
@@ -671,7 +672,10 @@ document.addEventListener("click", (event) => {
     case "esporta-run": {
       const calcolo = calcola();
       if (!calcolo) avvisa(tr("Nessun giocatore presente.", "No players present."));
-      else scarica(`party-run-${oggi()}.txt`, testoRun(calcolo));
+      else {
+        scarica(`party-run-${oggi()}.txt`, testoRun(calcolo));
+        window.conta?.("party-run-esportate");
+      }
       return;
     }
     default:
@@ -691,6 +695,7 @@ function scarica(nome, testo, tipo = "text/plain") {
 }
 
 function esporta() {
+  window.conta?.("party-backup");
   const nome = `party-backup-${oggi()}.json`;
   scarica(nome, JSON.stringify(stato, null, 2), "application/json");
   avvisa(tr(`Il browser scarica ${nome}: conservalo, e con Ripristina da backup recuperi i dati.`, `The browser downloads ${nome}: keep it, and Restore from backup brings the data back.`));
@@ -700,6 +705,7 @@ file.addEventListener("change", async () => {
   const scelto = file.files[0];
   file.value = "";
   if (!scelto) return;
+  window.conta?.("party-ripristino");
   try {
     const nuovo = normalizza(JSON.parse(await scelto.text()));
     if (!confirm(tr("Sostituire i dati della pagina con quelli del file?", "Replace the page's data with those in the file?"))) return;

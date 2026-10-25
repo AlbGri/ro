@@ -2,6 +2,10 @@
 
 Le versioni della pagina `livelli/`.
 
+## [1.19] - 2026-10-25
+
+- Il sito conta in forma anonima, senza cookie, le visite e alcune azioni (backup e ripristino), per sapere quanto si usa
+
 ## [1.18] - 2026-10-24
 
 - Il Field Manual 100% aumenta anche la job EXP, come visto in gioco (Sharp Leaf nel weekend:

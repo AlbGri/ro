@@ -813,10 +813,12 @@ document.addEventListener("click", async (e) => {
   if (azione === "chiudi-ricerca") {
     ricerca.close();
   } else if (azione === "copia-link") {
+    window.conta?.("calcolatore-link-copiato");
     await copiaLink(buildCorrente(), tr("Link copiato: chi lo apre vede questa build.", "Link copied: whoever opens it sees this build."));
   } else if (azione === "copia-link-salvata") {
     const s = stato.salvate[Number(selSalvate.value)];
     if (!s) return;
+    window.conta?.("calcolatore-link-copiato");
     await copiaLink(s.build, tr(`Link copiato: chi lo apre vede la build "${s.nome}".`, `Link copied: whoever opens it sees the build "${s.nome}".`));
   } else if (azione === "salva") {
     const nome = nomeBuild.value.trim();
@@ -837,12 +839,14 @@ document.addEventListener("click", async (e) => {
     disegnaSalvate();
     selSalvate.value = String(stato.salvate.findIndex((s) => s.nome === nome));
     avvisa(tr(`Build "${nome}" salvata.`, `Build "${nome}" saved.`));
+    window.conta?.("calcolatore-build-salvata");
   } else if (azione === "carica") {
     const s = stato.salvate[Number(selSalvate.value)];
     if (!s) return;
     stato.corrente = s.build;
     stato.nome = s.nome;
     salva();
+    window.conta?.("calcolatore-build-caricata");
     apriBuild(s.build);
   } else if (azione === "elimina") {
     const i = Number(selSalvate.value);
@@ -859,6 +863,7 @@ document.addEventListener("click", async (e) => {
     history.replaceState(null, "", location.pathname);
     location.reload();
   } else if (azione === "fissa-a") {
+    window.conta?.("calcolatore-confronto");
     stato.confronto = { build: buildCorrente(), quando: Date.now() };
     salva();
     preparaA();
@@ -942,6 +947,7 @@ function importaLink() {
   clearTimeout(timerSalva);
   stato.corrente = r.build;
   salva();
+  window.conta?.("calcolatore-importa-esterno");
   if (!r.nonCaricati.length) return apriBuild(r.build);
   importata = r.build;
   document.getElementById("esterno-sintesi").textContent = tr(`Build importata da ${r.calcolatore}. Non sono stati caricati:`, `Build imported from ${r.calcolatore}. These were not loaded:`);
@@ -959,6 +965,7 @@ esterno.addEventListener("close", () => {
 
 const file = document.getElementById("file");
 function esporta() {
+  window.conta?.("calcolatore-backup");
   stato.corrente = buildCorrente();
   const blob = new Blob([JSON.stringify(stato, null, 2)], { type: "application/json" });
   const link = document.createElement("a");
@@ -977,6 +984,7 @@ file.addEventListener("change", async () => {
     if (!confirm(tr("Sostituire le build della pagina con quelle del file?", "Replace the page's builds with those in the file?"))) return;
     stato = nuovo;
     salva();
+    window.conta?.("calcolatore-ripristino");
     if (stato.corrente) apriBuild(stato.corrente);
     else location.reload();
   } catch {

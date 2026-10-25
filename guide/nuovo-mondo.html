@@ -445,7 +445,7 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
 </dialog>
 
 <script>
-const GUIDE_VERSION = "10.1";
+const GUIDE_VERSION = "10.2";
 const STORAGE_KEY = "uaro-nw-guide";
 
 const QUESTS = {
@@ -2783,6 +2783,7 @@ const PHASES = [
       if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
     });
     document.getElementById("btnExport").addEventListener("click", function () {
+      if (window.conta) conta("guida-note-esportate");
       let text = buildExport(false);
       const copyAgain = function () { copyText(text).then(function (k) { toast(k ? T("Copiato", "Copied") : T("Copia non riuscita: seleziona il testo", "Copy failed: select the text")); }); };
       copyText(text).then(function (ok) {
@@ -2803,6 +2804,7 @@ const PHASES = [
     });
     document.getElementById("btnBackup").addEventListener("click", function () {
       closeMore();
+      if (window.conta) conta("guida-backup");
       const text = backupText();
       const d = new Date();
       const name = "uaro-nuovo-mondo-backup-" + d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0") + ".txt";
@@ -2833,6 +2835,7 @@ const PHASES = [
           state.done = migrateIds(parsed.done || {}, idsVersion);
           state.notes = migrateIds(parsed.notes || {}, idsVersion);
           save(); syncInputs(); closeDialog();
+          if (window.conta) conta("guida-ripristino");
           toast(T("Progressi ripristinati", "Progress restored"));
         }
       });

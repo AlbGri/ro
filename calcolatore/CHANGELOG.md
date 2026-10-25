@@ -2,6 +2,10 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.21] - 2026-10-25
+
+- Il sito conta in forma anonima, senza cookie, le visite e alcune azioni (build salvate, caricate e importate, link copiati, confronto, backup e ripristino), per sapere quanto si usa
+
 ## [1.20] - 2026-10-25
 
 - Le carte si possono mettere solo negli slot dell'oggetto: la casella "Limitare le carte agli

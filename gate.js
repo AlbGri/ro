@@ -97,6 +97,7 @@
       // Senza localStorage la scelta non si puo' ricordare: resta l'italiano.
       return;
     }
+    window.conta(english ? "lingua-italiano" : "lingua-inglese");
     location.reload();
   };
 
@@ -385,19 +386,35 @@
   // perche' i filtri pubblicitari bloccano soprattutto quello. Solo dopo il
   // codice, per contare chi usa il sito e non chi si ferma alla schermata, e
   // solo in https: le prove da localhost o da file non contano.
-  const count = () => {
-    const query = new URLSearchParams({
+  let counting = false;
+
+  const send = (params) => {
+    if (!counting) return;
+    const query = new URLSearchParams({ ...params, rnd: Math.random().toString(36).slice(2) });
+    const url = "https://rotools.goatcounter.com/count?" + query;
+    // sendBeacon arriva anche se la pagina si ricarica subito dopo, come al cambio di lingua
+    if (!navigator.sendBeacon?.(url)) new Image().src = url;
+  };
+
+  /**
+   * Conta un'azione, un evento di GoatCounter: `conta("calcolatore-build-salvata")`.
+   * Le pagine la chiamano con `window.conta?.(...)`, perche' la guida funziona anche senza
+   * questo script.
+   */
+  window.conta = (name) => send({ p: name, e: "true" });
+
+  const countPage = () =>
+    send({
       p: location.pathname,
       t: document.title,
       r: document.referrer,
-      rnd: Math.random().toString(36).slice(2),
+      s: [screen.width, screen.height, devicePixelRatio || 1].join(","),
     });
-    new Image().src = "https://rotools.goatcounter.com/count?" + query;
-  };
+
   window.accessGranted.then(() => {
-    if (location.protocol !== "https:") return;
+    counting = location.protocol === "https:";
     // il titolo c'e' solo quando la pagina e' stata letta
-    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", count);
-    else count();
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", countPage);
+    else countPage();
   });
 })();

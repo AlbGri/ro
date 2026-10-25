@@ -418,6 +418,7 @@ document.addEventListener("click", (event) => {
   if (markdown) {
     const titolo = markdown.parentElement;
     const testo = titolo.matches(".stage-title") ? capitolo(titolo.closest(".stage")) : sezione(titolo);
+    window.conta?.("halloween-copia-discord");
     if (testo.length <= LIMITE_DISCORD) copia(testo, tr("Copiato per Discord", "Copied for Discord"));
     else copia(testo, tr(
       `Copiato, ma sono ${testo.length} caratteri: Discord ne accetta ${LIMITE_DISCORD} per messaggio, incollalo in due volte.`,

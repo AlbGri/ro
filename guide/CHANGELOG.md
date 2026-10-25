@@ -3,6 +3,10 @@
 Le versioni della guida `nuovo-mondo.html`. Il numero e' quello scritto in
 testa a ogni export delle note.
 
+## [10.2] - 2026-10-25
+
+- Il sito conta in forma anonima, senza cookie, le visite e alcune azioni (export delle note, backup e ripristino), per sapere quanto si usa
+
 ## [10.1] - 2026-10-23
 
 - Il pulsante della lingua esce dal menu ⚙ e sta in alto, subito prima dell'ingranaggio, con la bandiera della lingua in cui si passa (`EN` in italiano, `IT` in inglese; sul telefono solo la bandiera)

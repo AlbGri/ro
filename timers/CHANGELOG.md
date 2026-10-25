@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.6.2] - 2026-10-25
+
+- Il sito conta in forma anonima, senza cookie, le visite e alcune azioni (timer creati, avvisi attivati, app installata, backup e ripristino), per sapere quanto si usa. Solo nella versione web
+
 ## [1.6.1] - 2026-10-23
 
 - MVP si scrive tutto in maiuscolo: la categoria predefinita e' `MVP`, e i timer, lo storico e i preset salvati con `MvP` diventano `MVP` all'apertura. Il colore della riga non cambia. Vale per la versione web e per l'applicazione Windows

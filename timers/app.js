@@ -446,6 +446,7 @@ function submitEditor(event) {
   if (editingId === null) {
     const timerId = store.add(new Timer(fields));
     selectedId = timerId;
+    window.conta?.("timer-creato");
   } else {
     const timer = store.timers.get(editingId);
     if (timer === undefined) {
@@ -498,6 +499,7 @@ function duplicate(timerId) {
     beeps: timer.beeps,
   });
   selectedId = store.add(copy);
+  window.conta?.("timer-creato");
   saveNow();
   tick();
 }
@@ -689,6 +691,7 @@ function bindEvents() {
     await enableAudio();
     await requestNotifications();
     refreshAlertsButton();
+    window.conta?.("timer-avvisi-attivati");
   });
 
   editorForm.addEventListener("submit", submitEditor);
@@ -734,11 +737,17 @@ function bindEvents() {
   });
 
   $("btn-clear").addEventListener("click", () => clearExpired());
-  $("btn-export").addEventListener("click", () => exportFile(store));
+  $("btn-export").addEventListener("click", () => {
+    exportFile(store);
+    window.conta?.("timer-backup");
+  });
   $("btn-import").addEventListener("click", () => $("file-import").click());
   $("file-import").addEventListener("change", (event) => {
     const file = event.target.files?.[0];
-    if (file !== undefined) chooseImport(file);
+    if (file !== undefined) {
+      chooseImport(file);
+      window.conta?.("timer-ripristino");
+    }
     event.target.value = "";
   });
   // Tema e lingua sono del sito, non dei timer: li cambia e li ricorda gate.js.
@@ -881,6 +890,7 @@ function setupInstall() {
   });
 
   window.addEventListener("appinstalled", () => {
+    window.conta?.("timer-app-installata");
     button.hidden = true;
     installPrompt = null;
     $("install").close();

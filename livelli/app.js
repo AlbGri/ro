@@ -457,6 +457,7 @@ document.getElementById("btnNuovo").addEventListener("click", () => {
 
 // Backup e ripristino in un file, dal menu ⚙ come nelle altre pagine.
 document.getElementById("btnBackup").addEventListener("click", () => {
+  window.conta?.("livelli-backup");
   salva();
   let testo;
   try {
@@ -479,6 +480,7 @@ file.addEventListener("change", async () => {
   const scelto = file.files[0];
   file.value = "";
   if (!scelto) return;
+  window.conta?.("livelli-ripristino");
   let stato;
   try {
     stato = JSON.parse(await scelto.text());
