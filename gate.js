@@ -414,30 +414,6 @@
       s: [screen.width, screen.height, devicePixelRatio || 1].join(","),
     });
 
-  // Il link alle statistiche in fondo a ogni pagina (Alberto, 25/10/2026): lo aggiunge questo
-  // script, cosi' e' uguale ovunque e una pagina nuova lo ha da sola.
-  const statsPage = site + "statistiche/";
-  if (!location.href.startsWith(statsPage)) {
-    const footerStyle = document.createElement("style");
-    footerStyle.textContent = `
-      .site-footer {
-        padding: 20px 16px calc(28px + env(safe-area-inset-bottom, 0px)); text-align: center;
-        font: 0.88rem/1.4 "Atkinson Hyperlegible", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      }
-      .site-footer a { color: inherit; opacity: 0.75; }
-      .site-footer a:hover { opacity: 1; }`;
-    document.head.append(footerStyle);
-    document.addEventListener("DOMContentLoaded", () => {
-      const footer = document.createElement("footer");
-      footer.className = "site-footer";
-      const link = document.createElement("a");
-      link.href = statsPage;
-      link.textContent = tr("Statistiche del sito", "Site statistics");
-      footer.append(link);
-      document.body.append(footer);
-    });
-  }
-
   window.accessGranted.then(() => {
     counting = location.protocol === "https:";
     // il titolo c'e' solo quando la pagina e' stata letta

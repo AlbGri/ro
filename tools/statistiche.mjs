@@ -1,6 +1,6 @@
 /**
  * Scarica da GoatCounter le statistiche del sito e le scrive in un file JSON, che la pagina
- * `statistiche/` legge dal ramo `statistiche` del repository.
+ * `stats/` legge dal ramo `statistiche` del repository.
  *
  * Lo lancia ogni ora l'azione `.github/workflows/statistiche.yml`, con il token nel segreto
  * `GOATCOUNTER_TOKEN` del repository (solo lettura delle statistiche, solo il sito rotools):

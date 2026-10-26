@@ -1,6 +1,6 @@
 # Ogni ora scarica le statistiche da GoatCounter (tools/statistiche.mjs) e le scrive nel ramo
 # "statistiche", che contiene solo statistiche.json e un solo commit, riscritto ogni volta: la
-# storia di main resta pulita e Pages non ripubblica. La pagina statistiche/ legge il file da
+# storia di main resta pulita e Pages non ripubblica. La pagina stats/ legge il file da
 # raw.githubusercontent.com.
 name: Statistiche
 

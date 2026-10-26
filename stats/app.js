@@ -25,6 +25,7 @@ const PAGINE = {
   "/ro/party/": ["Party", "Party"],
   "/ro/calcolatore/": ["Calcolatore", "Calculator"],
   "/ro/statistiche/": ["Statistiche", "Statistics"],
+  "/ro/stats/": ["Statistiche", "Statistics"],
 };
 const AZIONI = {
   "lingua-inglese": ["Passaggi all'inglese", "Switches to English"],
