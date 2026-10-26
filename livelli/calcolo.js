@@ -225,40 +225,63 @@ export function calcolaPiano(opzioni) {
     return resto * zenyPerExp[stato.livello];
   };
 
+  // Trucco dei mostri: si finisce il livello uccidendo solo se ne manca al piu' la
+  // soglia e la consegna che segue, fatta subito, perderebbe EXP per il limite di un
+  // livello. Una quest che da' poco (Acorn) non perde niente: si consegna e basta.
+  const entroSoglia = (l, exp) =>
+    rabbocco !== null && l < LIVELLO_MASSIMO && tabella[l - 1] - exp <= (tabella[l - 1] * rabbocco) / 100;
+  const sprecherebbe = (l, exp, guadagno) => aggiungiExp(tabella, l, exp, guadagno).persa > 0;
+  const uccisione = (l, exp) => ({
+    tipo: "rabbocco", da: { livello: l, exp }, a: { livello: l + 1, exp: 0 }, persa: 0, mancante: tabella[l - 1] - exp,
+  });
+
   /** Le mosse possibili da uno stato, ognuna come stato successivo. */
   const successori = (stato) => {
     const { livello: l, exp } = stato;
     const risultato = [];
+    const mostri = entroSoglia(l, exp);
 
     for (const q of quest) {
-      if (l < q.min || l > q.max) continue;
-      const rimasti = q.resto >= 0 ? stato.rimasti[q.resto] : 0;
-      const zeny = prezzoConsegna(q, rimasti);
-      const dopo = aggiungiExp(tabella, l, exp, q.guadagno);
-      let nuoviRimasti = stato.rimasti;
-      if (q.resto >= 0) {
-        nuoviRimasti = stato.rimasti.slice();
-        nuoviRimasti[q.resto] = Math.max(0, rimasti - q.quantita);
+      // La consegna subito, o dopo aver finito il livello con i mostri.
+      const prima = [];
+      if (l >= q.min && l <= q.max) prima.push(null);
+      if (mostri && l + 1 < obiettivo && l + 1 >= q.min && l + 1 <= q.max && sprecherebbe(l, exp, q.guadagno)) {
+        prima.push(uccisione(l, exp));
       }
-      risultato.push({
-        livello: dopo.livello,
-        exp: dopo.exp,
-        costo: stato.costo + zeny + (stato.ultima === q.id ? 0 : cambio) + PER_CONSEGNA,
-        zeny: stato.zeny + zeny,
-        consegne: stato.consegne + 1,
-        cacce: stato.cacce,
-        gratis: stato.gratis,
-        rimasti: nuoviRimasti,
-        ultima: q.id,
-        padre: stato,
-        mossa: { tipo: "quest", quest: q, zeny, persa: dopo.persa },
-      });
+      for (const uccisa of prima) {
+        const da = uccisa ? uccisa.a : { livello: l, exp };
+        const rimasti = q.resto >= 0 ? stato.rimasti[q.resto] : 0;
+        const zeny = prezzoConsegna(q, rimasti);
+        const dopo = aggiungiExp(tabella, da.livello, da.exp, q.guadagno);
+        let nuoviRimasti = stato.rimasti;
+        if (q.resto >= 0) {
+          nuoviRimasti = stato.rimasti.slice();
+          nuoviRimasti[q.resto] = Math.max(0, rimasti - q.quantita);
+        }
+        const passi = uccisa && [
+          uccisa,
+          { tipo: "quest", da, a: { livello: dopo.livello, exp: dopo.exp }, persa: dopo.persa },
+        ];
+        risultato.push({
+          livello: dopo.livello,
+          exp: dopo.exp,
+          costo: stato.costo + zeny + (stato.ultima === q.id ? 0 : cambio) + PER_CONSEGNA,
+          zeny: stato.zeny + zeny,
+          consegne: stato.consegne + 1,
+          cacce: stato.cacce,
+          gratis: stato.gratis,
+          rimasti: nuoviRimasti,
+          ultima: q.id,
+          padre: stato,
+          mossa: { tipo: "quest", quest: q, zeny, persa: dopo.persa, ...(passi && { passi }) },
+        });
+      }
     }
 
     // Una caccia si consegna in una volta sola, con un solo viaggio: 1, 2 o 3
-    // consegne di fila, e fra una e l'altra le uccisioni che completano un livello
-    // (gratis, quindi sempre). Poi la caccia e' chiusa: tiene basso il numero di
-    // combinazioni da provare.
+    // consegne di fila, prima di ognuna le uccisioni che completano un livello se
+    // la consegna perderebbe EXP (gratis e mai peggio, quindi sempre). Poi la caccia
+    // e' chiusa: tiene basso il numero di combinazioni da provare.
     pronte.forEach((c, i) => {
       if (stato.cacce[i] >= c.consegne) return;
       const usate = stato.cacce.slice();
@@ -266,15 +289,15 @@ export function calcolaPiano(opzioni) {
       const passi = [];
       let ora = { livello: l, exp };
       for (let k = 1; k <= c.consegne - stato.cacce[i]; k++) {
+        const mostriPrima = entroSoglia(ora.livello, ora.exp) && sprecherebbe(ora.livello, ora.exp, c.guadagno);
+        if (ora.livello + 1 < obiettivo && mostriPrima) {
+          passi.push(uccisione(ora.livello, ora.exp));
+          ora = { livello: ora.livello + 1, exp: 0 };
+        }
         const dopo = aggiungiExp(tabella, ora.livello, ora.exp, c.guadagno);
         if (dopo.livello < obiettivo && dopo.persa > c.sprecoMinimo[ora.livello]) break;
         passi.push({ tipo: "caccia", da: ora, a: { livello: dopo.livello, exp: dopo.exp }, persa: dopo.persa });
         ora = { livello: dopo.livello, exp: dopo.exp };
-        const mancante = ora.livello < obiettivo ? tabella[ora.livello - 1] - ora.exp : Infinity;
-        if (rabbocco !== null && mancante <= (tabella[ora.livello - 1] * rabbocco) / 100) {
-          passi.push({ tipo: "rabbocco", da: ora, a: { livello: ora.livello + 1, exp: 0 }, persa: 0, mancante });
-          ora = { livello: ora.livello + 1, exp: 0 };
-        }
         risultato.push({
           ...stato,
           livello: ora.livello,
@@ -291,14 +314,20 @@ export function calcolaPiano(opzioni) {
       }
     });
 
-    const mancante = tabella[l - 1] - exp;
-    if (rabbocco !== null && l < LIVELLO_MASSIMO && mancante <= (tabella[l - 1] * rabbocco) / 100) {
+    // All'ultimo livello nessuna consegna segue i mostri: valgono se una di quelle
+    // possibili qui perderebbe EXP.
+    const ultimo =
+      mostri &&
+      l + 1 >= obiettivo &&
+      (quest.some((q) => l >= q.min && l <= q.max && sprecherebbe(l, exp, q.guadagno)) ||
+        pronte.some((c, i) => stato.cacce[i] < c.consegne && sprecherebbe(l, exp, c.guadagno)));
+    if (ultimo) {
       risultato.push({
         ...stato,
         livello: l + 1,
         exp: 0,
         padre: stato,
-        mossa: { tipo: "rabbocco", zeny: 0, persa: 0, mancante },
+        mossa: { tipo: "rabbocco", zeny: 0, persa: 0, mancante: tabella[l - 1] - exp },
       });
     }
     return risultato;

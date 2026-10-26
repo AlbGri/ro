@@ -192,8 +192,8 @@ function disegnaTappa(numeroTappa, tappa, scelte, tabella) {
     if (tappa.rabbocchi > 0) {
       parti.push(
         tr(
-          `<p class="note-line tip"><strong>Mostri:</strong> quando al livello manca meno del ${scelte.rabbocco}%, uccidi qualche ${escape(q.mostro)} sulla mappa invece di consegnare. In questa tappa capita ${tappa.rabbocchi} volt${tappa.rabbocchi === 1 ? "a" : "e"}.</p>`,
-          `<p class="note-line tip"><strong>Monsters:</strong> when less than ${scelte.rabbocco}% of the level is left, kill a few ${escape(q.mostro)} on the map instead of turning in. In this stage it happens ${tappa.rabbocchi} ${plurale(tappa.rabbocchi, "time", "times")}.</p>`,
+          `<p class="note-line tip"><strong>Mostri:</strong> quando al livello manca meno del ${scelte.rabbocco}% e la consegna perderebbe EXP, uccidi qualche ${escape(q.mostro)} sulla mappa invece di consegnare. In questa tappa capita ${tappa.rabbocchi} volt${tappa.rabbocchi === 1 ? "a" : "e"}.</p>`,
+          `<p class="note-line tip"><strong>Monsters:</strong> when less than ${scelte.rabbocco}% of the level is left and the turn-in would waste EXP, kill a few ${escape(q.mostro)} on the map instead of turning in. In this stage it happens ${tappa.rabbocchi} ${plurale(tappa.rabbocchi, "time", "times")}.</p>`,
         ),
       );
     }
@@ -219,8 +219,8 @@ function disegnaTappa(numeroTappa, tappa, scelte, tabella) {
     if (tappa.rabbocchi > 0) {
       parti.push(
         tr(
-          `<p class="note-line tip"><strong>Mostri:</strong> quando al livello manca meno del ${scelte.rabbocco}%, finiscilo uccidendo mostri. Capita ${tappa.rabbocchi} volt${tappa.rabbocchi === 1 ? "a" : "e"}.</p>`,
-          `<p class="note-line tip"><strong>Monsters:</strong> when less than ${scelte.rabbocco}% of the level is left, finish it by killing monsters. It happens ${tappa.rabbocchi} ${plurale(tappa.rabbocchi, "time", "times")}.</p>`,
+          `<p class="note-line tip"><strong>Mostri:</strong> quando al livello manca meno del ${scelte.rabbocco}% e la consegna perderebbe EXP, finiscilo uccidendo mostri. Capita ${tappa.rabbocchi} volt${tappa.rabbocchi === 1 ? "a" : "e"}.</p>`,
+          `<p class="note-line tip"><strong>Monsters:</strong> when less than ${scelte.rabbocco}% of the level is left and the turn-in would waste EXP, finish it by killing monsters. It happens ${tappa.rabbocchi} ${plurale(tappa.rabbocchi, "time", "times")}.</p>`,
         ),
       );
     }

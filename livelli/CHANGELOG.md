@@ -2,6 +2,14 @@
 
 Le versioni della pagina `livelli/`.
 
+## [1.20] - 2026-10-26
+
+- "Completo il livello uccidendo mostri" vale solo quando la consegna successiva perderebbe EXP
+  (una consegna non fa salire piu' di un livello): con le quest che danno tanto, come Anolian
+  Skin, i mostri finiscono il livello prima della consegna; con quelle che danno poco, come
+  Acorn, si consegna e basta. Prima il piano mandava a uccidere mostri appena si era sotto la
+  soglia, anche quando la consegna non sprecava niente
+
 ## [1.19] - 2026-10-25
 
 - Il sito conta in forma anonima, senza cookie, le visite e alcune azioni (backup e ripristino), per sapere quanto si usa

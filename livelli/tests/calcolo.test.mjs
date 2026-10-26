@@ -85,19 +85,26 @@ function esaustiva({ rinato, livello, obiettivo, manuale = 0, rabbocco = null, c
       migliore = costo;
       return;
     }
+    const entroSoglia = rabbocco !== null && tabella[l - 1] - exp <= (tabella[l - 1] * rabbocco) / 100;
+    const spreca = (q) => aggiungiExp(tabella, l, exp, Math.floor(q.base * molt)).persa > 0;
     // Prima le quest che danno piu' EXP: un buon piano trovato presto taglia il resto.
     for (const q of [...QUEST].reverse()) {
-      if (l < q.min || l > q.max) continue;
-      const inInventario = rimasti[q.id] ?? 0;
-      const daComprare = Math.max(0, q.quantita - inInventario);
-      const dopo = aggiungiExp(tabella, l, exp, Math.floor(q.base * molt));
-      const extra = daComprare * (oggetti[q.id]?.prezzo ?? q.prezzo) + (ultima === q.id ? 0 : cambio);
-      visita(dopo.livello, dopo.exp, costo + extra, q.id, {
-        ...rimasti,
-        [q.id]: Math.max(0, inInventario - q.quantita),
-      });
+      // Consegna al livello l, o al livello l + 1 dopo i mostri se a l perderebbe EXP.
+      const livelli = [];
+      if (l >= q.min && l <= q.max) livelli.push(l);
+      if (entroSoglia && l + 1 < obiettivo && l + 1 >= q.min && l + 1 <= q.max && spreca(q)) livelli.push(l + 1);
+      for (const da of livelli) {
+        const inInventario = rimasti[q.id] ?? 0;
+        const daComprare = Math.max(0, q.quantita - inInventario);
+        const dopo = aggiungiExp(tabella, da, da === l ? exp : 0, Math.floor(q.base * molt));
+        const extra = daComprare * (oggetti[q.id]?.prezzo ?? q.prezzo) + (ultima === q.id ? 0 : cambio);
+        visita(dopo.livello, dopo.exp, costo + extra, q.id, {
+          ...rimasti,
+          [q.id]: Math.max(0, inInventario - q.quantita),
+        });
+      }
     }
-    if (rabbocco !== null && tabella[l - 1] - exp <= (tabella[l - 1] * rabbocco) / 100) {
+    if (entroSoglia && l + 1 >= obiettivo && QUEST.some((q) => l >= q.min && l <= q.max && spreca(q))) {
       visita(l + 1, 0, costo, ultima, rimasti);
     }
   };
@@ -129,6 +136,10 @@ describe("calcolaPiano", () => {
       nome: "rinato con il trucco dei mostri",
       rinato: true, livello: 62, obiettivo: 64, manuale: 100, rabbocco: 10,
       oggetti: { hugeleaf: { prezzo: 100 }, anolian: { prezzo: 500 } },
+    },
+    {
+      nome: "mostri prima delle consegne che perderebbero EXP",
+      rinato: false, livello: 61, obiettivo: 64, manuale: 100, rabbocco: 10, oggetti: {},
     },
   ];
 
@@ -168,9 +179,27 @@ describe("calcolaPiano", () => {
       rinato: false, livello: 60, obiettivo: 75, manuale: 100, rabbocco: 10, cambio: 30000,
       oggetti: { sharpleaf: { prezzo: 800 }, antelope: { prezzo: 672 } },
     });
-    const uccisioni = piano.tappe.flatMap((t) => t.passi).filter((p) => p.tipo === "rabbocco");
+    const passi = piano.tappe.flatMap((t) => t.passi.map((p) => ({ ...p, quest: t.quest })));
+    const uccisioni = passi.filter((p) => p.tipo === "rabbocco");
     assert.ok(uccisioni.length > 0);
-    for (const p of uccisioni) assert.ok(p.mancante <= EXP_NORMALE[p.da.livello - 1] * 0.1);
+    for (const p of uccisioni) {
+      assert.ok(p.mancante <= EXP_NORMALE[p.da.livello - 1] * 0.1);
+      // La consegna che segue, fatta prima dei mostri, avrebbe perso EXP.
+      const dopo = passi[passi.indexOf(p) + 1];
+      if (!dopo) continue;
+      const guadagno = Math.floor(dopo.quest.base * moltiplicatore(false, 100));
+      assert.ok(aggiungiExp(EXP_NORMALE, p.da.livello, p.da.exp, guadagno).persa > 0);
+    }
+  });
+
+  it("con una quest che da' poco i mostri non servono: nessuna consegna perderebbe EXP", () => {
+    const caro = { prezzo: 1e6 };
+    const piano = calcolaPiano({
+      rinato: false, livello: 31, obiettivo: 45, rabbocco: 10,
+      oggetti: { bill: caro, hugeleaf: caro, anolian: caro, sharpleaf: caro, antelope: caro },
+    });
+    assert.deepEqual(piano.tappe.map((t) => t.chiave), ["acorn"]);
+    assert.equal(piano.tappe[0].passi.filter((p) => p.tipo === "rabbocco").length, 0);
   });
 
   it("le cacce pronte si consegnano tutte, ognuna in una tappa sola", () => {
