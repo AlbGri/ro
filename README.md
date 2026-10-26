@@ -8,10 +8,10 @@ La home chiede un codice di accesso e poi fa scegliere il servizio.
 | Servizio | Indirizzo | Cartella |
 |---|---|---|
 | Timer di respawn per MvP e quest, web e desktop | `/ro/timers/`; l'eseguibile per Windows e' nelle [release](https://github.com/AlbGri/ro/releases) | [`timers/`](timers/README.md) |
-| Guida uaRO "Nuovo Mondo", passo per passo | `/ro/guide/nuovo-mondo.html` | `guide/`, con il suo [changelog](guide/CHANGELOG.md) |
-| Livelli fino all'84: il piano piu' economico con le quest ripetibili di uaRO | `/ro/livelli/` | `livelli/`, con il suo [changelog](livelli/CHANGELOG.md) |
+| Guida uaRO "Nuovo Mondo", passo per passo | `/ro/guide/new-world/` | `guide/`, con il suo [changelog](guide/CHANGELOG.md) |
+| Livelli fino all'84: il piano piu' economico con le quest ripetibili di uaRO | `/ro/levels/` | `levels/`, con il suo [changelog](levels/CHANGELOG.md) |
 | Party: le run migliori di un'istanza (Horror Toy Factory ed Endless Cellar) con i giocatori e gli Account Gilda | `/ro/party/` | `party/`, con il suo [changelog](party/CHANGELOG.md) |
-| Calcolatore di statistiche e danni per uaRO, dal calcolatore di Thrice | `/ro/calcolatore/` | [`calcolatore/`](calcolatore/README.md), con il suo [changelog](calcolatore/CHANGELOG.md) |
+| Calcolatore di statistiche e danni per uaRO, dal calcolatore di Thrice | `/ro/calculator/` | [`calculator/`](calculator/README.md), con il suo [changelog](calculator/CHANGELOG.md) |
 
 Tutto e' HTML, CSS e JavaScript senza framework ne' passaggi di build: le
 pagine vengono servite cosi' come sono nel repository.
@@ -44,9 +44,9 @@ restano nel suo browser: non c'e' nulla di condiviso da proteggere.
 | `tools/make-icons.mjs` | rigenera da `icon.svg` i PNG dei timer installati come applicazione e le icone della versione desktop |
 | `timers/` | applicazione web dei timer; in `timers/desktop/` la versione desktop in Python |
 | `guide/` | guide in un solo file HTML ciascuna; in `guide/strumenti/` gli script Node che le validano |
-| `livelli/` | calcolatore dei livelli: dati, calcolo del piano e pagina; test con `node --test tests/*.mjs` |
+| `levels/` | calcolatore dei livelli: dati, calcolo del piano e pagina; test con `node --test tests/*.mjs` |
 | `party/` | run di un'istanza: dati delle istanze, calcolo e pagina; test con `node --test tests/*.mjs` |
-| `calcolatore/` | calcolatore di statistiche e danni: motore, correzioni per uaRO e pagina; test con `node --test tests/*.test.mjs` |
+| `calculator/` | calcolatore di statistiche e danni: motore, correzioni per uaRO e pagina; test con `node --test tests/*.test.mjs` |
 
 Gli strumenti della guida leggono la cartella `guide/fonti` (copie di script e
 database di rAthena e cache delle mappe), che non fa parte del repository. La

@@ -4,7 +4,7 @@ const path = require("path");
 const zlib = require("zlib");
 
 const RADICE = path.join(__dirname, "..");
-const GUIDA = path.join(RADICE, "nuovo-mondo.html");
+const GUIDA = path.join(RADICE, "new-world", "index.html");
 const FONTI = path.join(RADICE, "fonti");
 
 // ---- Guida ----

@@ -1,6 +1,6 @@
 /**
  * Test del calcolo dei livelli. Si eseguono senza installare nulla, dalla
- * cartella `livelli/`: `node --test tests/*.mjs`.
+ * cartella `levels/`: `node --test tests/*.mjs`.
  */
 
 import assert from "node:assert/strict";

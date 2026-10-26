@@ -1,7 +1,7 @@
 # Calcolatore
 
 Statistiche, danni fatti e danni subiti di un personaggio di uaRO (pre-renewal), con
-equipaggiamento, carte, buff e mostri. Pagina: `/ro/calcolatore/`.
+equipaggiamento, carte, buff e mostri. Pagina: `/ro/calculator/`.
 
 ## Da dove viene
 

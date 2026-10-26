@@ -1,6 +1,6 @@
 # Changelog - guida Nuovo Mondo
 
-Le versioni della guida `nuovo-mondo.html`. Il numero e' quello scritto in
+Le versioni della guida `new-world/index.html`. Il numero e' quello scritto in
 testa a ogni export delle note.
 
 ## [10.2] - 2026-10-25
