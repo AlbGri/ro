@@ -8,8 +8,10 @@ const tr = window.tr;
 
 const STORAGE_KEY = "ragnarok-calcolatore/stato";
 const virtuale = (nome) => window.c[nome];
-// elenchi oltre questa lunghezza si scelgono con la ricerca
+// elenchi oltre questa lunghezza si scelgono con la ricerca, tranne quelli di soli numeri (le
+// statistiche di Bard e Dancer), tendine come le statistiche del personaggio
 const LUNGO = 40;
+const conRicerca = (v) => v.elenco().length > LUNGO && !v.elenco().every((o) => /^\d+$/.test(o.text));
 
 // ---------- stato salvato: build corrente e build con nome ----------
 
@@ -159,7 +161,7 @@ const collegati = new Set();
 function controllo(v) {
   let el;
   if (v.tipo === "select") {
-    el = v.elenco().length > LUNGO ? sceltaConRicerca(v) : selectSemplice(v);
+    el = conRicerca(v) ? sceltaConRicerca(v) : selectSemplice(v);
   } else if (v.tipo === "checkbox") {
     el = document.createElement("input");
     el.type = "checkbox";
@@ -507,7 +509,7 @@ function voceDescritta(v) {
 }
 // cio' che cambia il disegno: voci visibili, etichette, tipo dei campi, scelte con ricerca o tendine
 const firmaVoci = (voci) => voci.map((v) => visibile(v) && [
-  etichettaDi(v), htmlDi(v.nota), (v.riga || []).map(htmlDi), campiDi(v).map((n) => virtuale(n).tipo + (virtuale(n).elenco().length > LUNGO)),
+  etichettaDi(v), htmlDi(v.nota), (v.riga || []).map(htmlDi), campiDi(v).map((n) => virtuale(n).tipo + conRicerca(virtuale(n))),
 ]);
 function firmaPannello(gruppi) {
   return JSON.stringify(gruppi.map((g) => [htmlDi(g.titolo), firmaVoci(g.voci)]));
@@ -522,9 +524,29 @@ function disegnaPannello(gruppi, corpo) {
       copiaHtml(htmlDi(g.titolo), h);
       parti.push(h);
     }
+    // le voci facoltative (i parametri di canti e danze) stanno sotto la voce che le precede, in
+    // un blocco suo: attivare una canzone non sposta le altre
+    const celle = [];
+    for (const v of voci) {
+      if (v.facoltativo && celle.length) celle[celle.length - 1].push(v);
+      else celle.push([v]);
+    }
     const griglia = document.createElement("div");
     griglia.className = "voci";
-    griglia.append(...voci.map(voceDescritta));
+    for (const [v, ...parametri] of celle) {
+      if (!parametri.length) {
+        griglia.append(voceDescritta(v));
+        continue;
+      }
+      const blocco = document.createElement("div");
+      blocco.className = "blocco";
+      const sotto = document.createElement("div");
+      sotto.className = "parametri";
+      sotto.append(...parametri.map(voceDescritta));
+      blocco.append(voceDescritta(v), sotto);
+      griglia.append(blocco);
+      griglia.classList.add("con-blocchi");
+    }
     parti.push(griglia);
   }
   corpo.replaceChildren(...parti);

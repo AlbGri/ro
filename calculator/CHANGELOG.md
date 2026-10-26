@@ -2,6 +2,13 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.25] - 2026-10-26
+
+- Canti e danze: i parametri di una canzone attiva (statistiche di Bard o Dancer, Musical o
+  Dancing Lessons) stanno sotto la canzone, ognuno con la sua etichetta; attivarla non sposta
+  piu' le altre
+- Le statistiche di Bard e Dancer si scelgono con una tendina, come quelle del personaggio
+
 ## [1.24] - 2026-10-26
 
 - Riaprendo la pagina, gli slot delle carte dell'equipaggiamento restano utilizzabili: prima

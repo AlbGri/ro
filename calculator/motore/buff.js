@@ -233,6 +233,7 @@ function Buf3SW(e) {
             },
             {
               campo: "A3_Skill0_4",
+              etichetta: "Bard's LUK",
               facoltativo: true,
             },
             {
@@ -267,6 +268,7 @@ function Buf3SW(e) {
             },
             {
               campo: "A3_Skill2_3",
+              etichetta: "Bard's INT",
               facoltativo: true,
             },
             {
@@ -346,6 +348,7 @@ function Buf3SW(e) {
             },
             {
               campo: "A3_Skill12_3",
+              etichetta: "Dancer's AGI",
               facoltativo: true,
             },
             {
@@ -467,7 +470,7 @@ function Skill3SW_2() {
         n_A_Buf3[19] = 100;
         n_A_Buf3[30] = 10;
       }
-      scrivi("EN0_3", "Bard's AGI<br>Bard's LUK");
+      scrivi("EN0_3", "Bard's AGI");
       campo("A3_Skill0_2", "select", function () {
         A3(1);
       });
@@ -528,7 +531,7 @@ function Skill3SW_2() {
         n_A_Buf3[29] = 100;
         n_A_Buf3[32] = 10;
       }
-      scrivi("EN2_3", "Bard's DEX<br>Bard's INT");
+      scrivi("EN2_3", "Bard's DEX");
       campo("A3_Skill2_2", "select", function () {
         A3(1);
       });
@@ -671,7 +674,7 @@ function Skill3SW_2() {
         n_A_Buf3[39] = 130;
         n_A_Buf3[27] = 10;
       }
-      scrivi("EN12_3", "Dancer's DEX<br>Dancer's AGI");
+      scrivi("EN12_3", "Dancer's DEX");
       campo("A3_Skill12_2", "select", function () {
         A3(1);
       });

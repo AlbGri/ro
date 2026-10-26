@@ -139,6 +139,10 @@ input[type="checkbox"] { width: 18px; height: 18px; margin: 0; flex: none; accen
 .voce.in-riga { flex-wrap: wrap; gap: 6px; }
 .voce.in-riga > .testo { flex: none; font-size: .92rem; }
 @media (min-width: 641px) { .voci > .voce.in-riga { grid-column: span 2; } }
+/* una canzone attiva con i suoi parametri sotto (canti e danze): le altre voci della riga in alto */
+.voci.con-blocchi { align-items: start; }
+.blocco, .blocco > .parametri { display: grid; gap: 6px; min-width: 0; }
+.blocco > .parametri { margin-left: 2px; padding-left: 10px; border-left: 2px solid var(--line); }
 .voce.lunga { grid-column: 1 / -1; }
 .voce.lunga > select, .voce.lunga > .scelta { flex: 1 1 auto; }
 /* campi affiancati su piu' colonne: etichetta su una riga accanto al suo controllo, che riempie la colonna */
