@@ -3011,6 +3011,8 @@ function criticoAttaccoNormale() {
 // mostro (n_B_buf[12]) ed equipaggiamento (n_B_manual[21]), x 1,5 con n_B_buf[1]
 function riflessiAttacco() {
   if (n_rangedAtk != 0) {
+    scrivi("bREFLECT1", "");
+    scrivi("bREFLECT1name", "");
     scrivi("bREFLECT2", "");
     scrivi("bREFLECT2name", "");
     return;

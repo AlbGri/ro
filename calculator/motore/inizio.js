@@ -126,7 +126,6 @@ HSEname.forEach(function (nome, s) {
     incantamentiHSE.push([10 * s + punti, nome + "+" + punti]);
 });
 opzioni(c.A_HSE, [[0, "(enchant)"]].concat(incantamentiHSE));
-opzioni(c.A_HSE_HEAD1, [[0, "(headgear Hidden Slot Enchant)"]].concat(incantamentiHSE));
 var BastionEnchantOptions = [
   ["(Bastion enchant)", BASTIONENCHANTID.NONE],
   ["All Stats +1", BASTIONENCHANTID.ALL_STATS],

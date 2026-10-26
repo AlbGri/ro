@@ -80,6 +80,12 @@ function restrictEquipslot() {
   }
 }
 function restrictCardslot(e) {
+  slotCarte();
+  calc();
+}
+// slot delle carte attivi secondo l'equipaggiamento, senza ricalcolare: leggiBuild lo usa a
+// meta' caricamento, dove un calcolo cambierebbe i campi non ancora letti
+function slotCarte() {
   if ((card_restrict = 1 * c.restrict_cardslot.checked)) {
     if (c.A_weapon1.value) {
       if (typeof (n = itemData[c.A_weapon1.value].slots) == "string") {
@@ -184,7 +190,12 @@ function restrictCardslot(e) {
     c.A_acces1_card.disabled = false;
     c.A_acces2_card.disabled = false;
   }
-  calc();
+}
+// incantamento di una statistica solo sulle armature dell'Apprentice Craftsman (uaro.js)
+function incantoArmatura() {
+  var armatura = itemData[c.A_body.value];
+  c.A_HSE.disabled = !(armatura && armatura.statEnchant);
+  if (c.A_HSE.disabled) c.A_HSE.value = 0;
 }
 // la skill passiva al posto n: nome (risultato P_Skill<n>) e livello (campo A_skill<n>); il
 // gestore, se non e' detto, ricalcola le statistiche

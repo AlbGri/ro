@@ -251,6 +251,34 @@ test("limite degli slot attivo di partenza: copricapo doppio e arma a due mani",
   assert.equal(m.c.A_left.value, "305"); // (no shield)
 });
 
+test("riaprendo una build gli slot delle carte dell'equipaggiamento restano attivi", () => {
+  const m = creaMotore();
+  scegli(m, "A_JOB", 21); // Lord Knight
+  scegli(m, "A_head1", id(m, "Dark Bacilium"));
+  const carta = m.c.A_head1_card.elenco().find((o) => o.value != 0 && !o.disabled).value;
+  scegli(m, "A_head1_card", carta);
+  const m2 = creaMotore();
+  m2.leggiBuild(m.scriviBuild());
+  assert.equal(m2.c.A_head1_card.value, String(carta));
+  assert.equal(m2.c.A_head1_card.disabled, false);
+  assert.equal(m2.c.A_head2_card.disabled, true); // (no middle headgear)
+});
+
+test("incantamento di una statistica solo sulle armature dell'Apprentice Craftsman", () => {
+  const m = creaMotore();
+  scegli(m, "A_JOB", 21); // Lord Knight
+  scegli(m, "A_body", id(m, "Full Plate"));
+  const str = () => numero(m, "A_STRp");
+  const senza = str();
+  scegli(m, "A_HSE", 3); // STR +3
+  assert.equal(str(), senza + 3);
+  scegli(m, "A_body", id(m, "Padded Armor")); // non nell'elenco
+  assert.equal(m.c.A_HSE.disabled, true);
+  assert.equal(m.c.A_HSE.value, "0");
+  assert.equal(str(), senza);
+  assert.equal(m.c.A_HSE_HEAD1, undefined); // copricapo basso: su uaRO non c'e'
+});
+
 test("Garling Card: CRI +2, danno critico +5%, CRI +1 ogni 2 raffinamenti delle calzature", () => {
   const m = creaMotore();
   const garling = costante(m, "GARLING_CARD_UARO");

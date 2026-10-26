@@ -57,6 +57,8 @@ var NOMI_NOSTRI = {
     return id && m_Skill[id[2]] && m_Skill[id[2]][2];
   },
   freccia: (v) => m_Arrow[v] && m_Arrow[v][2],
+  // 10 * statistica + punti, come in inizio.js
+  incantamento: (v) => HSEname[Math.floor(v / 10)] && HSEname[Math.floor(v / 10)] + " +" + (v % 10),
   dicastes: nomeDicastes,
   // campo A_skill<k>: la skill passiva k della classe, al livello v
   passiva: (v, campo) => m_Skill[m_JobBuff[n_A_JOB][campo.slice(7)]][2] + " " + v,
@@ -97,6 +99,11 @@ function importaBuild(link) {
     if (tipo == "tipoArma") return armaAssente ? 0 : valore;
     if (tipo == "bastion")
       return esterno.versione == 18 ? 8 * Math.floor(valore / 6) + (valore % 6) : 0;
+    // l'incantamento del copricapo basso su uaRO non c'e'
+    if (tipo == "incantamentoBasso") {
+      scarta("incantamento", "A_HSE_HEAD1", nomeNostro("incantamento", valore), "assente");
+      return 0;
+    }
     var tabella = dati && dati.tabelle[tipo];
     if (tabella) {
       var nostro = tabella[0][valore];

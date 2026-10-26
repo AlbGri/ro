@@ -186,7 +186,7 @@ function scriviBuild() {
   }
   testa[79] = bitBuild(c.A_adopted.checked, 0, 0, 0, 0);
   metti(80, c.A_HSE.value, 2);
-  metti(82, c.A_HSE_HEAD1.value, 2);
+  // 82-83: posto dell'incantamento del copricapo basso, tolto (vedi leggiBuild), sempre 0
   metti(84, 8 * c.A_BASTION_HEAD.value + 1 * c.A_BASTION_SHOES.value, 2);
   testa[86] = bitBuild(
     0,
@@ -308,7 +308,6 @@ function leggiBuild(build, esterno) {
   c.restrict_cardslot.checked = f[0];
   c.all_card.checked = f[1];
   if (c.all_card.checked) allCard();
-  restrictCardslot(0);
   c.maxASPD.value = 0;
   c.A_JOB.value = classe;
   ClickJob(classe, 2);
@@ -359,9 +358,14 @@ function leggiBuild(build, esterno) {
   // un oggetto che la classe non indossa (l'originale lo lasciava negli elenchi, vedi
   // WeaponSet2) torna alla voce vuota
   for (campo of ELENCHI_ARMATURE) if (c[campo].selectedIndex < 0) c[campo].selectedIndex = 0;
+  // gli slot delle carte dipendono dall'equipaggiamento appena letto
+  slotCarte();
   c.A_adopted.checked = bit(x(79))[0];
   c.A_HSE.value = traduci("incantamento", x(80, 2), "A_HSE");
-  c.A_HSE_HEAD1.value = traduci("incantamento", x(82, 2), "A_HSE_HEAD1");
+  incantoArmatura();
+  // 82-83: incantamento del copricapo basso, che su uaRO non c'e': non si carica, e
+  // importaBuild lo elenca
+  if (x(82, 2)) traduci("incantamentoBasso", x(82, 2));
   var bastion = traduci("bastion", x(84, 2));
   c.A_BASTION_HEAD.value = Math.floor(bastion / 8);
   c.A_BASTION_SHOES.value = bastion % 8;

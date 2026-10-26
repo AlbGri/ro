@@ -494,7 +494,6 @@ campo("A_head2", "select", function () { StAllCalc(); ClickB_Item(this.value); r
 campo("A_head2_card", "select", function () { StAllCalc(); Card(this.value); });
 campo("A_BASTION_HEAD", "select", function () { StAllCalc(); });
 campo("A_head3", "select", function () { StAllCalc(); ClickB_Item(this.value); restrictCardslot(4); });
-campo("A_HSE_HEAD1", "select", function () { StAllCalc(); });
 campo("A_LEFT_REFINE", "select", function () { StAllCalc(); });
 campo("A_left", "select", function () { StAllCalc(); ClickB_Item(this.value); restrictCardslot(5); setShieldWeight(this.value); });
 campo("A_left_card", "select", function () { StAllCalc(); Card(this.value); });

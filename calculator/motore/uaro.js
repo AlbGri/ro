@@ -176,6 +176,25 @@ function applyUaroHeadgearBonuses() {
     equipType: 60, attackOrDefense: 10, slots: 0, weight: 300, requiredLevel: 55, name: "Meteor Plate", jobMask: 1070,
     bonuses: [{ id: 151, value: 30 }, { id: 152, value: 30 }],
   });
+
+  // Incantamento di una statistica (A_HSE) dell'Apprentice Craftsman di Prontera: solo su queste
+  // armature, con o senza slot (elenco dell'NPC in gioco, Alberto 26/10/2026). Nel gioco Orleans's
+  // Gown, Elite Engineer Armor, Assassin Robe e Green Operation Coat
+  [
+    "Mantle", "Coat", "Chain Mail", "Full Plate", "Silk Robe", "Saint's Robe", "Holy Robe", "Wooden Mail",
+    "Tights", "Silver Robe", "Mage Coat", "Thief Clothes", "Legion Plate Armor", "Lucius's Fierce Armor of Volcano",
+    "Saphien's Armor of Ocean", "Aebecee's Raging Typhoon Armor", "Claytos Cracking Earth Armor", "Ninja Suit",
+    "Chameleon Armor", "Glorious Suit", "Glorious Popularized Suit", "Glorious Mass-Production Suit", "Mink Coat",
+    "Lord's Clothes", "Glittering Jacket", "Formal Suit", "Scapulare", "Angelic Protection", "Novice Breastplate",
+    "Meteor Plate", "Orlean's Gown", "Life Link", "Diabolus Robe", "Diabolus Armor", "Assaulter Plate",
+    "Elite Engineer's Armor", "Assassin's Robe", "Warlock's Battle Robe", "Medic's Robe", "Elite Archer Suit",
+    "Elite Shooter Suit", "Sprint Mail", "Kandura", "Armor of Naga", "Improved Tights", "Green Operation Coat (UARO)",
+    "Bone Plate",
+  ].forEach(function (nome) {
+    var armature = itemData.filter(function (o) { return o.equipType == 60 && o.name === nome; });
+    if (!armature.length) throw new Error("uaro.js: armatura " + nome + " assente");
+    armature.forEach(function (o) { o.statEnchant = true; });
+  });
   nuovo({
     equipType: 52, attackOrDefense: 0, slots: 0, weight: 30, requiredLevel: 40, name: "Blood Sucker",
     description: "1% chance to absorb 3% of the physical damage dealt as HP (not simulated).",

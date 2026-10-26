@@ -123,7 +123,6 @@ const ESATTE = {
   "Remove All Cards": "Togli tutte le carte",
   "(Bastion enchant)": "(incantamento Bastion)",
   "All Stats +1": "Tutte le statistiche +1",
-  "(headgear Hidden Slot Enchant)": "(incantamento Hidden Slot)",
   "(enchant)": "(incantamento)",
   "(primary enchant)": "(incantamento principale)",
   "(layer 2: stat)": "(livello 2: statistica)",

@@ -2323,6 +2323,7 @@ function StPlusCalc() {
     n_A_Buf7[49] && (a += 20),
     n_A_Buf7[50] && (E += 20),
     n_A_Buf7[51] && (S += 20));
+  incantoArmatura();
   var I = 1 * c.A_HSE.value;
   if (I) {
     var D = I % 10;
@@ -2333,18 +2334,9 @@ function StPlusCalc() {
       41 <= I && I <= 49 && (E += D),
       51 <= I && I <= 59 && (S += D));
   }
-  var T,
-    d = 1 * c.A_HSE_HEAD1.value;
+  var T;
   if (
-    (d &&
-      ((D = d % 10),
-      1 <= d && d <= 9 && (n += D),
-      11 <= d && d <= 19 && (s += D),
-      21 <= d && d <= 29 && (_ += D),
-      31 <= d && d <= 39 && (a += D),
-      41 <= d && d <= 49 && (E += D),
-      51 <= d && d <= 59 && (S += D)),
-    SkillSearch(SKILLID.TRANSCENDENT_SPIRIT) == 1 &&
+    (SkillSearch(SKILLID.TRANSCENDENT_SPIRIT) == 1 &&
       n_Reborn == 1 &&
       n_A_BaseLV > 10 &&
       n_A_BaseLV < 70 &&

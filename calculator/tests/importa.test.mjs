@@ -99,6 +99,21 @@ test("Thrice: Bastion da 6 * copricapo + calzature; un Dicastes oltre +2 non si 
   assert.equal(n.c.A_acces1.value, String(vm.runInContext("EQUIPID.LIGHT_OF_EL_DICASTES", m)));
 });
 
+test("Thrice: incantamento sul copricapo basso o su un'armatura non incantabile, non caricati", () => {
+  const m = creaMotore();
+  const scegli = (nome, valore) => (m.scegli(m.c[nome], String(valore)), m.calc());
+  scegli("A_JOB", 7); // Knight
+  scegli("A_body", vm.runInContext("itemData", m).findIndex((o) => o.name === "Padded Armor"));
+  let b = metti(distendi(String(m.scriviBuild())), 0, 18);
+  b = metti(b, 80, 3, 2); // STR +3 sull'armatura
+  b = metti(b, 82, 42, 2); // DEX +2 sul copricapo basso
+  const r = creaMotore().importaBuild("https://uaro-calc.xdthrice.workers.dev/#" + b);
+  assert.deepEqual(JSON.parse(JSON.stringify(r.nonCaricati)), [
+    { tipo: "incantamento", campo: "A_HSE_HEAD1", nome: "DEX +2", motivo: "assente" },
+    { tipo: "incantamento", campo: "A_HSE", nome: "STR +3", motivo: "non valido" },
+  ]);
+});
+
 test("link non riconosciuti: altro sito, versione diversa, la nostra build", () => {
   const m = creaMotore();
   const nostra = String(m.scriviBuild());

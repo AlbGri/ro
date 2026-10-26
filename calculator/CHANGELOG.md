@@ -2,6 +2,16 @@
 
 Le versioni della pagina `calcolatore/`.
 
+## [1.24] - 2026-10-26
+
+- Riaprendo la pagina, gli slot delle carte dell'equipaggiamento restano utilizzabili: prima
+  erano bloccati finche' non si cambiava un pezzo di equipaggiamento
+- L'incantamento di una statistica sull'armatura si puo' mettere solo sulle armature che
+  l'Apprentice Craftsman di Prontera incanta; con le altre la tendina e' disattivata
+- Tolto l'incantamento del copricapo basso, che su uaRO non esiste: le build salvate che lo
+  avevano lo perdono
+- Con un attacco a distanza non compare piu' per errore il danno riflesso da Shield Reflect
+
 ## [1.23] - 2026-10-25
 
 - "Ricomincia da zero" dopo aver caricato una build svuota anche il campo del nome: prima il

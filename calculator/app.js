@@ -924,6 +924,8 @@ function voceNonCaricata(x) {
   // lo slot dell'equipaggiamento, con il nome che ha nella pagina
   const slot = /^A_weapon2/.test(x.campo)
     ? tr("seconda arma", "second weapon")
+    : x.campo === "A_HSE_HEAD1"
+    ? tr("Testa, basso", "Head: low")
     : document.querySelector(`[data-campo="${x.campo}"]`)?.closest(".slot")?.querySelector(".slot-nome")?.textContent;
   if (slot) tipo += ` (${slot})`;
   const motivo = x.motivo === "assente" ? tr("non c'è in questo calcolatore", "not in this calculator") : tr("non si può usare in questa build", "cannot be used in this build");
