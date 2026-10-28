@@ -30,7 +30,11 @@ if (!uscita) throw new Error("Uso: node tools/statistiche.mjs <file di uscita>")
 
 const pausa = (ms) => new Promise((ok) => setTimeout(ok, ms));
 
-/** Una richiesta all'API; il limite e' di 4 al secondo, quindi si va piano e si riprova. */
+/**
+ * Una richiesta all'API; il limite e' di 4 al secondo, quindi si va piano e si riprova. Si
+ * riprova anche su 404 ed errori 5xx: GoatCounter ogni tanto risponde 404 a richieste valide
+ * (26 e 27/10/2026), e un'ora dopo la stessa richiesta funziona.
+ */
 async function chiedi(percorso, parametri) {
   const url = `${API}${percorso}?${new URLSearchParams(parametri)}`;
   for (let tentativo = 1; ; tentativo++) {
@@ -41,6 +45,10 @@ async function chiedi(percorso, parametri) {
     if (risposta.ok) return risposta.json();
     if (risposta.status === 429 && tentativo < 5) {
       await pausa(1000 * (Number(risposta.headers.get("X-Rate-Limit-Reset")) || 1));
+      continue;
+    }
+    if ((risposta.status === 404 || risposta.status >= 500) && tentativo < 5) {
+      await pausa(5000 * tentativo);
       continue;
     }
     throw new Error(`${percorso}: ${risposta.status} ${await risposta.text()}`);
