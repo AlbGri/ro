@@ -106,8 +106,6 @@ main > ul li { margin-bottom: 8px; }
 .stage-sub { font-size: .9rem; color: var(--muted); }
 .stage p { margin: 6px 0 0; }
 .stage ul { margin: 4px 0 0; padding-left: 1.1em; }
-.stage.unknown .stage-num { color: var(--muted); }
-.stage.unknown p.todo { color: var(--muted); font-style: italic; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .chip {
@@ -192,9 +190,9 @@ main > ul li { margin-bottom: 8px; }
   <ol class="route">
     <li data-en="Finish the 7 chapters of <strong>Spooky Memories</strong>: one a day, the next one opens after midnight server time. Each skipped day moves the egg back by one day. The quest is done once per account: do it all with the same character.">Finisci i 7 capitoli di <strong>Spooky Memories</strong>: uno al giorno, il successivo si apre dopo la mezzanotte del server. Ogni giorno saltato sposta l'uovo di un giorno. La quest si fa una volta per account: falla tutta con lo stesso personaggio.</li>
     <li data-en="Collect the <strong>Skelion Bone Fragments</strong>: 10 per attempt, dropped by Skelions. Chapter 2 also asks for 10 Skelions and chapter 3 for 25 fragments: farm them all together.">Raccogli gli <strong>Skelion Bone Fragments</strong>: 10 per tentativo, li lasciano gli Skelion. Anche il capitolo 2 chiede 10 Skelion e il capitolo 3 25 frammenti: falli tutti insieme.</li>
-    <li data-en="After chapter 7, the ritual at the <strong>Halloween Magician</strong> in Niflheim gives the Scatleton Egg.">Dopo il capitolo 7 il rituale dall'<strong>Halloween Magician</strong> a Niflheim dà lo Scatleton Egg.</li>
+    <li data-en="After chapter 7, the ritual at the <strong>Halloween Magician</strong> in Payon gives the Scatleton Egg.">Dopo il capitolo 7 il rituale dall'<strong>Halloween Magician</strong> a Payon dà lo Scatleton Egg.</li>
   </ol>
-  <p class="note-line verify" data-en="The wiki speaks of 10 fragments for “each try”: the ritual may fail, with a chance not known yet. Each new try takes 10 more fragments.">Il wiki parla di 10 frammenti per “each try”: il rituale potrebbe fallire, con una probabilità che ancora non si conosce. Ogni nuovo tentativo costa altri 10 frammenti.</p>
+  <p class="note-line warn" data-en="The ritual can fail, and each try takes 10 fragments: once it took 4 tries, 40 fragments.">Il rituale può fallire, e ogni tentativo costa 10 frammenti: una volta ne sono serviti 4, cioè 40 frammenti.</p>
   <p class="note-line tip" data-en="The Skelions live in <strong>The Hollow beneath Niflheim</strong>: talk to Old Man Barnaby and choose “Where's that dungeon?”. Inside, Teleport, Fly Wing and memo do not work and you cannot save; Butterfly Wing does.">Gli Skelion stanno in <strong>The Hollow beneath Niflheim</strong>: parla con Old Man Barnaby e scegli “Where's that dungeon?”. Dentro non funzionano Teleport, Fly Wing e memo e non si salva; la Butterfly Wing sì.</p>
   <div class="chips">
     <span class="chip-label">Old Man Barnaby</span><button class="chip" type="button" data-copy="/navi niflheim 149/117">/navi niflheim 149/117</button>
@@ -261,12 +259,13 @@ main > ul li { margin-bottom: 8px; }
       <div class="chips"><span class="chip-label">Vegetable Gardener, Pumpkin</span><button class="chip" type="button" data-copy="/navi prontera 101/49">/navi prontera 101/49</button></div>
     </div>
   </div>
-  <div class="stage unknown">
+  <div class="stage">
     <div class="stage-num">7</div>
     <div>
       <p class="stage-title">Night of the Zombies</p>
       <span class="stage-sub" data-en="Payon · 70 coins, 30 cakes">Payon · 70 monete, 30 torte</span>
-      <p class="todo" data-en="Not known yet. Afterwards, the ritual for the Scatleton Egg.">Ancora da scoprire. Dopo, il rituale per lo Scatleton Egg.</p>
+      <p data-en="Defeat 40 among Zombie, Munak and Bongun, and 30 Ghoul. Then, at the same NPC, the ritual for the Scatleton Egg.">Uccidi 40 fra Zombie, Munak e Bongun e 30 Ghoul. Poi, dallo stesso NPC, il rituale per lo Scatleton Egg.</p>
+      <div class="chips"><span class="chip-label">Halloween Magician</span><button class="chip" type="button" data-copy="/navi payon 162/176">/navi payon 162/176</button></div>
     </div>
   </div>
 
