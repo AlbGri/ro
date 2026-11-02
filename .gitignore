@@ -39,6 +39,8 @@ ragnarok_timers.log*
 
 # Archivi di distribuzione
 *.zip
+# il kit lgp si scarica dal sito, non da una release
+!lgp/*.zip
 # Zip dei timer estratti per l'uso personale di Alberto, con i suoi dati
 timers/desktop/RagnarokTimers-v*-windows/
 

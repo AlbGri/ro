@@ -107,7 +107,7 @@
   // la pagina e' stata letta: prima dei moduli, che trovano gia' le scritte
   // giuste, e prima che venga disegnata. Fino ad allora la pagina resta
   // nascosta, per non mostrare l'italiano per un istante.
-  const EN_ATTRIBUTES = ["title", "aria-label", "placeholder", "content"];
+  const EN_ATTRIBUTES = ["title", "aria-label", "placeholder", "content", "alt"];
 
   if (english && root.hasAttribute("data-bilingual")) {
     root.lang = "en";
@@ -355,13 +355,19 @@
         input.focus();
         gate.querySelector(".gate-lang").addEventListener("click", window.toggleLang);
 
+        // GoatCounter conta una persona una volta sola per evento: il numero del tentativo
+        // nell'evento dice quante volte si sbaglia. Il testo inserito non va mai inviato.
+        let wrong = 0;
         gate.querySelector("form").addEventListener("submit", async (event) => {
           event.preventDefault();
           if ((await sha256(input.value)) !== ACCESS_HASH) {
+            wrong += 1;
+            beacon({ p: wrong < 4 ? `accesso-sbagliato-${wrong}` : "accesso-sbagliato-4-oltre", e: "true" });
             error.hidden = false;
             input.select();
             return;
           }
+          beacon({ p: "accesso-riuscito", e: "true" });
           remember();
           gate.remove();
           style.remove();
@@ -384,19 +390,24 @@
   // 25/10/2026): pannello in rotools.goatcounter.com. La richiesta la manda
   // questo codice e non il loro count.js, per non eseguire script di terzi e
   // perche' i filtri pubblicitari bloccano soprattutto quello. Solo dopo il
-  // codice, per contare chi usa il sito e non chi si ferma alla schermata, e
-  // solo in https: le prove da localhost o da file non contano.
+  // codice, per contare chi usa il sito e non chi si ferma alla schermata (fanno
+  // eccezione i tentativi alla schermata stessa), e solo in https: le prove da
+  // localhost o da file non contano.
   let counting = false;
   // la cartella del sito, dove sta questo script: chi arriva da un'altra pagina del sito non
   // ha una provenienza
   const site = new URL(".", document.currentScript.src).href;
 
-  const send = (params) => {
-    if (!counting) return;
+  function beacon(params) {
+    if (location.protocol !== "https:") return;
     const query = new URLSearchParams({ ...params, rnd: Math.random().toString(36).slice(2) });
     const url = "https://rotools.goatcounter.com/count?" + query;
     // sendBeacon arriva anche se la pagina si ricarica subito dopo, come al cambio di lingua
     if (!navigator.sendBeacon?.(url)) new Image().src = url;
+  }
+
+  const send = (params) => {
+    if (counting) beacon(params);
   };
 
   /**
@@ -414,8 +425,14 @@
       s: [screen.width, screen.height, devicePixelRatio || 1].join(","),
     });
 
+  // L'eseguibile dei timer si scarica dalla home e dalle impostazioni dei timer: contato
+  // qui, perche' toccare la pagina dei timer chiederebbe una loro versione nuova.
+  document.addEventListener("click", (event) => {
+    if (event.target.closest?.('a[href*="/releases/download/timers-"]')) window.conta("timer-scarica-windows");
+  });
+
   window.accessGranted.then(() => {
-    counting = location.protocol === "https:";
+    counting = true;
     // il titolo c'e' solo quando la pagina e' stata letta
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", countPage);
     else countPage();

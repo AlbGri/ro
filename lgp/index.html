@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="it" data-bilingual>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>ro-tools – lgp</title>
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#F5F7F1">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1B2420">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<script src="../gate.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Colori e caratteri sono quelli della guida Nuovo Mondo. */
+:root {
+  --bg: #E6EBE2;
+  --surface: #F5F7F1;
+  --surface-2: #EDF1E8;
+  --ink: #1D2821;
+  --muted: #56655B;
+  --line: #C6D0C1;
+  --accent: #6A4C9C;
+  --focus: #6A4C9C;
+  --serif: "Alegreya", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: "Atkinson Hyperlegible", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131A16; --surface: #1B2420; --surface-2: #212C27; --ink: #E3EAE2; --muted: #9DAA9F; --line: #33413A;
+    --accent: #B79CEB; --focus: #B79CEB;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131A16; --surface: #1B2420; --surface-2: #212C27; --ink: #E3EAE2; --muted: #9DAA9F; --line: #33413A;
+  --accent: #B79CEB; --focus: #B79CEB;
+  color-scheme: dark;
+}
+:root { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--sans); font-size: 16px; line-height: 1.5;
+}
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+code { font-size: .92em; overflow-wrap: anywhere; }
+
+/* Intestazione, come nella guida */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  padding-top: env(safe-area-inset-top, 0px);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-inner {
+  max-width: 960px; margin: 0 auto; min-height: 64px;
+  display: flex; align-items: center; gap: 16px; padding: 8px 20px; flex-wrap: wrap;
+}
+.brand { font-family: var(--serif); font-weight: 700; font-size: 1.15rem; white-space: nowrap; flex: 1; }
+.btn {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 8px;
+  padding: 7px 12px; cursor: pointer; font-size: .92rem; line-height: 1.2;
+}
+.btn:hover { border-color: var(--muted); }
+a.btn { text-decoration: none; }
+/* Menu ⚙, copiato dalla guida */
+.more { position: relative; }
+.more > summary { list-style: none; }
+.more > summary::-webkit-details-marker { display: none; }
+.more > summary.gear { padding-left: 9px; padding-right: 9px; font-size: 1.05rem; }
+.more-menu {
+  position: absolute; right: 0; top: calc(100% + 6px); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 10px; padding: 6px; display: grid; gap: 4px; min-width: 220px;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--ink) 18%, transparent);
+}
+.more-menu .btn { text-align: left; border-color: transparent; }
+.more-menu .btn:hover { background: var(--surface-2); }
+
+main { max-width: 960px; margin: 0 auto; padding: 28px 20px 40px; }
+.hero { padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.hero h1 { font-family: var(--serif); font-size: clamp(2.1rem, 4.5vw, 3.2rem); line-height: 1.05; margin: 0 0 12px; font-weight: 700; letter-spacing: -.01em; }
+.lead { font-size: 1.12rem; margin: 0 0 16px; color: var(--muted); }
+.download { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; }
+.download .btn {
+  border-color: var(--accent); background: color-mix(in srgb, var(--accent) 16%, var(--surface));
+  font-weight: 700; font-size: 1rem; padding: 9px 16px;
+}
+.hint { font-size: .88rem; color: var(--muted); margin: 0; }
+/* Le icone sono pixel art da 40 px: raddoppiate senza sfumare */
+.anteprima { display: block; width: 100%; max-width: 696px; height: auto; margin: 24px 0 0; image-rendering: pixelated; }
+
+section { margin-top: 28px; }
+h2 { font-family: var(--serif); font-size: 1.4rem; line-height: 1.15; margin: 0 0 12px; font-weight: 700; }
+ol, ul { margin: 0; padding-left: 1.4em; }
+li + li { margin-top: 6px; }
+p { margin: 0 0 10px; }
+.skill { font-size: .95rem; margin-top: 12px; }
+.skill summary { cursor: pointer; color: var(--muted); }
+.skill ul { margin-top: 8px; columns: 3 220px; }
+.skill li + li { margin-top: 2px; }
+footer { max-width: 960px; margin: 0 auto; padding: 0 20px 40px; }
+
+@media (max-width: 640px) {
+  .topbar-inner { gap: 10px; padding: 8px 16px; }
+  main, footer { padding-left: 16px; padding-right: 16px; }
+  .btn { padding: 6px 10px; font-size: .86rem; }
+  .brand { font-size: 1rem; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="btn" href="../" title="Torna alla scelta dei servizi" data-en-title="Back to the list of services">Home</a>
+    <span class="brand">lgp</span>
+    <!-- Lingua prima del menu ⚙, come in ogni pagina: la bandiera la disegna gate.js. -->
+    <button class="btn" type="button" onclick="toggleLang()" data-lang><span data-en="IT">EN</span></button>
+    <!-- Menu ⚙, uguale in ogni pagina: qui solo il tema, la pagina non ha dati da salvare. -->
+    <details class="more">
+      <summary class="btn gear" title="Menu" aria-label="Menu">&#9881;</summary>
+      <div class="more-menu">
+        <button class="btn" type="button" onclick="toggleTheme()" data-en="Switch light/dark theme">Cambia tema chiaro/scuro</button>
+      </div>
+    </details>
+  </div>
+</header>
+<main>
+  <section class="hero">
+    <h1>lgp</h1>
+    <p class="lead" data-en="A kit for the LGP plugin of the uaRO client: every ground skill shows its official icon, enlarged from 24 to 38 pixels and colored like the skill.">Un kit per il plugin LGP del client di uaRO: ogni skill a terra mostra la sua icona ufficiale, ingrandita da 24 a 38 pixel e colorata come la skill.</p>
+    <div class="download">
+      <a class="btn" href="lgp_20261015.zip" download onclick="window.conta?.('lgp-scaricato')" data-en="Download the kit">Scarica il kit</a>
+      <span class="hint" data-en="lgp_20261015.zip, 40 KB: <code>plugin.ini</code> and the <code>lgp</code> folder with 64 images">lgp_20261015.zip, 40 KB: <code>plugin.ini</code> e la cartella <code>lgp</code> con 64 immagini</span>
+    </div>
+    <img class="anteprima" src="anteprima.png" width="348" height="84"
+      alt="Icone di Storm Gust, Meteor Storm, Lord of Vermilion, Sanctuary, Magnus Exorcismus, Fire Wall, Quagmire, Land Protector, Safety Wall, Pneuma, Fire Pillar, Spider Web, Venom Dust, Ankle Snare, Claymore Trap e Demonstration"
+      data-en-alt="Icons of Storm Gust, Meteor Storm, Lord of Vermilion, Sanctuary, Magnus Exorcismus, Fire Wall, Quagmire, Land Protector, Safety Wall, Pneuma, Fire Pillar, Spider Web, Venom Dust, Ankle Snare, Claymore Trap and Demonstration">
+  </section>
+
+  <section>
+    <h2 data-en="Installation">Installazione</h2>
+    <ol>
+      <li data-en="Close the game and extract the zip: it contains <code>plugin.ini</code> and the <code>lgp</code> folder.">Chiudi il gioco ed estrai lo zip: contiene <code>plugin.ini</code> e la cartella <code>lgp</code>.</li>
+      <li data-en="Back up <code>plugin.ini</code>, in the client folder <code>UaRO World of Your Dream</code>, and the folder <code>UaRO World of Your Dream\data\texture\lgp</code>: they are usually already there and the kit replaces them.">Fai una copia di sicurezza di <code>plugin.ini</code>, nella cartella del client <code>UaRO World of Your Dream</code>, e della cartella <code>UaRO World of Your Dream\data\texture\lgp</code>: di solito ci sono già e il kit li sostituisce.</li>
+      <li data-en="Copy <code>plugin.ini</code> into <code>UaRO World of Your Dream</code>, replacing the one already there.">Copia <code>plugin.ini</code> in <code>UaRO World of Your Dream</code>, sostituendo quello che c'è.</li>
+      <li data-en="Copy the images of the zip's <code>lgp</code> folder into <code>UaRO World of Your Dream\data\texture\lgp</code>, replacing the files with the same name.">Copia le immagini della cartella <code>lgp</code> dello zip in <code>UaRO World of Your Dream\data\texture\lgp</code>, sostituendo i file con lo stesso nome.</li>
+      <li data-en="In game type <code>@lgp</code> to turn the icons on; the same command turns them off.">In gioco scrivi <code>@lgp</code> per accendere le icone; lo stesso comando le spegne.</li>
+    </ol>
+    <p class="hint" style="margin-top: 10px" data-en="To go back: put the copies from step 2 back in their place.">Per tornare a prima: rimetti al loro posto le copie del passo 2.</p>
+  </section>
+
+  <section>
+    <h2 data-en="What changes">Cosa cambia</h2>
+    <ul>
+      <li data-en="Skills are 60% opaque, so you can see what is underneath.">Le skill sono opache al 60%, per vedere cosa c'è sotto.</li>
+      <li data-en="Pneuma, Safety Wall, Demonstration, Fire Pillar, Spider Web, Venom Dust and the traps are fully opaque, with a colored frame, so they stand out.">Pneuma, Safety Wall, Demonstration, Fire Pillar, Spider Web, Venom Dust e le trappole sono piene, con una cornice colorata, per vederle subito.</li>
+      <li data-en="The areas of Storm Gust, Meteor Storm and Lord of Vermilion stay visible for 4.7, 1 and 4.1 seconds.">Le aree di Storm Gust, Meteor Storm e Lord of Vermilion restano visibili per 4,7, 1 e 4,1 secondi.</li>
+    </ul>
+    <details class="skill">
+      <summary data-en="Skills in the kit">Skill del kit</summary>
+      <ul>
+        <li>Storm Gust</li><li>Meteor Storm</li><li>Lord of Vermilion</li><li>Safety Wall</li><li>Fire Wall</li>
+        <li>Warp Portal</li><li>Sanctuary</li><li>Magnus Exorcismus</li><li>Pneuma</li><li>Grand Cross</li>
+        <li>Fire Pillar</li><li>Ice Wall</li><li>Quagmire</li><li>Blast Mine</li><li>Skid Trap</li>
+        <li>Ankle Snare</li><li>Venom Dust</li><li>Land Mine</li><li>Shockwave Trap</li><li>Sandman</li>
+        <li>Flasher</li><li>Freezing Trap</li><li>Claymore Trap</li><li>Talkie Box</li><li>Volcano</li>
+        <li>Deluge</li><li>Violent Gale</li><li>Land Protector</li><li>Lullaby</li><li>Mr. Kim A Rich Man</li>
+        <li>Eternal Chaos</li><li>A Drum on the Battlefield</li><li>The Ring of Nibelungen</li><li>Loki's Veil</li>
+        <li>Into the Abyss</li><li>Invulnerable Siegfried</li><li>Dissonance</li><li>A Whistle</li>
+        <li>Assassin Cross of Sunset</li><li>A Poem of Bragi</li><li>The Apple of Idun</li><li>Ugly Dance</li>
+        <li>Humming</li><li>Please Don't Forget Me</li><li>Fortune's Kiss</li><li>Service for You</li>
+        <li>Graffiti</li><li>Demonstration</li><li>Gospel</li><li>Basilica</li><li>Moonlit Water Mill</li>
+        <li>Fog Wall</li><li>Spider Web</li><li>Gravitation Field</li><li>Wand of Hermode</li><li>Desperado</li>
+        <li>Suiton</li><li>Tatami Gaeshi</li><li>Kaensin</li><li>Ground Drift</li>
+        <li data-en="the family calls">i richiami della famiglia</li>
+      </ul>
+    </details>
+  </section>
+
+  <section>
+    <h2 data-en="Customizing">Personalizzare</h2>
+    <p data-en="The opacity of every skill is in <code>plugin.ini</code>, section <code>[LGP::CELL_COLOR]</code>. In the value <code>0xAARRGGBB</code> the two digits after <code>0x</code> are the opacity: <code>FF</code> full, <code>CC</code> 80%, <code>B3</code> 70%, <code>99</code> 60%. Lines are listed by skill code: the name is in the comment above the same code in <code>[LGP::CELL_IMAGE]</code>.">L'opacità di ogni skill sta in <code>plugin.ini</code>, sezione <code>[LGP::CELL_COLOR]</code>. Nel valore <code>0xAARRGGBB</code> le due cifre dopo <code>0x</code> sono l'opacità: <code>FF</code> piena, <code>CC</code> 80%, <code>B3</code> 70%, <code>99</code> 60%. Le righe sono per codice della skill: il nome sta nel commento sopra lo stesso codice in <code>[LGP::CELL_IMAGE]</code>.</p>
+  </section>
+</main>
+<footer>
+  <p class="hint" data-en="The kit images come from the Ragnarok Online skill icons, by Gravity, and are not covered by the site's GPL-3.0 license.">Le immagini del kit derivano dalle icone delle skill di Ragnarok Online, di Gravity, e non sono coperte dalla licenza GPL-3.0 del sito.</p>
+</footer>
+</body>
+</html>

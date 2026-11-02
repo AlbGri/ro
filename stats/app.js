@@ -30,8 +30,16 @@ const PAGINE = {
   "/ro/calculator/": ["Calcolatore", "Calculator"],
   "/ro/statistiche/": ["Statistiche", "Statistics"],
   "/ro/stats/": ["Statistiche", "Statistics"],
+  "/ro/lgp/": ["lgp", "lgp"],
 };
 const AZIONI = {
+  "accesso-riuscito": ["Codice di accesso giusto", "Correct access code"],
+  "accesso-sbagliato-1": ["Codice sbagliato almeno una volta", "Wrong code at least once"],
+  "accesso-sbagliato-2": ["Codice sbagliato almeno due volte", "Wrong code at least twice"],
+  "accesso-sbagliato-3": ["Codice sbagliato almeno tre volte", "Wrong code at least three times"],
+  "accesso-sbagliato-4-oltre": ["Codice sbagliato quattro volte o più", "Wrong code four times or more"],
+  "timer-scarica-windows": ["Timer per Windows scaricati", "Windows timers downloaded"],
+  "lgp-scaricato": ["Kit lgp scaricati", "lgp kits downloaded"],
   "lingua-inglese": ["Passaggi all'inglese", "Switches to English"],
   "lingua-italiano": ["Passaggi all'italiano", "Switches to Italian"],
   "timer-creato": ["Timer creati", "Timers created"],
