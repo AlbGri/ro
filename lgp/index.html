@@ -97,8 +97,15 @@ main { max-width: 960px; margin: 0 auto; padding: 28px 20px 40px; }
 
 section { margin-top: 28px; }
 h2 { font-family: var(--serif); font-size: 1.4rem; line-height: 1.15; margin: 0 0 12px; font-weight: 700; }
+h3 { font-family: var(--serif); font-size: 1.15rem; line-height: 1.2; margin: 22px 0 8px; font-weight: 700; }
 ol, ul { margin: 0; padding-left: 1.4em; }
 li + li { margin-top: 6px; }
+.passi li + li { margin-top: 10px; }
+/* la struttura delle cartelle: scorre di lato sul telefono invece di andare a capo */
+.albero {
+  margin: 0 0 16px; padding: 10px 14px; overflow-x: auto; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 8px; font-size: .88rem; line-height: 1.45;
+}
 p { margin: 0 0 10px; }
 .skill { font-size: .95rem; margin-top: 12px; }
 .skill summary { cursor: pointer; color: var(--muted); }
@@ -145,14 +152,35 @@ footer { max-width: 960px; margin: 0 auto; padding: 0 20px 40px; }
 
   <section>
     <h2 data-en="Installation">Installazione</h2>
-    <ol>
-      <li data-en="Close the game and extract the zip: it contains <code>plugin.ini</code> and the <code>lgp</code> folder.">Chiudi il gioco ed estrai lo zip: contiene <code>plugin.ini</code> e la cartella <code>lgp</code>.</li>
-      <li data-en="Back up <code>plugin.ini</code>, in the client folder <code>UaRO World of Your Dream</code>, and the folder <code>UaRO World of Your Dream\data\texture\lgp</code>: they are usually already there and the kit replaces them.">Fai una copia di sicurezza di <code>plugin.ini</code>, nella cartella del client <code>UaRO World of Your Dream</code>, e della cartella <code>UaRO World of Your Dream\data\texture\lgp</code>: di solito ci sono già e il kit li sostituisce.</li>
-      <li data-en="Copy <code>plugin.ini</code> into <code>UaRO World of Your Dream</code>, replacing the one already there.">Copia <code>plugin.ini</code> in <code>UaRO World of Your Dream</code>, sostituendo quello che c'è.</li>
-      <li data-en="Copy the images of the zip's <code>lgp</code> folder into <code>UaRO World of Your Dream\data\texture\lgp</code>, replacing the files with the same name.">Copia le immagini della cartella <code>lgp</code> dello zip in <code>UaRO World of Your Dream\data\texture\lgp</code>, sostituendo i file con lo stesso nome.</li>
-      <li data-en="In game type <code>@lgp</code> to turn the icons on; the same command turns them off.">In gioco scrivi <code>@lgp</code> per accendere le icone; lo stesso comando le spegne.</li>
+    <p data-en="It takes a couple of minutes. At the end the game folder must look like this:">Ci vogliono un paio di minuti. Alla fine la cartella del gioco deve essere così:</p>
+    <pre class="albero" data-en="UaRO World of Your Dream
+├─ plugin.ini            ← the kit's one
+└─ data
+   └─ texture
+      └─ lgp
+         ├─ g_wz_stormgust.bmp
+         ├─ g_wz_meteor.bmp
+         └─ … (64 images in total)">UaRO World of Your Dream
+├─ plugin.ini            ← quello del kit
+└─ data
+   └─ texture
+      └─ lgp
+         ├─ g_wz_stormgust.bmp
+         ├─ g_wz_meteor.bmp
+         └─ … (64 immagini in tutto)</pre>
+    <ol class="passi">
+      <li data-en="<strong>Close the game.</strong>"><strong>Chiudi il gioco.</strong></li>
+      <li data-en="<strong>Open the game folder.</strong> Right-click the uaRO icon on the desktop and choose <em>Open file location</em>. The <code>UaRO World of Your Dream</code> folder opens: it is the one that also contains <code>plugin.ini</code>. Keep it open."><strong>Apri la cartella del gioco.</strong> Fai clic destro sull'icona di uaRO sul desktop e scegli <em>Apri percorso file</em>. Si apre la cartella <code>UaRO World of Your Dream</code>: è quella dove c'è anche <code>plugin.ini</code>. Tienila aperta.</li>
+      <li data-en="<strong>Back up the current files.</strong> On the desktop create a folder named <code>lgp original</code> (right-click, <em>New</em>, <em>Folder</em>). Copy into it the <code>plugin.ini</code> file of the game folder and the <code>lgp</code> folder you find in <code>data</code>, then <code>texture</code>. Use copy and paste (<code>Ctrl+C</code> and <code>Ctrl+V</code>), do not drag: dragging can move the files instead of copying them. If there is no <code>lgp</code> folder in <code>texture</code>, copy only <code>plugin.ini</code>."><strong>Fai una copia di quello che c'è.</strong> Sul desktop crea una cartella <code>lgp originale</code> (clic destro, <em>Nuovo</em>, <em>Cartella</em>). Copiaci dentro il file <code>plugin.ini</code> della cartella del gioco e la cartella <code>lgp</code> che trovi in <code>data</code>, poi <code>texture</code>. Usa copia e incolla (<code>Ctrl+C</code> e <code>Ctrl+V</code>), non trascinare: trascinando i file possono spostarsi invece di essere copiati. Se in <code>texture</code> la cartella <code>lgp</code> non c'è, copia solo <code>plugin.ini</code>.</li>
+      <li data-en="<strong>Extract the kit.</strong> Right-click the downloaded <code>lgp_20261015.zip</code> file, choose <em>Extract All</em> and then <em>Extract</em>. A folder opens with <code>plugin.ini</code> and the <code>lgp</code> folder."><strong>Estrai il kit.</strong> Fai clic destro sul file scaricato <code>lgp_20261015.zip</code>, scegli <em>Estrai tutto</em> e poi <em>Estrai</em>. Si apre una cartella con <code>plugin.ini</code> e la cartella <code>lgp</code>.</li>
+      <li data-en="<strong>Copy <code>plugin.ini</code></strong> from the extracted folder into the game folder. When Windows asks what to do with the file already there, choose <em>Replace the file in the destination</em>."><strong>Copia <code>plugin.ini</code></strong> dalla cartella estratta alla cartella del gioco. Quando Windows chiede cosa fare con il file che c'è già, scegli <em>Sostituisci il file nella destinazione</em>.</li>
+      <li data-en="<strong>Copy the whole <code>lgp</code> folder</strong> from the extracted folder into <code>data</code>, then <code>texture</code>, of the game folder: paste it inside <code>texture</code>, not inside <code>lgp</code>. If Windows asks, choose <em>Replace the files in the destination</em>."><strong>Copia la cartella <code>lgp</code> intera</strong> dalla cartella estratta in <code>data</code>, poi <code>texture</code>, della cartella del gioco: incollala dentro <code>texture</code>, non dentro <code>lgp</code>. Se Windows chiede, scegli <em>Sostituisci i file nella destinazione</em>.</li>
+      <li data-en="<strong>Check.</strong> Open <code>data</code>, <code>texture</code>, <code>lgp</code>: you must see the images right away, such as <code>g_wz_stormgust.bmp</code>. If you find another <code>lgp</code> folder instead, open it, select everything (<code>Ctrl+A</code>), cut it (<code>Ctrl+X</code>), go back one level and paste it (<code>Ctrl+V</code>)."><strong>Controlla.</strong> Apri <code>data</code>, <code>texture</code>, <code>lgp</code>: devi vedere subito le immagini, come <code>g_wz_stormgust.bmp</code>. Se invece trovi un'altra cartella <code>lgp</code>, aprila, seleziona tutto (<code>Ctrl+A</code>), taglia (<code>Ctrl+X</code>), torna indietro di una cartella e incolla (<code>Ctrl+V</code>).</li>
+      <li data-en="<strong>Turn the icons on.</strong> Start the game, log in with a character, type <code>@lgp</code> in the chat and press Enter. The same command turns them off."><strong>Accendi le icone.</strong> Avvia il gioco, entra con un personaggio, scrivi <code>@lgp</code> nella chat e premi Invio. Lo stesso comando le spegne.</li>
     </ol>
-    <p class="hint" style="margin-top: 10px" data-en="To go back: put the copies from step 2 back in their place.">Per tornare a prima: rimetti al loro posto le copie del passo 2.</p>
+
+    <h3 data-en="To go back">Per tornare come prima</h3>
+    <p data-en="Close the game and copy <code>plugin.ini</code> and the <code>lgp</code> folder from the <code>lgp original</code> folder on the desktop back to their place, as in steps 5 and 6, choosing <em>Replace</em>.">Chiudi il gioco e ricopia <code>plugin.ini</code> e la cartella <code>lgp</code> della cartella <code>lgp originale</code> sul desktop al loro posto, come ai passi 5 e 6, scegliendo <em>Sostituisci</em>.</p>
   </section>
 
   <section>
