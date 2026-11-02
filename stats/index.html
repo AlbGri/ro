@@ -137,6 +137,7 @@ h2 { font-family: var(--serif); font-size: 1.4rem; line-height: 1.15; margin: 0 
 .barre .binario { grid-column: 1 / -1; height: 10px; }
 .barre .barra { height: 100%; min-width: 2px; background: var(--accent); border-radius: 0 4px 4px 0; }
 .vuoto { color: var(--muted); margin: 0; }
+.nota { margin: -4px 0 12px; }
 
 @media (max-width: 640px) {
   .topbar-inner { gap: 10px; padding: 8px 16px; }
@@ -202,6 +203,11 @@ h2 { font-family: var(--serif); font-size: 1.4rem; line-height: 1.15; margin: 0 
       <section class="card">
         <h2 data-en="Actions">Azioni</h2>
         <ol class="barre" id="azioni"></ol>
+      </section>
+      <section class="card">
+        <h2 data-en="Access code">Codice di accesso</h2>
+        <p class="hint nota" data-en="Since 2 November 2026. Only people who type the code are counted: a browser that already remembers it skips the screen.">Dal 2 novembre 2026. Si conta solo chi scrive il codice: un browser che lo ricorda già salta la schermata.</p>
+        <ol class="barre" id="accessi"></ol>
       </section>
       <div class="griglia">
         <section class="card"><h2 data-en="Devices">Dispositivi</h2><ol class="barre" id="schermi"></ol></section>

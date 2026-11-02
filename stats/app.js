@@ -31,6 +31,7 @@ const PAGINE = {
   "/ro/statistiche/": ["Statistiche", "Statistics"],
   "/ro/stats/": ["Statistiche", "Statistics"],
   "/ro/lgp/": ["lgp", "lgp"],
+  "/ro/pet/": ["Promemoria pet", "Pet reminder"],
 };
 const AZIONI = {
   "accesso-riuscito": ["Codice di accesso giusto", "Correct access code"],
@@ -40,6 +41,7 @@ const AZIONI = {
   "accesso-sbagliato-4-oltre": ["Codice sbagliato quattro volte o più", "Wrong code four times or more"],
   "timer-scarica-windows": ["Timer per Windows scaricati", "Windows timers downloaded"],
   "lgp-scaricato": ["Kit lgp scaricati", "lgp kits downloaded"],
+  "pet-nutrito": ["Promemoria pet avviati", "Pet reminders started"],
   "lingua-inglese": ["Passaggi all'inglese", "Switches to English"],
   "lingua-italiano": ["Passaggi all'italiano", "Switches to Italian"],
   "timer-creato": ["Timer creati", "Timers created"],
@@ -257,7 +259,10 @@ function disegna() {
 
   $("visite").textContent = numero.format(dati.visite);
   $("media").textContent = decimale.format(dati.visite / Math.max(giorni.length, 1));
-  $("azioni-totale").textContent = numero.format(dati.azioni.reduce((somma, a) => somma + a.visite, 0));
+  // i tentativi alla schermata del codice hanno la loro scheda e non sono azioni
+  const accesso = (nome) => nome.startsWith("accesso-");
+  const azioni = dati.azioni.filter((a) => !accesso(a.nome));
+  $("azioni-totale").textContent = numero.format(azioni.reduce((somma, a) => somma + a.visite, 0));
 
   andamento(giorni);
   $("tabella-giorni").replaceChildren(
@@ -273,7 +278,14 @@ function disegna() {
   );
 
   barre("pagine", voci(dati.pagine, (p) => scegli(PAGINE[p.nome]) || p.titolo || p.nome), dati.visite);
-  barre("azioni", voci(dati.azioni, (a) => scegli(AZIONI[a.nome]) || a.nome));
+  barre("azioni", voci(azioni, (a) => scegli(AZIONI[a.nome]) || a.nome));
+  // nell'ordine di AZIONI: codice giusto, poi sbagliato almeno una, due, tre, quattro volte
+  barre(
+    "accessi",
+    Object.keys(AZIONI)
+      .filter(accesso)
+      .map((nome) => ({ nome: scegli(AZIONI[nome]), valore: dati.azioni.find((a) => a.nome === nome)?.visite || 0 })),
+  );
   const totale = (elenco) => elenco.reduce((somma, v) => somma + v.visite, 0);
   barre("schermi", voci(dati.schermi, (s) => scegli(SCHERMI[s.id]) || sconosciuto), totale(dati.schermi));
   barre("paesi", voci(dati.paesi, (p) => (ignoto(p.id) ? sconosciuto : sicuro((id) => nomePaese.of(id), p.id))), totale(dati.paesi));
