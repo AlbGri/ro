@@ -12,6 +12,7 @@ La home chiede un codice di accesso e poi fa scegliere il servizio.
 | Livelli fino all'84: il piano piu' economico con le quest ripetibili di uaRO | `/ro/levels/` | `levels/`, con il suo [changelog](levels/CHANGELOG.md) |
 | Party: le run migliori di un'istanza (Horror Toy Factory ed Endless Cellar) con i giocatori e gli Account Gilda | `/ro/party/` | `party/`, con il suo [changelog](party/CHANGELOG.md) |
 | Calcolatore di statistiche e danni per uaRO, dal calcolatore di Thrice | `/ro/calculator/` | [`calculator/`](calculator/README.md), con il suo [changelog](calculator/CHANGELOG.md) |
+| Promemoria pet: conto alla rovescia di 9 minuti che suona quando e' ora di nutrire il pet | `/ro/pet/` | `pet/` |
 | lgp: kit da scaricare per il plugin LGP del client di uaRO, le skill a terra con la loro icona | `/ro/lgp/` | `lgp/` |
 
 Tutto e' HTML, CSS e JavaScript senza framework ne' passaggi di build: le
@@ -48,6 +49,7 @@ restano nel suo browser: non c'e' nulla di condiviso da proteggere.
 | `levels/` | calcolatore dei livelli: dati, calcolo del piano e pagina; test con `node --test tests/*.mjs` |
 | `party/` | run di un'istanza: dati delle istanze, calcolo e pagina; test con `node --test tests/*.mjs` |
 | `calculator/` | calcolatore di statistiche e danni: motore, correzioni per uaRO e pagina; test con `node --test tests/*.test.mjs` |
+| `pet/` | promemoria pet, una sola pagina con il codice dentro |
 | `lgp/` | pagina del kit lgp, con lo zip da scaricare e un'anteprima delle icone |
 
 Gli strumenti della guida leggono la cartella `guide/fonti` (copie di script e
