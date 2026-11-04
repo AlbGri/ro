@@ -24,7 +24,9 @@ CLAUDE.md
 
 # Documenti locali
 _local/
-STATO_PROGETTO.md
+/*.md
+!/README.md
+!/CHANGELOG.md
 
 # OS
 Thumbs.db

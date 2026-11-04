@@ -1,6 +1,6 @@
 # Changelog - calcolatore
 
-Le versioni della pagina `calcolatore/`.
+Le versioni della pagina `calculator/`.
 
 ## [1.25] - 2026-10-26
 

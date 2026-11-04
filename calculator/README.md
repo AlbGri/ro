@@ -33,6 +33,6 @@ Qui ci sono:
 ## Prove
 
 ```bash
-cd calcolatore
+cd calculator
 node --test tests/*.test.mjs
 ```

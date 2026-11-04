@@ -1,6 +1,6 @@
 # Changelog - livelli fino all'84
 
-Le versioni della pagina `livelli/`.
+Le versioni della pagina `levels/`.
 
 ## [1.20] - 2026-10-26
 
