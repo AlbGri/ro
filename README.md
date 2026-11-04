@@ -1,19 +1,21 @@
 # ro-tools
 
-Strumenti e guide per Ragnarok Online in un solo sito statico, servito da
-GitHub Pages: `https://albgri.github.io/ro/`.
+Strumenti e guide per Ragnarok Online in un solo sito statico, pubblicato su
+GitHub Pages e raggiungibile da `https://ro.albgri.com/`. Anche il vecchio
+indirizzo `https://albgri.github.io/ro/` resta valido, ma tiene dati separati:
+codice di accesso, scelte e timer salvati nel browser non passano dall'uno all'altro.
 
 La home chiede un codice di accesso e poi fa scegliere il servizio.
 
 | Servizio | Indirizzo | Cartella |
 |---|---|---|
-| Timer di respawn per MvP e quest, web e desktop | `/ro/timers/`; l'eseguibile per Windows e' nelle [release](https://github.com/AlbGri/ro/releases) | [`timers/`](timers/README.md) |
-| Guida uaRO "Nuovo Mondo", passo per passo | `/ro/guide/new-world/` | `guide/`, con il suo [changelog](guide/CHANGELOG.md) |
-| Livelli fino all'84: il piano piu' economico con le quest ripetibili di uaRO | `/ro/levels/` | `levels/`, con il suo [changelog](levels/CHANGELOG.md) |
-| Party: le run migliori di un'istanza (Horror Toy Factory ed Endless Cellar) con i giocatori e gli Account Gilda | `/ro/party/` | `party/`, con il suo [changelog](party/CHANGELOG.md) |
-| Calcolatore di statistiche e danni per uaRO, dal calcolatore di Thrice | `/ro/calculator/` | [`calculator/`](calculator/README.md), con il suo [changelog](calculator/CHANGELOG.md) |
-| Promemoria pet: conto alla rovescia di 9 minuti che suona quando e' ora di nutrire il pet | `/ro/pet/` | `pet/` |
-| lgp: kit da scaricare per il plugin LGP del client di uaRO, le skill a terra con la loro icona | `/ro/lgp/` | `lgp/` |
+| Timer di respawn per MvP e quest, web e desktop | `/timers/`; l'eseguibile per Windows e' nelle [release](https://github.com/AlbGri/ro/releases) | [`timers/`](timers/README.md) |
+| Guida uaRO "Nuovo Mondo", passo per passo | `/guide/new-world/` | `guide/`, con il suo [changelog](guide/CHANGELOG.md) |
+| Livelli fino all'84: il piano piu' economico con le quest ripetibili di uaRO | `/levels/` | `levels/`, con il suo [changelog](levels/CHANGELOG.md) |
+| Party: le run migliori di un'istanza (Horror Toy Factory ed Endless Cellar) con i giocatori e gli Account Gilda | `/party/` | `party/`, con il suo [changelog](party/CHANGELOG.md) |
+| Calcolatore di statistiche e danni per uaRO, dal calcolatore di Thrice | `/calculator/` | [`calculator/`](calculator/README.md), con il suo [changelog](calculator/CHANGELOG.md) |
+| Promemoria pet: conto alla rovescia di 9 minuti che suona quando e' ora di nutrire il pet | `/pet/` | `pet/` |
+| lgp: kit da scaricare per il plugin LGP del client di uaRO, le skill a terra con la loro icona | `/lgp/` | `lgp/` |
 
 Tutto e' HTML, CSS e JavaScript senza framework ne' passaggi di build: le
 pagine vengono servite cosi' come sono nel repository.

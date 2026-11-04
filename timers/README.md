@@ -4,7 +4,7 @@ Timer per le finestre di respawn di MVP e quest di Ragnarok Online: registri l'o
 
 Le applicazioni sono due, con lo stesso formato dei dati:
 
-- la [versione web](#versione-web), su `albgri.github.io/ro/timers/`: in italiano o in inglese, installabile su telefono e computer
+- la [versione web](#versione-web), su `ro.albgri.com/timers/`: in italiano o in inglese, installabile su telefono e computer
 - l'[applicazione desktop](#applicazione-desktop) per Windows, in tkinter e senza dipendenze esterne: in italiano o in inglese, con un allarme sonoro e il lampeggio nella barra delle applicazioni che avvisano anche con il browser chiuso. L'eseguibile si scarica dalle [release](https://github.com/AlbGri/ro/releases)
 
 Commenti, docstring e documentazione sono in italiano.
@@ -29,8 +29,10 @@ La lista si riordina da sola: prima le finestre aperte in ordine di chiusura, po
 
 I file in questa cartella sono l'applicazione web, in HTML, CSS e JavaScript,
 senza framework ne' passaggi di build: GitHub Pages li serve cosi' come sono
-all'indirizzo `albgri.github.io/ro/timers/`. E' una PWA: installabile
-sulla schermata iniziale e utilizzabile offline.
+all'indirizzo `ro.albgri.com/timers/`. E' una PWA: installabile
+sulla schermata iniziale e utilizzabile offline. Il vecchio indirizzo
+`albgri.github.io/ro/timers/` funziona ancora, ma i timer salvati li' restano li':
+per spostarli si usano `Backup dei dati` e `Ripristina da backup`.
 
 I dati stanno in `localStorage`, quindi restano nel browser che li ha scritti:
 non c'e' sincronizzazione fra dispositivi e cancellare i dati del sito cancella
