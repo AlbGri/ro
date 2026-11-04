@@ -277,7 +277,8 @@ function disegna() {
     }),
   );
 
-  barre("pagine", voci(dati.pagine, (p) => scegli(PAGINE[p.nome]) || p.titolo || p.nome), dati.visite);
+  // senza prefisso: visite da ro.albgri.com del 04/11/2026, prima che gate.js lo aggiungesse
+  barre("pagine", voci(dati.pagine, (p) => scegli(PAGINE[p.nome] || PAGINE["/ro" + p.nome]) || p.titolo || p.nome), dati.visite);
   barre("azioni", voci(azioni, (a) => scegli(AZIONI[a.nome]) || a.nome));
   // nell'ordine di AZIONI: codice giusto, poi sbagliato almeno una, due, tre, quattro volte
   barre(

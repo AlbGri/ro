@@ -417,9 +417,13 @@
    */
   window.conta = (name) => send({ p: name, e: "true" });
 
+  // ro.albgri.com serve gli stessi file di albgri.github.io/ro/ senza il prefisso: con il
+  // prefisso le due strade contano come una sola pagina (Alberto, 04/11/2026)
+  const path = location.hostname === "ro.albgri.com" ? "/ro" + location.pathname : location.pathname;
+
   const countPage = () =>
     send({
-      p: location.pathname,
+      p: path,
       t: document.title,
       r: document.referrer.startsWith(site) ? "" : document.referrer,
       s: [screen.width, screen.height, devicePixelRatio || 1].join(","),
