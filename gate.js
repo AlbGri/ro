@@ -197,7 +197,7 @@
 
   // -------------------------------------------------------------- accesso ---
 
-  const ACCESS_HASH = "809770779ab9eed80d00159f4ddb738055d501c06ae1715c8e688ba7452f66cf";
+  const ACCESS_HASH = "809770779ab9eed80d00159f4ddb738055d501c06ae1715c8e688ba7452f66cf"; // gitleaks:allow
 
   // La chiave e' nata con i timer e resta quella: cambiarla chiederebbe di
   // nuovo il codice a chi lo ha gia' inserito.
