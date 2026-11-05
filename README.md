@@ -112,6 +112,6 @@ elaborarli.
 
 ## Licenza
 
-[GPL-3.0](LICENSE), tranne le immagini in `lgp/` (lo zip del kit e l'anteprima):
+[AGPL-3.0](LICENSE), tranne le immagini in `lgp/` (lo zip del kit e l'anteprima):
 derivano dalle icone delle skill di Ragnarok Online, di Gravity, e non sono
-coperte dalla GPL.
+coperte dalla AGPL.
