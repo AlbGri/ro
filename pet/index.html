@@ -99,10 +99,14 @@ main { max-width: 560px; margin: 0 auto; padding: 28px 20px 40px; }
 #nutrito {
   border-color: var(--accent); background: color-mix(in srgb, var(--accent) 16%, var(--surface)); font-weight: 700;
 }
-.minuti { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 20px; }
-.minuti input {
+.campo { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 20px; }
+.campo + .campo { margin-top: 12px; }
+.campo input[type="number"] {
   width: 4.5em; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); text-align: center;
 }
+.campo > span { white-space: nowrap; }
+.campo input[type="range"] { accent-color: var(--accent); min-width: 0; }
+.campo output { min-width: 2.5ch; text-align: right; font-variant-numeric: tabular-nums; }
 .hint { font-size: .9rem; color: var(--muted); margin: 16px 0 0; }
 .hint[hidden] { display: none; }
 #avviso-suono { color: var(--warn); }
@@ -139,9 +143,14 @@ main { max-width: 560px; margin: 0 auto; padding: 28px 20px 40px; }
       <button class="btn" type="button" id="nutrito" data-en="Fed">Nutrito</button>
       <button class="btn" type="button" id="ferma" hidden data-en="Stop">Ferma</button>
     </div>
-    <label class="minuti">
+    <label class="campo">
       <span data-en="Minutes">Minuti</span>
       <input id="minuti" type="number" min="1" max="120" step="1" value="9" inputmode="numeric">
+    </label>
+    <label class="campo">
+      <span data-en="Alarm volume">Volume dell'allarme</span>
+      <input id="volume" type="range" min="0" max="100" step="5" value="60">
+      <output id="volume-valore">60</output>
     </label>
   </section>
   <p class="hint" data-en="Press <strong>Fed</strong> when you feed the pet: the countdown starts over. At zero it beeps until you press it again. The page must stay open, even in another tab.">Premi <strong>Nutrito</strong> quando dai da mangiare al pet: il conto riparte da capo. A zero suona finché non lo premi di nuovo. La pagina deve restare aperta, anche in un'altra scheda.</p>
@@ -158,10 +167,12 @@ const BIP_DURATA = 0.3;
 const BIP_OGNI = 2;
 // oltre questo tempo senza risposta smette di suonare, ma il conto resta a zero
 const SUONA_PER = 600;
-const VOLUME = 0.6;
 
-/** @type {{minuti: number, fine: number | null}} fine: istante in ms in cui suona, null se fermo */
-let stato = { minuti: 9, fine: null };
+/**
+ * @type {{minuti: number, volume: number, fine: number | null}}
+ * volume da 0 a 100; fine: istante in ms in cui suona, null se fermo
+ */
+let stato = { minuti: 9, volume: 60, fine: null };
 try {
   stato = { ...stato, ...JSON.parse(localStorage.getItem(CHIAVE) || "{}") };
 } catch {
@@ -195,26 +206,34 @@ function annullaBip() {
   uscita = null;
 }
 
+function bip(s, destinazione) {
+  const inviluppo = audio.createGain();
+  // le rampe evitano il click a inizio e fine nota, come nei timer
+  inviluppo.gain.setValueAtTime(0, s);
+  inviluppo.gain.linearRampToValueAtTime(1, s + 0.01);
+  inviluppo.gain.setValueAtTime(1, s + BIP_DURATA - 0.01);
+  inviluppo.gain.linearRampToValueAtTime(0, s + BIP_DURATA);
+  const nota = audio.createOscillator();
+  nota.frequency.value = BIP_HZ;
+  nota.connect(inviluppo).connect(destinazione);
+  nota.start(s);
+  nota.stop(s + BIP_DURATA);
+}
+
+// Il volume sta su un nodo solo, a valle dei bip: cambiarlo vale anche per quelli gia' programmati.
+function nodoVolume() {
+  const nodo = audio.createGain();
+  nodo.gain.value = stato.volume / 100;
+  nodo.connect(audio.destination);
+  return nodo;
+}
+
 function programmaBip() {
   annullaBip();
   if (stato.fine === null || audio?.state !== "running") return;
-  uscita = audio.createGain();
-  uscita.connect(audio.destination);
+  uscita = nodoVolume();
   const inizio = audio.currentTime + Math.max(0, (stato.fine - Date.now()) / 1000);
-  for (let t = 0; t < SUONA_PER; t += BIP_OGNI) {
-    const s = inizio + t;
-    const volume = audio.createGain();
-    // le rampe evitano il click a inizio e fine nota, come nei timer
-    volume.gain.setValueAtTime(0, s);
-    volume.gain.linearRampToValueAtTime(VOLUME, s + 0.01);
-    volume.gain.setValueAtTime(VOLUME, s + BIP_DURATA - 0.01);
-    volume.gain.linearRampToValueAtTime(0, s + BIP_DURATA);
-    const nota = audio.createOscillator();
-    nota.frequency.value = BIP_HZ;
-    nota.connect(volume).connect(uscita);
-    nota.start(s);
-    nota.stop(s + BIP_DURATA);
-  }
+  for (let t = 0; t < SUONA_PER; t += BIP_OGNI) bip(inizio + t, uscita);
 }
 
 const formato = (secondi) => `${Math.floor(secondi / 60)}:${String(secondi % 60).padStart(2, "0")}`;
@@ -266,6 +285,19 @@ $("minuti").addEventListener("change", () => {
     $("minuti").value = stato.minuti;
   }
   disegna();
+});
+
+$("volume").value = stato.volume;
+$("volume-valore").textContent = stato.volume;
+$("volume").addEventListener("input", () => {
+  stato.volume = Number($("volume").value);
+  $("volume-valore").textContent = stato.volume;
+  if (uscita) uscita.gain.value = stato.volume / 100;
+  salva();
+});
+// a slider lasciato un bip di prova, come nelle impostazioni dei timer
+$("volume").addEventListener("change", async () => {
+  if (await sbloccaAudio()) bip(audio.currentTime, nodoVolume());
 });
 
 // Un conto ancora in corso dopo un ricaricamento (anche il cambio di lingua ricarica): il
