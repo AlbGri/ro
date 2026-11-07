@@ -75,7 +75,7 @@ describe("aggiungiExp", () => {
  * Ricerca esaustiva: prova ogni sequenza di mosse fino all'obiettivo. Lenta,
  * serve solo a controllare `calcolaPiano` su casi piccoli.
  */
-function esaustiva({ rinato, livello, obiettivo, manuale = 0, rabbocco = null, cambio = 0, oggetti }) {
+function esaustiva({ rinato, livello, obiettivo, manuale = 0, rabbocco = null, cambio = 0, tempo = 0, oggetti }) {
   const tabella = rinato ? EXP_RINATO : EXP_NORMALE;
   const molt = moltiplicatore(false, manuale);
   let migliore = Infinity;
@@ -97,7 +97,7 @@ function esaustiva({ rinato, livello, obiettivo, manuale = 0, rabbocco = null, c
         const inInventario = rimasti[q.id] ?? 0;
         const daComprare = Math.max(0, q.quantita - inInventario);
         const dopo = aggiungiExp(tabella, da, da === l ? exp : 0, Math.floor(q.base * molt));
-        const extra = daComprare * (oggetti[q.id]?.prezzo ?? q.prezzo) + (ultima === q.id ? 0 : cambio);
+        const extra = daComprare * (oggetti[q.id]?.prezzo ?? q.prezzo) + (ultima === q.id ? 0 : cambio) + tempo;
         visita(dopo.livello, dopo.exp, costo + extra, q.id, {
           ...rimasti,
           [q.id]: Math.max(0, inInventario - q.quantita),
@@ -113,7 +113,8 @@ function esaustiva({ rinato, livello, obiettivo, manuale = 0, rabbocco = null, c
   return migliore;
 }
 
-const costoDi = (piano, cambio) => piano.zeny + cambio * piano.tappe.filter((t) => t.tipo !== "rabbocco").length;
+const costoDi = (piano, cambio, tempo) =>
+  piano.zeny + cambio * piano.tappe.filter((t) => t.tipo !== "rabbocco").length + tempo * piano.consegne;
 
 describe("calcolaPiano", () => {
   const casi = [
@@ -125,6 +126,11 @@ describe("calcolaPiano", () => {
     {
       nome: "con il cambio di quest che costa",
       rinato: false, livello: 70, obiettivo: 73, manuale: 100, cambio: 30000,
+      oggetti: { sharpleaf: { prezzo: 800 }, anolian: { prezzo: 300 } },
+    },
+    {
+      nome: "con il costo del tempo di una consegna",
+      rinato: false, livello: 70, obiettivo: 73, manuale: 100, cambio: 30000, tempo: 20000,
       oggetti: { sharpleaf: { prezzo: 800 }, anolian: { prezzo: 300 } },
     },
     {
@@ -147,9 +153,19 @@ describe("calcolaPiano", () => {
     it(`costo uguale alla ricerca esaustiva: ${caso.nome}`, () => {
       const piano = calcolaPiano(caso);
       assert.ok(piano);
-      assert.equal(costoDi(piano, caso.cambio ?? 0), esaustiva(caso));
+      assert.equal(costoDi(piano, caso.cambio ?? 0, caso.tempo ?? 0), esaustiva(caso));
     });
   }
+
+  it("il costo del tempo riduce le consegne di Acorn: non rinato dal 40 con il manuale 100%", () => {
+    const opzioni = { rinato: false, livello: 40, obiettivo: 84, manuale: 100, cambio: 30000 };
+    const acorn = (piano) => piano.tappe.filter((t) => t.chiave === "acorn").reduce((n, t) => n + t.consegne, 0);
+    const senza = calcolaPiano(opzioni);
+    const con = calcolaPiano({ ...opzioni, tempo: 5000 });
+    assert.ok(acorn(con) < acorn(senza) / 2, `Acorn ${acorn(senza)} -> ${acorn(con)}`);
+    assert.ok(con.consegne < senza.consegne);
+    assert.ok(con.zeny >= senza.zeny);
+  });
 
   it("con abbastanza oggetti in inventario non si spende niente", () => {
     const piano = calcolaPiano({

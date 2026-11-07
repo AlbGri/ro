@@ -136,6 +136,8 @@ class Coda {
  *   questa percentuale lo si completa uccidendo mostri, senza consegne.
  * @param {number} [opzioni.cambio=0] Zeny che vale passare a un altro NPC: entra
  *   nel costo da minimizzare, non negli zeny spesi.
+ * @param {number} [opzioni.tempo=0] Zeny che vale il tempo di una consegna, come `cambio`:
+ *   con un valore alto il piano preferisce le quest che danno piu' EXP per consegna.
  * @param {Object<string, {posseduti?: number, prezzo?: ?number}>} [opzioni.oggetti={}]
  *   Per id di quest: oggetti gia' in inventario e prezzo di uno; senza prezzo
  *   vale quello di `dati.js`.
@@ -153,8 +155,10 @@ export function calcolaPiano(opzioni) {
     cacce = {},
     rabbocco = null,
     cambio = 0,
+    tempo = 0,
     oggetti = {},
   } = opzioni;
+  const perConsegna = PER_CONSEGNA + tempo;
   const tabella = rinato ? EXP_RINATO : EXP_NORMALE;
   const molt = moltiplicatore(weekend, manuale);
   const expIniziale = Math.floor((tabella[livello - 1] * percentuale) / 100);
@@ -204,7 +208,7 @@ export function calcolaPiano(opzioni) {
   for (let l = 1; l <= obiettivo; l++) {
     for (const q of quest) {
       if (q.max >= l) {
-        zenyPerExp[l] = Math.min(zenyPerExp[l], (q.prezzo * q.quantita) / q.guadagno);
+        zenyPerExp[l] = Math.min(zenyPerExp[l], (q.prezzo * q.quantita + tempo) / q.guadagno);
       }
     }
   }
@@ -265,7 +269,7 @@ export function calcolaPiano(opzioni) {
         risultato.push({
           livello: dopo.livello,
           exp: dopo.exp,
-          costo: stato.costo + zeny + (stato.ultima === q.id ? 0 : cambio) + PER_CONSEGNA,
+          costo: stato.costo + zeny + (stato.ultima === q.id ? 0 : cambio) + perConsegna,
           zeny: stato.zeny + zeny,
           consegne: stato.consegne + 1,
           cacce: stato.cacce,
@@ -302,7 +306,7 @@ export function calcolaPiano(opzioni) {
           ...stato,
           livello: ora.livello,
           exp: ora.exp,
-          costo: stato.costo + (stato.ultima === c.id ? 0 : cambio) + k * PER_CONSEGNA,
+          costo: stato.costo + (stato.ultima === c.id ? 0 : cambio) + k * perConsegna,
           consegne: stato.consegne + k,
           cacce: usate,
           gratis: restanti(usate),

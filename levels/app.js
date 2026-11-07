@@ -133,6 +133,7 @@ function leggi() {
     cacce: Object.fromEntries(CACCE.map((c) => [c.id, Number(f[`caccia-${c.id}`].value)])),
     rabbocco: f.rabbocchi.checked ? intero(f.soglia.value, 1, 50, 10) : null,
     cambio: intero(f.cambio.value, 0, 1e9, 0),
+    tempo: intero(f.tempo.value, 0, 1e9, 0),
     poringCoin: intero(f.poringCoin.value, 0, 1e9, 13000),
     manuali50: intero(f.manuali50.value, 0, 1000, MANUALE.gratis50),
     mezzore: intero(f.mezzore.value, 1, 1000, 1),
@@ -146,6 +147,17 @@ const nomeClasse = (classe) => (classe === 1 ? tr("prima classe", "first class")
 const statoJob = (rinato, s) => `${s.livello} (${percento(percentualeJob(rinato, s))}%)`;
 
 const chip = (testo) => `<button class="chip" type="button" data-copy="${escape(testo)}">${escape(testo)}</button>`;
+
+/**
+ * Dove comprare un oggetto: il mercato dei giocatori (@ws) e, se c'e', il negozio NPC. Con un
+ * prezzo scritto sotto quello dell'NPC il mercato va per primo.
+ */
+function doveComprare(q, prezzo) {
+  const mercato = `<span class="chip-label">${tr("Mercato", "Market")}</span>${chip(`@ws ${q.idOggetto}`)}`;
+  if (!q.negozio) return mercato;
+  const npc = `<span class="chip-label">${escape(q.negozio.nome)}</span>${chip(`/navi ${q.negozio.navi}`)}`;
+  return prezzo !== null && prezzo < q.prezzo ? mercato + npc : npc + mercato;
+}
 
 function disegnaPassi(passi, tabella, rinato) {
   const stato = (s) => `${s.livello} (${percento(percentualeDi(tabella, s))}%)`;
@@ -181,11 +193,7 @@ function disegnaTappa(numeroTappa, tappa, scelte, tabella) {
 
     const chips = [`<span class="chip-label">${escape(q.npc)}</span>${chip(`/navi ${q.navi}`)}`];
     if (tappa.comprati > 0) {
-      chips.push(
-        q.negozio
-          ? `<span class="chip-label">${escape(q.negozio.nome)}</span>${chip(`/navi ${q.negozio.navi}`)}`
-          : `<span class="chip-label">${tr("Mercato", "Market")}</span>${chip(`@ws ${q.idOggetto}`)}`,
-      );
+      chips.push(doveComprare(q, scelte.oggetti[q.id].prezzo));
     }
     parti.push(`<div class="chips">${chips.join("")}</div>`);
     if (q.citta) parti.push(`<p class="stage-range">${tr("Città da cui partire", "Starting town")}: ${escape(q.citta)} ${tr("(da verificare)", "(to be verified)")}.</p>`);
@@ -284,12 +292,10 @@ function disegnaClasse(numeroTappa, tappa, tabella) {
 }
 
 /** La lista della spesa di tutto il piano, oggetto per oggetto. */
-function disegnaSpesa(spesa) {
+function disegnaSpesa(spesa, scelte) {
   if (spesa.length === 0) return "";
   const righe = spesa.map(({ quest: q, servono, dallInventario, comprati, zeny }) => {
-    const dove = q.negozio
-      ? `<span class="chip-label">${escape(q.negozio.nome)}</span>${chip(`/navi ${q.negozio.navi}`)}`
-      : `<span class="chip-label">${tr("Mercato", "Market")}</span>${chip(`@ws ${q.idOggetto}`)}`;
+    const dove = doveComprare(q, scelte.oggetti[q.id].prezzo);
     const cosa =
       comprati > 0
         ? `<strong>${numero(comprati)} ${escape(q.oggetto)}</strong> ${tr("da comprare", "to buy")}, ${numero(zeny)} zeny`
@@ -406,7 +412,7 @@ function aggiorna() {
       `<p class="summary">From ${stato(piano.partenza)} to ${stato(piano.arrivo)}: <strong>${numero(piano.consegne)}</strong> ${plurale(piano.consegne, "turn-in", "turn-ins")} in ${tappe} ${plurale(tappe, "stage", "stages")}, <strong>${numero(piano.zeny)}</strong> zeny of items. At the end: Job Level ${statoJob(scelte.rinato, job.finale)} of the ${nomeClasse(job.finale.classe)}.</p>`,
     ),
   ];
-  html.push(disegnaSpesa(piano.spesa));
+  html.push(disegnaSpesa(piano.spesa, scelte));
   job.tappe.forEach((t, i) =>
     html.push(t.tipo === "classe" ? disegnaClasse(i + 1, t, tabella) : disegnaTappa(i + 1, t, scelte, tabella)),
   );

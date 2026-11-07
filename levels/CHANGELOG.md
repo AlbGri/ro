@@ -2,6 +2,17 @@
 
 Le versioni della pagina `levels/`.
 
+## [1.21] - 2026-11-07
+
+- Nuova opzione "Costo del tempo di una consegna" (5.000 zeny se non si cambia): il piano conta
+  ogni consegna come quella cifra, che non entra nel totale, e preferisce le quest che danno piu'
+  EXP per consegna. Da non rinato dal 40 con il Field Manual 100% le Acorn scendono da 91 a 34
+  consegne e si passa prima alle Anolian Skin, per circa 74.000 zeny in piu'. Con 0 il piano
+  torna quello di prima
+- Nella lista della spesa gli oggetti venduti da un NPC hanno anche il mercato dei giocatori
+  (@ws): se scrivi un prezzo piu' basso di quello dell'NPC, il mercato viene per primo. Le Antelope
+  Horn, per esempio, dai giocatori spesso costano meno
+
 ## [1.20] - 2026-10-26
 
 - "Completo il livello uccidendo mostri" vale solo quando la consegna successiva perderebbe EXP
