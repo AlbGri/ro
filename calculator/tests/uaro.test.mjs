@@ -349,3 +349,36 @@ test("armi di Halloween 2026: The Ripper, Witch's Broom, Jack O' Rush", () => {
   assert.deepEqual([skill(6), bonus("ATK"), bonus("DMG_UNDEAD_PERCENT"), bonus("DMG_DEMON_PERCENT")], [30, atk + 30, undead + 10, 10]);
   arma(0, "Jack O' Rush"); // Novice
 });
+
+test("Breakthrough del Super Novice: HP +2000, SP +200, MATK +50, cure ricevute +20%, ATK +50", () => {
+  const m = creaMotore();
+  scegli(m, "A_JOB", 20); // Super Novice
+  scegli(m, "A_BaseLV", 90);
+  const i = [...Array(22).keys()].find((k) => testo(m, "P_Skill" + k) === "Breakthrough");
+  assert.ok(i !== undefined, "Breakthrough fra le skill passive");
+  const valori = () => [numero(m, "A_MaxHP"), numero(m, "A_MaxSP"), m.bonusValues[100], m.n_A_MATK[0],
+    vm.runInContext("BattleCalc(100, 10)", m)];
+  const senza = valori();
+  scegli(m, "A_skill" + i, 1);
+  assert.deepEqual(valori().map((v, k) => v - senza[k]), [2000, 200, 20, 50, 50]);
+  const build = m.scriviBuild();
+  const n = creaMotore();
+  assert.ok(n.leggiBuild(build));
+  assert.equal(n.c["A_skill" + i].value, "1");
+});
+
+test("El Dicastes: Light, Feral Boots, Feral Tail e Golden Trinket con e senza slot", () => {
+  const m = creaMotore();
+  const dati = costante(m, "itemData");
+  for (const nome of ["Light of El Dicastes", "Feral Boots", "Feral Tail", "Golden Trinket"])
+    assert.equal(dati[id(m, nome)].slots, "0/1", nome);
+});
+
+test("Magical Bullet: la parte magica non va sotto zero con molta MDEF", () => {
+  const m = creaMotore();
+  vm.runInContext(
+    "n_A_ActiveSkill = SKILLID.MAGICAL_BULLET; n_A_MATK = [10, 10, 10]; n_B_MDEF2 = 500; targetData[15] = 90",
+    m,
+  );
+  assert.ok(vm.runInContext("BattleCalc2(100)", m) >= 100);
+});

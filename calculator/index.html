@@ -116,7 +116,7 @@ h3 { font-family: var(--serif); font-size: 1.2rem; margin: 0 0 10px; font-weight
   border: 1px solid var(--line); border-radius: 12px; background: var(--surface);
   padding: 14px 16px 16px; margin-bottom: 14px;
 }
-.colonne { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; align-items: start; }
+.colonne { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 14px; align-items: start; }
 .colonne > .card { margin-bottom: 0; }
 
 input[type="text"], input[type="number"], input[type="search"], select {
@@ -129,7 +129,8 @@ input[type="checkbox"] { width: 18px; height: 18px; margin: 0; flex: none; accen
 /* coppie etichetta e controllo */
 .voci { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px 14px; }
 .voce { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.voce > .etichetta { flex: 1 1 auto; min-width: 0; font-size: .92rem; }
+/* l'etichetta non scende sotto la sua parola piu' lunga: e' la tendina che si stringe ("Manuale") */
+.voce > .etichetta { flex: 1 1 auto; min-width: min-content; font-size: .92rem; }
 .voce > select, .voce > input[type="text"], .voce > .scelta { flex: 0 1 auto; }
 /* tendine e caselle della stessa larghezza, qualunque sia l'opzione piu' lunga (0-5, 0-10, off) */
 .voce > select, .voce > input[type="text"] { box-sizing: border-box; min-width: 5.6em; }
@@ -242,6 +243,9 @@ details.pannello > summary { cursor: pointer; padding: 10px 16px; font-weight: 7
 details.pannello > summary::-webkit-details-marker { display: none; }
 details.pannello > summary::before { content: "\25B8"; color: var(--muted); transition: transform .15s; }
 details.pannello[open] > summary::before { transform: rotate(90deg); }
+/* il mostro scelto, visibile con il pannello del nemico chiuso */
+details.pannello:not([open]) > summary .scelto { font-weight: 400; color: var(--muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+details.pannello[open] > summary .scelto { display: none; }
 details.pannello > summary .attivo { font-size: .78rem; color: var(--bradium); border: 1px solid color-mix(in srgb, var(--bradium) 45%, transparent); border-radius: 5px; padding: 0 5px; font-weight: 400; }
 details.pannello > .corpo { padding: 2px 16px 14px; }
 .corpo h4 { margin: 12px 0 6px; font-size: .95rem; color: var(--muted); }
@@ -540,10 +544,7 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
   <details class="pannello" data-pannello="ID_ARG" data-apri="Buf9SW" data-attivo="A9used"><summary><span data-en="Additional Enchants &amp; Manual Edits on Player">Incantamenti aggiuntivi e modifiche manuali al personaggio</span></summary><div class="corpo"></div></details>
 
   <h2 data-en="Skills and buffs">Skill e buff</h2>
-  <div class="card">
-    <h3 data-en="Passive &amp; Self-casted Skills">Skill passive e su di sé</h3>
-    <div class="voci" id="passive"></div>
-  </div>
+  <details class="pannello" open><summary><span data-en="Passive &amp; Self-casted Skills">Skill passive e su di sé</span></summary><div class="corpo"><div class="voci" id="passive"></div></div></details>
   <details class="pannello" data-pannello="SIENSKILL" data-apri="BufSW" data-attivo="A2used"><summary><span data-en="Supportive / Party Skills">Skill di supporto e del party</span></summary><div class="corpo"></div></details>
   <details class="pannello" data-pannello="SP_SIEN01" data-apri="Buf3SW" data-attivo="A3used"><summary><span data-en="Music and Dance Skills">Canti e danze</span></summary><div class="corpo"></div></details>
   <details class="pannello" data-pannello="SP_SIEN02" data-apri="Buf4SW" data-attivo="A4used"><summary><span data-en="Guild Skills">Skill di gilda</span></summary><div class="corpo"></div></details>
@@ -551,8 +552,7 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
   <details class="pannello" data-pannello="SP_SIEN04" data-apri="Buf6SW" data-attivo="A6used"><summary><span data-en="Miscellaneous Effects on Player">Altri effetti sul personaggio</span></summary><div class="corpo"></div></details>
 
   <h2 data-en="Combat">Combattimento</h2>
-  <div class="card">
-    <h3 data-en="Enemy">Nemico</h3>
+  <details class="pannello" open><summary><span data-en="Enemy">Nemico</span><span class="scelto" id="nemico-scelto"></span></summary><div class="corpo">
     <div class="voci affiancati">
       <label class="voce"><span class="etichetta" data-en="Place">Luogo</span><select data-campo="ENEMY_SORT2"></select></label>
       <label class="voce" data-nascondi><span class="etichetta" data-en="Map">Mappa</span><select data-campo="ENEMY_MAP"></select></label>
@@ -579,7 +579,7 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
       <div><dt>DEX</dt><dd data-uscita="B_dex"></dd></div>
       <div><dt>LUK</dt><dd data-uscita="B_luk"></dd></div>
     </dl>
-  </div>
+  </div></details>
   <details class="pannello" data-pannello="EnemyDebuf" data-apri="debufSW" data-attivo="AIused"><summary><span data-en="Debuffs on Enemy">Debuff sul nemico</span></summary><div class="corpo"></div></details>
   <details class="pannello" data-pannello="EnemyBuf" data-apri="EnemyBufSW" data-attivo="AKused"><summary><span data-en="Buffs on Enemy">Buff del nemico</span></summary><div class="corpo"></div></details>
   <details class="pannello" data-pannello="B_MANUAL" data-apri="Buf10SW" data-attivo="A10used"><summary><span data-en="Manual Edits on Enemy">Modifiche manuali al nemico</span></summary><div class="corpo"></div></details>

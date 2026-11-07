@@ -228,7 +228,7 @@ const PEZZI = [
   [/ damage$/, " di danno"],
   [/^Mean investment = /, "Investimento medio = "],
   [/\bduration\b/g, "durata"],
-  [/^\(no weapon\)$/, "(nessuna arma)"],
+  [/^\(no weapon\)(?=( \[0\])?$)/, "(nessuna arma)"],
   [/^\(no card\)$/, "(nessuna carta)"],
   [/^\(no shield\)$/, "(nessuno scudo)"],
   [/^\(nothing\)$/, "(niente)"],
@@ -242,6 +242,16 @@ const INGLESE = document.documentElement.lang === "en" && {
   "Left Hand:": "Left Hand",
   ...EPISODI,
 };
+
+// numeri dei risultati nel formato della lingua: il motore li scrive all'inglese, quasi sempre senza
+// separatore delle migliaia (67984.12) e in pochi posti con (7,809). I decimali restano quelli del
+// motore; un numero con piu' punti (13.3.1) resta com'e'
+const LOCALE = INGLESE ? "en-GB" : "it-IT";
+const VIRGOLA = INGLESE ? "." : ",";
+export function numeri(testo) {
+  return testo.replace(/(?<![\d.,])(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d+))?(?![\d]|[.,]\d)/g, (_, intero, decimali) =>
+    Number(intero.replace(/,/g, "")).toLocaleString(LOCALE) + (decimali ? VIRGOLA + decimali : ""));
+}
 
 export function traduci(testo) {
   const t = testo.trim();

@@ -89,6 +89,9 @@ function applyUaroHeadgearBonuses() {
   correggi(1900, { slots: 2 }); // Golden Wrench [2]
   correggi(1434, { slots: 2 }); // Alca Bringer [2]
   correggi(1196, { slots: 2 }); // Two-Handed Chrome Metal Sword [2]
+  // El Dicastes: si trovano con e senza slot, che i gatti aggiungono per 60 Certificate (wiki,
+  // El Dicastes; Alberto in gioco anche per la Light)
+  for (var dicastes = 1895; dicastes <= 1898; dicastes++) correggi(dicastes, { slots: "0/1" });
 
   // Golden Trinket (in gioco "Sapha Wise Golden Trinket"): peso 1, screen del gioco del 24/10/2026.
   // Il MATK +1% dello screen e' un incantamento Dicastes di livello 1, non dell'oggetto

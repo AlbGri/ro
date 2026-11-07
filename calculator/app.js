@@ -2,7 +2,7 @@
 // qui la pagina ne rispecchia campi e risultati, in italiano o in inglese (tr() di gate.js), e
 // gli riporta ogni scelta con
 // scegli() del motore (valore e gestore del campo).
-import { traduci } from "./traduzioni.js";
+import { numeri, traduci } from "./traduzioni.js";
 
 const tr = window.tr;
 
@@ -114,8 +114,8 @@ const TAG_TESTO = new Set(["b", "strong", "i", "em", "u", "s", "strike", "del", 
 const STILI = /^(color|text-decoration|font-weight|font-style|background-color)$/;
 
 // copia un nodo dell'HTML di un risultato, con i soli tag e stili del testo
-function copia(n) {
-  if (n.nodeType === Node.TEXT_NODE) return document.createTextNode(traduci(n.data));
+function copia(n, conNumeri) {
+  if (n.nodeType === Node.TEXT_NODE) return document.createTextNode(conNumeri ? numeri(traduci(n.data)) : traduci(n.data));
   if (n.nodeType !== Node.ELEMENT_NODE) return null;
   const nome = n.localName;
   if (/^(select|input|option|optgroup|script|style)$/.test(nome)) return null;
@@ -136,23 +136,24 @@ function copia(n) {
   if (stile.length) el.setAttribute("style", stile.join(";"));
   if (el.classList.contains("name")) el.tabIndex = 0;
   for (const f of n.childNodes) {
-    const c = copia(f);
+    const c = copia(f, conNumeri);
     if (c) el.appendChild(c);
   }
   return el;
 }
-function copiaNodi(nodi, dentro) {
+function copiaNodi(nodi, dentro, conNumeri) {
   dentro.replaceChildren();
   for (const f of nodi) {
-    const c = copia(f);
+    const c = copia(f, conNumeri);
     if (c) dentro.appendChild(c);
   }
 }
-// un risultato del motore (uscite in motore/campi.js): HTML con pochi tag
+// un risultato del motore (uscite in motore/campi.js): HTML con pochi tag. Con conNumeri i
+// numeri seguono la lingua
 const modello = document.createElement("template");
-function copiaHtml(html, dentro) {
+function copiaHtml(html, dentro, conNumeri) {
   modello.innerHTML = html;
-  copiaNodi(modello.content.childNodes, dentro);
+  copiaNodi(modello.content.childNodes, dentro, conNumeri);
 }
 
 // controlli collegati: ogni controllo della pagina sa a quale campo del motore corrisponde
@@ -450,13 +451,15 @@ const elementiContenitore = [...document.querySelectorAll("[data-contenitore]")]
 const elementiPannello = [...document.querySelectorAll("[data-pannello]")];
 const passive = document.getElementById("passive");
 const manoSinistra = document.getElementById("mano-sinistra");
+const nemicoScelto = document.getElementById("nemico-scelto");
 
 function aggiornaUscite() {
   for (const el of elementiUscita) {
     const html = window.uscite[el.dataset.uscita] ?? "";
     if (el._html === html) continue;
     el._html = html;
-    copiaHtml(html, el);
+    // nomi e scheda degli oggetti restano come sono: "RWC 2010" non e' un numero
+    copiaHtml(html, el, el.dataset.uscita !== "A_SobWeaponName" && !el.closest(".scheda-oggetto"));
   }
   for (const el of righe) el.hidden = !window.testo(el.dataset.riga);
 }
@@ -592,6 +595,8 @@ function sincronizza() {
   aggiornaPassive();
   ricollega();
   for (const el of collegati) aggiornaControllo(el);
+  const nemico = virtuale("B_Enemy");
+  nemicoScelto.textContent = traduci(nemico.elenco()[nemico.selectedIndex]?.text ?? "");
   aggiornaConfronto();
 }
 
@@ -706,7 +711,7 @@ function valoreDi(m, motore) {
   let mostra = traduci(testo) || "—";
   if (m.primo) mostra = testo.match(/^[-\d.]+\s*%?/)?.[0] ?? mostra;
   if (m.percento && numero !== null) mostra = arrotonda(numero) + "%";
-  return { mostra, numero };
+  return { mostra: numeri(mostra), numero };
 }
 
 function differenza(m, a, b) {
@@ -716,7 +721,7 @@ function differenza(m, a, b) {
   let testo = (d > 0 ? "+" : "") + arrotonda(d);
   // per le probabilita' la differenza e' gia' in punti percentuali
   if (a.numero !== 0 && !m.percento) testo += ` (${d > 0 ? "+" : ""}${arrotonda((d / Math.abs(a.numero)) * 100)}%)`;
-  return { testo, diversa: true, classe: (m.meno ? d < 0 : d > 0) ? "meglio" : "peggio" };
+  return { testo: numeri(testo), diversa: true, classe: (m.meno ? d < 0 : d > 0) ? "meglio" : "peggio" };
 }
 
 function sceltaDi(w, nome) {

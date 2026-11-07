@@ -2,6 +2,22 @@
 
 Le versioni della pagina `calculator/`.
 
+## [1.26] - 2026-11-07
+
+- I numeri seguono la lingua della pagina: in italiano 67.984,12, in inglese 67,984.12. Prima
+  quasi tutti erano senza separatore delle migliaia e alcuni lo avevano all'inglese
+- "Skill passive e su di sé" e "Nemico" si possono chiudere come gli altri pannelli e all'apertura
+  della pagina sono aperti; con "Nemico" chiuso il titolo mostra il mostro scelto
+- Light of El Dicastes, Feral Boots, Feral Tail e Golden Trinket sono segnati [0/1]: si trovano
+  con e senza slot, che i gatti aggiungono per 60 Certificate. Il calcolo non cambia
+- Nuova skill passiva del Super Novice, Breakthrough (skill platino di uaRO): ATK +50, MATK +50,
+  Max HP +2000, Max SP +200, cure ricevute +20%
+- The Ring of Nibelungen con due armi: il bonus vale per ogni arma di livello 4, destra e sinistra,
+  come sul server. Prima andava solo alla destra, anche quando di livello 4 era la sinistra
+- Magical Bullet non da' piu' un danno negativo contro i mostri con molta MDEF
+- Sul telefono stretto (320 px) la pagina non sfora piu' a destra; l'etichetta "Manuale" in
+  "Altri effetti sul personaggio" non viene piu' tagliata
+
 ## [1.25] - 2026-10-26
 
 - Canti e danze: i parametri di una canzone attiva (statistiche di Bard o Dancer, Musical o

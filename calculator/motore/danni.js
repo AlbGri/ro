@@ -87,12 +87,18 @@ function attaccoDueArmi() {
   var elemento = Math.max(0, element[targetData[3]][n_A_Weapon2_element]);
   var stelle = stelleSinistra();
   var atkArma = n_A_workDEX >= n_A_Weapon2_ATK ? n_A_Weapon2_ATK : n_A_Weapon2_ATK - 1;
-  var massimo = n_A_ATK + n_A_Weapon2LV_Maxplus + Math.floor((atkArma + wImp) * wCSize);
+  var massimo =
+    n_A_ATK +
+    n_A_Weapon2LV_Maxplus +
+    Math.floor((atkArma + wImp + nibelungen(n_A_Weapon2LV)) * wCSize);
   massimo = Math.max(1, BattleCalc4(massimo, 2, 1));
   massimo = Math.floor(massimo * elemento);
   massimo = Math.floor(((massimo + stelle) * (3 + SkillSearch(SKILLID.LEFT_HAND_MASTERY))) / 10);
   if (n_A_workDEX > n_A_Weapon2_ATK) n_A_workDEX = n_A_Weapon2_ATK;
-  var minimo = n_A_ATK + n_A_Weapon2LV_Minplus + Math.floor((n_A_workDEX + wImp) * wCSize);
+  var minimo =
+    n_A_ATK +
+    n_A_Weapon2LV_Minplus +
+    Math.floor((n_A_workDEX + wImp + nibelungen(n_A_Weapon2LV)) * wCSize);
   minimo = Math.max(1, BattleCalc4(minimo, 0, 1));
   minimo = Math.floor(minimo * elemento);
   minimo = Math.floor((minimo + stelle) * (0.3 + SkillSearch(SKILLID.LEFT_HAND_MASTERY) / 10));
@@ -2905,10 +2911,7 @@ function probabilitaSchivare() {
 // e quello critico (n_A_CriATK, BK_n_A_CriATK); con arco e armi da fuoco conta la freccia
 function atkAttaccoNormale() {
   n_A_workDEX = Math.floor(n_A_DEX * (1 + 0.2 * (n_A_WeaponLV - 1)));
-  var atkArma =
-    n_A_Weapon_ATK +
-    (wImp +
-      (!n_A_Buf3[10] || (n_A_WeaponLV != 4 && n_A_Weapon2LV != 4) ? 0 : 50 + 25 * n_A_Buf3[10]));
+  var atkArma = n_A_Weapon_ATK + wImp + nibelungen(n_A_WeaponLV);
   var distanza = ARMI_A_DISTANZA.includes(n_A_WeaponType);
   var freccia = Math.floor((m_Arrow[n_A_Arrow][0] - 1) * wCSize);
   n_A_DMG = [0, 0, 0];
@@ -2993,11 +2996,15 @@ function criticoAttaccoNormale() {
     // il critico della sinistra serve solo a decidere se mostrare un valore o un intervallo; il
     // valore lo scrive calc dopo BattleCalc999, che calcola la sinistra (wLeft)
     var sinistra = [
-      n_A_ATK + n_A_Weapon2LV_Minplus + Math.floor((n_A_Weapon2_ATK + wImp) * wCSize),
+      n_A_ATK +
+        n_A_Weapon2LV_Minplus +
+        Math.floor((n_A_Weapon2_ATK + wImp + nibelungen(n_A_Weapon2LV)) * wCSize),
       n_A_ATK +
         (n_A_Weapon2LV_Minplus + n_A_Weapon2LV_Maxplus) / 2 +
-        Math.floor((n_A_Weapon2_ATK + wImp) * wCSize),
-      n_A_ATK + n_A_Weapon2LV_Maxplus + Math.floor((n_A_Weapon2_ATK + wImp) * wCSize),
+        Math.floor((n_A_Weapon2_ATK + wImp + nibelungen(n_A_Weapon2LV)) * wCSize),
+      n_A_ATK +
+        n_A_Weapon2LV_Maxplus +
+        Math.floor((n_A_Weapon2_ATK + wImp + nibelungen(n_A_Weapon2LV)) * wCSize),
     ];
     sinistra[1] = BattleCalc(sinistra[1], 10);
     sinistra[0] = BattleCalc(sinistra[0], 10);
@@ -3066,6 +3073,8 @@ function BattleCalc(danno, quale) {
   else danno = BattleCalc4(danno, quale, 0);
   if (danno < 1) danno = 1;
   danno += n_A_Buf9[25];
+  // uaRO: Breakthrough, ATK +50 come una maestria (patch note del 24/11/2025)
+  danno += 50 * SkillSearch(SKILLID.BREAKTHROUGH);
   if (n_A_WeaponType == 1 || n_A_WeaponType == 2) danno += 4 * SkillSearch(SKILLID.SWORD_MASTERY);
   else if (n_A_WeaponType == 3) danno += 4 * SkillSearch(SKILLID.TWO_HAND_SWORD_MASTERY);
   else if (n_A_WeaponType == 4 || n_A_WeaponType == 5) {
@@ -3119,8 +3128,13 @@ function BattleCalc2(danno) {
     if (SKILLID.POISON_REACT == n_A_ActiveSkill && (targetData[3] < 50 || 60 <= targetData[3]))
       danno += 75;
   }
+  // la parte magica, ridotta dalla MDEF, non scende sotto zero: con molta MDEF del mostro il danno
+  // era negativo (anche nell'originale)
   if (n_A_ActiveSkill == SKILLID.MAGICAL_BULLET)
-    danno += Math.floor(n_A_MATK[w_MagiclBulet] * mdefReduction(targetData[15]) - n_B_MDEF2);
+    danno += Math.max(
+      0,
+      Math.floor(n_A_MATK[w_MagiclBulet] * mdefReduction(targetData[15]) - n_B_MDEF2),
+    );
   if (n_A_ActiveSkill == SKILLID.GUNSLINGER_MINE) danno += 50 * n_A_ActiveSkillLV;
   if (
     m_Card[n_A_card[0]][0] == 106 &&

@@ -1,4 +1,9 @@
 // Statistiche del personaggio: StAllCalc somma equipaggiamento, carte, skill e buff
+// ATK di The Ring of Nibelungen per un'arma: solo di livello 4, mano per mano come in rAthena
+// (status_calc_watk)
+function nibelungen(livelloArma) {
+  return n_A_Buf3[10] && livelloArma == 4 ? 50 + 25 * n_A_Buf3[10] : 0;
+}
 function SkillSearch(e) {
   if (e == 258 && TimeItemNumSearch(35)) return 1;
   for (var _ = 0; _ <= 20; _++) if (m_JobBuff[n_A_JOB][_] == e) return n_A_Buf[_];
@@ -591,7 +596,7 @@ function calcolaATK() {
   n_A_ATK = Math.floor((n_A_ATK * (100 + percento)) / 100);
   wImp = 5 * n_A_Buf2[2];
   if (n_A_Buf3[9]) wImp += 25 + 25 * n_A_Buf3[9];
-  if (n_A_Buf3[10] && (n_A_WeaponLV == 4 || n_A_Weapon2LV == 4)) atk += 50 + 25 * n_A_Buf3[10];
+  atk += nibelungen(n_A_WeaponLV) + nibelungen(n_A_Weapon2LV);
   if (n_A_Buf6[0] == 0 && n_A_Buf6[1] >= 1 && n_A_Bodyelement == 3) atk += 10 * n_A_Buf6[1];
   if (n_A_Buf2[19] == 1) atk *= 2;
   scrivi(
@@ -691,6 +696,8 @@ function calcolaHP() {
       break;
   }
   n_A_MaxHP += 200 * SkillSearch(SKILLID.FAITH);
+  // uaRO: Breakthrough, Max HP +2000 e Max SP +200 (wiki, Class Changes)
+  n_A_MaxHP += 2000 * SkillSearch(SKILLID.BREAKTHROUGH);
   var fisso = bonusValues[BONUSID.HP] + n_A_Buf9[30];
   if (n_A_BaseLV <= 79) fisso += 400 * EquipNumSearch(EQUIPID.ACADEMY_OF_BADGE);
   if (n_A_JobClass() == 5) fisso -= 100 * CardNumSearch(474);
@@ -803,6 +810,7 @@ function calcolaSP() {
   fisso += StPlusCalc2(4);
   fisso += StPlusCalc2(7);
   fisso += 30 * SkillSearch(SKILLID.KAINA);
+  fisso += 200 * SkillSearch(SKILLID.BREAKTHROUGH);
   if (n_A_BaseLV <= 79) fisso += 200 * EquipNumSearch(EQUIPID.ACADEMY_OF_BADGE);
   if (n_A_card[9] == 179) fisso += 40;
   if (n_A_JobClass() == 3) fisso += 50 * EquipNumSearch(EQUIPID.ACOLYTE_FIGURE);
@@ -1156,6 +1164,7 @@ function calcolaMATK() {
   if (n_A_Buf7[17]) bonus += 5;
   if (n_A_Buf7[10] || n_A_Buf7[46]) bonus += 20;
   else if (n_A_Buf7[30]) bonus += 15;
+  bonus += 50 * SkillSearch(SKILLID.BREAKTHROUGH); // uaRO: Breakthrough, MATK +50 (wiki)
   if (n_A_Equip[5] == 1785 && SU_INT > 97) bonus += 10;
   if (EQUIPID.GEFFENIA_WATER_BOOK == n_A_Equip[5] && SU_INT >= 90) bonus += 30;
   if (n_A_Equip[2] == 1492 && n_A_Equip[0] == 89) bonus += 10 * n_A_Weapon_refine;
@@ -1772,6 +1781,8 @@ function bonusFinali() {
   if (SkillSearch(SKILLID.DRAGONOLOGY))
     bonusValues[BONUSID.DMG_DRAGON_PERCENT] += 4 * SkillSearch(SKILLID.DRAGONOLOGY);
   if (n_A_Buf7[45]) bonusValues[100] += 20;
+  // uaRO: Breakthrough, cure ricevute +20%
+  bonusValues[100] += 20 * SkillSearch(SKILLID.BREAKTHROUGH);
   if (n_A_JobClass() == 2)
     bonusValues[BONUSID.CRIT_DMG_PERCENT] += CardNumSearch(550) * Math.floor(n_A_HEAD_REFINE / 2);
   if (n_A_Equip[0] == 624) bonusValues[191] += n_A_Weapon_refine;
