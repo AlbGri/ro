@@ -630,6 +630,7 @@ const METRICHE = [
   { voce: tr("Danno minimo", "Minimum damage"), id: "strID_0" },
   { voce: tr("Danno medio", "Average damage"), id: "strID_1" },
   { voce: tr("Danno massimo", "Maximum damage"), id: "strID_2" },
+  { voce: tr("Tempo di lancio della skill", "Skill Cast Time"), secondi: "wCast", meno: true },
   { voce: tr("Danno al secondo", "Damage per second"), id: "AveSecondATK" },
   { voce: tr("Colpi per ucciderlo, in media", "Average Number of Hits"), id: "AveATKnum", meno: true },
   { gruppo: tr("L'attacco del nemico", "Enemy's attack") },
@@ -706,6 +707,12 @@ function numeroDi(testo) {
 const arrotonda = (x) => String(Math.round(x * 100) / 100);
 
 function valoreDi(m, motore) {
+  // il motore scrive il tempo di lancio solo fra le righe secondarie, insieme ad altro: si legge
+  // la sua variabile, arrotondata come nella pagina
+  if (m.secondi) {
+    const numero = Math.floor(100 * motore[m.secondi]) / 100;
+    return { mostra: numeri(numero + " s"), numero };
+  }
   const testo = motore.testo(m.id).replace(/\s+/g, " ").trim();
   const numero = testo ? numeroDi(testo) : null;
   let mostra = traduci(testo) || "—";

@@ -2,6 +2,11 @@
 
 Le versioni della pagina `calculator/`.
 
+## [1.27] - 2026-11-08
+
+- Confronto fra due build: nuova voce "Tempo di lancio della skill", i secondi di lancio della
+  skill scelta in A e in B
+
 ## [1.26] - 2026-11-07
 
 - I numeri seguono la lingua della pagina: in italiano 67.984,12, in inglese 67,984.12. Prima
