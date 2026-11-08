@@ -5,7 +5,8 @@ Le versioni della pagina `calculator/`.
 ## [1.27] - 2026-11-08
 
 - Confronto fra due build: nuova voce "Tempo di lancio della skill", i secondi di lancio della
-  skill scelta in A e in B
+  skill scelta in A e in B. Le due voci in percentuale, uguali per tutte le skill, si chiamano ora
+  "Tempo di lancio, in %" e "Ritardo dopo il lancio, in %"
 
 ## [1.26] - 2026-11-07
 
