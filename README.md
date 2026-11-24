@@ -112,6 +112,6 @@ elaborarli.
 
 ## Licenza
 
-[AGPL-3.0](LICENSE), tranne le immagini in `lgp/` (lo zip del kit e l'anteprima):
-derivano dalle icone delle skill di Ragnarok Online, di Gravity, tranne Pneuma e
-Land Protector, che sono della gilda Fromage, e non sono coperte dalla AGPL.
+[AGPL-3.0](LICENSE), tranne le immagini in `lgp/` (lo zip del kit e l'anteprima),
+che non sono coperte dalla AGPL: le icone derivano da quelle delle skill di
+Ragnarok Online, di Gravity.
