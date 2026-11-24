@@ -28,30 +28,26 @@ Nuova versione dell'applicazione per Windows, la prima dalla 1.0.0: ora fa quell
 
 ## [1.5.3] - 2026-10-23
 
-Il pulsante della lingua esce dal menu ⚙ e sta in alto, subito prima dell'ingranaggio, con la bandiera della lingua in cui si passa.
-L'applicazione desktop pubblicata non cambia.
+Il pulsante della lingua esce dal menu ⚙ e sta in alto, subito prima dell'ingranaggio, con la bandiera della lingua in cui si passa. L'applicazione desktop pubblicata non cambia.
 
 - In italiano mostra la bandiera inglese e `EN`, in inglese quella italiana e `IT`; sul telefono solo la bandiera
 - Sul telefono, quando ci sono insieme `Avvisi` e `Installa`, l'orologio scende sotto i pulsanti invece di sovrapporsi a `Home`
 
 ## [1.5.2] - 2026-10-22
 
-L'applicazione installata sul telefono o sul computer si chiama `RO Timers`, in entrambe le lingue.
-L'applicazione desktop pubblicata non cambia.
+L'applicazione installata sul telefono o sul computer si chiama `RO Timers`, in entrambe le lingue. L'applicazione desktop pubblicata non cambia.
 
 - Il nome compare a chi installa da ora; chi l'ha gia' installata lo vede quando il browser rilegge il manifest, sul computer dopo una conferma
 
 ## [1.5.1] - 2026-10-18
 
-Torna l'ingranaggio, che ora apre il menu uguale in tutte le pagine del sito.
-L'applicazione desktop pubblicata non cambia.
+Torna l'ingranaggio, che ora apre il menu uguale in tutte le pagine del sito. L'applicazione desktop pubblicata non cambia.
 
 - In alto a destra l'ingranaggio al posto della scritta `Altro`: il menu e le sue voci sono quelli della 1.5.0
 
 ## [1.5.0] - 2026-10-18
 
-In alto a destra l'ingranaggio diventa il menu `Altro`, uguale in tutte le pagine del sito.
-L'applicazione desktop pubblicata non cambia.
+In alto a destra l'ingranaggio diventa il menu `Altro`, uguale in tutte le pagine del sito. L'applicazione desktop pubblicata non cambia.
 
 - Nel menu `Altro`: `Impostazioni`, `Togli gli scaduti`, `Backup dei dati`, `Ripristina da backup`, `English` e `Cambia tema chiaro/scuro`
 - `Esporta i dati` e `Importa i dati` si chiamano `Backup dei dati` e `Ripristina da backup`, come nelle altre pagine; il file e' lo stesso di prima
@@ -59,8 +55,7 @@ L'applicazione desktop pubblicata non cambia.
 
 ## [1.4.0] - 2026-10-04
 
-Nella versione web l'ora di un timer si puo' scrivere con i secondi.
-L'applicazione desktop pubblicata non cambia.
+Nella versione web l'ora di un timer si puo' scrivere con i secondi. L'applicazione desktop pubblicata non cambia.
 
 - Il campo `Ora` accetta anche i secondi, `23:50:30` oltre a `23:50`, sia in un timer nuovo sia in modifica
 - In modifica il campo mostra l'ora completa di secondi. Se non la tocchi, il timer resta dov'era: prima salvare una modifica al solo nome poteva spostare la partenza all'inizio del minuto e far risuonare l'allarme
@@ -78,15 +73,13 @@ La versione web e' anche in inglese. L'applicazione desktop non cambia.
 
 ## [1.2.2] - 2026-10-04
 
-Sul telefono il colore della barra del browser segue il tema scelto a mano.
-L'applicazione desktop non cambia.
+Sul telefono il colore della barra del browser segue il tema scelto a mano. L'applicazione desktop non cambia.
 
 - Con `Cambia tema chiaro/scuro` la barra del browser prende il colore del tema scelto; prima restava su quello del sistema. Vale per tutto il sito
 
 ## [1.2.1] - 2026-10-04
 
-L'intestazione della versione web si allinea alla tabella, come nella guida.
-L'applicazione desktop non cambia.
+L'intestazione della versione web si allinea alla tabella, come nella guida. L'applicazione desktop non cambia.
 
 - Su uno schermo largo il pulsante Home e i pulsanti di destra stanno sopra i bordi della tabella, invece di finire ai due estremi della finestra
 - Accanto a Home c'e' il nome della pagina, `Timer di respawn`, come nella guida; sul telefono non c'e' posto e resta nascosto
@@ -95,8 +88,7 @@ L'applicazione desktop non cambia.
 
 ## [1.2.0] - 2026-10-04
 
-Nella versione web ogni timer decide quante volte suona il suo allarme.
-L'applicazione desktop non cambia.
+Nella versione web ogni timer decide quante volte suona il suo allarme. L'applicazione desktop non cambia.
 
 - Nuova colonna `Bip`, accanto a `Suono`: un numero da 1 a 99, che dice quante volte suona l'allarme di quel timer, una ogni 15 secondi finche' la riga non viene toccata. Il campo vuoto vale 1
 - L'allarme non si ripete piu' da solo sei volte: i timer gia' salvati suonano una volta, finche' non si scrive un numero piu' alto
@@ -114,8 +106,7 @@ Il repository cambia nome, da `ragnarok` a `ro`, e con lui l'indirizzo del sito.
 
 ## [1.1.3] - 2026-10-03
 
-La versione web diventa omogenea con la guida, nella lingua e nell'aspetto.
-L'applicazione desktop resta in inglese.
+La versione web diventa omogenea con la guida, nella lingua e nell'aspetto. L'applicazione desktop resta in inglese.
 
 - Interfaccia web in italiano, come il resto del sito: scritte, messaggi, istruzioni di installazione, nomi delle citta' dei fusi orari. I termini del gioco, come `Spawn` e `MvP`, restano in inglese
 - Con il mouse i pulsanti hanno la misura di quelli della guida; restano piu' alti sui dispositivi a tocco
@@ -143,8 +134,7 @@ La versione web prende lo stile del resto del sito. L'applicazione desktop non c
 
 ## [1.1.1] - 2026-10-03
 
-I timer entrano nel sito unificato `albgri.github.io/ragnarok/`, accanto alle
-guide. Le funzioni restano le stesse.
+I timer entrano nel sito unificato `albgri.github.io/ragnarok/`, accanto alle guide. Le funzioni restano le stesse.
 
 - Nuovo indirizzo della versione web: `albgri.github.io/ragnarok/timers/`. I timer salvati nel browser al vecchio indirizzo restano validi
 - Il codice di accesso e' uno solo per tutto il sito: chi lo ha gia' inserito non deve ripeterlo
@@ -154,8 +144,7 @@ guide. Le funzioni restano le stesse.
 
 ## [1.1.0] - 2026-09-10
 
-Versione web installabile, servita da GitHub Pages, accanto all'applicazione
-desktop che resta invariata.
+Versione web installabile, servita da GitHub Pages, accanto all'applicazione desktop che resta invariata.
 
 ### Versione web
 

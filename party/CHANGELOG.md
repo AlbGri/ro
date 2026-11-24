@@ -13,16 +13,11 @@ Le versioni della pagina `party/`.
 
 ## [1.26] - 2026-10-24
 
-- Sopra le run `‹ Combinazione 1 di 1 ›`: spesso piu' combinazioni danno lo stesso risultato (stesse
-  run, stesse entrate, stesse regole), e `›` ne cerca un'altra, per esempio con altri giocatori in
-  un'altra run. Con `‹` si torna a quelle gia' viste; la 1 e' quella della pagina. `Esporta le
-  run` esporta quella mostrata. Se i dati cambiano, o si ricarica la pagina, si riparte dalla 1
+- Sopra le run `‹ Combinazione 1 di 1 ›`: spesso piu' combinazioni danno lo stesso risultato (stesse run, stesse entrate, stesse regole), e `›` ne cerca un'altra, per esempio con altri giocatori in un'altra run. Con `‹` si torna a quelle gia' viste; la 1 e' quella della pagina. `Esporta le run` esporta quella mostrata. Se i dati cambiano, o si ricarica la pagina, si riparte dalla 1
 
 ## [1.25] - 2026-10-24
 
-- Horror Toy Factory: la run preferita e' quella con l'HP Tanker e un secondo High Priest. Il
-  Champion fa il tank solo se senza di lui si perde una run o qualcuno non gioca; prima era la run
-  preferita. Fra una run col Champion e una con lo Sniper Incubus resta meglio quella col Champion
+- Horror Toy Factory: la run preferita e' quella con l'HP Tanker e un secondo High Priest. Il Champion fa il tank solo se senza di lui si perde una run o qualcuno non gioca; prima era la run preferita. Fra una run col Champion e una con lo Sniper Incubus resta meglio quella col Champion
 
 ## [1.24] - 2026-10-24
 
@@ -30,152 +25,89 @@ Le versioni della pagina `party/`.
 
 ## [1.23] - 2026-10-24
 
-- `Incolla l'elenco della gilda` si apre con l'elenco della pagina: si corregge, si cancella chi non
-  c'e' piu' e si scrivono i nuovi in fondo. Il pulsante `Applica` (prima `Aggiungi alla pagina`)
-  sostituisce la tabella con il testo, comprese assenza e run, che prima si potevano mettere ma non
-  togliere. Sotto il testo la pagina dice chi e' nuovo, modificato e da togliere, e chiede conferma
-  prima di togliere qualcuno. Un nome scritto due volte va corretto
-- Nell'elenco l'Account Gilda non disponibile si scrive `Account Gilda nome (non disponibile): classi`
-  (`unavailable` in inglese), anche in `Esporta l'elenco`
+- `Incolla l'elenco della gilda` si apre con l'elenco della pagina: si corregge, si cancella chi non c'e' piu' e si scrivono i nuovi in fondo. Il pulsante `Applica` (prima `Aggiungi alla pagina`) sostituisce la tabella con il testo, comprese assenza e run, che prima si potevano mettere ma non togliere. Sotto il testo la pagina dice chi e' nuovo, modificato e da togliere, e chiede conferma prima di togliere qualcuno. Un nome scritto due volte va corretto
+- Nell'elenco l'Account Gilda non disponibile si scrive `Account Gilda nome (non disponibile): classi` (`unavailable` in inglese), anche in `Esporta l'elenco`
 
 ## [1.22] - 2026-10-24
 
-- Nuova sezione `Personaggi da creare`, in fondo alla pagina: quali personaggi creare, e a chi, per fare
-  piu' run (`Per la run N`, un passo per ogni run in piu') e poi per far giocare piu' persone.
-  Propone meno personaggi possibile, HP Tanker e Sniper Incubus solo dove servono, quando si puo'
-  negli account che ci sono gia' (per esempio un Creator nell'account del Priest, che
-  nell'Endless Cellar non serve), e divide gli account nuovi fra i giocatori. Ogni passo si
-  aggiunge ai precedenti; gli Account Gilda restano come sono
-- `Classi da proporre`: pulsanti come quelli delle run, un clic spegne una classe da non
-  suggerire, per esempio una difficile da fare. Se servono proprio quelle, o se servono piu' giocatori, la pagina lo dice. Le classi spuntate restano nel
-  browser e nel backup
+- Nuova sezione `Personaggi da creare`, in fondo alla pagina: quali personaggi creare, e a chi, per fare piu' run (`Per la run N`, un passo per ogni run in piu') e poi per far giocare piu' persone. Propone meno personaggi possibile, HP Tanker e Sniper Incubus solo dove servono, quando si puo' negli account che ci sono gia' (per esempio un Creator nell'account del Priest, che nell'Endless Cellar non serve), e divide gli account nuovi fra i giocatori. Ogni passo si aggiunge ai precedenti; gli Account Gilda restano come sono
+- `Classi da proporre`: pulsanti come quelli delle run, un clic spegne una classe da non suggerire, per esempio una difficile da fare. Se servono proprio quelle, o se servono piu' giocatori, la pagina lo dice. Le classi spuntate restano nel browser e nel backup
 - Ripristinando un backup si aggiorna anche la scelta dell'istanza
 
 ## [1.21] - 2026-10-23
 
-- Nella run Sniper Incubus il posto dello Sniper si chiama `Sniper Incubus`: li' serve proprio lui.
-  Nelle run complete uno Sniper Incubus occupa il posto `Sniper`, come uno Sniper qualsiasi
+- Nella run Sniper Incubus il posto dello Sniper si chiama `Sniper Incubus`: li' serve proprio lui. Nelle run complete uno Sniper Incubus occupa il posto `Sniper`, come uno Sniper qualsiasi
 
 ## [1.20] - 2026-10-23
 
-- Horror Toy Factory: nuova run da 4 senza Professor, con 2 High Priest (almeno un HP Tanker),
-  Clown o Bard e uno Sniper Incubus, la nuova classe dello Sniper che regge la run da solo. Si
-  scrive nella casella dell'account, `Sniper Incubus` (anche `Incubus`), e vale anche per un
-  Account Gilda. Puo' essere una run qualsiasi della serata: con poche persone anche tutte
-- Una run completa, con il Professor, vale piu' di una run Sniper Incubus quando non costa run o
-  entrate. Le run con Sniper Incubus si riconoscono dalla scritta `con Sniper Incubus`
-- `Per la run N` spiega cosa manca anche per la run Sniper Incubus, se qualcuno ha uno Sniper
-  Incubus
+- Horror Toy Factory: nuova run da 4 senza Professor, con 2 High Priest (almeno un HP Tanker), Clown o Bard e uno Sniper Incubus, la nuova classe dello Sniper che regge la run da solo. Si scrive nella casella dell'account, `Sniper Incubus` (anche `Incubus`), e vale anche per un Account Gilda. Puo' essere una run qualsiasi della serata: con poche persone anche tutte
+- Una run completa, con il Professor, vale piu' di una run Sniper Incubus quando non costa run o entrate. Le run con Sniper Incubus si riconoscono dalla scritta `con Sniper Incubus`
+- `Per la run N` spiega cosa manca anche per la run Sniper Incubus, se qualcuno ha uno Sniper Incubus
 
 ## [1.19] - 2026-10-23
 
-- L'elenco esportato scrive chi non e' presente: `Nome (assente)`, anche con le run,
-  `Nome (assente, run 1-2)`; in inglese `absent`. Incollato, quei giocatori restano senza la
-  spunta Presente invece di tornare tutti presenti. Un giocatore gia' nella tabella diventa
-  assente se l'elenco lo dice, ma non torna presente da solo
+- L'elenco esportato scrive chi non e' presente: `Nome (assente)`, anche con le run, `Nome (assente, run 1-2)`; in inglese `absent`. Incollato, quei giocatori restano senza la spunta Presente invece di tornare tutti presenti. Un giocatore gia' nella tabella diventa assente se l'elenco lo dice, ma non torna presente da solo
 
 ## [1.18] - 2026-10-23
 
-- HP Tanker non e' piu' una spunta del giocatore ma una classe del personaggio: si scrive nella
-  casella dell'account, `HP Tanker/Clown` (anche `Tanker HP`). Cosi' un giocatore puo' avere un
-  High Priest che tanka e uno che non tanka. Anche un Account Gilda con un HP Tanker tanka,
-  chiunque lo giochi. La colonna HP Tanker della tabella non c'e' piu'
-- Le spunte gia' messe diventano HP Tanker in tutti gli High Priest di quel giocatore: togli
-  Tanker da quelli che non tankano. Lo stesso vale per `Nome (HP Tanker)` negli elenchi esportati
-  prima
-- Incollando l'elenco della gilda, un account che nella tabella ha un HP Tanker lo tiene, se
-  nell'elenco ha un High Priest
-- Clown, Bard, Gypsy e Dancer sono classi separate: nelle caselle e nelle run si vede quella
-  scritta. Bragi vale come Clown e SP Song come Gypsy. I posti si chiamano `Clown o Bard` e
-  `Gypsy o Dancer`. Un Bard salvato prima come Clown resta Clown: va corretto a mano
+- HP Tanker non e' piu' una spunta del giocatore ma una classe del personaggio: si scrive nella casella dell'account, `HP Tanker/Clown` (anche `Tanker HP`). Cosi' un giocatore puo' avere un High Priest che tanka e uno che non tanka. Anche un Account Gilda con un HP Tanker tanka, chiunque lo giochi. La colonna HP Tanker della tabella non c'e' piu'
+- Le spunte gia' messe diventano HP Tanker in tutti gli High Priest di quel giocatore: togli Tanker da quelli che non tankano. Lo stesso vale per `Nome (HP Tanker)` negli elenchi esportati prima
+- Incollando l'elenco della gilda, un account che nella tabella ha un HP Tanker lo tiene, se nell'elenco ha un High Priest
+- Clown, Bard, Gypsy e Dancer sono classi separate: nelle caselle e nelle run si vede quella scritta. Bragi vale come Clown e SP Song come Gypsy. I posti si chiamano `Clown o Bard` e `Gypsy o Dancer`. Un Bard salvato prima come Clown resta Clown: va corretto a mano
 
 ## [1.17] - 2026-10-23
 
-- Tabella dei giocatori: le colonne del nome, di Presente e di HP Tanker sono piu' strette, e lo
-  spazio va agli account
-- Ogni colonna di account e' larga in proporzione al testo piu' lungo che contiene: le colonne
-  quasi vuote (account 4, 5, 6) lasciano spazio alla prima, di solito la piu' piena
+- Tabella dei giocatori: le colonne del nome, di Presente e di HP Tanker sono piu' strette, e lo spazio va agli account
+- Ogni colonna di account e' larga in proporzione al testo piu' lungo che contiene: le colonne quasi vuote (account 4, 5, 6) lasciano spazio alla prima, di solito la piu' piena
 - Il testo intero di un account si legge passandoci sopra con il mouse
 
 ## [1.16] - 2026-10-23
 
-- Le caselle vuote degli account sono vuote, senza la scritta `Account N`: la dice gia'
-  l'intestazione. Sul telefono, dove l'intestazione non c'e', la scritta resta
+- Le caselle vuote degli account sono vuote, senza la scritta `Account N`: la dice gia' l'intestazione. Sul telefono, dove l'intestazione non c'e', la scritta resta
 
 ## [1.15] - 2026-10-23
 
-- La colonna `Run` non dice piu' quante run fa un giocatore ma in quali c'e', per chi arriva
-  tardi o va via prima: tre pulsanti 1 2 3, tutti accesi; un clic spegne la run in cui manca.
-  Le run fatte sono sempre le prime della serata, e il calcolo mette ognuno solo nelle sue
-- Nell'elenco della gilda: `Nome (run 1-2)`, `(run 3)`, `(run 1+3)` o `(run 1, 3)`, anche con la
-  spunta: `Nome (HP Tanker, run 2-3)`. Il vecchio `(2 run)` vale come le prime due, e cosi' i
-  dati salvati con la 1.13 e la 1.14
+- La colonna `Run` non dice piu' quante run fa un giocatore ma in quali c'e', per chi arriva tardi o va via prima: tre pulsanti 1 2 3, tutti accesi; un clic spegne la run in cui manca. Le run fatte sono sempre le prime della serata, e il calcolo mette ognuno solo nelle sue
+- Nell'elenco della gilda: `Nome (run 1-2)`, `(run 3)`, `(run 1+3)` o `(run 1, 3)`, anche con la spunta: `Nome (HP Tanker, run 2-3)`. Il vecchio `(2 run)` vale come le prime due, e cosi' i dati salvati con la 1.13 e la 1.14
 
 ## [1.14] - 2026-10-23
 
-- Nelle run, accanto alla classe di chi tanka (il Champion o l'HP Tanker), l'etichetta `Tanker`,
-  come quella degli Account Gilda; nel txt delle run `, Tanker`
+- Nelle run, accanto alla classe di chi tanka (il Champion o l'HP Tanker), l'etichetta `Tanker`, come quella degli Account Gilda; nel txt delle run `, Tanker`
 
 ## [1.13] - 2026-10-23
 
-- Horror Toy Factory: in ogni run qualcuno tanka. Puo' essere un HP Tanker, nuova colonna per i
-  giocatori che la reggono da High Priest: dei due High Priest della run almeno uno e' di un
-  giocatore con la spunta, con uno qualsiasi dei suoi account (l'equipaggiamento si passa); un
-  Account Gilda non conta come HP Tanker. Oppure un Champion con Steel Body, chiunque lo giochi,
-  con un High Priest di supporto e un secondo High Priest o un Priest, perche' il Champion non
-  puo' usare Safety Wall. A parita' di run ed entrate si preferisce il Champion. Ogni run dice
-  chi tanka, e `Per la run N` spiega cosa manca per l'uno e per l'altro. Nell'elenco della gilda:
-  `Nome (HP Tanker)`; in inglese Tanker HP
-- Nuova colonna `Run`: quante run puo' fare al massimo un giocatore, 3 se non si cambia. Chi ne
-  fa meno per scelta non e' fra quelli che "non giocano tutte le run". Nell'elenco della gilda:
-  `Nome (2 run)`, anche insieme alla spunta: `Nome (HP Tanker, 2 run)`
-- Soul Linker riconosciuto (anche `SL`): con il link il Clown usa la canzone degli SP, quindi in
-  una run senza Gypsy/Dancer prende il suo posto fra i liberi
-- Nell'elenco della gilda e nelle caselle `Snip` vale come Sniper, e le classi separate solo da
-  spazi si leggono una per una: `Snip Prof Bragi` sono Sniper, Professor e Clown/Bard
+- Horror Toy Factory: in ogni run qualcuno tanka. Puo' essere un HP Tanker, nuova colonna per i giocatori che la reggono da High Priest: dei due High Priest della run almeno uno e' di un giocatore con la spunta, con uno qualsiasi dei suoi account (l'equipaggiamento si passa); un Account Gilda non conta come HP Tanker. Oppure un Champion con Steel Body, chiunque lo giochi, con un High Priest di supporto e un secondo High Priest o un Priest, perche' il Champion non puo' usare Safety Wall. A parita' di run ed entrate si preferisce il Champion. Ogni run dice chi tanka, e `Per la run N` spiega cosa manca per l'uno e per l'altro. Nell'elenco della gilda: `Nome (HP Tanker)`; in inglese Tanker HP
+- Nuova colonna `Run`: quante run puo' fare al massimo un giocatore, 3 se non si cambia. Chi ne fa meno per scelta non e' fra quelli che "non giocano tutte le run". Nell'elenco della gilda: `Nome (2 run)`, anche insieme alla spunta: `Nome (HP Tanker, 2 run)`
+- Soul Linker riconosciuto (anche `SL`): con il link il Clown usa la canzone degli SP, quindi in una run senza Gypsy/Dancer prende il suo posto fra i liberi
+- Nell'elenco della gilda e nelle caselle `Snip` vale come Sniper, e le classi separate solo da spazi si leggono una per una: `Snip Prof Bragi` sono Sniper, Professor e Clown/Bard
 
 ## [1.12] - 2026-10-23
 
-- I jolly si chiamano Account Gilda, come Guild Account nella versione inglese. Nell'elenco della
-  gilda la riga e' `Account Gilda nome: classi`; `Jolly nome: classi` vale ancora, quindi gli
-  elenchi esportati prima si rileggono. Dati salvati e backup restano validi
+- I jolly si chiamano Account Gilda, come Guild Account nella versione inglese. Nell'elenco della gilda la riga e' `Account Gilda nome: classi`; `Jolly nome: classi` vale ancora, quindi gli elenchi esportati prima si rileggono. Dati salvati e backup restano validi
 
 ## [1.11] - 2026-10-23
 
-- Menu ⚙: "Ricomincia da zero", come nel calcolatore e nei livelli, toglie tutti i giocatori e i
-  jolly (chiede conferma). Istanza e soprannomi imparati restano: l'elenco esportato non li ha
+- Menu ⚙: "Ricomincia da zero", come nel calcolatore e nei livelli, toglie tutti i giocatori e i jolly (chiede conferma). Istanza e soprannomi imparati restano: l'elenco esportato non li ha
 
 ## [1.10] - 2026-10-23
 
-- `Per la run N` dice quanti personaggi servono e quali account potrebbero coprirli, con il
-  numero della loro casella: per esempio "Per 3 run servono 6 High Priest e 3 Professor, 9
-  personaggi su account diversi. Gli account che hanno almeno uno dei due sono 8: Alberto (1,
-  2), ... Ogni account entra con un solo personaggio."
-- Se un giocatore ha piu' account di quante sono le run, la riga ricorda che ne contano al piu'
-  uno per run
+- `Per la run N` dice quanti personaggi servono e quali account potrebbero coprirli, con il numero della loro casella: per esempio "Per 3 run servono 6 High Priest e 3 Professor, 9 personaggi su account diversi. Gli account che hanno almeno uno dei due sono 8: Alberto (1, 2), ... Ogni account entra con un solo personaggio."
+- Se un giocatore ha piu' account di quante sono le run, la riga ricorda che ne contano al piu' uno per run
 
 ## [1.9] - 2026-10-23
 
-- Quando le run sono meno di tre, `Per la run N` dice cosa manca anche se ogni posto basta da
-  solo ma non insieme agli altri, perche' gli stessi account servono per piu' posti: per esempio
-  "High Priest e Professor insieme: per 3 run ne servono 9, ci sono 8 account che li coprono"
+- Quando le run sono meno di tre, `Per la run N` dice cosa manca anche se ogni posto basta da solo ma non insieme agli altri, perche' gli stessi account servono per piu' posti: per esempio "High Priest e Professor insieme: per 3 run ne servono 9, ci sono 8 account che li coprono"
 
 ## [1.8] - 2026-10-23
 
-- Il pulsante della lingua esce dal menu ⚙ e sta in alto, subito prima dell'ingranaggio, con la
-  bandiera della lingua in cui si passa (`EN` in italiano, `IT` in inglese; sul telefono solo
-  la bandiera)
+- Il pulsante della lingua esce dal menu ⚙ e sta in alto, subito prima dell'ingranaggio, con la bandiera della lingua in cui si passa (`EN` in italiano, `IT` in inglese; sul telefono solo la bandiera)
 - `Pally` vale come Paladin, come `Pala` e `Devo`
 
 ## [1.7] - 2026-10-23
 
-- La pagina e' anche in inglese: con `English` nel menu ⚙ si passa all'inglese, e la scelta vale
-  per tutto il sito. I jolly in inglese si chiamano Guild Account, l'id macchina Hardware ID
-- L'elenco della gilda e le caselle degli account capiscono le parole delle due lingue,
-  qualunque sia quella della pagina: `Jolly` o `Guild Account`, `e` o `and`, `Altro` o `Other`.
-  L'elenco esportato usa le parole della lingua della pagina
-- Sul telefono l'etichetta del jolly accanto alla classe va a capo invece di allargare la
-  pagina, e il menu Istanza si restringe
+- La pagina e' anche in inglese: con `English` nel menu ⚙ si passa all'inglese, e la scelta vale per tutto il sito. I jolly in inglese si chiamano Guild Account, l'id macchina Hardware ID
+- L'elenco della gilda e le caselle degli account capiscono le parole delle due lingue, qualunque sia quella della pagina: `Jolly` o `Guild Account`, `e` o `and`, `Altro` o `Other`. L'elenco esportato usa le parole della lingua della pagina
+- Sul telefono l'etichetta del jolly accanto alla classe va a capo invece di allargare la pagina, e il menu Istanza si restringe
 
 ## [1.6] - 2026-10-22
 

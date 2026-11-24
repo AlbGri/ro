@@ -1,9 +1,6 @@
 # ro-tools
 
-Strumenti e guide per Ragnarok Online in un solo sito statico, pubblicato su
-GitHub Pages e raggiungibile da `https://ro.albgri.com/`. Anche il vecchio
-indirizzo `https://albgri.github.io/ro/` resta valido, ma tiene dati separati:
-codice di accesso, scelte e timer salvati nel browser non passano dall'uno all'altro.
+Strumenti e guide per Ragnarok Online in un solo sito statico, pubblicato su GitHub Pages e raggiungibile da `https://ro.albgri.com/`. Anche il vecchio indirizzo `https://albgri.github.io/ro/` resta valido, ma tiene dati separati: codice di accesso, scelte e timer salvati nel browser non passano dall'uno all'altro.
 
 La home chiede un codice di accesso e poi fa scegliere il servizio.
 
@@ -17,25 +14,18 @@ La home chiede un codice di accesso e poi fa scegliere il servizio.
 | Promemoria pet: conto alla rovescia di 9 minuti che suona quando e' ora di nutrire il pet | `/pet/` | `pet/` |
 | lgp: kit da scaricare per il plugin LGP del client di uaRO, le skill a terra con la loro icona | `/lgp/` | `lgp/` |
 
-Tutto e' HTML, CSS e JavaScript senza framework ne' passaggi di build: le
-pagine vengono servite cosi' come sono nel repository.
+Tutto e' HTML, CSS e JavaScript senza framework ne' passaggi di build: le pagine vengono servite cosi' come sono nel repository.
 
 ## Codice di accesso
 
-`gate.js` contiene l'impronta SHA-256 di un codice, mai il codice. Ogni pagina
-lo include e resta coperta finche' il codice non viene inserito; il browser lo
-ricorda, quindi si inserisce una volta sola per tutto il sito.
+`gate.js` contiene l'impronta SHA-256 di un codice, mai il codice. Ogni pagina lo include e resta coperta finche' il codice non viene inserito; il browser lo ricorda, quindi si inserisce una volta sola per tutto il sito.
 
 ```bash
 node tools/set-access-code.mjs "codice scelto"
 node tools/set-access-code.mjs --clear     # toglie il codice
 ```
 
-Non e' una protezione. Il sito e' statico e il repository e' pubblico: il
-contenuto si legge comunque dal sorgente, un codice corto si trova per
-tentativi e chi lo conosce puo' passarlo a chiunque. Serve a tenere fuori i
-curiosi di passaggio. I dati di ciascuno (timer, spunte e note della guida)
-restano nel suo browser: non c'e' nulla di condiviso da proteggere.
+Non e' una protezione. Il sito e' statico e il repository e' pubblico: il contenuto si legge comunque dal sorgente, un codice corto si trova per tentativi e chi lo conosce puo' passarlo a chiunque. Serve a tenere fuori i curiosi di passaggio. I dati di ciascuno (timer, spunte e note della guida) restano nel suo browser: non c'e' nulla di condiviso da proteggere.
 
 ## Struttura
 
@@ -54,41 +44,26 @@ restano nel suo browser: non c'e' nulla di condiviso da proteggere.
 | `pet/` | promemoria pet, una sola pagina con il codice dentro |
 | `lgp/` | pagina del kit lgp, con lo zip da scaricare e un'anteprima delle icone |
 
-Gli strumenti della guida leggono la cartella `guide/fonti` (copie di script e
-database di rAthena e cache delle mappe), che non fa parte del repository. La
-guida funziona anche senza.
+Gli strumenti della guida leggono la cartella `guide/fonti` (copie di script e database di rAthena e cache delle mappe), che non fa parte del repository. La guida funziona anche senza.
 
 ### Aggiungere un servizio
 
-1. Una cartella sua, con una pagina che include il codice di accesso
-   nell'`<head>`: `<script src="../gate.js"></script>`.
-2. Lo stile delle altre pagine (colori e caratteri della guida Nuovo Mondo), un
-   pulsante Home verso la scelta dei servizi e uno per il tema, che chiama
-   `toggleTheme()`. I due `<meta name="theme-color">`, per il sistema chiaro e
-   per quello scuro, vanno prima di `gate.js`, che li allinea al tema scelto.
+1. Una cartella sua, con una pagina che include il codice di accesso nell'`<head>`: `<script src="../gate.js"></script>`.
+2. Lo stile delle altre pagine (colori e caratteri della guida Nuovo Mondo), un pulsante Home verso la scelta dei servizi e uno per il tema, che chiama `toggleTheme()`. I due `<meta name="theme-color">`, per il sistema chiaro e per quello scuro, vanno prima di `gate.js`, che li allinea al tema scelto.
 3. Una scheda nella home, in `index.html`.
-4. Le scritte in italiano e in inglese (vedi sotto) e un pulsante per la lingua,
-   che chiama `toggleLang()`.
+4. Le scritte in italiano e in inglese (vedi sotto) e un pulsante per la lingua, che chiama `toggleLang()`.
 
-Il tema scelto vale per tutto il sito: `gate.js` lo ricorda e lo applica a ogni
-pagina con l'attributo `data-theme`; senza una scelta decide il sistema.
+Il tema scelto vale per tutto il sito: `gate.js` lo ricorda e lo applica a ogni pagina con l'attributo `data-theme`; senza una scelta decide il sistema.
 
 ### Lingua
 
-Il sito e' in italiano e in inglese: l'inglese si sceglie con il pulsante
-`English` e vale per tutto il sito. La lingua del browser non conta.
+Il sito e' in italiano e in inglese: l'inglese si sceglie con il pulsante `English` e vale per tutto il sito. La lingua del browser non conta.
 
 Le due lingue stanno una accanto all'altra, senza un file di traduzioni:
 
-- una pagina tradotta ha `data-bilingual` su `<html>`. L'italiano e' il testo
-  della pagina, l'inglese sta nell'attributo `data-en` dello stesso elemento, o
-  in `data-en-title`, `data-en-aria-label`, `data-en-placeholder` e
-  `data-en-content` per gli attributi. Li applica `gate.js`
-- nel JavaScript una scritta si sceglie con `tr("Chiudi", "Close")`, anche lei
-  di `gate.js`
-- la guida fa da se' (deve funzionare anche senza `gate.js`): legge la stessa
-  scelta, applica i suoi `data-en` e prende i testi di fasi e step dal campo `en`
-  dei dati (vedi `guide/CLAUDE.md`)
+- una pagina tradotta ha `data-bilingual` su `<html>`. L'italiano e' il testo della pagina, l'inglese sta nell'attributo `data-en` dello stesso elemento, o in `data-en-title`, `data-en-aria-label`, `data-en-placeholder` e `data-en-content` per gli attributi. Li applica `gate.js`
+- nel JavaScript una scritta si sceglie con `tr("Chiudi", "Close")`, anche lei di `gate.js`
+- la guida fa da se' (deve funzionare anche senza `gate.js`): legge la stessa scelta, applica i suoi `data-en` e prende i testi di fasi e step dal campo `en` dei dati (vedi `guide/CLAUDE.md`)
 
 Cambiare lingua ricarica la pagina.
 
@@ -100,19 +75,12 @@ Dalla radice del repository:
 python -m http.server 8765
 ```
 
-Il sito e' su `http://localhost:8765/`. Serve un server perche' i moduli
-JavaScript e il service worker dei timer non funzionano aprendo i file dal
-disco; la guida invece si apre anche con un doppio clic.
+Il sito e' su `http://localhost:8765/`. Serve un server perche' i moduli JavaScript e il service worker dei timer non funzionano aprendo i file dal disco; la guida invece si apre anche con un doppio clic.
 
 ## Pubblicazione
 
-Su GitHub, `Settings > Pages > Deploy from a branch`, ramo `main`, cartella
-`/ (root)`. Il file `.nojekyll` dice a GitHub di servire i file senza
-elaborarli.
+Su GitHub, `Settings > Pages > Deploy from a branch`, ramo `main`, cartella `/ (root)`. Il file `.nojekyll` dice a GitHub di servire i file senza elaborarli.
 
 ## Licenza
 
-[AGPL-3.0](LICENSE), tranne le immagini in `lgp/` (lo zip del kit e l'anteprima),
-che non sono coperte dalla AGPL: le icone derivano da quelle delle skill di
-Ragnarok Online, di Gravity. I caratteri in `caratteri/` (Alegreya e Atkinson
-Hyperlegible Next) hanno la loro licenza, la SIL Open Font License, nei file `OFL-*.txt`.
+[AGPL-3.0](LICENSE), tranne le immagini in `lgp/` (lo zip del kit e l'anteprima), che non sono coperte dalla AGPL: le icone derivano da quelle delle skill di Ragnarok Online, di Gravity. I caratteri in `caratteri/` (Alegreya e Atkinson Hyperlegible Next) hanno la loro licenza, la SIL Open Font License, nei file `OFL-*.txt`.

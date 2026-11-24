@@ -27,32 +27,15 @@ La lista si riordina da sola: prima le finestre aperte in ordine di chiusura, po
 
 ## Versione web
 
-I file in questa cartella sono l'applicazione web, in HTML, CSS e JavaScript,
-senza framework ne' passaggi di build: GitHub Pages li serve cosi' come sono
-all'indirizzo `ro.albgri.com/timers/`. E' una PWA: installabile
-sulla schermata iniziale e utilizzabile offline. Il vecchio indirizzo
-`albgri.github.io/ro/timers/` funziona ancora, ma i timer salvati li' restano li':
-per spostarli si usano `Backup dei dati` e `Ripristina da backup`.
+I file in questa cartella sono l'applicazione web, in HTML, CSS e JavaScript, senza framework ne' passaggi di build: GitHub Pages li serve cosi' come sono all'indirizzo `ro.albgri.com/timers/`. E' una PWA: installabile sulla schermata iniziale e utilizzabile offline. Il vecchio indirizzo `albgri.github.io/ro/timers/` funziona ancora, ma i timer salvati li' restano li': per spostarli si usano `Backup dei dati` e `Ripristina da backup`.
 
-I dati stanno in `localStorage`, quindi restano nel browser che li ha scritti:
-non c'e' sincronizzazione fra dispositivi e cancellare i dati del sito cancella
-i timer. Il formato e' pero' identico a quello dell'applicazione desktop, e i
-comandi `Backup dei dati` e `Ripristina da backup` del menu ⚙ in alto a destra spostano i timer da una all'altra.
+I dati stanno in `localStorage`, quindi restano nel browser che li ha scritti: non c'e' sincronizzazione fra dispositivi e cancellare i dati del sito cancella i timer. Il formato e' pero' identico a quello dell'applicazione desktop, e i comandi `Backup dei dati` e `Ripristina da backup` del menu ⚙ in alto a destra spostano i timer da una all'altra.
 
-Il layout e' unico: su telefono ogni timer e' una scheda, da 880px in su le
-stesse celle diventano le colonne della tabella.
+Il layout e' unico: su telefono ogni timer e' una scheda, da 880px in su le stesse celle diventano le colonne della tabella.
 
-Le scritte sono in italiano; il pulsante `EN` in alto, accanto all'⚙, le
-porta in inglese, e la scelta vale per tutto il sito. In italiano le colonne si
-chiamano `Suono`, `Bip`, `Nome`, `Mappa`, `Categoria`, `Ora`, `Spawn`,
-`Spawn max` e `Manca`; in inglese `Sound`, `Beeps`, `Name`, `Map`, `Category`,
-`Time`, `Spawn`, `Max. Spawn` e `Left`, come nell'applicazione desktop. I
-termini del gioco, come `Spawn` e `MVP`, restano in inglese.
+Le scritte sono in italiano; il pulsante `EN` in alto, accanto all'⚙, le porta in inglese, e la scelta vale per tutto il sito. In italiano le colonne si chiamano `Suono`, `Bip`, `Nome`, `Mappa`, `Categoria`, `Ora`, `Spawn`, `Spawn max` e `Manca`; in inglese `Sound`, `Beeps`, `Name`, `Map`, `Category`, `Time`, `Spawn`, `Max. Spawn` e `Left`, come nell'applicazione desktop. I termini del gioco, come `Spawn` e `MVP`, restano in inglese.
 
-La colonna `Bip` dice quante volte suona l'allarme di quel timer, una ogni 15
-secondi finche' la riga non viene toccata: si scrive un numero da 1 a 99, e il
-campo vuoto vale 1. Il numero viaggia nel file dati (campo `beeps` del timer)
-e vale anche nell'applicazione desktop.
+La colonna `Bip` dice quante volte suona l'allarme di quel timer, una ogni 15 secondi finche' la riga non viene toccata: si scrive un numero da 1 a 99, e il campo vuoto vale 1. Il numero viaggia nel file dati (campo `beeps` del timer) e vale anche nell'applicazione desktop.
 
 Differenze rispetto al desktop, tutte volute:
 
@@ -68,43 +51,25 @@ Differenze rispetto al desktop, tutte volute:
 
 ### Fuso orario
 
-L'intestazione mostra un orologio con il fuso in uso. Non e' un ornamento: la
-modalita' anti tracciamento di Firefox, Tor e alcune VPN dichiarano UTC invece
-del fuso reale, e in quel caso ogni orario digitato viene collocato con ore di
-scarto. Il sintomo non e' evidente, perche' anche la rilettura usa il fuso
-sbagliato e le colonne `Ora` e `Spawn` restano coerenti fra loro: se ne accorge
-solo il contatore `Manca`.
+L'intestazione mostra un orologio con il fuso in uso. Non e' un ornamento: la modalita' anti tracciamento di Firefox, Tor e alcune VPN dichiarano UTC invece del fuso reale, e in quel caso ogni orario digitato viene collocato con ore di scarto. Il sintomo non e' evidente, perche' anche la rilettura usa il fuso sbagliato e le colonne `Ora` e `Spawn` restano coerenti fra loro: se ne accorge solo il contatore `Manca`.
 
-Toccando l'orologio si sceglie la propria citta'. La scelta e' salvata su quel
-dispositivo e non viaggia con i dati esportati, perche' descrive dove ci si
-trova e non i timer. Cambiare fuso non sposta i timer gia' creati: quelli
-inseriti con il fuso sbagliato vanno corretti a mano.
+Toccando l'orologio si sceglie la propria citta'. La scelta e' salvata su quel dispositivo e non viaggia con i dati esportati, perche' descrive dove ci si trova e non i timer. Cambiare fuso non sposta i timer gia' creati: quelli inseriti con il fuso sbagliato vanno corretti a mano.
 
-Il pulsante `Installa` in alto compare solo quando l'applicazione non e' gia'
-installata: dove il browser lo permette apre l'installazione automatica, altrove
-mostra le istruzioni del sistema riconosciuto, perche' Safari non emette
-`beforeinstallprompt` e la voce resta nascosta nel menu di condivisione.
+Il pulsante `Installa` in alto compare solo quando l'applicazione non e' gia' installata: dove il browser lo permette apre l'installazione automatica, altrove mostra le istruzioni del sistema riconosciuto, perche' Safari non emette `beforeinstallprompt` e la voce resta nascosta nel menu di condivisione.
 
 Limiti del browser, da conoscere prima di affidarcisi:
 
-- **gli allarmi suonano solo con la pagina aperta**: una PWA chiusa non puo'
-  svegliarsi da sola senza un server che invii notifiche push
-- il suono parte solo dopo la prima interazione con la pagina, da cui il
-  pulsante `Attiva avvisi`
-- su iPhone le notifiche funzionano solo se l'applicazione e' stata installata
-  sulla schermata iniziale
+- **gli allarmi suonano solo con la pagina aperta**: una PWA chiusa non puo' svegliarsi da sola senza un server che invii notifiche push
+- il suono parte solo dopo la prima interazione con la pagina, da cui il pulsante `Attiva avvisi`
+- su iPhone le notifiche funzionano solo se l'applicazione e' stata installata sulla schermata iniziale
 
 ### Codice di accesso e pubblicazione
 
-Il codice di accesso e' quello del sito, uguale per tutti i servizi, e la
-pubblicazione riguarda il repository intero: sono descritti nel
-[README alla radice](../README.md).
+Il codice di accesso e' quello del sito, uguale per tutti i servizi, e la pubblicazione riguarda il repository intero: sono descritti nel [README alla radice](../README.md).
 
 ## Applicazione desktop
 
-L'interfaccia e' in italiano; il pulsante `EN` in alto a destra la porta in
-inglese, e `IT` la riporta in italiano. La scelta resta nel file dati. Accanto
-c'e' l'orologio con i secondi, nel fuso orario di Windows.
+L'interfaccia e' in italiano; il pulsante `EN` in alto a destra la porta in inglese, e `IT` la riporta in italiano. La scelta resta nel file dati. Accanto c'e' l'orologio con i secondi, nel fuso orario di Windows.
 
 ### Colonne
 
@@ -193,25 +158,20 @@ pip install -r requirements-dev.txt
 pytest
 ```
 
-La logica della versione web ha i suoi test, che girano con il solo Node
-installato:
+La logica della versione web ha i suoi test, che girano con il solo Node installato:
 
 ```bash
 cd timers
 node --test tests_web/*.mjs
 ```
 
-Per provare le pagine serve un server locale, perche' i moduli JavaScript e il
-service worker non funzionano aprendo il file dal disco. Va avviato dalla
-radice del repository, perche' la pagina carica `gate.js` da li':
+Per provare le pagine serve un server locale, perche' i moduli JavaScript e il service worker non funzionano aprendo il file dal disco. Va avviato dalla radice del repository, perche' la pagina carica `gate.js` da li':
 
 ```bash
 python -m http.server 8765
 ```
 
-L'applicazione e' su `http://localhost:8765/timers/`. Service worker e
-installazione richiedono `localhost` oppure HTTPS: dall'indirizzo di rete
-locale in HTTP semplice la pagina si apre ma non si installa.
+L'applicazione e' su `http://localhost:8765/timers/`. Service worker e installazione richiedono `localhost` oppure HTTPS: dall'indirizzo di rete locale in HTTP semplice la pagina si apre ma non si installa.
 
 ## Build eseguibile
 
@@ -230,11 +190,7 @@ Distribuzione:
 Compress-Archive -Path "dist\RagnarokTimers\*" -DestinationPath "RagnarokTimers-v1.6.0-windows.zip"
 ```
 
-Lo zip si pubblica come release del repository, con il tag `timers-v` seguito
-dalla versione. L'eseguibile pubblicato si scarica dalle
-[release](https://github.com/AlbGri/ro/releases); la home del sito e le
-impostazioni dei timer hanno un collegamento diretto allo zip, da aggiornare a
-ogni nuova release.
+Lo zip si pubblica come release del repository, con il tag `timers-v` seguito dalla versione. L'eseguibile pubblicato si scarica dalle [release](https://github.com/AlbGri/ro/releases); la home del sito e le impostazioni dei timer hanno un collegamento diretto allo zip, da aggiornare a ogni nuova release.
 
 ## Compatibilita'
 

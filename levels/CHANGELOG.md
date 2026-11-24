@@ -8,22 +8,12 @@ Le versioni della pagina `levels/`.
 
 ## [1.21] - 2026-11-07
 
-- Nuova opzione "Costo del tempo di una consegna" (5.000 zeny se non si cambia): il piano conta
-  ogni consegna come quella cifra, che non entra nel totale, e preferisce le quest che danno piu'
-  EXP per consegna. Da non rinato dal 40 con il Field Manual 100% le Acorn scendono da 91 a 34
-  consegne e si passa prima alle Anolian Skin, per circa 74.000 zeny in piu'. Con 0 il piano
-  torna quello di prima
-- Nella lista della spesa gli oggetti venduti da un NPC hanno anche il mercato dei giocatori
-  (@ws): se scrivi un prezzo piu' basso di quello dell'NPC, il mercato viene per primo. Le Antelope
-  Horn, per esempio, dai giocatori spesso costano meno
+- Nuova opzione "Costo del tempo di una consegna" (5.000 zeny se non si cambia): il piano conta ogni consegna come quella cifra, che non entra nel totale, e preferisce le quest che danno piu' EXP per consegna. Da non rinato dal 40 con il Field Manual 100% le Acorn scendono da 91 a 34 consegne e si passa prima alle Anolian Skin, per circa 74.000 zeny in piu'. Con 0 il piano torna quello di prima
+- Nella lista della spesa gli oggetti venduti da un NPC hanno anche il mercato dei giocatori (@ws): se scrivi un prezzo piu' basso di quello dell'NPC, il mercato viene per primo. Le Antelope Horn, per esempio, dai giocatori spesso costano meno
 
 ## [1.20] - 2026-10-26
 
-- "Completo il livello uccidendo mostri" vale solo quando la consegna successiva perderebbe EXP
-  (una consegna non fa salire piu' di un livello): con le quest che danno tanto, come Anolian
-  Skin, i mostri finiscono il livello prima della consegna; con quelle che danno poco, come
-  Acorn, si consegna e basta. Prima il piano mandava a uccidere mostri appena si era sotto la
-  soglia, anche quando la consegna non sprecava niente
+- "Completo il livello uccidendo mostri" vale solo quando la consegna successiva perderebbe EXP (una consegna non fa salire piu' di un livello): con le quest che danno tanto, come Anolian Skin, i mostri finiscono il livello prima della consegna; con quelle che danno poco, come Acorn, si consegna e basta. Prima il piano mandava a uccidere mostri appena si era sotto la soglia, anche quando la consegna non sprecava niente
 
 ## [1.19] - 2026-10-25
 
@@ -31,36 +21,25 @@ Le versioni della pagina `levels/`.
 
 ## [1.18] - 2026-10-24
 
-- Il Field Manual 100% aumenta anche la job EXP, come visto in gioco (Sharp Leaf nel weekend:
-  x3 sia base sia job). Prima la pagina lo contava solo per la base e prevedeva un livello job
-  piu' basso. Il Field Manual (50%) resta solo base finche' non e' verificato
+- Il Field Manual 100% aumenta anche la job EXP, come visto in gioco (Sharp Leaf nel weekend: x3 sia base sia job). Prima la pagina lo contava solo per la base e prevedeva un livello job piu' basso. Il Field Manual (50%) resta solo base finche' non e' verificato
 
 ## [1.17] - 2026-10-23
 
-- Menu ⚙: "Ricomincia da zero", come nel calcolatore, rimette tutti i campi ai valori iniziali
-  (chiede conferma; prima si puo' fare il Backup dei dati)
+- Menu ⚙: "Ricomincia da zero", come nel calcolatore, rimette tutti i campi ai valori iniziali (chiede conferma; prima si puo' fare il Backup dei dati)
 
 ## [1.16] - 2026-10-23
 
-- I manuali si chiamano come nel gioco, con le loro differenze (wiki di uaRO, Server Info): nelle
-  Opzioni si sceglie fra Battle Manual (50% a EXP base e job), Field Manual (50%, solo base) e
-  Field Manual 100% (solo base). Prima il manuale aumentava sempre anche la job EXP
-- Sotto il manuale scelto, la job EXP ha un suo moltiplicatore quando e' diverso da quello
-  delle quest
-- Manuale: 50% o 100%?: i manuali al 50% gratis sono i 3 Battle Manual dell'inizio e i Field
-  Manual delle Attendance Rewards
+- I manuali si chiamano come nel gioco, con le loro differenze (wiki di uaRO, Server Info): nelle Opzioni si sceglie fra Battle Manual (50% a EXP base e job), Field Manual (50%, solo base) e Field Manual 100% (solo base). Prima il manuale aumentava sempre anche la job EXP
+- Sotto il manuale scelto, la job EXP ha un suo moltiplicatore quando e' diverso da quello delle quest
+- Manuale: 50% o 100%?: i manuali al 50% gratis sono i 3 Battle Manual dell'inizio e i Field Manual delle Attendance Rewards
 
 ## [1.15] - 2026-10-23
 
-- Il pulsante della lingua esce dal menu ⚙ e sta in alto, subito prima dell'ingranaggio, con la
-  bandiera della lingua in cui si passa (`EN` in italiano, `IT` in inglese; sul telefono solo
-  la bandiera)
+- Il pulsante della lingua esce dal menu ⚙ e sta in alto, subito prima dell'ingranaggio, con la bandiera della lingua in cui si passa (`EN` in italiano, `IT` in inglese; sul telefono solo la bandiera)
 
 ## [1.14] - 2026-10-23
 
-- La pagina e' anche in inglese: con `English` nel menu ⚙ si passa all'inglese, e la scelta vale
-  per tutto il sito. I termini sono quelli del gioco e del wiki di uaRO (turn-in, hunting quest,
-  Transcendent, Battle Manual (50%) e Battle Manual (100%))
+- La pagina e' anche in inglese: con `English` nel menu ⚙ si passa all'inglese, e la scelta vale per tutto il sito. I termini sono quelli del gioco e del wiki di uaRO (turn-in, hunting quest, Transcendent, Battle Manual (50%) e Battle Manual (100%))
 - In inglese i numeri si scrivono all'inglese: 1,163,200 e 2.25
 
 ## [1.13] - 2026-10-21
