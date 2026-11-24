@@ -16,6 +16,7 @@ const STORAGE_KEY = "ragnarok-party/stato";
 const LOCALE = tr("it-IT", "en-GB");
 const NOME_GIOCATORE = tr("Giocatore", "Player");
 const NOME_JOLLY = tr("Account Gilda", "Guild Account");
+const ICONA_CHIUDI = '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>';
 
 const giocatoriEl = document.getElementById("giocatori");
 const jollyEl = document.getElementById("jolly");
@@ -211,7 +212,7 @@ function disegnaGiocatori() {
         return `<button class="btn small" type="button" data-g="${gi}" data-r="${k + 1}" data-azione="run" aria-pressed="${g.run.includes(k + 1)}" title="${titolo}" aria-label="${titolo}">${k + 1}</button>`;
       }).join("")}</span>
       ${[...Array(n)].map((_, ai) => campoClassi(g.account[ai] ?? "", `data-g="${gi}" data-a="${ai}" data-campo="account"`, `Account ${ai + 1}`)).join("")}
-      <button class="btn small danger" type="button" data-g="${gi}" data-azione="togli-giocatore" title="${tr("Togli il giocatore", "Remove the player")}" aria-label="${tr("Togli il giocatore", "Remove the player")}">✕</button>
+      <button class="btn small danger" type="button" data-g="${gi}" data-azione="togli-giocatore" title="${tr("Togli il giocatore", "Remove the player")}" aria-label="${tr("Togli il giocatore", "Remove the player")}">${ICONA_CHIUDI}</button>
     </div>`,
   );
   giocatoriEl.innerHTML = stato.giocatori.length ? intestazione + righe.join("") : `<p class="hint">${tr("Nessun giocatore.", "No players.")}</p>`;
@@ -224,7 +225,7 @@ function disegnaJolly() {
       <input type="checkbox" data-j="${ji}" data-campo="disponibile"${j.disponibile ? " checked" : ""} aria-label="${tr("Disponibile", "Available")}">
       <input type="text" class="nome" value="${escape(j.nome)}" placeholder="${NOME_JOLLY} ${ji + 1}" data-j="${ji}" data-campo="nome" aria-label="${tr("Nome dell'Account Gilda", "Guild Account name")}">
       ${campoClassi(j.classi, `data-j="${ji}" data-campo="classi"`, tr("Classi", "Classes"))}
-      <button class="btn small danger" type="button" data-j="${ji}" data-azione="togli-jolly" title="${tr("Togli l'Account Gilda", "Remove the Guild Account")}" aria-label="${tr("Togli l'Account Gilda", "Remove the Guild Account")}">✕</button>
+      <button class="btn small danger" type="button" data-j="${ji}" data-azione="togli-jolly" title="${tr("Togli l'Account Gilda", "Remove the Guild Account")}" aria-label="${tr("Togli l'Account Gilda", "Remove the Guild Account")}">${ICONA_CHIUDI}</button>
     </div>`,
   );
   jollyEl.innerHTML = stato.jolly.length ? intestazione + righe.join("") : `<p class="hint">${tr("Nessun Account Gilda.", "No Guild Accounts.")}</p>`;

@@ -9,9 +9,7 @@
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1B2420">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
 <script src="../gate.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../caratteri/caratteri.css">
 <style>
 /* Colori e caratteri sono quelli della guida Nuovo Mondo. */
 :root {
@@ -28,7 +26,7 @@
   --tip: #4E6B3A;
   --focus: #6A4C9C;
   --serif: "Alegreya", "Palatino Linotype", Palatino, Georgia, serif;
-  --sans: "Atkinson Hyperlegible", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --sans: "Atkinson Hyperlegible Next", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --mono: ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
   /* colori di elementi e razze negli HTML che scrive il motore (dal calcolatore di Thrice) */
   --text: var(--ink);
@@ -95,6 +93,7 @@ a.btn { text-decoration: none; }
 .more > summary { list-style: none; }
 .more > summary::-webkit-details-marker { display: none; }
 .more > summary.gear { padding-left: 9px; padding-right: 9px; font-size: 1.05rem; }
+.more > summary.gear svg { vertical-align: -3px; }
 .more-menu {
   position: absolute; right: 0; top: calc(100% + 6px); background: var(--surface);
   border: 1px solid var(--line); border-radius: 10px; padding: 6px; display: grid; gap: 4px; min-width: 220px;
@@ -204,7 +203,10 @@ input[type="checkbox"] { width: 18px; height: 18px; margin: 0; flex: none; accen
   min-width: 0; overflow: hidden;
 }
 .scelta > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.scelta::after { content: "\25BE"; color: var(--muted); flex: none; }
+.scelta::after {
+  content: ""; flex: none; width: 6px; height: 6px; margin-right: 2px;
+  border: solid var(--muted); border-width: 0 1.5px 1.5px 0; transform: translateY(-2px) rotate(45deg);
+}
 .scelta:disabled { opacity: .55; cursor: default; }
 dialog.ricerca {
   border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink);
@@ -241,8 +243,11 @@ dialog.finestra .sito { white-space: nowrap; }
 details.pannello { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); margin-bottom: 10px; }
 details.pannello > summary { cursor: pointer; padding: 10px 16px; font-weight: 700; list-style: none; display: flex; gap: 8px; align-items: center; }
 details.pannello > summary::-webkit-details-marker { display: none; }
-details.pannello > summary::before { content: "\25B8"; color: var(--muted); transition: transform .15s; }
-details.pannello[open] > summary::before { transform: rotate(90deg); }
+details.pannello > summary::before {
+  content: ""; flex: none; width: 6px; height: 6px; margin: 0 2px;
+  border: solid var(--muted); border-width: 0 1.5px 1.5px 0; transform: rotate(-45deg); transition: transform .15s;
+}
+details.pannello[open] > summary::before { transform: translateY(-2px) rotate(45deg); }
 /* il mostro scelto, visibile con il pannello del nemico chiuso */
 details.pannello:not([open]) > summary .scelto { font-weight: 400; color: var(--muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 details.pannello[open] > summary .scelto { display: none; }
@@ -354,7 +359,7 @@ table.confronto td.peggio { color: var(--warn); font-weight: 700; }
     <button class="btn" type="button" onclick="toggleLang()" data-lang><span data-en="IT">EN</span></button>
     <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, tema. Lo chiude gate.js. -->
     <details class="more">
-      <summary class="btn gear" title="Menu" aria-label="Menu">&#9881;</summary>
+      <summary class="btn gear" title="Menu" aria-label="Menu"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M6.77 3.05L6.96 1.08h2.08l.19 1.97 1.4.58 1.53-1.26 1.47 1.47-1.26 1.53.58 1.4 1.97.19v2.08l-1.97.19-.58 1.4 1.26 1.53-1.47 1.47-1.53-1.26-1.4.58-.19 1.97H6.96l-.19-1.97-1.4-.58-1.53 1.26-1.47-1.47 1.26-1.53-.58-1.4-1.97-.19V6.96l1.97-.19.58-1.4-1.26-1.53 1.47-1.47 1.53 1.26z"/><circle cx="8" cy="8" r="2"/></svg></summary>
       <div class="more-menu">
         <button class="btn" type="button" data-azione="nuova" data-en="Start over">Ricomincia da zero</button>
         <button class="btn" type="button" data-azione="esterno" data-en="Import from external">Importa da esterno</button>

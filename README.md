@@ -114,4 +114,5 @@ elaborarli.
 
 [AGPL-3.0](LICENSE), tranne le immagini in `lgp/` (lo zip del kit e l'anteprima),
 che non sono coperte dalla AGPL: le icone derivano da quelle delle skill di
-Ragnarok Online, di Gravity.
+Ragnarok Online, di Gravity. I caratteri in `caratteri/` (Alegreya e Atkinson
+Hyperlegible Next) hanno la loro licenza, la SIL Open Font License, nei file `OFL-*.txt`.

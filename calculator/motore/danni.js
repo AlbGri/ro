@@ -1886,7 +1886,7 @@ function formatEffectiveHP(hp) {
   return hp == Infinity
     ? "∞"
     : !isFinite(hp) || hp < 0
-      ? "—"
+      ? "—" // stile:consentito
       : Math.round(hp).toLocaleString("en-US");
 }
 function formatSurvivalHits(minimo, massimo) {

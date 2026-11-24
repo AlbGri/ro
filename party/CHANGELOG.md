@@ -2,6 +2,11 @@
 
 Le versioni della pagina `party/`.
 
+## [1.28] - 2026-11-24
+
+- I caratteri arrivano dal sito invece che da Google Fonts, e il testo usa Atkinson Hyperlegible Next, la versione nuova dello stesso carattere. L'ingranaggio del menu e' un disegno, uguale su ogni sistema
+- Il pulsante che toglie un giocatore o un Account Gilda ha una croce disegnata
+
 ## [1.27] - 2026-10-25
 
 - Il sito conta in forma anonima, senza cookie, le visite e alcune azioni (run ed elenco esportati, backup e ripristino), per sapere quanto si usa

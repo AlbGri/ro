@@ -2,6 +2,11 @@
 
 Le versioni della pagina `calculator/`.
 
+## [1.28] - 2026-11-24
+
+- I caratteri arrivano dal sito invece che da Google Fonts, e il testo usa Atkinson Hyperlegible Next, la versione nuova dello stesso carattere. L'ingranaggio del menu e' un disegno, uguale su ogni sistema
+- Le punte delle scelte con ricerca e dei pannelli sono disegnate
+
 ## [1.27] - 2026-11-08
 
 - Confronto fra due build: nuova voce "Tempo di lancio della skill", i secondi di lancio della

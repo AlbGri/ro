@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.6.3] - 2026-11-24
+
+- I caratteri arrivano dal sito invece che da Google Fonts, e il testo usa Atkinson Hyperlegible Next, la versione nuova dello stesso carattere. L'ingranaggio del menu e' un disegno, uguale su ogni sistema
+- La freccia fra Time e Spawn diventa una piccola punta disegnata, e la nota sul backup dice Menu > Backup dei dati. Solo nella versione web
+
 ## [1.6.2] - 2026-10-25
 
 - Il sito conta in forma anonima, senza cookie, le visite e alcune azioni (timer creati, avvisi attivati, app installata, backup e ripristino), per sapere quanto si usa. Solo nella versione web

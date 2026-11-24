@@ -176,7 +176,7 @@
       const style = document.createElement("style");
       style.textContent = `
         .solo-italiano {
-          margin: 0; padding: 8px 16px; text-align: center; font: 0.9rem/1.4 "Atkinson Hyperlegible", "Segoe UI", sans-serif;
+          margin: 0; padding: 8px 16px; text-align: center; font: 0.9rem/1.4 "Atkinson Hyperlegible Next", "Segoe UI", sans-serif;
           background: #6a4c9c; color: #fff;
         }`;
       document.head.append(style);
@@ -228,7 +228,7 @@
       padding: 24px;
       background: var(--gate-bg);
       color: var(--gate-ink);
-      font: 16px/1.5 "Atkinson Hyperlegible", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font: 16px/1.5 "Atkinson Hyperlegible Next", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
     @media (prefers-color-scheme: dark) {
       :root:not([data-theme="light"]) .gate {${DARK}

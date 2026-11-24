@@ -23,7 +23,7 @@
      chiaro va scurito, altrimenti giallo e verde non si leggono. */
   --cat-strength: 60%;
   --serif: "Alegreya", "Palatino Linotype", Palatino, Georgia, serif;
-  --sans: "Atkinson Hyperlegible", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --sans: "Atkinson Hyperlegible Next", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --radius: 10px;
   color-scheme: light;
 }
@@ -564,9 +564,14 @@ button {
 
 .times .time::after,
 .times .spawn::after {
-  content: "→";
-  margin-left: 6px;
-  color: var(--fg-muted);
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin: 0 3px 0 6px;
+  border: solid var(--fg-muted);
+  border-width: 0 1.5px 1.5px 0;
+  transform: translateY(-1px) rotate(-45deg);
 }
 
 .times .maxspawn:empty,

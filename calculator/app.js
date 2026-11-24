@@ -715,14 +715,14 @@ function valoreDi(m, motore) {
   }
   const testo = motore.testo(m.id).replace(/\s+/g, " ").trim();
   const numero = testo ? numeroDi(testo) : null;
-  let mostra = traduci(testo) || "—";
+  let mostra = traduci(testo) || "-";
   if (m.primo) mostra = testo.match(/^[-\d.]+\s*%?/)?.[0] ?? mostra;
   if (m.percento && numero !== null) mostra = arrotonda(numero) + "%";
   return { mostra: numeri(mostra), numero };
 }
 
 function differenza(m, a, b) {
-  if (a.numero === null || b.numero === null) return { testo: "—", diversa: a.mostra !== b.mostra };
+  if (a.numero === null || b.numero === null) return { testo: "-", diversa: a.mostra !== b.mostra };
   const d = b.numero - a.numero;
   if (Math.abs(d) < 1e-6) return { testo: "0", diversa: false };
   let testo = (d > 0 ? "+" : "") + arrotonda(d);

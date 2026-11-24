@@ -434,16 +434,16 @@ var USCITE = {
   aREFLECT2: "",
   nm066: "Average Dmg Received (w/dodge)",
   B_Ave2Atk: "0.78",
-  B_EffectiveHP: "—",
-  B_ExpectedEffectiveHP: "—",
-  B_SurvivalHits: "—",
+  B_EffectiveHP: "—", // stile:consentito
+  B_ExpectedEffectiveHP: "—", // stile:consentito
+  B_SurvivalHits: "—", // stile:consentito
   A_KakutyouData: "",
 };
 var uscite = Object.assign({}, USCITE);
 function scrivi(id, valore) {
   uscite[id] = "" + valore;
 }
-var ENTITA = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: "\u00a0", times: "×", rarr: "→", larr: "←", middot: "·", hellip: "…", mdash: "—", ndash: "–", deg: "°", plusmn: "±", frac12: "½" };
+var ENTITA = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: "\u00a0", times: "×", rarr: "→", larr: "←", middot: "·", hellip: "…", mdash: "—", ndash: "–", deg: "°", plusmn: "±", frac12: "½" }; // stile:consentito
 // il testo di un risultato come lo vede una persona: senza tag, entita' lette, spazi compressi
 function testo(id) {
   var html = uscite[id];

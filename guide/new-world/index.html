@@ -9,9 +9,7 @@
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1B2420">
 <link rel="icon" href="../../icon.svg" type="image/svg+xml">
 <script src="../../gate.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../caratteri/caratteri.css">
 <style>
 :root {
   --bg: #E6EBE2;
@@ -31,7 +29,7 @@
   --tip: #4E6B3A;
   --focus: #6A4C9C;
   --serif: "Alegreya", "Palatino Linotype", Palatino, Georgia, serif;
-  --sans: "Atkinson Hyperlegible", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --sans: "Atkinson Hyperlegible Next", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --mono: ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
   --topbar-h: 64px;
   color-scheme: light;
@@ -94,6 +92,7 @@ a.btn { text-decoration: none; }
 .more > summary { list-style: none; }
 .more > summary::-webkit-details-marker { display: none; }
 .more > summary.gear { padding-left: 9px; padding-right: 9px; font-size: 1.05rem; }
+.more > summary.gear svg { vertical-align: -3px; }
 .more-menu {
   position: absolute; right: 0; top: calc(100% + 6px); background: var(--surface);
   border: 1px solid var(--line); border-radius: 10px; padding: 6px; display: grid; gap: 4px; min-width: 220px;
@@ -350,7 +349,7 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
     <div class="lang-menu">
       <button class="btn" type="button" onclick="window.toggleLang && toggleLang()" data-lang><span data-en="IT">EN</span></button>
       <details class="more">
-        <summary class="btn gear" title="Menu" aria-label="Menu">&#9881;</summary>
+        <summary class="btn gear" title="Menu" aria-label="Menu"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M6.77 3.05L6.96 1.08h2.08l.19 1.97 1.4.58 1.53-1.26 1.47 1.47-1.26 1.53.58 1.4 1.97.19v2.08l-1.97.19-.58 1.4 1.26 1.53-1.47 1.47-1.53-1.26-1.4.58-.19 1.97H6.96l-.19-1.97-1.4-.58-1.53 1.26-1.47-1.47 1.26-1.53-.58-1.4-1.97-.19V6.96l1.97-.19.58-1.4-1.26-1.53 1.47-1.47 1.53 1.26z"/><circle cx="8" cy="8" r="2"/></svg></summary>
         <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, tema. -->
         <div class="more-menu">
           <button class="btn" id="btnClearNotes" type="button" data-en="Delete all notes">Cancella tutte le note</button>
@@ -408,7 +407,7 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
             <li data-en="Check the steps you have done. Go to the next step takes you to the first one not done; click it again to skip the ones left behind.">Spunta gli step fatti. Vai al prossimo passo ti porta al primo non fatto; cliccalo di nuovo per saltare quelli lasciati indietro.</li>
             <li data-en="In dialogues choose the underlined option, like «Yes.»; the ones in high quotes, like “No.”, are to be avoided.">Nei dialoghi scegli l'opzione sottolineata, come «Yes.»; quelle tra virgolette alte, come “No.”, sono da evitare.</li>
             <li data-en="A step with the optional label does not count in the progress. If something does not add up, write it in the step's note and use Export notes for the admin.">Uno step con l'etichetta facoltativo non conta nel progresso. Se qualcosa non torna, scrivilo nella nota dello step e usa Esporta note per l'admin.</li>
-            <li data-en="Checks and notes stay in this browser. If you clear the browser data they are lost: make a backup first from the ⚙ menu at the top right.">Spunte e note restano in questo browser. Se cancelli i dati del browser si perdono: prima fai un backup dal menu ⚙ in alto a destra.</li>
+            <li data-en="Checks and notes stay in this browser. If you clear the browser data they are lost: make a backup first from the menu at the top right.">Spunte e note restano in questo browser. Se cancelli i dati del browser si perdono: prima fai un backup dal menu in alto a destra.</li>
           </ul>
         </div>
         <div>
@@ -445,7 +444,7 @@ dialog textarea { width: 100%; min-height: 260px; padding: 10px; border: 1px sol
 </dialog>
 
 <script>
-const GUIDE_VERSION = "10.2";
+const GUIDE_VERSION = "10.3";
 const STORAGE_KEY = "uaro-nw-guide";
 
 const QUESTS = {
@@ -2199,7 +2198,7 @@ const PHASES = [
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ guide: "uaro-nw", v: GUIDE_VERSION, ids: IDS_VERSION, done: state.done, notes: state.notes, hide: state.hide, open: state.open }));
     } catch (e) {
-      if (storageOk) { storageOk = false; toast(T("Questo browser non salva i progressi: usa ⚙, Backup dei dati", "This browser does not save progress: use ⚙, Data backup")); }
+      if (storageOk) { storageOk = false; toast(T("Questo browser non salva i progressi: usa Menu > Backup dei dati", "This browser does not save progress: use Menu > Data backup")); }
     }
   }
 
@@ -2699,7 +2698,7 @@ const PHASES = [
     lines.push(okVer.length ? okVer.join(", ") : T("(nessuno)", "(none)"));
     if (withBackup) {
       lines.push("");
-      lines.push(T("BACKUP DEI PROGRESSI (per recuperare spunte e note: ⚙, Ripristina da backup, e incolla questo export)", "PROGRESS BACKUP (to recover checks and notes: ⚙, Restore from backup, and paste this export)"));
+      lines.push(T("BACKUP DEI PROGRESSI (per recuperare spunte e note: Menu > Ripristina da backup, e incolla questo export)", "PROGRESS BACKUP (to recover checks and notes: Menu > Restore from backup, and paste this export)"));
       lines.push(backupText());
     }
     return lines.join("\n");

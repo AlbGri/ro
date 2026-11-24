@@ -9,9 +9,7 @@
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1B2420">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
 <script src="../gate.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../caratteri/caratteri.css">
 <style>
 /* Colori e caratteri sono quelli della guida Nuovo Mondo. */
 :root {
@@ -28,7 +26,7 @@
   --tip: #4E6B3A;
   --focus: #6A4C9C;
   --serif: "Alegreya", "Palatino Linotype", Palatino, Georgia, serif;
-  --sans: "Atkinson Hyperlegible", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --sans: "Atkinson Hyperlegible Next", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --mono: ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
   color-scheme: light;
 }
@@ -80,6 +78,7 @@ a.btn { text-decoration: none; }
 .more > summary { list-style: none; }
 .more > summary::-webkit-details-marker { display: none; }
 .more > summary.gear { padding-left: 9px; padding-right: 9px; font-size: 1.05rem; }
+.more > summary.gear svg { vertical-align: -3px; }
 .more-menu {
   position: absolute; right: 0; top: calc(100% + 6px); background: var(--surface);
   border: 1px solid var(--line); border-radius: 10px; padding: 6px; display: grid; gap: 4px; min-width: 220px;
@@ -149,6 +148,7 @@ input[type="text"], select {
   .riga [data-campo="account"]::placeholder { color: transparent; }
 }
 .riga > .btn { justify-self: center; }
+.riga > .btn svg { vertical-align: -2px; }
 #dubbi { display: grid; gap: 8px; margin-bottom: 12px; }
 #dubbi:empty { display: none; }
 #dubbi .note-line { margin: 0; }
@@ -218,7 +218,7 @@ input[type="text"], select {
     <button class="btn" type="button" onclick="toggleLang()" data-lang><span data-en="IT">EN</span></button>
     <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, tema. Lo chiude gate.js. -->
     <details class="more">
-      <summary class="btn gear" title="Menu" aria-label="Menu">&#9881;</summary>
+      <summary class="btn gear" title="Menu" aria-label="Menu"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M6.77 3.05L6.96 1.08h2.08l.19 1.97 1.4.58 1.53-1.26 1.47 1.47-1.26 1.53.58 1.4 1.97.19v2.08l-1.97.19-.58 1.4 1.26 1.53-1.47 1.47-1.53-1.26-1.4.58-.19 1.97H6.96l-.19-1.97-1.4-.58-1.53 1.26-1.47-1.47 1.26-1.53-.58-1.4-1.97-.19V6.96l1.97-.19.58-1.4-1.26-1.53 1.47-1.47 1.53 1.26z"/><circle cx="8" cy="8" r="2"/></svg></summary>
       <div class="more-menu">
         <button class="btn" type="button" data-azione="ricomincia" data-en="Start over">Ricomincia da zero</button>
         <button class="btn" type="button" data-azione="esporta" data-en="Data backup">Backup dei dati</button>
@@ -243,7 +243,7 @@ input[type="text"], select {
       <li id="ordine"></li>
       <li data-en="Often more than one arrangement gives the same result: with › above the runs the page finds another one, with ‹ you go back. Arrangement 1 is the page's; when the data changes it starts again from 1.">Spesso più combinazioni danno lo stesso risultato: con › sopra le run la pagina ne cerca un'altra, con ‹ torni indietro. La combinazione 1 è quella della pagina; se i dati cambiano si riparte dalla 1.</li>
       <li data-en="To enter many players at once: under Players, Edit the list, and paste at the bottom the accounts and classes as they write them on Discord.">Per inserire tanti giocatori insieme: sotto Giocatori, Modifica l'elenco, e incolla in fondo gli account e le classi come li scrivono su Discord.</li>
-      <li data-en="The data stays in this browser: to keep it or pass it to another one, use the ⚙ menu at the top right, Data backup.">I dati restano in questo browser: per conservarli o passarli a un altro usa il menu ⚙ in alto a destra, Backup dei dati.</li>
+      <li data-en="The data stays in this browser: to keep it or pass it to another one, use Data backup, in the menu at the top right.">I dati restano in questo browser: per conservarli o passarli a un altro usa Backup dei dati, nel menu in alto a destra.</li>
     </ul>
   </section>
 

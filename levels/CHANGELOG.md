@@ -2,6 +2,10 @@
 
 Le versioni della pagina `levels/`.
 
+## [1.22] - 2026-11-24
+
+- I caratteri arrivano dal sito invece che da Google Fonts, e il testo usa Atkinson Hyperlegible Next, la versione nuova dello stesso carattere. L'ingranaggio del menu e' un disegno, uguale su ogni sistema
+
 ## [1.21] - 2026-11-07
 
 - Nuova opzione "Costo del tempo di una consegna" (5.000 zeny se non si cambia): il piano conta

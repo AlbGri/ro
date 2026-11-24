@@ -19,12 +19,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="stylesheet" href="../caratteri/caratteri.css" />
     <link rel="stylesheet" href="style.css" />
     <script src="../gate.js"></script>
   </head>
@@ -65,7 +60,7 @@
           <button type="button" class="ghost compact" id="btn-lang" data-lang><span data-en="IT">EN</span></button>
           <!-- Menu ⚙, uguale in ogni pagina: voci della pagina, backup, tema. Lo chiude gate.js. -->
           <details class="more">
-            <summary class="gear" title="Menu" aria-label="Menu">&#9881;</summary>
+            <summary class="gear" title="Menu" aria-label="Menu"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M6.77 3.05L6.96 1.08h2.08l.19 1.97 1.4.58 1.53-1.26 1.47 1.47-1.26 1.53.58 1.4 1.97.19v2.08l-1.97.19-.58 1.4 1.26 1.53-1.47 1.47-1.53-1.26-1.4.58-.19 1.97H6.96l-.19-1.97-1.4-.58-1.53 1.26-1.47-1.47 1.26-1.53-.58-1.4-1.97-.19V6.96l1.97-.19.58-1.4-1.26-1.53 1.47-1.47 1.53 1.26z"/><circle cx="8" cy="8" r="2"/></svg></summary>
             <div class="more-menu">
               <button type="button" class="ghost" id="btn-settings" data-en="Settings">Impostazioni</button>
               <button type="button" class="ghost" id="btn-clear" data-en="Clear expired">Togli gli scaduti</button>
@@ -252,10 +247,10 @@
 
       <p
         class="hint"
-        data-en="Timers stay in this browser only. Nothing is uploaded, and clearing the site data deletes them: with ⚙, Data backup you save a file to move them to another device or to the desktop app."
+        data-en="Timers stay in this browser only. Nothing is uploaded, and clearing the site data deletes them: with Menu > Data backup you save a file to move them to another device or to the desktop app."
       >
         I timer restano solo in questo browser. Niente viene inviato, e
-        cancellando i dati del sito si perdono: con ⚙, Backup dei dati salvi un
+        cancellando i dati del sito si perdono: con Menu > Backup dei dati salvi un
         file per portarli su un altro dispositivo o nell'applicazione desktop.
       </p>
       <p
