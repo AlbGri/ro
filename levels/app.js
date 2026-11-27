@@ -145,6 +145,10 @@ function leggi() {
 
 const nomeClasse = (classe) => (classe === 1 ? tr("prima classe", "first class") : tr("seconda classe", "second class"));
 const statoJob = (rinato, s) => `${s.livello} (${percento(percentualeJob(rinato, s))}%)`;
+// "all'84", "dall'8": davanti ai numeri che si leggono con una vocale (1, 8, 11, 18, 80-89).
+const elide = (n) => [1, 8, 11, 18].includes(n) || (n >= 80 && n <= 89);
+const al = (n) => (elide(n) ? "all'" : "al ");
+const dal = (n, maiuscola) => (maiuscola ? "D" : "d") + al(n);
 
 const chip = (testo) => `<button class="chip" type="button" data-copy="${escape(testo)}">${escape(testo)}</button>`;
 
@@ -172,8 +176,8 @@ function disegnaPassi(passi, tabella, rinato) {
 function disegnaTappa(numeroTappa, tappa, scelte, tabella) {
   const stato = (s) => `${s.livello} (${percento(percentualeDi(tabella, s))}%)`;
   const intervallo =
-    `<div class="stage-range">${tr("Dal", "From")} ${stato(tappa.da)} ${tr("al", "to")} ${stato(tappa.a)}</div>` +
-    `<div class="stage-range">${tr(`Job della ${nomeClasse(tappa.jobDa.classe)}: dal`, `Job Level (${nomeClasse(tappa.jobDa.classe)}): from`)} ${statoJob(scelte.rinato, tappa.jobDa)} ${tr("al", "to")} ${statoJob(scelte.rinato, tappa.jobA)}</div>`;
+    `<div class="stage-range">${tr(dal(tappa.da.livello, true), "From ")}${stato(tappa.da)} ${tr(al(tappa.a.livello), "to ")}${stato(tappa.a)}</div>` +
+    `<div class="stage-range">${tr(`Job della ${nomeClasse(tappa.jobDa.classe)}: ${dal(tappa.jobDa.livello)}`, `Job Level (${nomeClasse(tappa.jobDa.classe)}): from `)}${statoJob(scelte.rinato, tappa.jobDa)} ${tr(al(tappa.jobA.livello), "to ")}${statoJob(scelte.rinato, tappa.jobA)}</div>`;
   const parti = [];
   let titolo;
 
@@ -182,12 +186,12 @@ function disegnaTappa(numeroTappa, tappa, scelte, tabella) {
     titolo = tr(`${q.oggetto} a ${q.npc}`, `${q.oggetto} to ${q.npc}`);
     const totale = tappa.consegne * q.quantita;
     let testo = tr(
-      `${tappa.consegne} consegn${tappa.consegne === 1 ? "a" : "e"} da ${q.quantita} ${q.oggetto}: ${numero(totale)} oggetti.`,
-      `${tappa.consegne} ${plurale(tappa.consegne, "turn-in", "turn-ins")} of ${q.quantita} ${q.oggetto}: ${numero(totale)} items.`,
+      `${tappa.consegne} consegn${tappa.consegne === 1 ? "a" : "e"} da ${q.quantita} ${q.oggetto}, in tutto ${numero(totale)} oggetti.`,
+      `${tappa.consegne} ${plurale(tappa.consegne, "turn-in", "turn-ins")} of ${q.quantita} ${q.oggetto}, ${numero(totale)} items in all.`,
     );
     if (tappa.dallInventario > 0) testo += tr(` Ne usi ${numero(tappa.dallInventario)} dei tuoi.`, ` You use ${numero(tappa.dallInventario)} of yours.`);
     testo += tappa.comprati > 0
-      ? tr(` Da comprare: ${numero(tappa.comprati)}, per ${numero(tappa.zeny)} zeny.`, ` To buy: ${numero(tappa.comprati)}, for ${numero(tappa.zeny)} zeny.`)
+      ? tr(` Ne compri ${numero(tappa.comprati)} per ${numero(tappa.zeny)} zeny.`, ` You buy ${numero(tappa.comprati)} for ${numero(tappa.zeny)} zeny.`)
       : tr(" Non serve comprarne.", " No need to buy any.");
     parti.push(`<p>${escape(testo)}</p>`);
 
@@ -219,8 +223,8 @@ function disegnaTappa(numeroTappa, tappa, scelte, tabella) {
     if (scelte.rinato) {
       parti.push(
         tr(
-          `<p class="note-line tip"><strong>Trucco:</strong> prendi la quest prima di rinascere (si prende ai livelli ${c.min}-${c.max}) e uccidi i mostri; da rinato la consegni qui, a qualsiasi livello.</p>`,
-          `<p class="note-line tip"><strong>Trick:</strong> take the quest before rebirth (it is taken at levels ${c.min}-${c.max}) and kill the monsters; as Transcendent you turn it in here, at any level.</p>`,
+          `<p class="note-line tip">Prendi la quest prima di rinascere (si prende ai livelli ${c.min}-${c.max}) e uccidi i mostri; da rinato la consegni qui, a qualsiasi livello.</p>`,
+          `<p class="note-line tip">Take the quest before rebirth (it is taken at levels ${c.min}-${c.max}) and kill the monsters; as Transcendent you turn it in here, at any level.</p>`,
         ),
       );
     }
@@ -247,8 +251,8 @@ function disegnaTappa(numeroTappa, tappa, scelte, tabella) {
   if (alMassimo.length > 0) {
     parti.push(
       tr(
-        `<p class="note-line warn"><strong>Job EXP sprecata:</strong> al job ${massimo} della ${nomeClasse(tappa.jobA.classe)}, il massimo, la job EXP delle consegne non serve più. In questa tappa succede in ${alMassimo.length} consegn${alMassimo.length === 1 ? "a" : "e"}: ${numero(persaAlMassimo)} job EXP.</p>`,
-        `<p class="note-line warn"><strong>Wasted Job EXP:</strong> at Job Level ${massimo} of the ${nomeClasse(tappa.jobA.classe)}, the maximum, the Job EXP of the turn-ins is no longer useful. In this stage it happens in ${alMassimo.length} ${plurale(alMassimo.length, "turn-in", "turn-ins")}: ${numero(persaAlMassimo)} Job EXP.</p>`,
+        `<p class="note-line warn"><strong>Job EXP sprecata:</strong> al job ${massimo} della ${nomeClasse(tappa.jobA.classe)}, il massimo, la job EXP delle consegne non serve più. In questa tappa succede in ${alMassimo.length} consegn${alMassimo.length === 1 ? "a" : "e"}, per ${numero(persaAlMassimo)} job EXP.</p>`,
+        `<p class="note-line warn"><strong>Wasted Job EXP:</strong> at Job Level ${massimo} of the ${nomeClasse(tappa.jobA.classe)}, the maximum, the Job EXP of the turn-ins is no longer useful. In this stage it happens in ${alMassimo.length} ${plurale(alMassimo.length, "turn-in", "turn-ins")}, for ${numero(persaAlMassimo)} Job EXP.</p>`,
       ),
     );
   }
@@ -283,8 +287,8 @@ function disegnaClasse(numeroTappa, tappa, tabella) {
         <h3 class="stage-title">${tr("Cambia classe", "Job change")}</h3>
         <div class="stage-range">${tr(`Al livello ${base}, job ${tappa.job.livello} della prima classe`, `At level ${base}, Job Level ${tappa.job.livello} of the first class`)}</div>
         <p class="note-line warn">${tr(
-          "<strong>Prima della prossima consegna:</strong> fai il cambio di classe. Il job riparte da 1 e la job EXP delle consegne torna a servire; se continui a consegnare senza cambiare, va sprecata.",
-          "<strong>Before the next turn-in:</strong> do the job change. The Job Level starts again from 1 and the Job EXP of the turn-ins is useful again; if you keep turning in without changing, it is wasted.",
+          "<strong>Fai il cambio di classe prima della prossima consegna.</strong> Il job riparte da 1 e la job EXP delle consegne torna a servire; se continui a consegnare senza cambiare, va sprecata.",
+          "<strong>Do the job change before the next turn-in.</strong> The Job Level starts again from 1 and the Job EXP of the turn-ins is useful again; if you keep turning in without changing, it is wasted.",
         )}</p>
         ${persa}
       </div>
@@ -339,10 +343,10 @@ function disegnaManuali(scelte) {
   const secondo = possibili[1];
   const verdetto = secondo
     ? tr(
-        `Conviene ${conviene(migliore.manuale)}: rispetto ${rispetto(secondo.manuale)} risparmi ${numero(secondo.totale - migliore.totale)} zeny.`,
-        `Best choice: ${conviene(migliore.manuale)}. Compared with ${rispetto(secondo.manuale)} you save ${numero(secondo.totale - migliore.totale)} zeny.`,
+        `Conviene ${conviene(migliore.manuale)}, e rispetto ${rispetto(secondo.manuale)} risparmi ${numero(secondo.totale - migliore.totale)} zeny.`,
+        `The best choice is ${conviene(migliore.manuale)}, and compared with ${rispetto(secondo.manuale)} you save ${numero(secondo.totale - migliore.totale)} zeny.`,
       )
-    : tr(`Conviene ${conviene(migliore.manuale)}.`, `Best choice: ${conviene(migliore.manuale)}.`);
+    : tr(`Conviene ${conviene(migliore.manuale)}.`, `The best choice is ${conviene(migliore.manuale)}.`);
   return `<table><thead><tr><th>${tr("Manuale", "Manual")}</th><th>${tr("Oggetti", "Items")}</th><th>${tr("Manuali", "Manuals")}</th><th>${tr("Totale", "Total")}</th></tr></thead><tbody>${tabella.join("")}</tbody></table>
     <p class="verdetto">${verdetto}</p>`;
 }
@@ -379,8 +383,8 @@ function aggiorna() {
   if (daiMostri) {
     if (scelte.obiettivo <= minimo) {
       pianoEl.innerHTML = `<p class="empty">${tr(
-        `Le quest cominciano dal livello ${minimo}: fino al ${scelte.obiettivo} si sale solo uccidendo mostri.`,
-        `The quests start at level ${minimo}: up to ${scelte.obiettivo} you level up only by killing monsters.`,
+        `Fino ${al(scelte.obiettivo)}${scelte.obiettivo} si sale solo uccidendo mostri, perché le quest cominciano dal livello ${minimo}.`,
+        `Up to ${scelte.obiettivo} you level up only by killing monsters, because the quests start at level ${minimo}.`,
       )}</p>`;
       confronto.innerHTML = "";
       return;
@@ -403,13 +407,13 @@ function aggiorna() {
   const html = [
     daiMostri
       ? tr(
-          `<p class="note-line tip"><strong>Fino al ${minimo}:</strong> sotto il livello ${minimo} non ci sono quest ripetibili, si sale uccidendo mostri. Il piano parte dal ${minimo} allo 0%.</p>`,
-          `<p class="note-line tip"><strong>Up to ${minimo}:</strong> below level ${minimo} there are no repeatable quests, you level up by killing monsters. The plan starts from ${minimo} at 0%.</p>`,
+          `<p class="note-line tip">Sotto il livello ${minimo} non ci sono quest ripetibili e si sale uccidendo mostri. Il piano parte dal ${minimo} allo 0%.</p>`,
+          `<p class="note-line tip">Below level ${minimo} there are no repeatable quests and you level up by killing monsters. The plan starts from ${minimo} at 0%.</p>`,
         )
       : "",
     tr(
-      `<p class="summary">Dal ${stato(piano.partenza)} al ${stato(piano.arrivo)}: <strong>${numero(piano.consegne)}</strong> consegne in ${tappe} tapp${tappe === 1 ? "a" : "e"}, <strong>${numero(piano.zeny)}</strong> zeny di oggetti. Alla fine: job ${statoJob(scelte.rinato, job.finale)} della ${nomeClasse(job.finale.classe)}.</p>`,
-      `<p class="summary">From ${stato(piano.partenza)} to ${stato(piano.arrivo)}: <strong>${numero(piano.consegne)}</strong> ${plurale(piano.consegne, "turn-in", "turn-ins")} in ${tappe} ${plurale(tappe, "stage", "stages")}, <strong>${numero(piano.zeny)}</strong> zeny of items. At the end: Job Level ${statoJob(scelte.rinato, job.finale)} of the ${nomeClasse(job.finale.classe)}.</p>`,
+      `<p class="summary">${dal(piano.partenza.livello, true)}${stato(piano.partenza)} ${al(piano.arrivo.livello)}${stato(piano.arrivo)} servono <strong>${numero(piano.consegne)}</strong> consegne in ${tappe} tapp${tappe === 1 ? "a" : "e"} e <strong>${numero(piano.zeny)}</strong> zeny di oggetti. Alla fine arrivi al job ${statoJob(scelte.rinato, job.finale)} della ${nomeClasse(job.finale.classe)}.</p>`,
+      `<p class="summary">From ${stato(piano.partenza)} to ${stato(piano.arrivo)} you need <strong>${numero(piano.consegne)}</strong> ${plurale(piano.consegne, "turn-in", "turn-ins")} in ${tappe} ${plurale(tappe, "stage", "stages")} and <strong>${numero(piano.zeny)}</strong> zeny of items. At the end you reach Job Level ${statoJob(scelte.rinato, job.finale)} of the ${nomeClasse(job.finale.classe)}.</p>`,
     ),
   ];
   html.push(disegnaSpesa(piano.spesa, scelte));

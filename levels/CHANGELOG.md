@@ -2,18 +2,23 @@
 
 Le versioni della pagina `levels/`.
 
+## [1.23] - 2026-11-28
+
+- Spiegazioni della pagina piu' semplici, nelle due lingue; la sezione dei manuali si chiama «Manuale al 50% o al 100%?»
+- Corretti "al 84", "dal 80" e simili in "all'84", "dall'80"
+
 ## [1.22] - 2026-11-24
 
 - I caratteri arrivano dal sito invece che da Google Fonts, e il testo usa Atkinson Hyperlegible Next, la versione nuova dello stesso carattere. L'ingranaggio del menu e' un disegno, uguale su ogni sistema
 
 ## [1.21] - 2026-11-07
 
-- Nuova opzione "Costo del tempo di una consegna" (5.000 zeny se non si cambia): il piano conta ogni consegna come quella cifra, che non entra nel totale, e preferisce le quest che danno piu' EXP per consegna. Da non rinato dal 40 con il Field Manual 100% le Acorn scendono da 91 a 34 consegne e si passa prima alle Anolian Skin, per circa 74.000 zeny in piu'. Con 0 il piano torna quello di prima
-- Nella lista della spesa gli oggetti venduti da un NPC hanno anche il mercato dei giocatori (@ws): se scrivi un prezzo piu' basso di quello dell'NPC, il mercato viene per primo. Le Antelope Horn, per esempio, dai giocatori spesso costano meno
+- Nuova opzione "Costo del tempo di una consegna" (5.000 zeny se non si cambia). Il piano conta ogni consegna come quella cifra, che non entra nel totale, e preferisce le quest che danno piu' EXP per consegna. Da non rinato dal 40 con il Field Manual 100% le Acorn scendono da 91 a 34 consegne e si passa prima alle Anolian Skin, per circa 74.000 zeny in piu'. Con 0 il piano torna quello di prima
+- Nella lista della spesa gli oggetti venduti da un NPC hanno anche il mercato dei giocatori (@ws), che viene per primo se scrivi un prezzo piu' basso di quello dell'NPC. Le Antelope Horn, per esempio, dai giocatori spesso costano meno
 
 ## [1.20] - 2026-10-26
 
-- "Completo il livello uccidendo mostri" vale solo quando la consegna successiva perderebbe EXP (una consegna non fa salire piu' di un livello): con le quest che danno tanto, come Anolian Skin, i mostri finiscono il livello prima della consegna; con quelle che danno poco, come Acorn, si consegna e basta. Prima il piano mandava a uccidere mostri appena si era sotto la soglia, anche quando la consegna non sprecava niente
+- "Completo il livello uccidendo mostri" vale solo quando la consegna successiva perderebbe EXP (una consegna non fa salire piu' di un livello). Con le quest che danno tanto, come Anolian Skin, i mostri finiscono il livello prima della consegna; con quelle che danno poco, come Acorn, si consegna e basta. Prima il piano mandava a uccidere mostri appena si era sotto la soglia, anche quando la consegna non sprecava niente
 
 ## [1.19] - 2026-10-25
 
@@ -21,17 +26,17 @@ Le versioni della pagina `levels/`.
 
 ## [1.18] - 2026-10-24
 
-- Il Field Manual 100% aumenta anche la job EXP, come visto in gioco (Sharp Leaf nel weekend: x3 sia base sia job). Prima la pagina lo contava solo per la base e prevedeva un livello job piu' basso. Il Field Manual (50%) resta solo base finche' non e' verificato
+- Il Field Manual 100% aumenta anche la job EXP, come visto in gioco (Sharp Leaf nel weekend, x3 sia base sia job). Prima la pagina lo contava solo per la base e prevedeva un livello job piu' basso. Il Field Manual (50%) resta solo base finche' non e' verificato
 
 ## [1.17] - 2026-10-23
 
-- Menu ⚙: "Ricomincia da zero", come nel calcolatore, rimette tutti i campi ai valori iniziali (chiede conferma; prima si puo' fare il Backup dei dati)
+- Nel menu ⚙, "Ricomincia da zero" rimette tutti i campi ai valori iniziali, come nel calcolatore (chiede conferma; prima si puo' fare il Backup dei dati)
 
 ## [1.16] - 2026-10-23
 
-- I manuali si chiamano come nel gioco, con le loro differenze (wiki di uaRO, Server Info): nelle Opzioni si sceglie fra Battle Manual (50% a EXP base e job), Field Manual (50%, solo base) e Field Manual 100% (solo base). Prima il manuale aumentava sempre anche la job EXP
+- I manuali si chiamano come nel gioco, con le loro differenze (wiki di uaRO, Server Info). Nelle Opzioni si sceglie fra Battle Manual (50% a EXP base e job), Field Manual (50%, solo base) e Field Manual 100% (solo base). Prima il manuale aumentava sempre anche la job EXP
 - Sotto il manuale scelto, la job EXP ha un suo moltiplicatore quando e' diverso da quello delle quest
-- Manuale: 50% o 100%?: i manuali al 50% gratis sono i 3 Battle Manual dell'inizio e i Field Manual delle Attendance Rewards
+- Nel confronto dei manuali, quelli al 50% gratis sono i 3 Battle Manual dell'inizio e i Field Manual delle Attendance Rewards
 
 ## [1.15] - 2026-10-23
 
@@ -40,7 +45,7 @@ Le versioni della pagina `levels/`.
 ## [1.14] - 2026-10-23
 
 - La pagina e' anche in inglese: con `English` nel menu ⚙ si passa all'inglese, e la scelta vale per tutto il sito. I termini sono quelli del gioco e del wiki di uaRO (turn-in, hunting quest, Transcendent, Battle Manual (50%) e Battle Manual (100%))
-- In inglese i numeri si scrivono all'inglese: 1,163,200 e 2.25
+- In inglese i numeri si scrivono all'inglese, come 1,163,200 e 2.25
 
 ## [1.13] - 2026-10-21
 
@@ -52,12 +57,12 @@ Le versioni della pagina `levels/`.
 
 ## [1.11] - 2026-10-18
 
-- Bill of Birds: il prezzo predefinito è quello con Discount, 48 zeny; accanto c'è quello senza, 64
+- Il prezzo predefinito delle Bill of Birds è quello con Discount, 48 zeny, e accanto c'è quello senza, 64
 
 ## [1.10] - 2026-10-18
 
 - In alto a destra il menu Altro, uguale in tutte le pagine del sito, con Backup dei dati, Ripristina da backup, English e Cambia tema chiaro/scuro
-- Backup e ripristino delle scelte in un file: prima restavano solo nel browser
+- Backup e ripristino delle scelte in un file, che prima restavano solo nel browser
 - La pagina resta in italiano; in inglese lo dice in cima
 - Sotto il livello 10, dove non ci sono quest ripetibili, il piano parte dal 10 allo 0% invece di non comparire, e compare anche il confronto dei manuali
 
@@ -67,11 +72,11 @@ Le versioni della pagina `levels/`.
 
 ## [1.8] - 2026-10-18
 
-- Il bonus del weekend moltiplica quello del manuale invece di sommarsi: weekend e manuale al 50% fanno ×2,25, weekend e manuale al 100% ×3. Nel weekend il piano chiede meno oggetti, come in gioco
+- Il bonus del weekend moltiplica quello del manuale invece di sommarsi. Weekend e manuale al 50% fanno ×2,25, weekend e manuale al 100% ×3. Nel weekend il piano chiede meno oggetti, come in gioco
 
 ## [1.7] - 2026-10-18
 
-- Nuova sezione «Manuale: 50% o 100%?»: con il prezzo del Poring Coin, i manuali al 50% che hai e le mezz'ore di consegne, confronta il piano senza manuale, con il 50% e con il 100%, oggetti e manuali compresi, e dice quale conviene
+- Nuova sezione «Manuale: 50% o 100%?», che con il prezzo del Poring Coin, i manuali al 50% che hai e le mezz'ore di consegne confronta il piano senza manuale, con il 50% e con il 100%, oggetti e manuali compresi, e dice quale conviene
 
 ## [1.6] - 2026-10-18
 
@@ -94,14 +99,14 @@ Le versioni della pagina `levels/`.
 
 ## [1.2] - 2026-10-18
 
-- Tolti il campo della caccia iniziale e la casella del mercenario: conta solo il livello attuale, con una nota sui Les del Moscovia Dungeon con il Bow Mercenary
+- Tolti il campo della caccia iniziale e la casella del mercenario. Conta solo il livello attuale, con una nota sui Les del Moscovia Dungeon con il Bow Mercenary
 - Bonus EXP, livello completato con i mostri e peso di un cambio di quest stanno insieme nel riquadro Opzioni
-- Nuovo riquadro Cacce pronte: Goat, Ice Titan e Medusa, da 50 a 150 uccisi. Una caccia completata si consegna a qualsiasi livello, anche sotto il minimo per prenderla: il piano sceglie quando, e la consegna in una tappa sola
+- Nuovo riquadro Cacce pronte, per Goat, Ice Titan e Medusa da 50 a 150 uccisi. Una caccia completata si consegna a qualsiasi livello, anche sotto il minimo per prenderla, e il piano sceglie quando consegnarla, in una tappa sola
 - Il cambio di classe compare prima della consegna successiva, senza lasciare tappe vuote
 
 ## [1.1] - 2026-10-18
 
-- Senza scrivere niente il piano dice quanti oggetti comprare: un prezzo lasciato vuoto vale quello dell'NPC o una stima
+- Senza scrivere niente il piano dice quanti oggetti comprare, perche' un prezzo lasciato vuoto vale quello dell'NPC o una stima
 - Lista della spesa in cima al piano, con quanti oggetti comprare in tutto e dove
 - Restano solo le quest di Bill of Birds, Acorn, Huge Leaf, Anolian Skin, Sharp Leaf e Antelope Horn
 - Scritte più chiare per la caccia iniziale, il mercenario arciere e il peso di un cambio di quest
@@ -112,7 +117,7 @@ Prima versione.
 
 - Piano più economico fino al livello obiettivo (84 se non lo cambi) con le quest ripetibili di uaRO, da non rinato o da rinato
 - Bonus del weekend e del manuale, oggetti che hai già e prezzi del mercato; i prezzi degli NPC sono già scritti
-- Ogni consegna fa salire al massimo un livello, come nel gioco: il piano lo calcola e mostra l'EXP persa
+- Ogni consegna fa salire al massimo un livello, come nel gioco, e il piano mostra l'EXP persa
 - Opzioni: caccia iniziale (con il mercenario arciere ai Les del Moscovia Dungeon), tre consegne della Medusa, livello completato uccidendo i mostri della mappa, prezzo di un cambio di NPC
 - Piano a tappe con i /navi dell'NPC e del negozio, o il @ws per il mercato, e il dettaglio consegna per consegna
-- Job seguito accanto al piano: il momento del cambio di classe e l'avviso sulle consegne che sprecano job EXP
+- Job seguito accanto al piano, con il momento del cambio di classe e l'avviso sulle consegne che sprecano job EXP
