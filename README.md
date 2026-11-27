@@ -1,20 +1,21 @@
 # ro-tools
 
-Strumenti e guide per Ragnarok Online in un solo sito statico, pubblicato su GitHub Pages e raggiungibile da `https://ro.albgri.com/`. Anche il vecchio indirizzo `https://albgri.github.io/ro/` resta valido, ma tiene dati separati: codice di accesso, scelte e timer salvati nel browser non passano dall'uno all'altro.
+Strumenti e guide per Ragnarok Online in un solo sito statico, pubblicato su GitHub Pages e raggiungibile da `https://ro.albgri.com/`. Anche il vecchio indirizzo `https://albgri.github.io/ro/` resta valido, ma codice di accesso, scelte e timer salvati nel browser non passano dall'uno all'altro.
 
 La home chiede un codice di accesso e poi fa scegliere il servizio.
 
 | Servizio | Indirizzo | Cartella |
 |---|---|---|
-| Timer di respawn per MvP e quest, web e desktop | `/timers/`; l'eseguibile per Windows e' nelle [release](https://github.com/AlbGri/ro/releases) | [`timers/`](timers/README.md) |
+| Timer di respawn per MVP e quest, web e desktop | `/timers/`; l'eseguibile per Windows e' nelle [release](https://github.com/AlbGri/ro/releases) | [`timers/`](timers/README.md) |
 | Guida uaRO "Nuovo Mondo", passo per passo | `/guide/new-world/` | `guide/`, con il suo [changelog](guide/CHANGELOG.md) |
+| Guida all'evento Halloween 2026 di uaRO: la strada piu' veloce per lo Scatleton Egg e le Halloween Coin | `/guide/halloween-2026/` | `guide/` |
 | Livelli fino all'84: il piano piu' economico con le quest ripetibili di uaRO | `/levels/` | `levels/`, con il suo [changelog](levels/CHANGELOG.md) |
 | Party: le run migliori di un'istanza (Horror Toy Factory ed Endless Cellar) con i giocatori e gli Account Gilda | `/party/` | `party/`, con il suo [changelog](party/CHANGELOG.md) |
 | Calcolatore di statistiche e danni per uaRO, dal calcolatore di Thrice | `/calculator/` | [`calculator/`](calculator/README.md), con il suo [changelog](calculator/CHANGELOG.md) |
 | Promemoria pet: conto alla rovescia di 9 minuti che suona quando e' ora di nutrire il pet | `/pet/` | `pet/` |
 | lgp: kit da scaricare per il plugin LGP del client di uaRO, le skill a terra con la loro icona | `/lgp/` | `lgp/` |
 
-Tutto e' HTML, CSS e JavaScript senza framework ne' passaggi di build: le pagine vengono servite cosi' come sono nel repository.
+Tutto e' HTML, CSS e JavaScript senza framework ne' passaggi di build. Le pagine vengono servite cosi' come sono nel repository.
 
 ## Codice di accesso
 
@@ -25,7 +26,7 @@ node tools/set-access-code.mjs "codice scelto"
 node tools/set-access-code.mjs --clear     # toglie il codice
 ```
 
-Non e' una protezione. Il sito e' statico e il repository e' pubblico: il contenuto si legge comunque dal sorgente, un codice corto si trova per tentativi e chi lo conosce puo' passarlo a chiunque. Serve a tenere fuori i curiosi di passaggio. I dati di ciascuno (timer, spunte e note della guida) restano nel suo browser: non c'e' nulla di condiviso da proteggere.
+Non e' una protezione. Il contenuto si legge comunque dal sorgente, perche' il sito e' statico e il repository e' pubblico. Un codice corto si trova per tentativi, e chi lo conosce puo' passarlo a chiunque. Serve a tenere fuori i curiosi di passaggio. I dati di ciascuno (timer, spunte e note della guida) restano nel suo browser, e sul sito non c'e' niente di condiviso da proteggere.
 
 ## Struttura
 
@@ -53,13 +54,13 @@ Gli strumenti della guida leggono la cartella `guide/fonti` (copie di script e d
 3. Una scheda nella home, in `index.html`.
 4. Le scritte in italiano e in inglese (vedi sotto) e un pulsante per la lingua, che chiama `toggleLang()`.
 
-Il tema scelto vale per tutto il sito: `gate.js` lo ricorda e lo applica a ogni pagina con l'attributo `data-theme`; senza una scelta decide il sistema.
+Il tema scelto vale per tutto il sito. `gate.js` lo ricorda e lo applica a ogni pagina con l'attributo `data-theme`; senza una scelta decide il sistema.
 
 ### Lingua
 
-Il sito e' in italiano e in inglese: l'inglese si sceglie con il pulsante `English` e vale per tutto il sito. La lingua del browser non conta.
+Il sito e' in italiano e in inglese, e la lingua scelta con il suo pulsante vale per tutto il sito. La lingua del browser non conta.
 
-Le due lingue stanno una accanto all'altra, senza un file di traduzioni:
+Le due lingue stanno una accanto all'altra, senza un file di traduzioni (il calcolatore ne ha uno solo per le frasi del suo motore):
 
 - una pagina tradotta ha `data-bilingual` su `<html>`. L'italiano e' il testo della pagina, l'inglese sta nell'attributo `data-en` dello stesso elemento, o in `data-en-title`, `data-en-aria-label`, `data-en-placeholder` e `data-en-content` per gli attributi. Li applica `gate.js`
 - nel JavaScript una scritta si sceglie con `tr("Chiudi", "Close")`, anche lei di `gate.js`
@@ -83,4 +84,4 @@ Su GitHub, `Settings > Pages > Deploy from a branch`, ramo `main`, cartella `/ (
 
 ## Licenza
 
-[AGPL-3.0](LICENSE), tranne le immagini in `lgp/` (lo zip del kit e l'anteprima), che non sono coperte dalla AGPL: le icone derivano da quelle delle skill di Ragnarok Online, di Gravity. I caratteri in `caratteri/` (Alegreya e Atkinson Hyperlegible Next) hanno la loro licenza, la SIL Open Font License, nei file `OFL-*.txt`.
+[AGPL-3.0](LICENSE), tranne le immagini in `lgp/` (lo zip del kit e l'anteprima), che non sono coperte dalla AGPL perche' le icone derivano da quelle delle skill di Ragnarok Online, di Gravity. I caratteri in `caratteri/` (Alegreya e Atkinson Hyperlegible Next) hanno la loro licenza, la SIL Open Font License, nei file `OFL-*.txt`.
