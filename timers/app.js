@@ -105,8 +105,8 @@ function saveNow() {
   if (!save(store)) {
     toast(
       tr(
-        "Salvataggio non riuscito: la memoria del browser è piena o bloccata.",
-        "Could not save: the browser storage is full or blocked.",
+        "Salvataggio non riuscito, perché la memoria del browser è piena o bloccata.",
+        "Could not save, because the browser storage is full or blocked.",
       ),
     );
   }
@@ -539,8 +539,8 @@ function clearExpired() {
   if (ids.length === 0) {
     toast(
       tr(
-        "Niente da togliere: nessuna finestra chiusa da più di un'ora.",
-        "Nothing to clear: no window closed more than an hour ago.",
+        "Nessuna finestra è chiusa da più di un'ora, quindi non c'è niente da togliere.",
+        "No window closed more than an hour ago, so there is nothing to clear.",
       ),
     );
     return;

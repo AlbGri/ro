@@ -1,11 +1,11 @@
 # Timer di respawn
 
-Timer per le finestre di respawn di MVP e quest di Ragnarok Online: registri l'ora dell'uccisione e la finestra di respawn del mostro, e la riga cambia colore quando la finestra si apre.
+Timer per le finestre di respawn di MVP e quest di Ragnarok Online. Registri l'ora dell'uccisione e la finestra di respawn del mostro, e la riga cambia colore quando la finestra si apre.
 
 Le applicazioni sono due, con lo stesso formato dei dati:
 
-- la [versione web](#versione-web), su `ro.albgri.com/timers/`: in italiano o in inglese, installabile su telefono e computer
-- l'[applicazione desktop](#applicazione-desktop) per Windows, in tkinter e senza dipendenze esterne: in italiano o in inglese, con un allarme sonoro e il lampeggio nella barra delle applicazioni che avvisano anche con il browser chiuso. L'eseguibile si scarica dalle [release](https://github.com/AlbGri/ro/releases)
+- la [versione web](#versione-web), su `ro.albgri.com/timers/`, in italiano o in inglese e installabile su telefono e computer
+- l'[applicazione desktop](#applicazione-desktop) per Windows, in tkinter e senza dipendenze esterne, in italiano o in inglese, con un allarme sonoro e il lampeggio nella barra delle applicazioni che avvisano anche con il browser chiuso. L'eseguibile si scarica dalle [release](https://github.com/AlbGri/ro/releases)
 
 Commenti, docstring e documentazione sono in italiano.
 
@@ -21,21 +21,21 @@ Ogni timer ha una durata minima e una massima, che diventano due orari: `Spawn` 
 | Fra `Spawn` e `Spawn max` | giallo, puo' gia' essere apparso | quanto manca a `Spawn max` |
 | Dopo `Spawn max` | rosso | da quanto e' passato, poi `-` |
 
-Se lasci vuoto il campo `Max` il timer diventa un countdown classico a durata fissa: la colonna `Spawn max` mostra `-` e la riga diventa rossa alla scadenza.
+Se lasci vuoto il campo `Max` il timer diventa un countdown classico a durata fissa. La colonna `Spawn max` mostra `-` e la riga diventa rossa alla scadenza.
 
-La lista si riordina da sola: prima le finestre aperte in ordine di chiusura, poi quelle ancora in attesa in ordine di apertura, infine quelle passate.
+La lista si riordina da sola, con prima le finestre aperte in ordine di chiusura, poi quelle ancora in attesa in ordine di apertura, infine quelle passate.
 
 ## Versione web
 
-I file in questa cartella sono l'applicazione web, in HTML, CSS e JavaScript, senza framework ne' passaggi di build: GitHub Pages li serve cosi' come sono all'indirizzo `ro.albgri.com/timers/`. E' una PWA: installabile sulla schermata iniziale e utilizzabile offline. Il vecchio indirizzo `albgri.github.io/ro/timers/` funziona ancora, ma i timer salvati li' restano li': per spostarli si usano `Backup dei dati` e `Ripristina da backup`.
+I file in questa cartella sono l'applicazione web, in HTML, CSS e JavaScript, senza framework ne' passaggi di build. GitHub Pages li serve cosi' come sono all'indirizzo `ro.albgri.com/timers/`. E' una PWA, installabile sulla schermata iniziale e utilizzabile offline. Il vecchio indirizzo `albgri.github.io/ro/timers/` funziona ancora, ma i timer salvati li' restano li', e per spostarli si usano `Backup dei dati` e `Ripristina da backup`.
 
-I dati stanno in `localStorage`, quindi restano nel browser che li ha scritti: non c'e' sincronizzazione fra dispositivi e cancellare i dati del sito cancella i timer. Il formato e' pero' identico a quello dell'applicazione desktop, e i comandi `Backup dei dati` e `Ripristina da backup` del menu ⚙ in alto a destra spostano i timer da una all'altra.
+I dati stanno in `localStorage`, quindi restano nel browser che li ha scritti. Non c'e' sincronizzazione fra dispositivi e cancellare i dati del sito cancella i timer. Il formato e' pero' identico a quello dell'applicazione desktop, e i comandi `Backup dei dati` e `Ripristina da backup` del menu ⚙ in alto a destra spostano i timer da una all'altra.
 
-Il layout e' unico: su telefono ogni timer e' una scheda, da 880px in su le stesse celle diventano le colonne della tabella.
+Il layout e' unico. Su telefono ogni timer e' una scheda, e da 880px in su le stesse celle diventano le colonne della tabella.
 
 Le scritte sono in italiano; il pulsante `EN` in alto, accanto all'⚙, le porta in inglese, e la scelta vale per tutto il sito. In italiano le colonne si chiamano `Suono`, `Bip`, `Nome`, `Mappa`, `Categoria`, `Ora`, `Spawn`, `Spawn max` e `Manca`; in inglese `Sound`, `Beeps`, `Name`, `Map`, `Category`, `Time`, `Spawn`, `Max. Spawn` e `Left`, come nell'applicazione desktop. I termini del gioco, come `Spawn` e `MVP`, restano in inglese.
 
-La colonna `Bip` dice quante volte suona l'allarme di quel timer, una ogni 15 secondi finche' la riga non viene toccata: si scrive un numero da 1 a 99, e il campo vuoto vale 1. Il numero viaggia nel file dati (campo `beeps` del timer) e vale anche nell'applicazione desktop.
+La colonna `Bip` dice quante volte suona l'allarme di quel timer, una ogni 15 secondi finche' la riga non viene toccata. Si scrive un numero da 1 a 99, e il campo vuoto vale 1. Il numero viaggia nel file dati (campo `beeps` del timer) e vale anche nell'applicazione desktop.
 
 Differenze rispetto al desktop, tutte volute:
 
@@ -51,21 +51,21 @@ Differenze rispetto al desktop, tutte volute:
 
 ### Fuso orario
 
-L'intestazione mostra un orologio con il fuso in uso. Non e' un ornamento: la modalita' anti tracciamento di Firefox, Tor e alcune VPN dichiarano UTC invece del fuso reale, e in quel caso ogni orario digitato viene collocato con ore di scarto. Il sintomo non e' evidente, perche' anche la rilettura usa il fuso sbagliato e le colonne `Ora` e `Spawn` restano coerenti fra loro: se ne accorge solo il contatore `Manca`.
+L'intestazione mostra un orologio con il fuso in uso, perche' Firefox con la protezione anti tracciamento, Tor e alcune VPN dichiarano UTC invece del fuso reale, e in quel caso ogni orario digitato viene collocato con ore di scarto. Il sintomo non e' evidente, perche' anche la rilettura usa il fuso sbagliato e le colonne `Ora` e `Spawn` restano coerenti fra loro. Lo rivela solo il contatore `Manca`.
 
-Toccando l'orologio si sceglie la propria citta'. La scelta e' salvata su quel dispositivo e non viaggia con i dati esportati, perche' descrive dove ci si trova e non i timer. Cambiare fuso non sposta i timer gia' creati: quelli inseriti con il fuso sbagliato vanno corretti a mano.
+Toccando l'orologio si sceglie la propria citta'. La scelta e' salvata su quel dispositivo e non viaggia con i dati esportati, perche' descrive dove ci si trova e non i timer. Cambiare fuso non sposta i timer gia' creati, e quelli inseriti con il fuso sbagliato vanno corretti a mano.
 
 Il pulsante `Installa` in alto compare solo quando l'applicazione non e' gia' installata: dove il browser lo permette apre l'installazione automatica, altrove mostra le istruzioni del sistema riconosciuto, perche' Safari non emette `beforeinstallprompt` e la voce resta nascosta nel menu di condivisione.
 
 Limiti del browser, da conoscere prima di affidarcisi:
 
-- **gli allarmi suonano solo con la pagina aperta**: una PWA chiusa non puo' svegliarsi da sola senza un server che invii notifiche push
+- **gli allarmi suonano solo con la pagina aperta**, perche' una PWA chiusa non puo' svegliarsi da sola senza un server che invii notifiche push
 - il suono parte solo dopo la prima interazione con la pagina, da cui il pulsante `Attiva avvisi`
 - su iPhone le notifiche funzionano solo se l'applicazione e' stata installata sulla schermata iniziale
 
 ### Codice di accesso e pubblicazione
 
-Il codice di accesso e' quello del sito, uguale per tutti i servizi, e la pubblicazione riguarda il repository intero: sono descritti nel [README alla radice](../README.md).
+Il codice di accesso e' quello del sito, uguale per tutti i servizi, e la pubblicazione riguarda il repository intero. Li descrive il [README alla radice](../README.md).
 
 ## Applicazione desktop
 
@@ -102,7 +102,7 @@ Compila il form e premi `Aggiungi` o `Invio`:
 - **Ora**: ora dell'uccisione, `HH:MM` o `HH:MM:SS`. Se la lasci vuota parte da adesso. Un orario che risulterebbe oltre 12 ore nel futuro viene letto come "ieri", cosi' un'uccisione delle 23:50 registrata dopo mezzanotte non parte fra un giorno. Modificando la cella `Ora` il campo mostra anche i secondi; se non lo cambi, il timer resta dov'era.
 - **Min / Max**: durata della finestra in minuti. Accetta `190`, `90,5`, `1h30`, `3:10`. Lasciando `Max` vuoto il timer e' a durata fissa.
 
-Scrivendo un nome gia' usato, mappa, categoria e durate vengono compilate con i valori dell'ultima volta. I preset si imparano dai timer che crei: non c'e' una tabella di respawn precaricata, perche' i tempi variano da server a server.
+Scrivendo un nome gia' usato, mappa, categoria e durate vengono compilate con i valori dell'ultima volta. I preset si imparano dai timer che crei. Non c'e' una tabella di respawn precaricata, perche' i tempi variano da server a server.
 
 #### Comandi
 
@@ -120,15 +120,15 @@ Scrivendo un nome gia' usato, mappa, categoria e durate vengono compilate con i 
 
 Selezionare una riga vale come "l'ho visto" e ferma la ripetizione dell'allarme senza spegnerlo per le volte successive; togliere la spunta a `Suono` lo disattiva stabilmente per quel timer.
 
-Niente sparisce dalla lista da solo: i timer restano finche' non li togli tu. `Togli gli scaduti` sposta nella sezione `archive` del file dati quelli con la finestra chiusa da almeno un'ora, e anche quello si annulla con `Ctrl+Z`.
+I timer restano nella lista finche' non li togli tu. `Togli gli scaduti` sposta nella sezione `archive` del file dati quelli con la finestra chiusa da almeno un'ora, e anche quello si annulla con `Ctrl+Z`.
 
 ### Dati e impostazioni
 
-Tutto sta in `ragnarok_timers.json`, accanto allo script o all'eseguibile: timer, storico dei nomi, preset, archivio, volume, lingua, posizione della finestra e opzione "sempre in primo piano".
+`ragnarok_timers.json`, accanto allo script o all'eseguibile, contiene timer, storico dei nomi, preset, archivio, volume, lingua, posizione della finestra e opzione "sempre in primo piano".
 
 `Ripristina da backup` prende dal file timer, storico, preset, archivio e volume; posizione della finestra, primo piano e lingua restano quelli del computer. Il backup del desktop si chiama `ragnarok_timers_backup.json`, per non sostituire per sbaglio il file dati se lo salvi accanto all'exe.
 
-Il salvataggio e' atomico e mantiene una copia `.bak`: se il file principale risulta illeggibile, all'avvio i dati vengono recuperati dal backup. Gli errori finiscono in `ragnarok_timers.log`.
+Il salvataggio e' atomico e mantiene una copia `.bak`. Se il file principale risulta illeggibile, all'avvio i dati vengono recuperati dal backup. Gli errori finiscono in `ragnarok_timers.log`.
 
 ## Struttura
 
@@ -171,7 +171,7 @@ Per provare le pagine serve un server locale, perche' i moduli JavaScript e il s
 python -m http.server 8765
 ```
 
-L'applicazione e' su `http://localhost:8765/timers/`. Service worker e installazione richiedono `localhost` oppure HTTPS: dall'indirizzo di rete locale in HTTP semplice la pagina si apre ma non si installa.
+L'applicazione e' su `http://localhost:8765/timers/`. Service worker e installazione richiedono `localhost` oppure HTTPS. Dall'indirizzo di rete locale in HTTP semplice la pagina si apre ma non si installa.
 
 ## Build eseguibile
 
@@ -180,7 +180,7 @@ cd timers/desktop
 pyinstaller RagnarokTimers.spec --noconfirm
 ```
 
-L'eseguibile viene creato in `dist/RagnarokTimers/`. Il file dati viene scritto nella cartella dell'exe al primo salvataggio, cioe' appena aggiungi un timer o chiudi la finestra: la cartella si puo' quindi spostare o copiare mantenendo i timer.
+L'eseguibile viene creato in `dist/RagnarokTimers/`. Il file dati viene scritto nella cartella dell'exe al primo salvataggio, cioe' appena aggiungi un timer o chiudi la finestra. La cartella si puo' quindi spostare o copiare mantenendo i timer.
 
 La build va lanciata da un environment conda con tkinter. Lo spec copia dalla cartella `Library/bin` dell'environment le DLL native che PyInstaller non rileva da solo (Tcl/Tk e libffi); se non le trova si ferma con un errore invece di produrre un eseguibile che non parte.
 

@@ -314,7 +314,7 @@ class TimerApp:
 
         hints = (
             self.tr(
-                "Ora: quando è morto il MVP o hai finito la quest, come 23:50 o 23:50:30. "
+                "Ora: quando è morto l'MVP o hai finito la quest, come 23:50 o 23:50:30. "
                 "Vuota vale adesso.",
                 "Time: when the MVP died or you finished the quest, like 23:50 or 23:50:30. "
                 "Empty means now.",
