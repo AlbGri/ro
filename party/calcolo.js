@@ -976,8 +976,8 @@ function cosaMancaCon(giocatori, jolly, istanza, posti, run) {
   if (giocatori.length < minimo) mancano.push(tr(`Servono almeno ${minimo} giocatori presenti, ce ne sono ${giocatori.length}.`, `At least ${minimo} players present are needed, there are ${giocatori.length}.`));
   else if (entrate < minimo * run) {
     mancano.push(tr(
-      `Per ${run} run servono ${minimo * run} entrate, i giocatori presenti ne fanno ${entrate}: qualcuno fa meno di ${run} run.`,
-      `${run} runs need ${minimo * run} entries, the players present make ${entrate}: some play fewer than ${run} runs.`,
+      `Per ${run} run servono ${minimo * run} entrate, e i giocatori presenti ne fanno ${entrate} perché qualcuno fa meno di ${run} run.`,
+      `${run} runs need ${minimo * run} entries, and the players present make ${entrate} because some play fewer than ${run} runs.`,
     ));
   }
   // I posti `forti` sono un posto in piu', contato da solo o con gli altri, ma non insieme al suo

@@ -303,8 +303,8 @@ export function leggiElenco(testo, imparati = {}) {
     const scritte = parole(nome, imparati);
     if (scritte.length > 0 && scritte.every((p) => riconosci(p, imparati)?.corretta === false)) {
       esito.errori.push(tr(
-        `riga ${riga}: "${nome}" sembra un account, non un giocatore: scrivi un numero davanti, come 1) ${nome}`,
-        `line ${riga}: "${nome}" looks like an account, not a player: write a number in front, like 1) ${nome}`,
+        `riga ${riga}: "${nome}" sembra un account e va scritto con un numero davanti, come 1) ${nome}`,
+        `line ${riga}: "${nome}" looks like an account and needs a number in front, like 1) ${nome}`,
       ));
       return;
     }
@@ -344,8 +344,8 @@ export function scriviElenco(stato, intestazione = true) {
   if (jolly.length > 0) blocchi.push(jolly.join("\n"));
   if (!intestazione) return blocchi.length > 0 ? `${blocchi.join("\n\n")}\n` : "";
   const testa = tr(
-    "# Elenco della gilda per la pagina Party: si incolla in \"Modifica l'elenco\".",
-    "# Guild list for the Party page: paste it in \"Edit the list\".",
+    "# Elenco della gilda per la pagina Party, da incollare in \"Modifica l'elenco\".",
+    "# Guild list for the Party page, to paste in \"Edit the list\".",
   );
   return `${testa}\n\n${blocchi.join("\n\n")}\n`;
 }

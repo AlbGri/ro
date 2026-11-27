@@ -338,7 +338,7 @@ describe("HP Tanker e Soul Linker (Alberto, 23/10/2026)", () => {
     assert.equal(esito.run.length, 2);
     assert.deepEqual(esito.fuori, []);
     assert.deepEqual(esito.mancano, [
-      "Per 3 run servono 15 entrate, i giocatori presenti ne fanno 14: qualcuno fa meno di 3 run.",
+      "Per 3 run servono 15 entrate, e i giocatori presenti ne fanno 14 perché qualcuno fa meno di 3 run.",
       "Per 3 run servono 3 Sniper. Gli account che lo hanno sono 3: Sniper (1, 2, 3). Un giocatore entra una volta per run, e qualcuno fa meno di 3 run, quindi ne contano 2.",
     ]);
   });

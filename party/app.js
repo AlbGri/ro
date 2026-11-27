@@ -164,7 +164,7 @@ function disegnaIstanza() {
       `. A Hardware ID enters at most ${i.maxRun} times, each time with a different account.`,
     );
   document.getElementById("ordine").textContent =
-    tr("Le run migliori: prima il numero di run, poi far entrare tutti il più possibile, ", "The best runs: first the number of runs, then letting everyone in as much as possible, ") +
+    tr("Per scegliere le run migliori conta prima il numero di run, poi far entrare tutti il più possibile, ", "To choose the best runs, first comes the number of runs, then letting everyone in as much as possible, ") +
     // Meno run dell'ultimo tipo, poi del penultimo: "poi meno run con Sniper Incubus, poi meno run con HP Tanker".
     (i.tipi ?? []).slice(1).reverse().map((t) => tr(`poi meno run con ${t.nome}, `, `then fewer runs with ${t.nome}, `)).join("") +
     desiderati.map((p) => tr(`poi ${desiderato(p)}, `, `then ${desiderato(p)}, `)).join("") +

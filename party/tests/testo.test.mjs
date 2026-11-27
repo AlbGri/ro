@@ -92,7 +92,7 @@ describe("elenco della gilda", () => {
     const letto = leggiElenco("1) HP\nHP/Sniper\nVuoto\nPieno\n1) Sniper\n");
     assert.deepEqual(letto.errori, [
       "riga 1: un account prima del nome del giocatore",
-      'riga 2: "HP/Sniper" sembra un account, non un giocatore: scrivi un numero davanti, come 1) HP/Sniper',
+      'riga 2: "HP/Sniper" sembra un account e va scritto con un numero davanti, come 1) HP/Sniper',
       "Vuoto non ha account",
     ]);
   });
