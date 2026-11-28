@@ -191,7 +191,7 @@
   // si chiude cliccando fuori o su una delle sue voci.
   document.addEventListener("click", (event) => {
     for (const menu of document.querySelectorAll("details.more[open]")) {
-      if (!menu.contains(event.target) || event.target.closest(".more-menu button")) menu.open = false;
+      if (!menu.contains(event.target) || event.target.closest(".more-menu button, .more-menu a")) menu.open = false;
     }
   });
 
