@@ -8,7 +8,7 @@
  * trasparente: un PNG per la finestra e un ICO per l'eseguibile. Vanno
  * rigenerati ogni volta che cambia il disegno.
  *
- * Il disegno passa da un canvas in Edge senza finestra: nessuna dipendenza.
+ * Il disegno passa da un canvas in Chrome senza finestra: nessuna dipendenza.
  *
  * Uso:
  *   node tools/make-icons.mjs
@@ -20,7 +20,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const EDGE = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe";
+const CHROME = "C:/Program Files/Google/Chrome/Application/chrome.exe";
 const BACKGROUND = "#e6ebe2";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -71,7 +71,7 @@ const workDir = mkdtempSync(join(tmpdir(), "ragnarok-icons-"));
 const pagePath = join(workDir, "icons.html");
 writeFileSync(pagePath, page);
 const result = spawnSync(
-  EDGE,
+  CHROME,
   [
     "--headless",
     "--disable-gpu",
@@ -86,10 +86,10 @@ const result = spawnSync(
 try {
   rmSync(workDir, { recursive: true, force: true });
 } catch {
-  // Edge puo' tenere ancora aperto il profilo: la cartella temporanea resta li'.
+  // Chrome puo' tenere ancora aperto il profilo: la cartella temporanea resta li'.
 }
 if (result.error) {
-  console.error(`Edge non ha risposto: ${result.error.message}`);
+  console.error(`Chrome non ha risposto: ${result.error.message}`);
   process.exit(1);
 }
 

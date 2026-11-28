@@ -1,4 +1,4 @@
-// Prova la pagina vera in Edge senza finestra, su una copia che non tocca i dati dell'utente.
+// Prova la pagina vera in Chrome senza finestra, su una copia che non tocca i dati dell'utente.
 //   node strumenti/prova_pagina.js prova.js
 //   node strumenti/prova_pagina.js prova.js --foto foto.png --finestra 1280,1500 --query "tema=scuro"
 //   node strumenti/prova_pagina.js prova.js --lingua en      (la pagina in inglese, senza gate.js come dal disco)
@@ -18,7 +18,7 @@ const path = require("path");
 const { spawnSync } = require("child_process");
 const { GUIDA } = require("./comune");
 
-const EDGE = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe";
+const CHROME = "C:/Program Files/Google/Chrome/Application/chrome.exe";
 const args = process.argv.slice(2);
 const opz = nome => { const i = args.indexOf("--" + nome); return i < 0 ? null : args.splice(i, 2)[1]; };
 const foto = opz("foto"), finestra = opz("finestra") || "1280,1500", query = opz("query"), semina = opz("semina"), lingua = opz("lingua");
@@ -54,9 +54,9 @@ fs.writeFileSync(copia, html);
 const url = "file:///" + copia.replace(/\\/g, "/") + (query ? "?" + query : "");
 
 const comuni = ["--headless", "--disable-gpu", "--virtual-time-budget=6000", "--window-size=" + finestra];
-const r = spawnSync(EDGE, comuni.concat(foto ? ["--hide-scrollbars", "--screenshot=" + path.resolve(foto), url] : ["--dump-dom", url]), { encoding: "utf8", timeout: 90000, maxBuffer: 64 * 1024 * 1024 });
+const r = spawnSync(CHROME, comuni.concat(foto ? ["--hide-scrollbars", "--screenshot=" + path.resolve(foto), url] : ["--dump-dom", url]), { encoding: "utf8", timeout: 90000, maxBuffer: 64 * 1024 * 1024 });
 fs.rmSync(cartella, { recursive: true, force: true });
-if (r.error) { console.log("Edge non ha risposto: " + r.error.message); process.exit(1); }
+if (r.error) { console.log("Chrome non ha risposto: " + r.error.message); process.exit(1); }
 if (foto) { console.log(fs.existsSync(foto) ? "Screenshot salvato in " + foto : "Screenshot non creato"); process.exit(fs.existsSync(foto) ? 0 : 1); }
 const m = (r.stdout || "").match(/<pre id="esito"[^>]*>([\s\S]*?)<\/pre>/);
 if (!m) { console.log("La pagina non ha prodotto un risultato (errore nel codice della pagina o della prova?)"); process.exit(1); }
