@@ -245,12 +245,13 @@ const INGLESE = document.documentElement.lang === "en" && {
 
 // numeri dei risultati nel formato della lingua: il motore li scrive all'inglese, quasi sempre senza
 // separatore delle migliaia (67984.12) e in pochi posti con (7,809). I decimali restano quelli del
-// motore; un numero con piu' punti (13.3.1) resta com'e'
+// motore; un numero con piu' punti (13.3.1) resta com'e'.
+// "always": it-IT non separa le migliaia a quattro cifre (7809 invece di 7.809)
 const LOCALE = INGLESE ? "en-GB" : "it-IT";
 const VIRGOLA = INGLESE ? "." : ",";
 export function numeri(testo) {
   return testo.replace(/(?<![\d.,])(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d+))?(?![\d]|[.,]\d)/g, (_, intero, decimali) =>
-    Number(intero.replace(/,/g, "")).toLocaleString(LOCALE) + (decimali ? VIRGOLA + decimali : ""));
+    Number(intero.replace(/,/g, "")).toLocaleString(LOCALE, { useGrouping: "always" }) + (decimali ? VIRGOLA + decimali : ""));
 }
 
 export function traduci(testo) {

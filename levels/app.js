@@ -19,7 +19,8 @@ const plurale = (n, uno, piu) => (n === 1 ? uno : piu);
 const form = document.getElementById("form");
 const pianoEl = document.getElementById("piano");
 
-const numero = (n) => Math.round(n).toLocaleString(LOCALE);
+// "always": it-IT non separa le migliaia a quattro cifre (1250 invece di 1.250)
+const numero = (n) => Math.round(n).toLocaleString(LOCALE, { useGrouping: "always" });
 const percento = (p) => p.toLocaleString(LOCALE, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const escape = (s) =>
   String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);

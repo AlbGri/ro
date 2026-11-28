@@ -2,6 +2,10 @@
 
 Le versioni della pagina `calculator/`.
 
+## [1.30] - 2026-11-28
+
+- In italiano anche i numeri da 1.000 a 9.999 hanno il punto delle migliaia (1.250, non 1250)
+
 ## [1.29] - 2026-11-28
 
 - Spiegazioni della pagina piu' semplici, nelle due lingue

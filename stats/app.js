@@ -5,8 +5,9 @@ const SVG = "http://www.w3.org/2000/svg";
 
 const tr = window.tr;
 const locale = tr("it-IT", "en-GB");
-const numero = new Intl.NumberFormat(locale);
-const decimale = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
+// "always": it-IT non separa le migliaia a quattro cifre (1250 invece di 1.250)
+const numero = new Intl.NumberFormat(locale, { useGrouping: "always" });
+const decimale = new Intl.NumberFormat(locale, { maximumFractionDigits: 1, useGrouping: "always" });
 const giornoBreve = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", timeZone: "UTC" });
 const giornoLungo = new Intl.DateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
 const nomePaese = new Intl.DisplayNames([tr("it", "en")], { type: "region" });
