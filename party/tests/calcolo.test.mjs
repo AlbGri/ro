@@ -243,6 +243,23 @@ describe("casi di Alberto", () => {
       "Per 2 run servono 4 High Priest. Gli account che lo hanno sono 5: Uno (1, 2, 3, 4) e Due (1). Un giocatore entra una volta per run, quindi ne contano 3.");
   });
 
+  it("con un account solo, o uno solo che conta, la frase e' al singolare", () => {
+    const giocatori = [
+      ...["High Priest", "High Priest", "Sniper", "Clown"].map((c, i) => giocatore(`G${i}`, account(c), account(c))),
+      { ...giocatore("P", account("Professor"), account("Professor")), run: [1] },
+      giocatore("K", account("Knight"), account("Knight")),
+    ];
+    assert.deepEqual(calcolaRun(giocatori, []).mancano, [
+      "Per 2 run servono 2 Professor. Gli account che lo hanno sono 2: P (1, 2). Un giocatore entra una volta per run, e qualcuno fa meno di 2 run, quindi ne conta 1.",
+    ]);
+    const insieme = [
+      ...["High Priest", "High Priest", "Sniper", "Knight"].map((c, i) => giocatore(`G${i}`, account(c))),
+      giocatore("PC", account("Professor", "Clown")),
+    ];
+    assert.equal(calcolaRun(insieme, []).mancano[0],
+      "Per 1 run servono 1 Professor e 1 Clown o Bard, 2 personaggi su account diversi. Solo un account ha almeno uno dei due: PC (1). Ogni account entra con un solo personaggio.");
+  });
+
   it("dice cosa manca anche quando i posti bastano uno per uno ma non insieme", () => {
     // L'elenco di Alberto del 23/10/2026: gli HP sono 6, ma due stanno su account che servono anche
     // come Professor o Clown/Bard, quindi la terza run non c'e'.
@@ -296,7 +313,7 @@ describe("HP Tanker e Soul Linker (Alberto, 23/10/2026)", () => {
     const esito = calcolaRun(giocatori, []);
     verifica(giocatori, [], ISTANZA, esito);
     assert.equal(esito.run.length, 1);
-    assert.deepEqual(esito.mancano, ["Per 2 run servono 2 High Priest (HP Tanker). Gli account che lo hanno sono 1: Alberto (1)."]);
+    assert.deepEqual(esito.mancano, ["Per 2 run servono 2 High Priest (HP Tanker). Lo ha un solo account: Alberto (1)."]);
     // Un account con un High Priest e un HP Tanker gioca l'HP Tanker.
     giocatori[0] = scarso("Alberto", account("HP Tanker"), account("High Priest", "HP Tanker"));
     assert.equal(calcolaRun(giocatori, []).run.length, 2);

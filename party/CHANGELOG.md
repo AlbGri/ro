@@ -2,6 +2,10 @@
 
 Le versioni della pagina `party/`.
 
+## [1.30] - 2026-11-28
+
+- «Per la run N» usa il singolare quando l'account e' uno solo ("Lo ha un solo account", "ne conta 1")
+
 ## [1.29] - 2026-11-28
 
 - Spiegazioni della pagina piu' semplici, nelle due lingue

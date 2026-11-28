@@ -936,11 +936,12 @@ function spiega(giocatori, jolly, gruppo, run, servono, ci, copreAccount) {
     const nome = gruppo[0].nome;
     frase = n === 0
       ? tr(`${runIt}. Nessun account ha un ${nome}.`, `${runEn}. No account has a ${nome}.`)
-      : tr(`${runIt}. Gli account che lo hanno sono ${n}: ${elenca(elenco)}.`,
+      : tr(`${runIt}. ${n === 1 ? "Lo ha un solo account" : `Gli account che lo hanno sono ${n}`}: ${elenca(elenco)}.`,
         `${runEn}. There ${n === 1 ? "is 1 account" : `are ${n} accounts`} with one: ${elenca(elenco)}.`);
   } else {
+    const quali = gruppo.length === 2 ? "dei due" : "di questi";
     frase = tr(
-      `${runIt}, ${servono} personaggi su account diversi. Gli account che hanno almeno uno ${gruppo.length === 2 ? "dei due" : "di questi"} sono ${n}: ${elenca(elenco)}. Ogni account entra con un solo personaggio.`,
+      `${runIt}, ${servono} personaggi su account diversi. ${n === 1 ? `Solo un account ha almeno uno ${quali}` : `Gli account che hanno almeno uno ${quali} sono ${n}`}: ${elenca(elenco)}. Ogni account entra con un solo personaggio.`,
       `${runEn}, ${servono} characters on different accounts. There ${n === 1 ? "is 1 account" : `are ${n} accounts`} with at least one of ${gruppo.length === 2 ? "the two" : "these"}: ${elenca(elenco)}. Each account enters with one character only.`,
     );
   }
@@ -950,8 +951,8 @@ function spiega(giocatori, jolly, gruppo, run, servono, ci, copreAccount) {
     const conJolly = jolly.some((j) => copreAccount(j, gruppo));
     const limitati = giocatori.some((g) => runDi(g, run) < run && g.account.some((a) => copreAccount(a, gruppo)));
     frase += tr(
-      ` Un giocatore entra una volta per run${conJolly ? ", anche con un Account Gilda" : ""}${limitati ? `, e qualcuno fa meno di ${run} run` : ""}, quindi ne contano ${ci}.`,
-      ` A player enters once per run${conJolly ? ", also with a Guild Account" : ""}${limitati ? `, and some play fewer than ${run} runs` : ""}, so ${ci} of them count.`,
+      ` Un giocatore entra una volta per run${conJolly ? ", anche con un Account Gilda" : ""}${limitati ? `, e qualcuno fa meno di ${run} run` : ""}, quindi ne ${ci === 1 ? "conta" : "contano"} ${ci}.`,
+      ` A player enters once per run${conJolly ? ", also with a Guild Account" : ""}${limitati ? `, and some play fewer than ${run} runs` : ""}, so ${ci} of them ${ci === 1 ? "counts" : "count"}.`,
     );
   }
   return frase;
