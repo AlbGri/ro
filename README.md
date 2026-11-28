@@ -8,7 +8,7 @@ La home chiede un codice di accesso e poi fa scegliere il servizio.
 |---|---|---|
 | Timer di respawn per MVP e quest, web e desktop | `/timers/`; l'eseguibile per Windows e' nelle [release](https://github.com/AlbGri/ro/releases) | [`timers/`](timers/README.md) |
 | Guida uaRO "Nuovo Mondo", passo per passo | `/guide/new-world/` | `guide/`, con il suo [changelog](guide/CHANGELOG.md) |
-| Guida all'evento Halloween 2026 di uaRO: la strada piu' veloce per lo Scatleton Egg e le Halloween Coin | `/guide/halloween-2026/` | `guide/` |
+| Guida all'evento Halloween 2026 di uaRO, finito (nella home fra gli eventi passati): la strada piu' veloce per lo Scatleton Egg e le Halloween Coin | `/guide/halloween-2026/` | `guide/` |
 | Livelli fino all'84: il piano piu' economico con le quest ripetibili di uaRO | `/levels/` | `levels/`, con il suo [changelog](levels/CHANGELOG.md) |
 | Party: le run migliori di un'istanza (Horror Toy Factory ed Endless Cellar) con i giocatori e gli Account Gilda | `/party/` | `party/`, con il suo [changelog](party/CHANGELOG.md) |
 | Calcolatore di statistiche e danni per uaRO, dal calcolatore di Thrice | `/calculator/` | [`calculator/`](calculator/README.md), con il suo [changelog](calculator/CHANGELOG.md) |

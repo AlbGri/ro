@@ -2,6 +2,10 @@
 
 Le versioni della guida `new-world/index.html`. Il numero e' quello scritto in testa a ogni export delle note.
 
+## [10.4] - 2026-11-28
+
+- Testi in cima alla pagina piu' semplici, nelle due lingue
+
 ## [10.3] - 2026-11-24
 
 - I caratteri arrivano dal sito invece che da Google Fonts, e il testo usa Atkinson Hyperlegible Next, la versione nuova dello stesso carattere. L'ingranaggio del menu e' un disegno, uguale su ogni sistema
@@ -18,7 +22,7 @@ Le versioni della guida `new-world/index.html`. Il numero e' quello scritto in t
 
 ## [10.0] - 2026-10-23
 
-- La guida e' anche in inglese: con `English` nel menu ⚙ si passa all'inglese, e la scelta vale per tutto il sito. Spunte, note e backup sono gli stessi nelle due lingue
+- La guida e' anche in inglese. Con `English` nel menu ⚙ si passa all'inglese, e la scelta vale per tutto il sito. Spunte, note e backup sono gli stessi nelle due lingue
 - In inglese l'export delle note e' in inglese, con i titoli degli step inglesi; le note restano come le hai scritte
 - I nomi di NPC, oggetti e opzioni di dialogo sono quelli del gioco in tutte e due le lingue
 
@@ -34,7 +38,7 @@ Le versioni della guida `new-world/index.html`. Il numero e' quello scritto in t
 
 - Il menu Altro ha lo stesso ordine in tutte le pagine del sito: Cancella tutte le note, Azzera tutto, Backup dei dati, Ripristina da backup, English, Cambia tema chiaro/scuro
 - "Backup dei progressi" si chiama "Backup dei dati", come nelle altre pagine; il backup e' lo stesso
-- Nuovo pulsante English: la guida resta in italiano, e in inglese lo dice in cima alla pagina
+- Nuovo pulsante English. La guida resta in italiano, e in inglese lo dice in cima alla pagina
 
 ## [9.1] - 2026-10-11
 
@@ -45,15 +49,15 @@ Le versioni della guida `new-world/index.html`. Il numero e' quello scritto in t
 
 Le consegne di Lugen stanno tutte in una fase, e il percorso va dalla fase 0 alla 12.
 
-- Le fasi 5, 6 e 7 diventano la fase 5, `Campo: pali e consegne di Lugen`: la consegna ad Alberto e' lo step 5.08 (prima 6.01), gli ultimi tre step con Lugen e Otto sono dal 5.09 al 5.11 (prima dal 7.01 al 7.03)
-- Le fasi dalla 8 alla 14 scalano di due: il Report parte dalla fase 6, Ring of the Wise King e' la 7, El Dicastes la 8, Guardian of Yggdrasil la 12. Dentro la fase gli step tengono il loro numero: il 14.09 diventa 12.09
+- Le fasi 5, 6 e 7 diventano la fase 5, `Campo: pali e consegne di Lugen`. La consegna ad Alberto e' lo step 5.08 (prima 6.01), gli ultimi tre step con Lugen e Otto sono dal 5.09 al 5.11 (prima dal 7.01 al 7.03)
+- Le fasi dalla 8 alla 14 scalano di due. Il Report parte dalla fase 6, Ring of the Wise King e' la 7, El Dicastes la 8, Guardian of Yggdrasil la 12. Dentro la fase gli step tengono il loro numero, e il 14.09 diventa 12.09
 - Spunte, note e backup fatti con i numeri di prima vengono convertiti da soli
 - Chi vuole solo El Dicastes si ferma alla fase 8
 - Le altre quest, da Q1 a Q5, non cambiano
 
 ## [8.3] - 2026-10-04
 
-- In cima al percorso, tolta la frase che rimandava alla pagina Altre quest: ci si arriva dal pulsante `Altre quest`
+- In cima al percorso, tolta la frase che rimandava alla pagina Altre quest, a cui si arriva dal pulsante `Altre quest`
 
 ## [8.2] - 2026-10-04
 
@@ -67,7 +71,7 @@ Le consegne di Lugen stanno tutte in una fase, e il percorso va dalla fase 0 all
 
 El Dicastes viene prima del ramo del Nidhoggur's Nest, che cosi' e' tutto di seguito.
 
-- El Dicastes passa dalla fase 12 alla fase 10, le pagine del Report dalla 10 alla 11, Two Tribes fino al dungeon dalla 11 alla 12. Dentro la fase gli step tengono il loro numero: il 12.05 diventa 10.05
+- El Dicastes passa dalla fase 12 alla fase 10, le pagine del Report dalla 10 alla 11, Two Tribes fino al dungeon dalla 11 alla 12. Dentro la fase gli step tengono il loro numero, e il 12.05 diventa 10.05
 - Spunte, note e backup fatti con i numeri di prima vengono convertiti da soli
 - Chi vuole solo El Dicastes si ferma alla fase 10
 
@@ -87,7 +91,7 @@ Revisione delle fasi dalla 1 alla 9 sugli script delle quest.
 
 ## [7.7] - 2026-10-03
 
-- Emerald, Ruby, Flame Stone e Potato si comprano dagli NPC: lo step da' il `/navi` del negozio al posto del comando `@ws`
+- Emerald, Ruby, Flame Stone e Potato si comprano dagli NPC, e lo step da' il `/navi` del negozio al posto del comando `@ws`
 
 ## [7.6] - 2026-10-03
 
@@ -110,7 +114,7 @@ La guida entra nel sito e la usano anche gli amici.
 
 ## [7.2] - 2026-10-03
 
-- Il contratto Cat Hand e' obbligatorio: step 0.05 e 2.01
+- Il contratto Cat Hand e' obbligatorio (step 0.05 e 2.01)
 
 ## [7.1] - 2026-10-03
 
@@ -118,7 +122,7 @@ La guida entra nel sito e la usano anche gli amici.
 
 ## [7.0] - 2026-10-03
 
-- Numerazione senza buchi: percorso dalla fase 0 alla 14, altre quest da Q1 a Q5. Spunte e note vengono convertite da sole
+- Numerazione senza buchi, con il percorso dalla fase 0 alla 14 e le altre quest da Q1 a Q5. Spunte e note vengono convertite da sole
 
 ## Versioni precedenti
 
