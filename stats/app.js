@@ -321,6 +321,6 @@ try {
   disegna();
 } catch (errore) {
   console.error(errore);
-  $("errore").textContent = tr("Le statistiche adesso non si riescono a leggere: riprova più tardi.", "The statistics cannot be read right now: try again later.");
+  $("errore").textContent = tr("Le statistiche adesso non si riescono a leggere. Riprova più tardi.", "The statistics cannot be read right now. Try again later.");
   $("errore").hidden = false;
 }
