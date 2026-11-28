@@ -101,7 +101,7 @@ erroreBox.className = "errore";
 erroreBox.hidden = true;
 function mostraErrore(e) {
   console.error(e);
-  erroreBox.textContent = tr("Il calcolo si è fermato su un errore con questa combinazione: i risultati potrebbero non essere aggiornati.", "The calculation stopped on an error with this combination: the results may not be up to date.") + " (" + (e?.message || e) + ")";
+  erroreBox.textContent = tr("Il calcolo si è fermato su un errore con questa combinazione, quindi i risultati potrebbero non essere aggiornati.", "The calculation stopped on an error with this combination, so the results may not be up to date.") + " (" + (e?.message || e) + ")";
   erroreBox.hidden = false;
 }
 function nascondiErrore() {
@@ -848,12 +848,12 @@ document.addEventListener("click", async (e) => {
     ricerca.close();
   } else if (azione === "copia-link") {
     window.conta?.("calcolatore-link-copiato");
-    await copiaLink(buildCorrente(), tr("Link copiato: chi lo apre vede questa build.", "Link copied: whoever opens it sees this build."));
+    await copiaLink(buildCorrente(), tr("Link copiato. Chi lo apre vede questa build.", "Link copied. Whoever opens it sees this build."));
   } else if (azione === "copia-link-salvata") {
     const s = stato.salvate[Number(selSalvate.value)];
     if (!s) return;
     window.conta?.("calcolatore-link-copiato");
-    await copiaLink(s.build, tr(`Link copiato: chi lo apre vede la build "${s.nome}".`, `Link copied: whoever opens it sees the build "${s.nome}".`));
+    await copiaLink(s.build, tr(`Link copiato. Chi lo apre vede la build "${s.nome}".`, `Link copied. Whoever opens it sees the build "${s.nome}".`));
   } else if (azione === "salva") {
     const nome = nomeBuild.value.trim();
     if (!nome) {
